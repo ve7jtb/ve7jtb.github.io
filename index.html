@@ -64,7 +64,104 @@
       </div>
     </header>
 
-    <!-- Featured Specification Report -->
+    <!-- Featured Specification Report: PQ MTC Attestation -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Featured Specification Report
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            W3C WebAuthn &amp; FIDO2 CTAP 2.3+
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            fmt: "mtc" &amp; "mtc-mds"
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Merkle Tree Certificates &amp; ML-DSA
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./pq_mtc_attestation_proposal.html" class="hover:underline">
+            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code> and <code>mtc-mds</code>)
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Defines two complementary Post-Quantum WebAuthn attestation statement formats—<strong><code>mtc</code></strong> (inline <code>COSE_Key</code> + <code>MTCProof</code>) and <strong><code>mtc-mds</code></strong> (MDS/Log-assisted public key lookup)—based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame, with comparisons against C509 and architectural synergies with <strong>OpenID Federation 1.1</strong>.
+        </p>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./pq_mtc_attestation_proposal.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full HTML Report</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./pq_mtc_attestation_proposal.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep-Link Cards into Report Sections -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./pq_mtc_attestation_proposal.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Normative <code>mtc</code> &amp; <code>mtc-mds</code> Formats, Leaf Structure &amp; RP Verification
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> (7.9–22.9 KB) exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> and <code>mtcMdsStmtFormat</code>, deterministic <code>FidoMtcLogEntry</code> serialization, and unified Relying Party verification.
+            </p>
+          </a>
+
+          <a href="./pq_mtc_attestation_proposal.html#section-6"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 6–7</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              FIDO MDS3 <code>mtcTrustAnchors</code> &amp; CTAP 2.3 3-Tier Size-Aware Cascade
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              WebIDL extensions for FIDO Metadata Statements (<code>MtcTrustAnchor</code>, <code>MtcSubtree</code>, <code>MtcBatchKeyEntry</code>), shared vs. separate <code>caId</code> deployment models, <code>authenticatorGetInfo</code> <code>attestationFormats</code> (<code>0x16</code>), and the 3-tier <code>"packed" &rarr; "mtc" &rarr; "mtc-mds"</code> cascade.
+            </p>
+          </a>
+
+          <a href="./pq_mtc_attestation_proposal.html#section-8"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 8</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Enterprise Attestation (<code>0x0A</code>), Signed Serial (<code>fido-mtc-ent</code>) &amp; 100k–5M Scaling
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Dual-key provisioning (<code>AttestationId::Batch</code> shared by &ge;100k devices vs. single-device <code>AttestationId::Enterprise</code>), Root CA subtree checkpoint signatures (<code>FidoMtcSubtreeCheckpoint</code>), signed <code>fido-mtc-ent</code> serial numbers, and scaling from 100k to 5M+ keys.
+            </p>
+          </a>
+
+          <a href="./pq_mtc_attestation_proposal.html#section-9"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 9–10</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              C509 Evaluation &amp; Bidirectional Synergies with OpenID Federation 1.1
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Why CBOR-encoded X.509 (<code>C509</code>) only reduces PQ cert chains by ~4.6% (while saving ~900 B in NVRAM via Type 3 lossless re-encoding), federating <code>fido_authenticator</code> metadata via OpenID Federation 1.1, and shrinking PQ OpenID Federation <code>trust_chain</code> hops by 85%–89% using MTC.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Specification Report: CTAP 2.3+ PQ PIN/UV Auth Protocol 3 -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
@@ -167,6 +264,17 @@
         Related Specifications &amp; Normative References
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer"
+           class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <div class="font-bold text-[var(--primary)] uppercase tracking-wider">IETF PLANTS Internet-Draft</div>
+          <div class="font-semibold text-sm text-[var(--foreground)] mt-1">
+            Merkle Tree Certificates (MTC)
+          </div>
+          <div class="text-[var(--muted-foreground)] mt-1">
+            <code>draft-ietf-plants-merkle-tree-certs</code> — D. Benjamin, D. Stebila, B. Westerbaan
+          </div>
+        </a>
+
         <a href="https://datatracker.ietf.org/doc/draft-bradleylundberg-cfrg-arkg/" target="_blank" rel="noopener noreferrer"
            class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
           <div class="font-bold text-[var(--primary)] uppercase tracking-wider">IETF CFRG Internet-Draft</div>
@@ -178,17 +286,6 @@
           </div>
         </a>
 
-        <a href="https://yubicolabs.github.io/webauthn-sign-extension/5-SNAPSHOT-2026-09-09T13:45/#sctn-sign-extension" target="_blank" rel="noopener noreferrer"
-           class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-          <div class="font-bold text-[var(--primary)] uppercase tracking-wider">W3C WebAuthn Extension Draft</div>
-          <div class="font-semibold text-sm text-[var(--foreground)] mt-1">
-            Web Authentication <code>sign</code> Extension (<code>previewSign5</code>)
-          </div>
-          <div class="text-[var(--muted-foreground)] mt-1">
-            Hardware-bound arbitrary signing &amp; ARKG integration for WebAuthn credentials
-          </div>
-        </a>
-
         <a href="https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html" target="_blank" rel="noopener noreferrer"
            class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
           <div class="font-bold text-[var(--primary)] uppercase tracking-wider">FIDO Alliance Specification</div>
@@ -196,7 +293,7 @@
             Client to Authenticator Protocol (CTAP) v2.3
           </div>
           <div class="text-[var(--muted-foreground)] mt-1">
-            Proposed Standard (February 2026) — PIN/UV Auth Protocols, PPUAT &amp; Extensions
+            Proposed Standard (February 2026) — PIN/UV Auth Protocols, PPUAT &amp; Attestation Formats
           </div>
         </a>
       </div>

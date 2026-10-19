@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CTAP 2.3+ Post-Quantum PIN/UV Auth Protocol 3 Specification Report</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">FIDO2 CTAP 2.3+ Architecture</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">pinUvAuthProtocol = 3</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">RFC 9180 HPKE (X-Wing / ML-KEM)</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">ARKG &amp; previewSign5</span>
+      </div>
+      <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      CTAP 2.3+ Post-Quantum PIN/UV Auth Protocol 3: Architecture, Downgrade Integrity, Hierarchical PPUAT, and Encrypted Extensions
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-6">
+      A comprehensive technical specification addressing core CTAP <code>keyAgreement</code> quantum and MITM vulnerabilities, zero-fingerprinting <code>authenticatorGetInfo</code> downgrade protection via vendor-indexed batch attestation, one-way hierarchical Persistent PIN/UV Auth Token (PPUAT) domain separation between Protocols 2 and 3, and post-quantum security for encrypted extensions (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code> deprecation, and <code>sign</code> / <code>previewSign5</code> with ARKG).
+    </p>
+
+    <!-- Sticky / Quick Navigation Bar -->
+    <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-[var(--border)]">
+      <a href="#section-1" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 1</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Core PIN Protocol &amp; HPKE</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1">HNDL/MITM flaws, HPKE modes &amp; 0-RTT caching</div>
+      </a>
+      <a href="#section-2" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 2</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Downgrades &amp; GetInfo Integrity</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1">Vendor <code>kid</code>, <code>pk_batch</code>, FN-DSA vs. LMS</div>
+      </a>
+      <a href="#section-3" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 3</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">PPUAT Domain Separation (v2/v3)</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1">One-way HKDF tree, <code>encIdentifier</code> &amp; code</div>
+      </a>
+      <a href="#section-4" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 4</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Extensions Using Encryption</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1"><code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, <code>sign</code></div>
+      </a>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 1: CORE PIN PROTOCOL KEYAGREEMENT ISSUES & HPKE ARCHITECTURE  -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Core PIN Protocol <code>keyAgreement</code> Issues &amp; Post-Quantum HPKE Architecture
+        </h2>
+      </div>
+
+      <!-- 1.1 Vulnerabilities -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          1.1 Vulnerabilities in CTAP 2.0–2.3 PIN Protocols 1 and 2
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          In CTAP 2.0 through CTAP 2.3 (§6.5, <code>authenticatorClientPIN</code> <code>0x06</code>), PIN/UV Auth Protocols <code>1</code> and <code>2</code> establish a transport encryption channel between the Platform (OS/Browser) and the Authenticator using an ephemeral <strong>P-256 ECDH</strong> key exchange (<code>getKeyAgreement</code>, subcommand <code>0x02</code>). This design suffers from four fundamental cryptographic weaknesses:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <h4 class="font-semibold text-sm text-[var(--foreground)] mb-1">1. Harvest-Now-Decrypt-Later (HNDL) Quantum Exposure</h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              A passive observer recording USB, NFC, BLE, or IPC traffic today captures the Authenticator's P-256 public key <code>Q_auth</code>, the Platform's public key <code>Q_plat</code>, and the <code>AES-256-CBC</code> ciphertexts. A future CRQC running Shor's algorithm recovers <code>d_auth</code>, derives <code>sharedSecret</code>, and decrypts <strong>long-lived static secrets</strong>: the user's static PIN hash <code>LEFT(SHA-256(PIN), 16)</code> in <code>pinHashEnc</code> (<code>0x06</code>) and <code>newPinEnc</code> (<code>0x05</code>), the long-lived <strong>PPUAT</strong> in <code>pinToken</code> (<code>0x02</code>), and static vault/disk encryption keys in <code>hmac-secret</code> (<code>prf</code>).
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <h4 class="font-semibold text-sm text-[var(--foreground)] mb-1">2. Unauthenticated <code>keyAgreement</code> (Active Bus MITM)</h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              <code>getKeyAgreement</code> (<code>0x02</code>) returns a raw, unauthenticated P-256 public key. An active bus MITM can substitute its own ephemeral keypair on both sides:
+              <br/>• <strong>External PIN (<code>0x09</code>):</strong> MITM decrypts <code>pinHashEnc</code> in real time to steal <code>LEFT(SHA-256(PIN), 16)</code>.
+              <br/>• <strong>Internal UV (<code>0x0A</code>):</strong> When on-device biometrics are used, there is no shared PIN secret and CTAP 2.3 sends <strong>no <code>pinUvAuthParam</code> (<code>0x04</code>)</strong> in <code>0x0A</code>—allowing any bus MITM to hijack the returned <code>pinUvAuthToken</code>!
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <h4 class="font-semibold text-sm text-[var(--foreground)] mb-1">3. Unauthenticated <code>AES-256-CBC</code> Responses</h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              While requests authenticate ciphertexts via a separate <code>pinUvAuthParam</code> (<code>HMAC-SHA-256</code>), responses such as <code>pinToken</code> (<code>0x02</code>) and <code>hmac-secret</code> outputs use raw unauthenticated <code>AES-256-CBC</code>, leaving response ciphertexts malleable on the wire.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <h4 class="font-semibold text-sm text-[var(--foreground)] mb-1">4. Mandatory <code>1-RTT</code> Overhead on Every Ceremony</h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              Every PIN/UV ceremony requires an explicit <code>getKeyAgreement</code> (<code>0x02</code>) round trip prior to calling <code>0x09</code> or <code>0x0A</code>. With post-quantum KEM public keys (1.2–1.5 KB), fetching an ephemeral key on every login adds substantial latency over NFC and BLE.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 Mapping CTAP 2.3 Abstract Interface to HPKE & KEM Agility -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          1.2 Mapping CTAP 2.3's Abstract KEM Interface to RFC 9180 HPKE &amp; KEM Agility
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          CTAP 2.3 (§6.5.4) already models key agreement around an asymmetric <strong>KEM + DEM abstract interface</strong> (<code>getPublicKey() -&gt; coseKey</code>, <code>encapsulate(peerCoseKey) -&gt; (coseKey, sharedSecret)</code>, <code>decapsulate(peerCoseKey) -&gt; sharedSecret</code>). <strong>PIN/UV Auth Protocol 3 (<code>pinUvAuthProtocol = 3</code>)</strong> maps this directly to <strong>RFC 9180 (HPKE)</strong> with KEM agility advertised via a new <code>authenticatorGetInfo</code> (<code>0x04</code>) field <strong><code>0x2A: pinUvAuthKems</code></strong>:
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">HPKE <code>kem_id</code></th>
+                <th class="p-3 font-semibold">Algorithm Name</th>
+                <th class="p-3 font-semibold">Composition</th>
+                <th class="p-3 font-semibold">Target Profile</th>
+                <th class="p-3 font-semibold"><code>Npk</code> (<code>pkR</code>)</th>
+                <th class="p-3 font-semibold"><code>Nenc</code> (<code>enc</code>)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-mono font-semibold">0x647a</td>
+                <td class="p-3 font-semibold">X-Wing (<code>MLKEM768-X25519</code>)</td>
+                <td class="p-3"><code>ML-KEM-768</code> + <code>X25519</code></td>
+                <td class="p-3">Commercial / Consumer Hybrid Default</td>
+                <td class="p-3 font-mono">1,216 B</td>
+                <td class="p-3 font-mono">1,120 B</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">0x0050</td>
+                <td class="p-3 font-semibold">MLKEM768-P256</td>
+                <td class="p-3"><code>ML-KEM-768</code> + <code>P-256</code></td>
+                <td class="p-3">FIPS 140-3 Hybrid Hardware Keys</td>
+                <td class="p-3 font-mono">1,249 B</td>
+                <td class="p-3 font-mono">1,153 B</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">0x0042</td>
+                <td class="p-3 font-semibold">ML-KEM-1024</td>
+                <td class="p-3">Pure <code>ML-KEM-1024</code> (Cat 5)</td>
+                <td class="p-3"><strong>NSA CNSA 2.0</strong> / High Assurance</td>
+                <td class="p-3 font-mono">1,568 B</td>
+                <td class="p-3 font-mono">1,568 B</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">0x0041</td>
+                <td class="p-3 font-semibold">ML-KEM-768</td>
+                <td class="p-3">Pure <code>ML-KEM-768</code> (Cat 3)</td>
+                <td class="p-3">Pure PQ Standard</td>
+                <td class="p-3 font-mono">1,184 B</td>
+                <td class="p-3 font-mono">1,088 B</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">0x0040</td>
+                <td class="p-3 font-semibold">ML-KEM-512</td>
+                <td class="p-3">Pure <code>ML-KEM-512</code> (Cat 1)</td>
+                <td class="p-3">Legacy <code>maxMsgSize: 1024</code> Keys</td>
+                <td class="p-3 font-mono">800 B</td>
+                <td class="p-3 font-mono">768 B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs space-y-1.5">
+          <div class="font-semibold text-[var(--foreground)]">MCU SRAM Optimization &amp; Fujisaki-Okamoto (FO) Implicit Rejection</div>
+          <p class="text-[var(--muted-foreground)]">
+            • <strong>64-Byte Seed Storage:</strong> Rather than holding an expanded 2,400-byte <code>ML-KEM-768</code> decapsulation key (<code>dk</code>) in scarce MCU SRAM, the Authenticator stores only the <strong>64-byte seed <code>(d, z)</code></strong> and streams matrix/vector expansion via hardware <code>SHAKE256</code>.
+            <br/>• <strong>FO Implicit Rejection &amp; <code>regenerate()</code>:</strong> Because <code>ML-KEM</code> uses the Fujisaki-Okamoto transform with implicit rejection, <code>ML-KEM.Decaps()</code> returns a pseudorandom key derived from secret <code>z</code> on invalid ciphertexts rather than an error. Tampering is caught immediately when <code>pinUvAuthParam</code> / AEAD tag verification fails with <code>CTAP2_ERR_PIN_AUTH_INVALID</code>, triggering state rotation per CTAP 2.3 §6.5.5.4.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1.3 Comparing HPKE Modes -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          1.3 Comparing HPKE Modes (RFC 9180 §5.1 Authentication Modes &amp; §5.2–5.3 DEM Modes)
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          In RFC 9180 and <code>draft-ietf-hpke-pq</code>, <strong>lattice KEMs (<code>ML-KEM</code>) and <code>X-Wing</code> do NOT support <code>AuthEncap</code> / <code>AuthDecap</code></strong> because <code>AuthEncap</code> requires non-interactive static-ephemeral Diffie-Hellman. Consequently, <strong><code>mode_base</code> (<code>0x00</code>)</strong> and <strong><code>mode_psk</code> (<code>0x01</code>)</strong> are the only two RFC 9180 modes compatible with Post-Quantum KEMs:
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">HPKE Mode</th>
+                <th class="p-3 font-semibold">ID</th>
+                <th class="p-3 font-semibold">PQ KEM Compatible?</th>
+                <th class="p-3 font-semibold">Authenticator (<code>R</code>) Auth</th>
+                <th class="p-3 font-semibold">Platform (<code>S</code>) Auth</th>
+                <th class="p-3 font-semibold">Role in CTAP 2.3 Protocol 3</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-mono font-semibold">mode_base</td>
+                <td class="p-3 font-mono">0x00</td>
+                <td class="p-3 font-semibold">Yes</td>
+                <td class="p-3"><code>pk_batch</code> verified via Vendor <code>kid</code> (<code>batchAttestSig</code>)</td>
+                <td class="p-3">None at HPKE layer</td>
+                <td class="p-3"><strong>Initial <code>setPIN</code> (<code>0x03</code>)</strong> on a factory-fresh key (no PIN or <code>PPUAT_v3</code> yet) or unauthenticated <code>uv=0</code> transport encryption.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">mode_psk</td>
+                <td class="p-3 font-mono">0x01</td>
+                <td class="p-3 font-semibold">Yes</td>
+                <td class="p-3"><code>pk_batch</code> + possession of <code>PPUAT_v3</code> (or <code>SPAKE2+</code> verifier)</td>
+                <td class="p-3">Possession of 256-bit <strong><code>PPUAT_v3</code></strong> (or <strong><code>SPAKE2+</code></strong> PIN secret) + fresh <code>encIdentifier</code> (<code>psk_id</code>)</td>
+                <td class="p-3"><strong>Primary Mode for Protocol 3:</strong><br/>• <strong>Unbound PC:</strong> <code>psk</code> = <code>SPAKE2+</code> PIN secret (provisions <code>PPUAT_v3</code>).<br/>• <strong>Bound PC (0-RTT):</strong> <code>psk = HKDF(PPUAT_v3)</code>, <code>psk_id = encIdentifier</code> (<code>0x19</code>) for both Internal UV (<code>0x0A</code>) &amp; External PIN (<code>0x09</code>).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono text-[var(--muted-foreground)]">mode_auth</td>
+                <td class="p-3 font-mono text-[var(--muted-foreground)]">0x02</td>
+                <td class="p-3 text-[var(--muted-foreground)]">No (<code>DHKEM</code> only)</td>
+                <td class="p-3 text-[var(--muted-foreground)]"><code>pkR</code></td>
+                <td class="p-3 text-[var(--muted-foreground)]">Asymmetric <code>skS</code> via <code>AuthEncap</code></td>
+                <td class="p-3 text-[var(--muted-foreground)]">Not usable with <code>ML-KEM</code> / <code>X-Wing</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono text-[var(--muted-foreground)]">mode_auth_psk</td>
+                <td class="p-3 font-mono text-[var(--muted-foreground)]">0x03</td>
+                <td class="p-3 text-[var(--muted-foreground)]">No (<code>DHKEM</code> only)</td>
+                <td class="p-3 text-[var(--muted-foreground)]"><code>pkR</code> + <code>psk</code></td>
+                <td class="p-3 text-[var(--muted-foreground)]">Asymmetric <code>skS</code> + <code>psk</code></td>
+                <td class="p-3 text-[var(--muted-foreground)]">Not usable with <code>ML-KEM</code> / <code>X-Wing</code>; redundant with 256-bit <code>PPUAT_v3</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="text-sm font-semibold text-[var(--foreground)] pt-2">
+          Comparing the 2 HPKE DEM Modes (<code>AEAD</code> <code>0x0002</code> vs. <code>Export-Only</code> <code>0xFFFF</code>) for Bidirectional CTAP Encryption
+        </h4>
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Feature</th>
+                <th class="p-3 font-semibold">Option 1: HPKE Stateful AEAD (<code>aead_id = 0x0002</code>, <code>AES-256-GCM</code>)</th>
+                <th class="p-3 font-semibold">Option 2: HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold">Platform &rarr; Authenticator (<code>newPinEnc</code>, <code>pinHashEnc</code>)</td>
+                <td class="p-3">Uses <code>ctx.Seal(aad, pt)</code> (<code>seq = 0</code> for <code>newPinEnc</code>, <code>seq = 1</code> for <code>pinHashEnc</code> in <code>changePIN</code>).</td>
+                <td class="p-3">Exports <code>K_AES = ctx.Export("CTAP2 AES key", 32)</code> and uses <code>IV_16 || AES-256-CBC(K_AES, IV_16, pt)</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Authenticator &rarr; Platform (<code>pinToken</code> <code>0x02</code>)</td>
+                <td class="p-3">Exports <code>(K_rsp, N_rsp) = ctx.Export("CTAP2.3-PINv3-Rsp", 44)</code> and uses <code>AES-256-GCM.Seal(K_rsp, N_rsp, aad, pt)</code>.</td>
+                <td class="p-3">Reuses <code>IV_16 || AES-256-CBC(K_AES, IV_16, pt)</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Standalone <code>authenticate()</code> Key</td>
+                <td class="p-3">Exports <code>K_HMAC = ctx.Export("CTAP2.3-PINv3-Auth", 32)</code>.</td>
+                <td class="p-3">Exports <code>K_HMAC = ctx.Export("CTAP2 HMAC key", 32)</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Wire Overhead per Encrypted Field</td>
+                <td class="p-3"><strong>+16 bytes</strong> (16 B GCM tag, <strong>0 B wire IV</strong> derived from <code>base_nonce ^ seq</code>).</td>
+                <td class="p-3"><strong>+16 bytes</strong> (16 B prepended random CBC IV, 0 B tag).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Security vs. Firmware Reuse</td>
+                <td class="p-3"><strong>Highest Security:</strong> Eliminates unauthenticated <code>AES-CBC</code> on responses and binds <code>AAD</code> into every ciphertext.</td>
+                <td class="p-3"><strong>Maximum Firmware Reuse:</strong> Reuses 100% of Protocol 2's <code>encrypt()</code>, <code>decrypt()</code>, and <code>authenticate()</code> code; only replaces <code>kdf(Z)</code>!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 1.4 Zero-RTT Caching -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          1.4 Zero-RTT <code>keyAgreement</code> Caching Against <code>PPUAT_v3</code> (Skipping <code>getKeyAgreement</code>)
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Once a Platform completes initial binding—acquiring <code>PPUAT_v3</code>, receiving the Authenticator's static batch public key <code>pk_batch</code>, and validating the vendor attestation over <code>authenticatorGetInfo</code> (Section 2)—it caches:
+        </p>
+        <div class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] font-mono text-xs text-center">
+          CachedBinding = (deviceIdentifier, PPUAT_v3, kemId, pk_batch, VerifiedGetInfoProfile)
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <span class="font-semibold text-[var(--foreground)]">1. Saves 1 Full RTT &amp; ~2.5 KB per Login:</span>
+            <span class="text-[var(--muted-foreground)]"> <code>pk_batch</code> and <code>batchAttestSig</code> are sent only once per computer. Every subsequent login jumps directly from <code>authenticatorGetInfo</code> (<code>0x04</code>) to <code>getPinUvAuthToken...</code> (<code>0x09</code> / <code>0x0A</code>), cutting NFC/BLE latency by &gt;50%.</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <span class="font-semibold text-[var(--foreground)]">2. Eliminates Runtime <code>ML-KEM.KeyGen</code> on MCU:</span>
+            <span class="text-[var(--muted-foreground)]"> On bound sessions, the Authenticator never generates PQ keypairs at runtime; it only executes fast <code>ML-KEM.Decaps(sk_batch, enc)</code>.</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <span class="font-semibold text-[var(--foreground)]">3. Full Per-Session Bidirectional Freshness:</span>
+            <span class="text-[var(--muted-foreground)]"> Platform samples fresh randomness in <code>KEM.Encap(pk_batch)</code>, and Authenticator supplies a fresh 128-bit random <code>IV_id</code> in <code>encIdentifier</code> (<code>0x19</code>) bound as <code>psk_id</code> in HPKE <code>SetupPSKS</code>.</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <span class="font-semibold text-[var(--foreground)]">4. Instant O(1) Downgrade Verification:</span>
+            <span class="text-[var(--muted-foreground)]"> Matching <code>encIdentifier</code> (<code>0x19</code>) lets the Platform immediately verify that received <code>authenticatorGetInfo</code> fields match <code>VerifiedGetInfoProfile</code> without re-running signature verification.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 2: DOWNGRADE ISSUES & AUTHENTICATORGETINFO INTEGRITY          -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Downgrade Issues &amp; <code>authenticatorGetInfo</code> Integrity
+        </h2>
+      </div>
+
+      <!-- 2.1 Four Downgrade Surfaces -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          2.1 The Four Downgrade &amp; Relay Attack Surfaces in CTAP 2.3
+        </h3>
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">#</th>
+                <th class="p-3 font-semibold">Attack Surface</th>
+                <th class="p-3 font-semibold">How the MITM Executes the Attack</th>
+                <th class="p-3 font-semibold">Why Naive HPKE Fails Without <code>GetInfo</code> Integrity</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-bold">1</td>
+                <td class="p-3 font-semibold">Direct KEM Stripping (<code>0x2A: pinUvAuthKems</code>)</td>
+                <td class="p-3">Authenticator sends <code>[0x0042, 0x647a, 0x0040]</code>. MITM rewrites it to <code>[0x0040]</code> to force the weakest KEM.</td>
+                <td class="p-3">HPKE's internal <code>suite_id</code> only binds the <em>selected</em> <code>kem_id</code>, not the <em>offered</em> list of KEMs.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold">2</td>
+                <td class="p-3 font-semibold">Indirect Size Squeezing (<code>0x05: maxMsgSize</code>)</td>
+                <td class="p-3">MITM leaves <code>pinUvAuthKems</code> intact but rewrites <code>maxMsgSize: 2048 &rarr; 1024</code> so the Platform avoids <code>ML-KEM-1024</code> (<code>1568 B</code>) and <code>X-Wing</code> (<code>1216 B</code>).</td>
+                <td class="p-3">Unauthenticated <code>maxMsgSize</code> tricks the Platform into voluntarily selecting a weaker KEM/protocol.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold">3</td>
+                <td class="p-3 font-semibold">Modality Downgrade (<code>0x04: options</code> <code>uv &rarr; clientPin</code>)</td>
+                <td class="p-3">Authenticator supports on-device biometrics (<code>uv: true</code>). MITM hides <code>uv</code> support to force host-side keyboard PIN entry.</td>
+                <td class="p-3">Unauthenticated <code>options</code> map lets the MITM force a phishable/interceptable PIN ceremony.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold">4</td>
+                <td class="p-3 font-semibold">Cross-Protocol Stripping &amp; Back-to-Back Relay MITM</td>
+                <td class="p-3">MITM rewrites <code>pinUvAuthProtocols: [3, 2, 1] &rarr; [1]</code>. Platform speaks <strong>Protocol 1</strong> (P-256 ECDH) to MITM; MITM decrypts <code>pinHashEnc</code> and translates it into <strong>Protocol 3</strong> to the Authenticator!</td>
+                <td class="p-3">Because the Authenticator receives a valid Protocol 3 request from the MITM, even an Authenticator NVRAM ratchet cannot detect that the Platform was downgraded!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs space-y-1.5">
+          <div class="font-semibold text-[var(--foreground)]">2.2 Why Naive Defenses Fail: Protocol 1 Compatibility &amp; WebAuthn RP Privacy Constraints</div>
+          <p class="text-[var(--muted-foreground)]">
+            • <strong>Extra Keys in <code>COSE_Key</code> Break Protocol 1:</strong> Adding a canary key like <code>-99: 3</code> inside <code>keyAgreement</code> breaks strict 5-key CTAP 2.0 CBOR parsers and is trivially stripped by a MITM because <code>keyAgreement</code> is not MAC'd in Protocols 1/2.
+            <br/>• <strong>Hashing <code>authenticatorGetInfo</code> Into <code>authenticatorData</code> Violates WebAuthn Privacy:</strong> <code>authenticatorData</code> is sent directly to the Relying Party (RP), whereas <code>authenticatorGetInfo</code> contains sensitive fingerprinting fields (<code>aaguid</code>, <code>firmwareVersion</code>, <code>remainingDiscoverableCredentials</code>). All <code>authenticatorGetInfo</code> integrity checks MUST stay strictly CTAP-local (<code>Platform &lt;-&gt; Authenticator</code>), leaking <strong>0 bits</strong> to the RP.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2.3 Multi-Batch Static PQ Key & Vendor kid Attestation -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          2.3 Multi-Batch Static PQ Key (<code>pk_batch</code>), Vendor <code>kid</code> (<code>0x2B</code>), &amp; Client Reconstruction
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          While there are hundreds of <code>aaguid</code> model identifiers, there are only <strong>~25–30 FIDO authenticator vendors</strong> worldwide. Introducing a 4-byte <strong><code>0x2B: batchAttestKid</code> (<code>vendorId_16 || keyRev_16</code>)</strong> in <code>authenticatorGetInfo</code> allows clients to cache ~30 vendor offline root keys in <strong>1.8 KB to 27 KB total</strong>—providing offline, zero-day verification even for brand-new <code>aaguid</code> models without requiring FIDO MDS access.
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Field in <code>ReconstructedAttestation_v1</code></th>
+                <th class="p-3 font-semibold">Source in <code>authenticatorGetInfo</code> (<code>0x04</code>)</th>
+                <th class="p-3 font-semibold">Specific Downgrade Attack Prevented</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-mono font-semibold">batchAttestKid (4 B)</td>
+                <td class="p-3 font-mono">0x2B (batchAttestKid)</td>
+                <td class="p-3"><strong>Key ID Binding:</strong> Identifies which vendor root public key verifies <code>batchAttestSig</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">aaguid (16 B)</td>
+                <td class="p-3 font-mono">0x03 (aaguid)</td>
+                <td class="p-3"><strong>Cross-Model Splicing:</strong> Prevents replaying <code>(pk_batch, batchAttestSig)</code> across models.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">pinUvAuthProtocols ([+ uint])</td>
+                <td class="p-3 font-mono">0x06 (pinUvAuthProtocols)</td>
+                <td class="p-3"><strong>Cross-Protocol Stripping:</strong> Prevents stripping <code>3</code> or reordering protocol preference.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">pinUvAuthKems ([+ uint16])</td>
+                <td class="p-3 font-mono">0x2A (pinUvAuthKems)</td>
+                <td class="p-3"><strong>KEM Stripping / Reordering:</strong> Prevents stripping stronger KEMs (<code>ML-KEM-1024</code>, <code>X-Wing</code>).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">maxMsgSize (uint)</td>
+                <td class="p-3 font-mono">0x05 (maxMsgSize)</td>
+                <td class="p-3"><strong>Indirect Size Squeezing:</strong> Prevents lowering <code>maxMsgSize</code> (<code>2048 &rarr; 1024</code>).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-mono font-semibold">uvCapabilityMask (uint8)</td>
+                <td class="p-3 font-mono">Key presence in 0x04 (options)</td>
+                <td class="p-3"><strong>Modality Downgrade (UV &rarr; PIN):</strong> 3-bit hardware capability mask (<code>bit0=clientPin</code>, <code>bit1=uv</code>, <code>bit2=pinUvAuthToken</code> key presence) so a MITM cannot hide on-device biometric <code>uv</code> support. Survives runtime PIN/UV configuration changes and firmware updates!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>; Sent on the wire in getKeyAgreement (subCommand = 0x02) response:
+GetKeyAgreementResponse = {
+    0x01: COSE_Key,                 ; ALWAYS includes full pk_batch bytes on the wire (for non-MDS clients)
+    ? 0x02: uint8,                  ; attestationVersion (e.g., 1)
+    ? 0x03: bstr                    ; batchAttestSig (Static factory signature from ROM)
+}
+
+; Reconstructed in memory by the Manufacturer (at factory signing) and by the Client (at verification):
+ReconstructedAttestation_v1 = [
+    attestationVersion:  1,              ; Defines this exact v1 field layout
+    batchAttestKid:      bstr .size 4,   ; From authenticatorGetInfo (0x2B: vendorId_16 || keyRev_16)
+    kemId:               uint16,         ; From getKeyAgreement 0x01 COSE_Key (-1)
+    pkBatch:             bstr,           ; From getKeyAgreement 0x01 COSE_Key (-2, sent on the wire)
+    aaguid:              bstr .size 16,  ; From authenticatorGetInfo (0x03)
+    pinUvAuthProtocols:  [+ uint],       ; From authenticatorGetInfo (0x06)
+    pinUvAuthKems:       [+ uint16],     ; From authenticatorGetInfo (0x2A)
+    maxMsgSize:          uint,           ; From authenticatorGetInfo (0x05, default 1024)
+    uvCapabilityMask:    uint8           ; From authenticatorGetInfo (0x04 key presence: bit0=clientPin, bit1=uv, bit2=pinUvAuthToken)
+]</code></pre>
+      </div>
+
+      <!-- 2.4 Signature Size vs Long-Term Security -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          2.4 Signature Size vs. Long-Term Security (15–20+ Year Horizon: <code>FN-DSA</code> vs. Stateful Hash-Based <code>LMS</code>)
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Because a vendor only signs <strong>once per manufacturing batch of &ge;100,000 units</strong> inside an offline factory HSM (&le;1,024 signatures over 20 years), <strong>Stateful Hash-Based Signatures (<code>LMS</code> RFC 8554 / NIST SP 800-208)</strong> are uniquely viable alongside <strong><code>FN-DSA</code> (FIPS 206)</strong>:
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Algorithm Candidate</th>
+                <th class="p-3 font-semibold">NIST Level &amp; Quantum Margin</th>
+                <th class="p-3 font-semibold">Mathematical Assumption</th>
+                <th class="p-3 font-semibold"><code>batchAttestSig</code> Size</th>
+                <th class="p-3 font-semibold">Total <code>getKeyAgreement</code> Resp</th>
+                <th class="p-3 font-semibold">Vendor PK Size</th>
+                <th class="p-3 font-semibold">30-Vendor Cache</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold"><code>FN-DSA-512</code> (Falcon-512)</td>
+                <td class="p-3">Cat 1 (~128b classical / ~64b Grover)</td>
+                <td class="p-3">Structured NTRU Lattice</td>
+                <td class="p-3 font-mono font-semibold">666 B</td>
+                <td class="p-3 font-mono">~1,900 B (Fits 2 KB)</td>
+                <td class="p-3 font-mono">897 B</td>
+                <td class="p-3 font-mono">~27 KB</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>LMS_SHA256_M24_H10</code> (w=8)</td>
+                <td class="p-3">Cat 3 (192b hash / 96b Grover)</td>
+                <td class="p-3 font-semibold">Pure <code>SHA-256</code> Only</td>
+                <td class="p-3 font-mono font-semibold">880 B</td>
+                <td class="p-3 font-mono">~2,110 B (Fits 2.2 KB)</td>
+                <td class="p-3 font-mono font-semibold">52 B</td>
+                <td class="p-3 font-mono font-semibold">~1.6 KB</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>FN-DSA-1024</code> (Falcon-1024)</td>
+                <td class="p-3">Cat 5 (256b classical / 128b Grover)</td>
+                <td class="p-3">Structured NTRU Lattice</td>
+                <td class="p-3 font-mono font-semibold">1,280 B</td>
+                <td class="p-3 font-mono">~2,510 B (Fits 4 KB)</td>
+                <td class="p-3 font-mono">1,793 B</td>
+                <td class="p-3 font-mono">~54 KB</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>LMS_SHA256_M32_H10</code> (w=8)</td>
+                <td class="p-3">Cat 5 / CNSA 2.0 (256b hash / 128b Grover)</td>
+                <td class="p-3 font-semibold">Pure <code>SHA-256</code> Only</td>
+                <td class="p-3 font-mono font-semibold">1,420 B</td>
+                <td class="p-3 font-mono">~2,650 B (Fits 4 KB)</td>
+                <td class="p-3 font-mono font-semibold">60 B</td>
+                <td class="p-3 font-mono font-semibold">~1.8 KB</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-65</code> (Dilithium3)</td>
+                <td class="p-3">Cat 3 / CNSA 2.0</td>
+                <td class="p-3">Module-LWE / MSIS Lattice</td>
+                <td class="p-3 font-mono">3,309 B</td>
+                <td class="p-3 font-mono">~4,540 B</td>
+                <td class="p-3 font-mono">1,952 B</td>
+                <td class="p-3 font-mono">~59 KB</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 3: PPUAT DOMAIN SEPARATION BETWEEN PIN PROTOCOLS 2 AND 3      -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          PPUAT Domain Separation Between PIN Protocols 2 and 3
+        </h2>
+      </div>
+
+      <!-- 3.1 & 3.2 Hierarchical PPUAT Derivation Tree -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          3.1 The Cross-Protocol Quantum Exposure Dilemma &amp; 3.2 One-Way Hierarchical PPUAT Tree
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          If an Authenticator returned the <strong>same</strong> raw 32-byte PPUAT over both <strong>Protocol 2</strong> (classical P-256 ECDH) and <strong>Protocol 3</strong> (Post-Quantum HPKE), a quantum adversary who records a single Protocol 2 session on a legacy host could break the P-256 ECDH exchange, recover the raw PPUAT, and compromise the <strong>Protocol 3 HPKE <code>mode_psk</code> key (<code>psk</code>)</strong>! Conversely, storing two independent NVRAM tokens would break single-response <code>authenticatorGetInfo</code> (<code>0x19: encIdentifier</code> and <code>0x1E: encCredStoreState</code>) compatibility.
+        </p>
+
+        <!-- Visual Hierarchy Diagram -->
+        <div class="p-5 rounded-2xl bg-[var(--content)] border border-[var(--border)] space-y-4">
+          <div class="text-xs font-bold uppercase tracking-wider text-center text-[var(--muted-foreground)]">
+            One-Way Hierarchical PPUAT Derivation Architecture (Single 32-Byte NVRAM Root)
+          </div>
+          <div class="max-w-md mx-auto p-3.5 rounded-xl bg-[var(--card)] border-2 border-[var(--primary)] text-center shadow-sm">
+            <div class="text-xs font-bold text-[var(--primary)]">Authenticator NVRAM Root Secret</div>
+            <div class="font-mono text-sm font-bold text-[var(--foreground)] mt-0.5">PPUAT_v3 (32 Bytes, 256-bit TRNG)</div>
+            <div class="text-xs text-[var(--muted-foreground)] mt-0.5">Issued ONLY over Protocol 3 (X-Wing / ML-KEM-1024)</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <!-- Protocol 3 Branch -->
+            <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] space-y-2">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Protocol 3 Only Branch (Post-Quantum HPKE)</div>
+              <div class="p-2.5 rounded-lg bg-[var(--content)] border border-[var(--border)] font-mono text-xs">
+                <strong>HPKE mode_psk Key (32B):</strong><br/>
+                psk = HKDF-SHA-256(0^32, PPUAT_v3, "CTAP2.3-PINv3-PSK", 32)
+              </div>
+              <div class="p-2.5 rounded-lg bg-[var(--content)] border border-[var(--border)] font-mono text-xs">
+                <strong>Protocol 3 CredMgmt MAC Key (32B):</strong><br/>
+                HMAC-SHA-256(PPUAT_v3, subCommand || params)
+              </div>
+            </div>
+
+            <!-- Protocol 2 Downward Branch -->
+            <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] space-y-2">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">One-Way Downward Branch (2^128 Grover Firewall)</div>
+              <div class="p-2.5 rounded-lg bg-[var(--content)] border border-[var(--border)] font-mono text-xs">
+                <strong>Protocol 2 Token (Issued over P-256 ECDH):</strong><br/>
+                PPUAT_v2 = HKDF-SHA-256(0^32, PPUAT_v3, "CTAP-PPUAT-v2", 32)
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="p-2 rounded-lg bg-[var(--content)] border border-[var(--border)] font-mono text-xs">
+                  <strong>0x19 encIdentifier Key:</strong><br/>
+                  K_id = HKDF(PPUAT_v2, "encIdentifier", 16)
+                </div>
+                <div class="p-2 rounded-lg bg-[var(--content)] border border-[var(--border)] font-mono text-xs">
+                  <strong>0x1E encCredStoreState:</strong><br/>
+                  K_css = HKDF(PPUAT_v2, "encCredStoreState", 16)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 Complete Field Reference & Python Implementation -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          3.3 Complete Field Encryption/Decryption Reference &amp; Reference Implementation
+        </h3>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">CTAP 2.3 Field &amp; Command</th>
+                <th class="p-3 font-semibold">Direction</th>
+                <th class="p-3 font-semibold">Protocol 2 (<code>pinUvAuthProtocol = 2</code>)</th>
+                <th class="p-3 font-semibold">Protocol 3 (<code>pinUvAuthProtocol = 3</code>, HPKE AEAD Mode)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold"><code>encIdentifier</code> (<code>0x19</code>)<br/><span class="text-[var(--muted-foreground)] font-normal">authenticatorGetInfo</span></td>
+                <td class="p-3">Auth &rarr; Plat</td>
+                <td class="p-3 font-mono">IV_16 || AES-128-CBC(K_id, IV_16, deviceId)</td>
+                <td class="p-3">Same wire bytes; Platform steps down <code>PPUAT_v3 &rarr; PPUAT_v2 &rarr; K_id</code> and decrypts with <code>AES-128-CBC</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>encCredStoreState</code> (<code>0x1E</code>)<br/><span class="text-[var(--muted-foreground)] font-normal">authenticatorGetInfo</span></td>
+                <td class="p-3">Auth &rarr; Plat</td>
+                <td class="p-3 font-mono">IV_16 || AES-128-CBC(K_css, IV_16, state)</td>
+                <td class="p-3">Same wire bytes; Platform steps down <code>PPUAT_v3 &rarr; PPUAT_v2 &rarr; K_css</code> and decrypts with <code>AES-128-CBC</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>newPinEnc</code> (<code>0x05</code>)<br/><span class="text-[var(--muted-foreground)] font-normal">setPIN, changePIN</span></td>
+                <td class="p-3">Plat &rarr; Auth</td>
+                <td class="p-3 font-mono">IV_16 || AES-256-CBC(K_AES, IV_16, paddedNewPin)</td>
+                <td class="p-3 font-mono">ctx.Seal(aad = PinUvAuthTranscript, pt = paddedNewPin) (seq = 0)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>pinHashEnc</code> (<code>0x06</code>)<br/><span class="text-[var(--muted-foreground)] font-normal">changePIN, getPinUvAuthToken</span></td>
+                <td class="p-3">Plat &rarr; Auth</td>
+                <td class="p-3 font-mono">IV_16 || AES-256-CBC(K_AES, IV_16, LEFT(SHA256(PIN), 16))</td>
+                <td class="p-3"><strong>Bound PC:</strong> <code>ctx.Seal(aad, LEFT(SHA256(PIN), 16))</code><br/><strong>Unbound PC:</strong> Blinded <code>SPAKE2+</code> share <code>X</code>.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>pinToken</code> (<code>0x02</code>)<br/><span class="text-[var(--muted-foreground)] font-normal">ClientPIN response</span></td>
+                <td class="p-3">Auth &rarr; Plat</td>
+                <td class="p-3"><code>AES-256-CBC</code> (Returns <code>PPUAT_v2</code> if <code>pcfg</code> requested)</td>
+                <td class="p-3"><code>AES-256-GCM.Seal(rspKey, rspNonce, reqParams, token)</code> (Returns <code>PPUAT_v3</code> if <code>pcfg</code> requested).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>import hmac
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+def hkdf_sha256(ikm: bytes, info: bytes, length: int) -&gt; bytes:
+    return HKDF(algorithm=hashes.SHA256(), length=length, salt=b"\x00" * 32, info=info).derive(ikm)
+
+class AuthenticatorPPUATState:
+    def __init__(self, ppuat_v3: bytes, device_id: bytes, cred_store_state: bytes):
+        self.ppuat_v3 = ppuat_v3                  # 32-byte NVRAM root secret
+        self.device_id = device_id                # 16-byte NVRAM identifier
+        self.cred_store_state = cred_store_state  # 16-byte NVRAM state
+
+    def get_ppuat_for_protocol(self, protocol_version: int) -&gt; bytes:
+        if protocol_version == 3:
+            return self.ppuat_v3
+        elif protocol_version == 2:
+            return hkdf_sha256(self.ppuat_v3, b"CTAP-PPUAT-v2", 32)
+        raise ValueError("Unsupported protocol for PPUAT")
+
+    def build_get_info_encrypted_fields(self, iv_id: bytes, iv_css: bytes) -&gt; tuple[bytes, bytes]:
+        ppuat_v2 = self.get_ppuat_for_protocol(2)
+        k_id = hkdf_sha256(ppuat_v2, b"encIdentifier", 16)
+        k_css = hkdf_sha256(ppuat_v2, b"encCredStoreState", 16)
+        enc_id = iv_id + Cipher(algorithms.AES(k_id), modes.CBC(iv_id)).encryptor().update(self.device_id)
+        enc_css = iv_css + Cipher(algorithms.AES(k_css), modes.CBC(iv_css)).encryptor().update(self.cred_store_state)
+        return enc_id, enc_css</code></pre>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 4: EXTENSIONS USING ENCRYPTION                                -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Extensions Using Encryption (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, and <code>sign</code> / <code>previewSign5</code>)
+        </h2>
+      </div>
+
+      <!-- 4.1, 4.2, 4.3 Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="p-5 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h3 class="text-base font-bold text-[var(--foreground)]">4.1 <code>hmac-secret</code> &amp; <code>hmac-secret-mc</code></h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • <strong>Eliding <code>1: keyAgreement</code> When <code>pinUvAuthToken</code> Is Present:</strong> Saves <strong>1,120–1,568 B</strong> on the wire and avoids a second <code>ML-KEM.Decaps()</code> on the MCU by deriving the extension secret directly from <code>HKDF-SHA-256(salt=clientDataHash, IKM=pinUvAuthToken, info="CTAP2.3-PINv3-HMAC-SECRET", L=64)</code>.
+            <br/>• <strong>0-RTT <code>uv = false</code> Mode:</strong> Encapsulates directly to cached <code>pk_batch</code> + <code>PPUAT_v3</code> without calling <code>getKeyAgreement</code>.
+            <br/>• <strong>100% RP Length Compatibility:</strong> Output inside <code>authenticatorData</code> remains exactly <strong>48 B</strong> (1 salt) or <strong>80 B</strong> (2 salts) in both AEAD (<code>32B/64B ct + 16B tag</code>) and Export-Only modes.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h3 class="text-base font-bold text-[var(--foreground)]">4.2 Encrypting <code>largeBlobKey</code> (<code>0x07</code>)</h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • <strong>The CTAP 2.3 Flaw:</strong> <code>largeBlobKey</code> (<code>0x07</code> in the outer CTAP response map) is sent in <strong>plaintext (32 B)</strong> over USB/NFC/BLE, while reading <code>authenticatorLargeBlobs</code> (<code>0x0C</code>) requires no PIN/UV.
+            <br/>• <strong>Protocol 3 Fix:</strong> Because <code>0x07</code> is in the outer CTAP response map (never sent to the RP), the Authenticator encrypts <code>largeBlobKey</code> under the active Protocol 3 session key (turning <code>0x07</code> into a <strong>48-byte AEAD/CBC ciphertext</strong>).
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h3 class="text-base font-bold text-[var(--foreground)]">4.3 Deprecating <code>credBlob</code> (§12.5)</h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • <strong>Unreleased Kerberos KDC Design Intent:</strong> <code>credBlob</code> was originally intended to store a <strong>hash of the Kerberos KDC certificate</strong> to prevent KDC endpoint spoofing during FIDO2 desktop login—a feature that has <strong>never been released</strong>.
+            <br/>• <strong>Security &amp; Size Flaws:</strong> Exposes plaintext on the bus without mandatory UV (<code>uv=false</code>), cannot be AEAD-encrypted inside signed <code>authenticatorData</code>, and wastes scarce per-passkey NVRAM and PQ packet budget. Fully superseded by <code>largeBlobs</code> (<code>0x07</code>/<code>0x0C</code>) and <code>hmac-secret</code> (<code>prf</code>).
+          </p>
+        </div>
+      </div>
+
+      <!-- 4.4 The WebAuthn sign (previewSign5) Extension — CTAP Bus Layer -->
+      <div class="space-y-4 pt-2">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          4.4 The WebAuthn <code>sign</code> (<code>previewSign5</code>) Extension &amp; ARKG — CTAP Bus Security
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          The WebAuthn <strong><code>sign</code> extension</strong> (<code>previewSign5</code>, snapshot <code>5-SNAPSHOT-2026-09-09T13:45</code>) enables a Relying Party or wallet (e.g., EUDI Wallet) to generate hardware-bound signing keys (<code>generateKey</code>) and produce <strong>standalone, raw signatures</strong> over arbitrary <code>tbs</code> data (<code>sign</code>), with support for <strong>Asynchronous Remote Key Generation (ARKG)</strong> (<code>draft-bradleylundberg-cfrg-arkg-08</code>).
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Three Severe CTAP Bus Vulnerabilities in Plaintext <code>previewSign5</code></div>
+            <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc pl-4">
+              <li><strong>Active Bus MITM "Raw Signing Oracle" (<code>tbs</code> &amp; <code>flags</code> Swap):</strong> In CTAP 2.0–2.3, <code>pinUvAuthParam</code> (<code>0x08</code>) covers <em>only</em> <code>clientDataHash</code> (<code>0x02</code>), NOT <code>0x04: extensions</code>. Because <code>previewSign5</code> returns a standalone raw signature <code>6: sig</code> over <code>6: tbs</code> alone, a bus MITM during any legitimate ceremony can replace <code>tbs_honest</code> with <code>tbs_attacker</code> (or downgrade <code>4: flags</code> to <code>unattended</code>) and capture a valid hardware-backed signature <code>sig_attacker</code>!</li>
+              <li><strong>Complete Defeat of ARKG Unlinkability on the Bus:</strong> Sending static <code>2: keyHandle</code> (<code>kid</code>), <code>7: additionalArgs</code> (<code>arkgArgs</code>), <code>6: tbs</code>, <code>6: sig</code>, and <code>7: att-obj</code> in plaintext lets any USB/NFC/BLE observer link 100% of ARKG ceremonies and correlate them to external verifiers.</li>
+              <li><strong>HNDL Quantum Break of Classical <code>ARKG-P256</code>:</strong> Recording plaintext <code>pkKem</code> and <code>arkgArgs</code> on the bus allows a future CRQC to break <code>pkKem</code>, recover every blinding scalar <code>&tau;</code>, and retroactively link all historical EUDI Wallet presentations.</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Protocol 3 CTAP Bus Architectural Fixes</div>
+            <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 list-disc pl-4">
+              <li><strong>Mandatory Binding of <code>extensions</code> (<code>0x04</code>) in <code>pinUvAuthParam</code>:</strong> Under Protocol 3, <code>pinUvAuthParam = authenticate(pinUvAuthToken, clientDataHash || CBOR(extensions))</code>, and <code>previewSign5</code> inputs are AEAD-encrypted under the Protocol 3 session (or a <code>uv=0</code> session to <code>pk_batch</code> / <code>PPUAT_v3</code>).</li>
+              <li><strong>Decoupling Raw <code>6: sig</code> From Signed <code>authenticatorData</code> (<code>sigCommitment</code>):</strong> Store a fixed 32-byte commitment <code>8: sigCommitment = SHA-256(tbs || sig)</code> inside signed <code>authenticatorData.extensions["previewSign5"]</code> (&le;45 bytes!) and move both raw <code>6: sig</code> and <code>7: att-obj</code> into <strong>AEAD-encrypted <code>unsignedExtensionOutputs["previewSign5"]</code></strong>. This preserves transaction-confirmation binding while hiding <code>sig</code> on the bus and preventing 4.6 KB <code>ML-DSA-87</code> signatures from overflowing <code>authenticatorData</code>!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.5 RP-to-Authenticator End-to-End Bidirectional Encryption Options -->
+      <div class="space-y-4 pt-2">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          4.5 <code>sign</code> (<code>previewSign5</code>) — RP-to-Authenticator End-to-End Bidirectional Encryption Options
+        </h3>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Because <code>previewSign5</code> passes raw <code>tbs</code> inputs and receives standalone raw signatures <code>sig</code> and ARKG seed keys (<code>att-obj</code>) through the Browser / User Agent, a compromised browser extension, renderer, or WebView sits as a Man-in-the-Middle unless <strong>end-to-end bidirectional encryption (<code>RP &lt;-&gt; Authenticator</code>)</strong> is used:
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Option</th>
+                <th class="p-3 font-semibold">Cryptographic Mechanism</th>
+                <th class="p-3 font-semibold">Protects <code>generateKey</code>?</th>
+                <th class="p-3 font-semibold">Protects <code>sign</code> (<code>tbs &lt;-&gt; sig</code>)?</th>
+                <th class="p-3 font-semibold">Browser MITM (<code>tbs</code> Swap) Protection</th>
+                <th class="p-3 font-semibold">Wire Overhead on <code>sign</code></th>
+                <th class="p-3 font-semibold">Post-Quantum (HNDL) Security</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold">Option A</td>
+                <td class="p-3"><strong>HPKE <code>mode_base</code> to ARKG <code>pk_kem</code></strong> (piggybacks on <code>arkgArgs</code>)</td>
+                <td class="p-3">No (requires Option B)</td>
+                <td class="p-3"><strong>Yes</strong> (<code>ctx.Seal</code> + <code>ctx.Export</code>)</td>
+                <td class="p-3">Requires <code>challenge</code> hash binding or hidden <code>pk_kem</code></td>
+                <td class="p-3 font-mono font-semibold">+16 B over arkgArgs</td>
+                <td class="p-3">PQ if <code>pk_kem</code> is <code>ML-KEM-768</code>; vulnerable if P-256</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Option B</td>
+                <td class="p-3"><strong>Ephemeral RP KEM (<code>rpKemPub</code>)</strong> in <code>generateKey</code> + <code>rpKemHash</code> in <code>innerAuthData</code></td>
+                <td class="p-3"><strong>Yes</strong> (<code>att-obj</code>, <code>pk_kem</code>, <code>kid</code>, <code>sig</code> encrypted to RP)</td>
+                <td class="p-3">Bootstraps Options A, C, and D</td>
+                <td class="p-3"><strong>Yes</strong> (<code>rpKemHash</code> attested in <code>innerAuthData</code> + <code>challenge</code>)</td>
+                <td class="p-3 font-mono">0 B on sign (~1.1 KB on generateKey)</td>
+                <td class="p-3"><strong>Yes</strong> (<code>ML-KEM-768</code>)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Option C</td>
+                <td class="p-3"><strong>Stateless Symmetric <code>K_e2e</code></strong> (<code>HKDF(credRandom, kid)</code>, sent via Option B)</td>
+                <td class="p-3">Via Option B</td>
+                <td class="p-3"><strong>Yes</strong> (<code>AES-256-GCM</code> req/rsp derived from <code>K_e2e</code>)</td>
+                <td class="p-3"><strong>Yes</strong> (Browser lacks <code>K_e2e</code>; AEAD fails on tamper)</td>
+                <td class="p-3 font-mono font-semibold">+28 B req / +16 B rsp</td>
+                <td class="p-3"><strong>Yes</strong> (256-bit key bootstrapped via <code>ML-KEM-768</code>)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Option D (Recommended)</td>
+                <td class="p-3"><strong>Hybrid HPKE <code>mode_psk</code></strong> (ARKG <code>pk_kem</code> + <code>K_e2e</code> from Option B)</td>
+                <td class="p-3"><strong>Yes</strong> (via Option B)</td>
+                <td class="p-3"><strong>Yes</strong> (HPKE <code>mode_psk</code> <code>Seal</code> + <code>Export</code>)</td>
+                <td class="p-3"><strong>Yes</strong> (Requires both <code>K_e2e</code> and <code>sk_kem</code>)</td>
+                <td class="p-3 font-mono font-semibold">+16 B over arkgArgs</td>
+                <td class="p-3"><strong>Yes — Makes even classical <code>ARKG-P256</code> PQ-unlinkable against HNDL!</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4.6 Master Summary Comparison Table -->
+      <div class="space-y-4 pt-2">
+        <h3 class="text-lg font-semibold text-[var(--foreground)]">
+          4.6 Summary Comparison Across All CTAP 2.3 Extensions
+        </h3>
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Extension / Field</th>
+                <th class="p-3 font-semibold">CTAP 2.3 Protocol 2 Behavior</th>
+                <th class="p-3 font-semibold">Proposed Protocol 3 Behavior</th>
+                <th class="p-3 font-semibold">Key Security &amp; Performance Gain</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold"><code>hmac-secret</code> (with <code>pinUvAuthToken</code>)</td>
+                <td class="p-3">Sends a second P-256 <code>keyAgreement</code> (77 B) + second ECDH on MCU</td>
+                <td class="p-3"><strong>Omits <code>1: keyAgreement</code></strong>; derives keys from <code>HKDF(pinUvAuthToken, clientDataHash)</code></td>
+                <td class="p-3"><strong>Saves 1.1–1.5 KB on wire</strong> &amp; avoids a second <code>ML-KEM.Decaps()</code> on MCU</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>hmac-secret</code> (<code>uv = false</code>, no token)</td>
+                <td class="p-3">Calls <code>getKeyAgreement</code> (1 RTT) + sends P-256 key</td>
+                <td class="p-3">Encapsulates to <strong>cached <code>pk_batch</code> + <code>PPUAT_v3</code></strong> (<code>0-RTT</code>)</td>
+                <td class="p-3"><strong>Saves 1 RTT</strong>; protects static vault secrets against HNDL quantum attacks</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>hmac-secret-mc</code> (<code>makeCredential</code>)</td>
+                <td class="p-3">Sends a second P-256 <code>keyAgreement</code> inside <code>makeCredential</code></td>
+                <td class="p-3"><strong>Omits <code>1: keyAgreement</code></strong>; derives keys from <code>pinUvAuthToken</code></td>
+                <td class="p-3">Prevents <code>makeCredential</code> from exceeding <code>maxMsgSize</code></td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>largeBlobKey</code> (<code>0x07</code> outer response)</td>
+                <td class="p-3"><strong>Sent in PLAINTEXT (32 B)</strong> on USB/NFC/BLE bus</td>
+                <td class="p-3"><strong>Encrypted (48 B)</strong> under Protocol 3 <code>pinUvAuthToken</code> / <code>rspKey</code></td>
+                <td class="p-3">Closes passive bus-sniffing vulnerability on <code>largeBlobs</code> with zero RP impact</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>credBlob</code> (§12.5)</td>
+                <td class="p-3">Originally intended for Kerberos KDC cert hash (never released); sent in <strong>PLAINTEXT</strong> without requiring <code>uv</code></td>
+                <td class="p-3"><strong>Deprecated</strong> in favor of <code>largeBlobs</code> (<code>0x07</code>/<code>0x0C</code>) and <code>hmac-secret</code> (<code>prf</code>)</td>
+                <td class="p-3">Eliminates plaintext bus leak, <code>authData</code> signature coupling, and per-passkey NVRAM bloat</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>sign</code> (<code>previewSign5</code> — CTAP Bus Layer)</td>
+                <td class="p-3"><code>keyHandle</code>, <code>tbs</code>, <code>arkgArgs</code>, <code>sig</code>, and <code>att-obj</code> sent in <strong>PLAINTEXT</strong>; <code>extensions</code> not covered by <code>pinUvAuthParam</code></td>
+                <td class="p-3"><code>pinUvAuthParam</code> covers <code>extensions</code>; inputs &amp; <code>unsignedExtensionOutputs</code> (<code>sig</code>, <code>att-obj</code>) <strong>encrypted</strong>; 32B <code>sigCommitment</code> in <code>authData</code></td>
+                <td class="p-3">Closes <strong>bus MITM raw signing oracle (<code>tbs</code> swap)</strong>, preserves <strong>ARKG unlinkability</strong> on bus, &amp; keeps <code>authData</code> small for PQ <code>ML-DSA</code></td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>sign</code> (<code>previewSign5</code> — RP &harr; Authenticator E2EE)</td>
+                <td class="p-3">Browser/Platform sees &amp; can modify <code>tbs</code>, <code>flags</code>, <code>keyHandle</code>, <code>arkgArgs</code>, and sees raw <code>sig</code> &amp; <code>att-obj</code></td>
+                <td class="p-3"><strong>Option B (<code>rpKemPub</code>) + Option C/D (<code>HPKE mode_psk</code> over <code>pk_kem</code> + stateless <code>K_e2e</code>)</strong></td>
+                <td class="p-3">End-to-end bidirectional encryption (<code>RP &lt;-&gt; Authenticator</code>); stops <strong>Browser MITM <code>tbs</code> swap</strong> and makes <strong><code>ARKG-P256</code> PQ-unlinkable against HNDL</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

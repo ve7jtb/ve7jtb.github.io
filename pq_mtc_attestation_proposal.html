@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc and mtc-mds)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">W3C WebAuthn &amp; FIDO2 CTAP 2.3+</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: "mtc" &amp; "mtc-mds"</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">IETF PLANTS Merkle Tree Certs</span>
+        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">ML-DSA &amp; OpenID Federation 1.1</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./pq_mtc_attestation_proposal.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      Proposal: Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code> and <code>mtc-mds</code>)
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Based on <a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>draft-ietf-plants-merkle-tree-certs</code></a>, <a href="https://www.w3.org/TR/webauthn-3/#sctn-defined-attestation-formats" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">W3C WebAuthn Level 3 / Level 4 §8</a>, <a href="https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">FIDO CTAP 2.3</a>, and <a href="https://fidoalliance.org/specs/mds/fido-metadata-statement-v3.0-ps-20210518.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">FIDO Metadata Statement (MDS3)</a>.
+    </p>
+
+    <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
+      <strong class="text-[var(--foreground)]">Attribution &amp; Scope of Fidont:</strong>
+      <strong>Fidont</strong> is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the <a href="https://github.com/google/OpenSK" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">Google OpenSK</a> Rust codebase. However, <strong>Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.</strong>
+    </div>
+
+    <!-- Quick Navigation Bar -->
+    <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-4 border-t border-[var(--border)]">
+      <a href="#section-1" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Problem &amp; <code>mtc</code> / <code>mtc-mds</code></div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1">Why PQ <code>packed</code> exceeds 7,609 B USB HID</div>
+      </a>
+      <a href="#section-3" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–5</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">CDDL, Leaf Format &amp; Verification</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1"><code>mtcEntryDesc</code>, <code>MTCProof</code> &amp; RP steps</div>
+      </a>
+      <a href="#section-6" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 6–7</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">MDS3 Schema &amp; CTAP 2.3 Cascade</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1"><code>mtcTrustAnchors</code>, <code>0x16</code> &amp; 3-tier cascade</div>
+      </a>
+      <a href="#section-8" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 8</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Enterprise Attestation &amp; Scaling</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1">Dual keys, <code>fido-mtc-ent</code>, 100k–5M fleet</div>
+      </a>
+      <a href="#section-9" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 9–10</div>
+        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">C509 &amp; OpenID Federation 1.1</div>
+        <div class="text-xs text-[var(--muted-foreground)] mt-1">C509 comparison &amp; federated trust chains</div>
+      </a>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 1: PROBLEM STATEMENT                                          -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Problem Statement: Why Classical <code>packed</code> X.509 Attestation Breaks for Post-Quantum
+        </h2>
+      </div>
+
+      <p class="text-sm text-[var(--muted-foreground)]">
+        In WebAuthn <code>packed</code> attestation, a <code>MakeCredential</code> response carries:
+        (1) <code>authData.attestedCredentialData.credentialPublicKey</code> (the newly generated user credential <code>COSE_Key</code>),
+        (2) <code>attStmt.sig</code> (the authenticator's attestation signature over <code>authenticatorData || clientDataHash</code>), and
+        (3) <code>attStmt.x5c</code> (<code>[attestnCert, ...caCerts]</code>, where <code>attestnCert</code> is a DER-encoded X.509v3 certificate containing both the batch/enterprise <code>subjectPublicKeyInfo</code> and the Attestation CA's <code>signatureValue</code>).
+        With classical <code>ES256</code> (65 B public key, ~71 B signature), a single-cert <code>packed</code> attestation response is <strong>~713 bytes</strong>. With post-quantum <code>ML-DSA</code> (FIPS 204) or PQ/T hybrid composites, the wire and NVRAM footprint explodes:
+      </p>
+
+      <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+              <th class="p-3 font-semibold">Component in <code>MakeCredential</code> Response</th>
+              <th class="p-3 font-semibold text-right">Classical (<code>ES256</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-44</code> (<code>-48</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-65</code> (<code>-49</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-87</code> (<code>-50</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-87-Ed448</code> (<code>-56</code>)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--border)]">
+            <tr>
+              <td class="p-3"><code>authData</code> base + <code>credentialPublicKey</code></td>
+              <td class="p-3 text-right font-mono">~220 B</td>
+              <td class="p-3 text-right font-mono">~1,470 B</td>
+              <td class="p-3 text-right font-mono">~2,110 B</td>
+              <td class="p-3 text-right font-mono">~2,750 B</td>
+              <td class="p-3 text-right font-mono">~2,810 B</td>
+            </tr>
+            <tr>
+              <td class="p-3"><code>attStmt.sig</code> (Attestation Key sig)</td>
+              <td class="p-3 text-right font-mono">~71 B</td>
+              <td class="p-3 text-right font-mono">2,420 B</td>
+              <td class="p-3 text-right font-mono">3,309 B</td>
+              <td class="p-3 text-right font-mono">4,627 B</td>
+              <td class="p-3 text-right font-mono">4,741 B</td>
+            </tr>
+            <tr>
+              <td class="p-3"><code>attestnCert</code> <code>subjectPublicKeyInfo</code></td>
+              <td class="p-3 text-right font-mono">~91 B</td>
+              <td class="p-3 text-right font-mono">1,334 B</td>
+              <td class="p-3 text-right font-mono">1,974 B</td>
+              <td class="p-3 text-right font-mono">2,614 B</td>
+              <td class="p-3 text-right font-mono">2,675 B</td>
+            </tr>
+            <tr>
+              <td class="p-3"><code>attestnCert</code> CA <code>signatureValue</code></td>
+              <td class="p-3 text-right font-mono">~71 B</td>
+              <td class="p-3 text-right font-mono">2,420 B</td>
+              <td class="p-3 text-right font-mono">3,309 B</td>
+              <td class="p-3 text-right font-mono">4,627 B</td>
+              <td class="p-3 text-right font-mono">4,741 B</td>
+            </tr>
+            <tr>
+              <td class="p-3"><code>attestnCert</code> X.509v3 TBS + ASN.1 overhead</td>
+              <td class="p-3 text-right font-mono">~260 B</td>
+              <td class="p-3 text-right font-mono">~280 B</td>
+              <td class="p-3 text-right font-mono">~280 B</td>
+              <td class="p-3 text-right font-mono">~280 B</td>
+              <td class="p-3 text-right font-mono">~280 B</td>
+            </tr>
+            <tr class="bg-[var(--content)] font-semibold">
+              <td class="p-3">Total (1-cert <code>x5c</code>, no intermediate)</td>
+              <td class="p-3 text-right font-mono">~713 B</td>
+              <td class="p-3 text-right font-mono">~7,924 B</td>
+              <td class="p-3 text-right font-mono">~10,982 B</td>
+              <td class="p-3 text-right font-mono">~14,898 B</td>
+              <td class="p-3 text-right font-mono">~15,247 B</td>
+            </tr>
+            <tr class="font-semibold">
+              <td class="p-3">Total (2-cert <code>x5c</code> w/ Intermediate CA)</td>
+              <td class="p-3 text-right font-mono">~1,150 B</td>
+              <td class="p-3 text-right font-mono">~11,960 B</td>
+              <td class="p-3 text-right font-mono">~16,545 B</td>
+              <td class="p-3 text-right font-mono">~22,419 B</td>
+              <td class="p-3 text-right font-mono">~22,943 B</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs space-y-1.5">
+        <div class="font-semibold text-[var(--foreground)]">Hardware &amp; Transport Bottlenecks</div>
+        <p class="text-[var(--muted-foreground)]">
+          • <strong>CTAP2 <code>maxMsgSize</code> &amp; USB HID Frames:</strong> Standard USB HID CTAP2 authenticators advertise <code>maxMsgSize</code> between <code>1024</code> and <code>7680</code> bytes (the maximum single CTAPHID message payload is <strong><code>7,609</code> bytes</strong>: 1 init packet of 57 B + 128 continuation packets of 59 B). Even a 1-cert <code>ML-DSA-44</code> <code>packed</code> attestation (<strong>7,924 B</strong>) exceeds the <strong>7,609-byte USB HID protocol hard limit</strong>!
+          <br/>• <strong>Authenticator Flash/NVRAM Budget:</strong> Constrained MCUs (such as the nRF52840 in Fidont) store attestation material in flash pages (<code>persist.rs</code>). Storing multi-kilobyte X.509 certificates consumes scarce non-volatile storage.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 2: TWO NEW WEBAUTHN ATTESTATION FORMATS: MTC AND MTC-MDS      -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Two New WebAuthn Attestation Formats: <code>mtc</code> and <code>mtc-mds</code>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h3 class="font-semibold text-sm text-[var(--foreground)]">
+            1. <code>mtc</code> (<code>fmt: "mtc"</code>) — MTC Attestation with Inline Public Key
+          </h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • Carries the attestation public key (<code>pubKey</code> as a CBOR-encoded <code>COSE_Key</code>) inline alongside <code>alg</code>, <code>sig</code>, and <code>mtcCert</code>.<br/>
+            • <strong>Use Case:</strong> Enterprise Attestation (<code>AttCA</code>), standalone MTCs, or large vendor batch logs where the Relying Party only caches the <strong>32-byte Landmark <code>SubtreeHash</code> <code>[start, end)</code></strong> from MDS.<br/>
+            • <strong>Flash Savings on Authenticator:</strong> Because Fidont derives <code>pubKey</code> on the fly from the 32-byte attestation private key seed (<code>attestation_key.get_pub_key()</code>), the authenticator <strong>never needs to store the 1.3–2.6 KB public key in flash</strong>—only the 32-byte seed and the ~150–280 B <code>mtcCert</code>!
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h3 class="font-semibold text-sm text-[var(--foreground)]">
+            2. <code>mtc-mds</code> (<code>fmt: "mtc-mds"</code>) — MDS/Log-Assisted MTC Attestation
+          </h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • Omits <code>pubKey</code> from <code>attStmt</code> on the wire. The Relying Party fetches the batch attestation public key indexed by <code>(mtcCert.caId, mtcCert.serial)</code> from FIDO MDS (<code>mtcTrustAnchors[].batchKeys</code>) or the vendor's MTC issuance log.<br/>
+            • <strong>Use Case:</strong> Basic Batch Attestation (<code>Basic</code>) for hardware security keys where a vendor has a small number of manufacturing batches per model, and maximum wire compression is required so that <strong>even <code>ML-DSA-87</code> (<code>-50</code>) fits inside a single 7,609-byte USB HID CTAP2 frame</strong>.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="text-base font-semibold text-[var(--foreground)]">
+        Wire-Size Comparison Across Formats (<code>2^8 = 256</code> Batch Log Entries, Landmark Proof = 256 B)
+      </h3>
+      <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+              <th class="p-3 font-semibold">Format</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-44</code> (<code>-48</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-65</code> (<code>-49</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-87</code> (<code>-50</code>)</th>
+              <th class="p-3 font-semibold text-right"><code>ML-DSA-87-Ed448</code> (<code>-56</code>)</th>
+              <th class="p-3 font-semibold text-center">Fits USB HID (<code>7,609 B</code> limit)?</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--border)]">
+            <tr>
+              <td class="p-3">Classical X.509 <code>packed</code> (1-cert PQ CA)</td>
+              <td class="p-3 text-right font-mono">~7,924 B</td>
+              <td class="p-3 text-right font-mono">~10,982 B</td>
+              <td class="p-3 text-right font-mono">~14,898 B</td>
+              <td class="p-3 text-right font-mono">~15,247 B</td>
+              <td class="p-3 text-center">❌ None fit</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold"><code>fmt: "mtc"</code> (Inline <code>pubKey</code> + Landmark <code>MTCProof</code>)</td>
+              <td class="p-3 text-right font-mono font-semibold">~5,490 B</td>
+              <td class="p-3 text-right font-mono font-semibold">~7,600 B</td>
+              <td class="p-3 text-right font-mono">~10,200 B</td>
+              <td class="p-3 text-right font-mono">~10,435 B</td>
+              <td class="p-3 text-center">✅ <code>ML-DSA-44</code> &amp; <code>ML-DSA-65</code> fit!</td>
+            </tr>
+            <tr class="bg-[var(--content)]">
+              <td class="p-3 font-semibold"><code>fmt: "mtc-mds"</code> (RP fetches <code>pubKey</code> via MDS/Log)</td>
+              <td class="p-3 text-right font-mono font-semibold">~4,165 B</td>
+              <td class="p-3 text-right font-mono font-semibold">~5,635 B</td>
+              <td class="p-3 text-right font-mono font-semibold">~7,595 B</td>
+              <td class="p-3 text-right font-mono">~7,769 B</td>
+              <td class="p-3 text-center font-semibold">✅ <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, &amp; <code>ML-DSA-87</code> fit!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-[var(--muted-foreground)]">
+        <em>Note: With <code>2^4 = 16</code> batches per model, the Landmark <code>MTCProof</code> inclusion path is only <code>4 × 32 = 128 B</code>, reducing <code>mtc-mds</code> for <code>ML-DSA-87</code> to <strong>~7,467 B</strong> and <code>ML-DSA-87-Ed448</code> to <strong>~7,641 B</strong> (or <strong>~7,577 B</strong> for a 4-batch log).</em>
+      </p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 3, 4 & 5: NORMATIVE CDDL, LEAF STRUCTURE & RP VERIFICATION    -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3, 4 &amp; 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Normative CDDL Specification, <code>MTCLogEntry</code> Leaf Structure &amp; Relying Party Verification
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <h3 class="text-base font-semibold text-[var(--foreground)]">3.1 <code>fmt: "mtc"</code> &amp; 3.2 <code>fmt: "mtc-mds"</code> (CDDL)</h3>
+          <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>$$attStmtType //= (
+    fmt: "mtc",
+    attStmt: mtcStmtFormat
+)
+$$attStmtType //= (
+    fmt: "mtc-mds",
+    attStmt: mtcMdsStmtFormat
+)
+
+mtcStmtFormat = {
+    alg: COSEAlgorithmIdentifier,
+    sig: bytes,
+    pubKey: bytes,          ; Canonical CBOR COSE_Key
+    mtcCert: mtcEntryDesc,
+} // {
+    alg: COSEAlgorithmIdentifier,
+    sig: bytes,             ; Self attestation
+}
+
+mtcMdsStmtFormat = {
+    alg: COSEAlgorithmIdentifier,
+    sig: bytes,
+    mtcCert: mtcEntryDesc,  ; pubKey fetched via MDS/log
+}
+
+mtcEntryDesc = {
+    caId: bytes,            ; DER Binary TrustAnchorID (RFC 9879)
+    serial: uint,           ; uint64: (log_number &lt;&lt; 48) | index
+    notBefore: uint,        ; uint64 Unix epoch seconds
+    notAfter: uint,         ; uint64 Unix epoch seconds
+    ? fwVersion: uint,      ; Optional firmware version
+    mtcProof: bytes,        ; TLS-serialized MTCProof (§4.2)
+}</code></pre>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-base font-semibold text-[var(--foreground)]">4. Deterministic <code>FidoMtcLogEntry</code> &amp; <code>MTCProof</code></h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            For each batch or enterprise attestation key at index <code>index</code> in log <code>log_number</code>, <code>serial = (log_number &lt;&lt; 48) | index</code>. The Merkle tree leaf input (hashed with RFC 9162 <code>0x00</code> leaf prefix <code>H(0x00 || entry)</code>) binds:
+          </p>
+          <ol class="list-decimal list-inside text-xs text-[var(--muted-foreground)] space-y-1">
+            <li><code>ca_id</code>: Variable-length prefix + <code>caId</code> bytes (ASN.1 DER relative OID / <code>TrustAnchorID</code>).</li>
+            <li><code>serial</code>: 8-byte big-endian <code>uint64</code> (<code>(log_number &lt;&lt; 48) | index</code>).</li>
+            <li><code>not_before</code> &amp; <code>not_after</code>: 8-byte big-endian <code>uint64</code> timestamps.</li>
+            <li><code>aaguid</code>: 16-byte <code>authData[37..53]</code> (avoiding duplicate transmission in <code>attStmt</code>).</li>
+            <li><code>fw_version</code>: Optional 8-byte big-endian <code>uint64</code> (<code>0</code> if absent).</li>
+            <li><code>pub_key_hash</code>: 32-byte <code>SHA-256(pubKey)</code> over canonical CBOR <code>COSE_Key</code>.</li>
+            <li><code>extensions</code>: Length-prefixed <code>MTCLogEntryExtension</code> list from <code>MTCProof</code>.</li>
+          </ol>
+          <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>struct {
+    MTCLogEntryExtension extensions&lt;0..2^16-1&gt;;
+    uint48 start;
+    uint48 end;
+    opaque inclusion_proof&lt;0..2^16-1&gt;;
+    Cosignature signatures&lt;0..2^24-1&gt;;
+} MTCProof;</code></pre>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+        <h3 class="text-sm font-semibold text-[var(--foreground)]">5. Unified Relying Party Verification Procedure (<code>mtc</code> and <code>mtc-mds</code>)</h3>
+        <ol class="list-decimal list-inside text-xs text-[var(--muted-foreground)] space-y-1.5">
+          <li><strong>Decode CBOR:</strong> Parse <code>attStmt</code> according to <code>mtcStmtFormat</code> (<code>fmt == "mtc"</code>) or <code>mtcMdsStmtFormat</code> (<code>fmt == "mtc-mds"</code>).</li>
+          <li><strong>Handle <code>Self</code> Attestation:</strong> When <code>fmt == "mtc"</code> and <code>mtcCert</code> is absent, verify <code>sig</code> over <code>authenticatorData || clientDataHash</code> using <code>credentialPublicKey</code> and return <code>Self</code>.</li>
+          <li><strong>Resolve Trust Anchor &amp; Attestation Public Key (<code>pubKey</code>):</strong> Lookup the <code>MtcTrustAnchor</code> matching <code>mtcCert.caId</code> for <code>authenticatorData.aaguid</code>. If <code>fmt == "mtc"</code>, extract <code>attStmt.pubKey</code>; if <code>fmt == "mtc-mds"</code>, lookup <code>mtcCert.serial</code> in <code>mtcTrustAnchor.batchKeys</code>.</li>
+          <li><strong>Verify Attestation Signature:</strong> Verify <code>pubKey.alg == attStmt.alg</code> and verify <code>attStmt.sig</code> over <code>authenticatorData || clientDataHash</code>.</li>
+          <li><strong>Check Validity Period &amp; Serial Revocation:</strong> Verify current time is within <code>[notBefore, notAfter]</code>, verify <code>serial &gt;&gt; 48 == logNumber</code>, and confirm <code>serial</code> is not in <code>revokedSerials</code>.</li>
+          <li><strong>Reconstruct Leaf &amp; Verify Merkle Inclusion Proof:</strong> Compute <code>pubKeyHash = SHA-256(pubKey)</code>, reconstruct <code>FidoMtcLogEntry</code>, compute <code>expectedSubtreeHash</code> via RFC 9162 §2.1.3.2 over <code>(index, start, end, FidoMtcLogEntry, inclusion_proof)</code>, and verify it matches an active landmark subtree in <code>mtcTrustAnchor.subtrees</code>.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 6 & 7: FIDO MDS3 EXTENSIONS & CTAP 2.3 CASCADE                -->
+    <!-- ===================================================================== -->
+    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 6 &amp; 7</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          FIDO Metadata Statement (<code>mtcTrustAnchors</code>) &amp; CTAP 2.3 3-Tier Size-Aware Cascade
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <h3 class="text-base font-semibold text-[var(--foreground)]">6. FIDO MDS3 WebIDL Schema Extensions</h3>
+          <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>dictionary MtcSubtree {
+    required unsigned short     logNumber; // uint16
+    required unsigned long long start;
+    required unsigned long long end;
+    required DOMString          rootHash;  // base64url 32B Merkle root
+    long                        alg;       // Optional Root CA COSE alg (-50)
+    DOMString                   signature; // Optional Root CA checkpoint sig
+};
+
+dictionary MtcBatchKeyEntry {
+    required unsigned long long serial;    // (logNumber &lt;&lt; 48) | index
+    required long               alg;       // -48, -49, -50, ...
+    required DOMString          coseKey;   // base64url canonical COSE_Key
+};
+
+dictionary MtcTrustAnchor {
+    required DOMString            caId;           // base64url DER TrustAnchorID
+    required DOMString            hashAlg;        // "sha-256"
+    required unsigned long        maxBatchWindow; // uint32 (seconds)
+    required MtcSubtree[]         subtrees;       // Landmark subtrees
+    required unsigned long long[] revokedSerials;
+    MtcBatchKeyEntry[]            batchKeys;      // Lookup table for "mtc-mds"
+};
+
+partial dictionary MetadataStatement {
+    MtcTrustAnchor[] mtcTrustAnchors;
+};</code></pre>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-base font-semibold text-[var(--foreground)]">6.1 Shared <code>caId</code> (Option A, Recommended)</h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            Vendors SHOULD issue all batch keys for an authenticator family as distinct leaves (<code>index = 0, 1, 2, ...</code>) within a <strong>single MTC Log (<code>caId: "g5k_AQE"</code>)</strong>. Whether a manufacturer has 3 batch keys or 10,000 batch keys over a 10-year lifecycle, <code>mtcTrustAnchors</code> requires only <strong>one <code>MtcTrustAnchor</code> entry</strong> and <strong>one 32-byte <code>rootHash</code></strong>:
+          </p>
+          <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>"mtcTrustAnchors": [
+  {
+    "caId": "g5k_AQE",
+    "hashAlg": "sha-256",
+    "maxBatchWindow": 315360000,
+    "subtrees": [
+      {
+        "logNumber": 7, "start": 0, "end": 8,
+        "rootHash": "tDE90jiRf8rgpv3frcGifWOs-FH1Oh62UCK0nGjS_zI"
+      }
+    ],
+    "revokedSerials": [],
+    "batchKeys": [
+      { "serial": 1970324836974592, "alg": -48, "coseKey": "owEHAzgv..." },
+      { "serial": 1970324836974593, "alg": -49, "coseKey": "owEHAzgw..." },
+      { "serial": 1970324836974594, "alg": -50, "coseKey": "owEHAzgx..." }
+    ]
+  }
+]</code></pre>
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <h3 class="text-base font-semibold text-[var(--foreground)]">
+          7.3 3-Tier Size-Aware Default Attestation Cascade (<code>"packed"</code> &rarr; <code>"mtc"</code> &rarr; <code>"mtc-mds"</code>)
+        </h3>
+        <p class="text-xs text-[var(--muted-foreground)]">
+          When the client omits <code>attestationFormatsPreference</code> (<code>0x0B</code>), Fidont evaluates a <strong>3-tier size-aware cascade</strong> so every registration returns the richest self-contained attestation format that fits inside a single <code>7,609 B</code> USB HID CTAP2 message (<code>&lt;= 7,550 B</code> threshold):
+          <strong>Tier 1 (<code>"packed"</code> with <code>x5c</code>)</strong> if <code>authData + sig + x5c + 60 &lt;= 7550</code>;
+          <strong>Tier 2 (<code>"mtc"</code> with inline <code>pubKey</code> + <code>mtcCert</code>)</strong> if <code>authData + sig + pubKey + 260 &lt;= 7550</code>;
+          otherwise <strong>Tier 3 (<code>"mtc-mds"</code> with <code>mtcCert</code> only)</strong>.
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Credential Signing Algorithm</th>
+                <th class="p-3 font-semibold text-center">Batch Key = <code>-48</code> (<code>ML-DSA-44</code>, <code>x5c=4,127 B</code>)</th>
+                <th class="p-3 font-semibold text-center">Batch Key = <code>-49</code> (<code>ML-DSA-65</code>, <code>x5c=5,656 B</code>)</th>
+                <th class="p-3 font-semibold text-center">Batch Key = <code>-50</code> (<code>ML-DSA-87</code>, <code>x5c=7,614 B</code>)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold">Classical (<code>-7, -8, -19, -35, -36, -47, -257</code>)</td>
+                <td class="p-3 text-center"><strong><code>"packed"</code> (<code>x5c</code>)</strong> (<code>6,704–7,008 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>5,632–5,936 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc-mds"</code></strong> (<code>4,898–5,202 B</code>)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-44</code> (<code>-48, -54, -57</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>5,395–5,673 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>6,924–7,202 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc-mds"</code></strong> (<code>6,190–6,468 B</code>)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-65</code> (<code>-49, -55, -58</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>6,035–6,313 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc-mds"</code></strong> (<code>5,586–5,864 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc-mds"</code></strong> (<code>6,830–7,108 B</code>)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-87</code> (<code>-50, -56, -59</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>6,675–6,989 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc-mds"</code></strong> (<code>6,226–6,540 B</code>)</td>
+                <td class="p-3 text-center"><strong><code>"mtc-mds"</code></strong> (<code>7,470–7,535 B</code>)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 8: ENTERPRISE ATTESTATION (0x0A) & FLEET SCALING              -->
+    <!-- ===================================================================== -->
+    <section id="section-8" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 8</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Enterprise Attestation (<code>0x0A</code>), Signed Device Serial (<code>"fido-mtc-ent"</code>), and Fleet Scaling (<code>100k</code> to <code>5M+</code> Keys)
+        </h2>
+      </div>
+
+      <p class="text-sm text-[var(--muted-foreground)]">
+        Each physical authenticator is provisioned at manufacturing time with <strong>two distinct attestation keys</strong>:
+        <strong><code>AttestationId::Batch</code></strong> (shared across <code>&gt;= 100,000</code> authenticators for non-enterprise privacy) and
+        <strong><code>AttestationId::Enterprise</code></strong> (1 unique single-device keypair per authenticator, selected when <code>enterpriseAttestation</code> <code>0x0A = 1</code> or <code>2</code>, loaded with both a single-device <code>mtcCert</code> and a per-device X.509 <code>x5c</code> certificate containing <code>OID 1.3.6.1.4.1.45724.1.1.2</code>).
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <h3 class="text-base font-semibold text-[var(--foreground)]">8.2 Root CA Subtree Checkpoint (<code>FidoMtcSubtreeCheckpoint</code>)</h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            To cryptographically bind <code>"caId": "g5k_AQI"</code> (and <code>"g5k_AQE"</code>) to the <strong>ML-DSA-87 Enterprise Root CA</strong> in <code>attestationRootCertificates</code> with zero USB wire overhead, each subtree entry in <code>mtcTrustAnchors</code> carries an <code>ML-DSA-87</code> signature over the 85-byte checkpoint:
+          </p>
+          <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>struct {
+    opaque context[32];   // "FIDO-MTC-SUBTREE-CHECKPOINT-V1\0\0"
+    opaque ca_id&lt;1..255&gt;; // 0x0005 || 83993f0102 ("g5k_AQI")
+    uint16 log_number;    // 7
+    uint48 start;         // 0
+    uint48 end;           // 8 (or 131072)
+    opaque root_hash[32]; // 32-byte Merkle subtree rootHash
+} FidoMtcSubtreeCheckpoint;</code></pre>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-base font-semibold text-[var(--foreground)]">8.3 Signed Device Serial Extension (<code>"fido-mtc-ent"</code>)</h3>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            During Enterprise Attestation (<code>0x0A = 1</code> or <code>2</code>), the authenticator sets <code>ED (0x80)</code> in <code>authenticatorData.flags</code> and includes <code>"fido-mtc-ent": { "deviceSerial": "123456" }</code> in <code>authenticatorData.extensions</code>, achieving 1:1 parity with X.509 <code>id-fido-gen-ce-sernum</code> (<code>1.3.6.1.4.1.45724.1.1.2</code>):
+          </p>
+          <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto"><code>; Included in authenticatorData.extensions ONLY during Enterprise Attestation
+$$extension-output //= (
+    "fido-mtc-ent": MtcEnterpriseExtension
+)
+
+MtcEnterpriseExtension = {
+    "deviceSerial" : tstr / uint ; e.g., "123456"
+}</code></pre>
+        </div>
+      </div>
+
+      <h3 class="text-base font-semibold text-[var(--foreground)] pt-2">
+        8.4.1 Fleet Scaling from <code>100,000</code> to <code>5,000,000</code> Single-Device Keys
+      </h3>
+      <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+              <th class="p-3 font-semibold">Total Keys (<code>N</code>)</th>
+              <th class="p-3 font-semibold text-center">Next Power of 2 (<code>2^d</code>)</th>
+              <th class="p-3 font-semibold text-center">Tree Depth <code>d</code></th>
+              <th class="p-3 font-semibold text-center">Single-Tree <code>rootHash</code></th>
+              <th class="p-3 font-semibold text-right">On-Wire <code>mtcProof</code> (<code>d × 32 B</code>)</th>
+              <th class="p-3 font-semibold text-right">Total <code>mtcCert</code> CBOR</th>
+              <th class="p-3 font-semibold text-center">Rolling 100k Subtrees</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--border)]">
+            <tr>
+              <td class="p-3 font-semibold">100,000</td>
+              <td class="p-3 text-center font-mono">2^17 = 131,072</td>
+              <td class="p-3 text-center font-mono">17</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono font-semibold">544 B</td>
+              <td class="p-3 text-right font-mono font-semibold">563 B</td>
+              <td class="p-3 text-center font-mono">1 (32 B)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">200,000</td>
+              <td class="p-3 text-center font-mono">2^18 = 262,144</td>
+              <td class="p-3 text-center font-mono">18</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono">576 B (+32 B)</td>
+              <td class="p-3 text-right font-mono">595 B</td>
+              <td class="p-3 text-center font-mono">2 (64 B)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">300,000 – 500,000</td>
+              <td class="p-3 text-center font-mono">2^19 = 524,288</td>
+              <td class="p-3 text-center font-mono">19</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono">608 B (+32 B)</td>
+              <td class="p-3 text-right font-mono">627 B</td>
+              <td class="p-3 text-center font-mono">3 – 5 (96 – 160 B)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">600,000 – 1,000,000</td>
+              <td class="p-3 text-center font-mono">2^20 = 1,048,576</td>
+              <td class="p-3 text-center font-mono">20</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono">640 B (+32 B)</td>
+              <td class="p-3 text-right font-mono">659 B</td>
+              <td class="p-3 text-center font-mono">6 – 10 (192 – 320 B)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">1,100,000 – 2,000,000</td>
+              <td class="p-3 text-center font-mono">2^21 = 2,097,152</td>
+              <td class="p-3 text-center font-mono">21</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono">672 B (+32 B)</td>
+              <td class="p-3 text-right font-mono">691 B</td>
+              <td class="p-3 text-center font-mono">11 – 20 (352 – 640 B)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">2,100,000 – 4,000,000</td>
+              <td class="p-3 text-center font-mono">2^22 = 4,194,304</td>
+              <td class="p-3 text-center font-mono">22</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono">704 B (+32 B)</td>
+              <td class="p-3 text-right font-mono">723 B</td>
+              <td class="p-3 text-center font-mono">21 – 40 (672 – 1,280 B)</td>
+            </tr>
+            <tr class="bg-[var(--content)]">
+              <td class="p-3 font-semibold">4,100,000 – 5,000,000</td>
+              <td class="p-3 text-center font-mono">2^23 = 8,388,608</td>
+              <td class="p-3 text-center font-mono">23</td>
+              <td class="p-3 text-center font-mono">32 B (43 chars)</td>
+              <td class="p-3 text-right font-mono font-semibold">736 B (+32 B)</td>
+              <td class="p-3 text-right font-mono font-semibold">755 B</td>
+              <td class="p-3 text-center font-mono">41 – 50 (1,312 – 1,600 B)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 9 & 10: C509 EVALUATION & OPENID FEDERATION 1.1 SYNERGIES     -->
+    <!-- ===================================================================== -->
+    <section id="section-9" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 9 &amp; 10</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
+          Evaluation of C509 (<code>draft-ietf-cose-cbor-encoded-cert-21</code>) &amp; Synergies with OpenID Federation 1.1
+        </h2>
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="text-base font-semibold text-[var(--foreground)]">
+          9.1–9.2 Why C509 Alone Cannot Solve the Post-Quantum <code>7,609 B</code> USB HID Limit
+        </h3>
+        <p class="text-xs text-[var(--muted-foreground)]">
+          While C509 compresses ASN.1 DER boilerplate by ~300 bytes (saving 58% on classical <code>ES256</code> batch certs and ~900 B in NVRAM via lossless Type 3 CBOR re-encoding), <strong>C509 cannot compress the high-entropy post-quantum <code>subjectPublicKey</code> or CA <code>issuerSignatureValue</code></strong> (achieving only a 3.8%–4.7% reduction on PQ certificates):
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)] rounded-xl">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold">Credential Algorithm + Batch Key</th>
+                <th class="p-3 font-semibold text-center"><code>"packed"</code> with DER <code>x5c</code></th>
+                <th class="p-3 font-semibold text-center"><code>"packed"</code> / <code>"c509"</code> with C509 <code>c5c</code></th>
+                <th class="p-3 font-semibold text-center"><code>"mtc"</code> (inline <code>pubKey</code> + <code>mtcCert</code>)</th>
+                <th class="p-3 font-semibold text-center"><code>"mtc-mds"</code> (<code>mtcCert</code> only)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-44</code> cred + <code>ML-DSA-44</code> batch (<code>ML-DSA-87</code> root)</td>
+                <td class="p-3 text-center font-mono">10,295 B ❌</td>
+                <td class="p-3 text-center font-mono">~10,000 B ❌</td>
+                <td class="p-3 text-center font-mono font-semibold">5,395 B ✅</td>
+                <td class="p-3 text-center font-mono font-semibold">4,073 B ✅</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-65</code> cred + <code>ML-DSA-65</code> batch (<code>ML-DSA-87</code> root)</td>
+                <td class="p-3 text-center font-mono">12,461 B ❌</td>
+                <td class="p-3 text-center font-mono">~12,165 B ❌</td>
+                <td class="p-3 text-center font-mono font-semibold">7,565 B ✅</td>
+                <td class="p-3 text-center font-mono font-semibold">5,586 B ✅</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold"><code>ML-DSA-87</code> cred + <code>ML-DSA-87</code> batch (<code>ML-DSA-87</code> root)</td>
+                <td class="p-3 text-center font-mono">15,065 B ❌</td>
+                <td class="p-3 text-center font-mono">~14,770 B ❌</td>
+                <td class="p-3 text-center font-mono">10,165 B ❌</td>
+                <td class="p-3 text-center font-mono font-semibold">7,470 B ✅</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">Classical <code>ES256</code> cred + Classical <code>ES256</code> batch (<code>cKey/cX5c</code>)</td>
+                <td class="p-3 text-center font-mono font-semibold">736 B ✅</td>
+                <td class="p-3 text-center font-mono font-semibold">~440 B ✅ (-296 B)</td>
+                <td class="p-3 text-center font-mono font-semibold">382 B ✅</td>
+                <td class="p-3 text-center font-mono font-semibold">307 B ✅</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="section-10" class="space-y-4 pt-4 border-t border-[var(--border)]">
+        <h3 class="text-base font-semibold text-[var(--foreground)]">
+          10. Bidirectional Synergies with OpenID Federation 1.1
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+            <h4 class="font-semibold text-sm text-[var(--foreground)]">
+              10.1 Federating FIDO Authenticator Metadata (<code>fido_authenticator</code>)
+            </h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              • <strong>Per-AAGUID Resolution (§5.1, §8.1):</strong> Replaces monolithic 50+ MB post-quantum MDS3 BLOBs with on-demand Entity Statements for <code>fido_authenticator</code>.<br/>
+              • <strong>Protocol Key Separation (§5.2.1):</strong> Serves large PQ <code>batchKeys</code> and Root CAs via <code>signed_jwks_uri</code> (<code>application/jwk-set+jwt</code>).<br/>
+              • <strong>Certification &amp; Lab Delegation (§7, §7.2, §8.4):</strong> FIDO Alliance issues <code>trust-mark-delegation+jwt</code> to accredited security labs, which issue live-revocable <code>trust-mark+jwt</code> statements to authenticator models.<br/>
+              • <strong>Historical Keys (§8.7) &amp; RP Privacy (§8.5, §19.2):</strong> Enables 10-year hardware token verification across key rollovers (<code>superseded</code> vs. <code>compromised</code>) and privacy-preserving synchronization via <code>federation_trust_mark_list_endpoint</code>.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+            <h4 class="font-semibold text-sm text-[var(--foreground)]">
+              10.2 Compacting Post-Quantum OpenID Federation <code>trust_chain</code> with MTC
+            </h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              • <strong>The PQ <code>trust_chain</code> Bottleneck (§4.3, §4.4, §8.3.2):</strong> In OpenID Federation 1.1, every Entity Statement carries both a full <code>jwks</code> public key and a JWS signature, and <code>trust_chain</code> is <code>REQUIRED</code> in Resolve Responses (§8.3.2). A 4-statement <code>ML-DSA</code> chain with delegated Trust Marks reaches <strong>45–62 KB</strong> (or <strong>70–100 KB</strong> with <code>peer_trust_chain</code> in §4.4).<br/>
+              • <strong>MTC-Backed Subordinate Statements &amp; Trust Marks:</strong> Publishing an <code>mtc_subtrees</code> checkpoint in the Superior's Entity Configuration replaces the 4.4–6.2 KB Base64URL <code>ML-DSA</code> signature with a ~400–700 B Merkle proof and binds the subordinate key via its 32 B RFC 7638 JWK Thumbprint (<code>kid</code>), reducing each Subordinate Statement from <strong>7.6–10.2 KB down to ~1.1 KB (an 85%–89% reduction per hop)</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>
