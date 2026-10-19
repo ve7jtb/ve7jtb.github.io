@@ -91,7 +91,7 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across 18 runs, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms with Total Phase Beagle USB Protocol Analyzer timing (<code>68,774</code> USB bus records, <code>0</code> bus errors) and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>302,212</code> lines of <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–19, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms with Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors) and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>304,330</code> lines of <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -116,12 +116,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <a href="./fido_ctap23_conformance_report.html#section-0-0"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0 (New — Run 18)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0 (New — Run 19: 250 / 250 Pass)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              18-Algorithm Hardware Conformance: Adding Draft NIST FIPS 206 <code>FN-DSA-512</code> (<code>alg: -60</code>) &amp; <code>FN-DSA-1024</code> (<code>alg: -61</code>) + <code>fidont_rtt.log</code> DWT Cycle Telemetry
+              18-Algorithm Hardware Conformance: <code>250 / 250</code> (<code>100.00%</code>) Pass with Draft NIST FIPS 206 <code>FN-DSA-512</code> (<code>alg: -60</code>) &amp; <code>FN-DSA-1024</code> (<code>alg: -61</code>) + TotalPhase USB + <code>fidont_rtt.log</code> DWT Cycle Telemetry
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              100% pass across all 18 algorithms on the <code>64 MHz</code> Cortex-M4F with <code>0</code> panics/OOMs across <code>302,212</code> RTT lines: <code>FN-DSA-512</code> signs in <code>958.0 ms</code> (<code>61.31M</code> cycles, <code>666 B</code> sig, <code>976 B</code> total response) and <code>FN-DSA-1024</code> signs in <code>2,054.9 ms</code> (<code>131.51M</code> cycles, <code>1,280 B</code> sig, <code>1,590 B</code> total response).
+              <code>250 / 250</code> (<code>100.00%</code>) pass across all 18 algorithms on the <code>64 MHz</code> Cortex-M4F with <code>0</code> USB bus errors across <code>127,232</code> USB records and <code>0</code> panics/OOMs across <code>304,330</code> RTT lines: <code>FN-DSA-512</code> signs in <code>957.77 ms</code> CPU (<code>61.30M</code> cycles, <code>666 B</code> sig, <code>376.05 ms</code> USB <code>IN</code>) and <code>FN-DSA-1024</code> signs in <code>2,049.19 ms</code> CPU (<code>131.15M</code> cycles, <code>1,280 B</code> sig, <code>548.07 ms</code> USB <code>IN</code>).
             </p>
           </a>
 
@@ -140,10 +140,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.2–0.3</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Multi-Log USB Bus Telemetry &amp; 6-Way Run Comparison
+              Multi-Log USB Bus Telemetry &amp; Runs 10–19 Comparison
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Correlating <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> (<code>4,756</code> OUT / <code>7,967</code> IN packets, <code>0</code> USB errors), and <code>fidont_rtt.log</code> across <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>, Dual-Batch Enterprise, and <code>perCredMgmtRO</code> runs.
+              Correlating <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> (<code>4,945</code> OUT / <code>8,827</code> IN packets, <code>0</code> USB errors), and <code>fidont_rtt.log</code> across Runs 10, 11, 16, 17, 18, and 19.
             </p>
           </a>
 
@@ -160,12 +160,12 @@
 
           <a href="./fido_ctap23_conformance_report.html#section-1"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–3</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              3-Tier PQ MTC Cascade, All 7 Extensions &amp; PIN Policy Analysis
+              Detailed Analysis of <code>Authr-ClientPin2-PinPolicy</code> <code>F-2</code> &amp; <code>F-3</code> Logic
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Live hardware verification of the <code>"packed" &rarr; "mtc" &rarr; "mtc-mds"</code> 7,550-byte cascade, all 68 CTAP 2.3 extension tests (including <code>hmac-secret-mc</code>), and <code>ClientPin2-PinPolicy</code> analysis.
+              Specification and implementation analysis of CTAP 2.3 §6.5.5.5 64-byte PIN padding, <code>CTAP2_ERR_PIN_POLICY_VIOLATION (0x37)</code>, and <code>ClientPin2-PinPolicy</code> test construction.
             </p>
           </a>
         </div>
