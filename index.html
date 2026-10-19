@@ -64,6 +64,103 @@
       </div>
     </header>
 
+    <!-- Featured Conformance & Hardware Telemetry Report: Fidont CTAP 2.3 -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Conformance &amp; Hardware Telemetry Report
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            250 / 250 Passed (100%)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            16 Algorithms &amp; PQ MTC
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            perCredMgmtRO &amp; Enterprise Attestation
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
+            FIDO CTAP 2.3 Conformance Test Report — 16 Algorithms, All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtc-mds</code>
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across 17 runs, culminating in <strong>250 Passed / 32 Skipped / 0 Failed (100.00%)</strong> with Total Phase Beagle USB Protocol Analyzer timing (<code>68,774</code> USB bus records, <code>0</code> bus errors, <code>1,073</code> <code>CTAPHID_CBOR</code> exchanges). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+        </p>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./fido_ctap23_conformance_report.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full HTML Report</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./fido_ctap23_conformance_report.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep-Link Cards into Report Sections -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.1</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              All 9 Newly Activated <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>) Tests
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Hardware verification of <code>encIdentifier</code> (<code>0x19</code>), <code>encCredStoreState</code> (<code>0x1E</code>) rotation on <code>rk: true</code> and <code>Reset</code>, <code>pcmr</code> (<code>0x40</code>) token rotation on <code>changePIN</code>, and read-only Credential Management enumeration.
+            </p>
+          </a>
+
+          <a href="./fido_ctap23_conformance_report.html#section-0-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.2–0.3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Multi-Log USB Bus Telemetry &amp; 6-Way Run Comparison
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Correlating <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> (<code>4,756</code> OUT / <code>7,967</code> IN packets, <code>0</code> USB errors), and <code>fidont_rtt.log</code> across <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>, Dual-Batch Enterprise, and <code>perCredMgmtRO</code> runs.
+            </p>
+          </a>
+
+          <a href="./fido_ctap23_conformance_report.html#section-0-4"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.4–0.5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              16-Algorithm Hardware Timing Sweep &amp; Suite Breakdown
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Microsecond-accurate MCU compute time vs. USB <code>IN</code> transfer time across all 16 classical, post-quantum (<code>ML-DSA-44/65/87</code>), and composite algorithms, plus all 17 CTAP 2.3 test suites.
+            </p>
+          </a>
+
+          <a href="./fido_ctap23_conformance_report.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              3-Tier PQ MTC Cascade, All 7 Extensions &amp; PIN Policy Analysis
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Live hardware verification of the <code>"packed" &rarr; "mtc" &rarr; "mtc-mds"</code> 7,550-byte cascade, all 68 CTAP 2.3 extension tests (including <code>hmac-secret-mc</code>), and <code>ClientPin2-PinPolicy</code> analysis.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- Featured Specification Report: PQ MTC Attestation -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
