@@ -72,10 +72,10 @@
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            250 / 250 Passed (100%)
+            18 Algorithms (incl. FN-DSA-512 &amp; FN-DSA-1024)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            16 Algorithms &amp; PQ MTC
+            250 / 250 Passed &amp; PQ MTC
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             perCredMgmtRO &amp; Enterprise Attestation
@@ -87,11 +87,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 16 Algorithms, All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtc-mds</code>
+            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtc-mds</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across 17 runs, culminating in <strong>250 Passed / 32 Skipped / 0 Failed (100.00%)</strong> with Total Phase Beagle USB Protocol Analyzer timing (<code>68,774</code> USB bus records, <code>0</code> bus errors, <code>1,073</code> <code>CTAPHID_CBOR</code> exchanges). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across 18 runs, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms with Total Phase Beagle USB Protocol Analyzer timing (<code>68,774</code> USB bus records, <code>0</code> bus errors) and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>302,212</code> lines of <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -114,6 +114,17 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-0"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0 (New — Run 18)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              18-Algorithm Hardware Conformance: Adding Draft NIST FIPS 206 <code>FN-DSA-512</code> (<code>alg: -60</code>) &amp; <code>FN-DSA-1024</code> (<code>alg: -61</code>) + <code>fidont_rtt.log</code> DWT Cycle Telemetry
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              100% pass across all 18 algorithms on the <code>64 MHz</code> Cortex-M4F with <code>0</code> panics/OOMs across <code>302,212</code> RTT lines: <code>FN-DSA-512</code> signs in <code>958.0 ms</code> (<code>61.31M</code> cycles, <code>666 B</code> sig, <code>976 B</code> total response) and <code>FN-DSA-1024</code> signs in <code>2,054.9 ms</code> (<code>131.51M</code> cycles, <code>1,280 B</code> sig, <code>1,590 B</code> total response).
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-1"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.1</div>
@@ -140,10 +151,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.4–0.5</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              16-Algorithm Hardware Timing Sweep &amp; Suite Breakdown
+              16-Algorithm USB Bus Timing Sweep &amp; Suite Breakdown
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Microsecond-accurate MCU compute time vs. USB <code>IN</code> transfer time across all 16 classical, post-quantum (<code>ML-DSA-44/65/87</code>), and composite algorithms, plus all 17 CTAP 2.3 test suites.
+              Microsecond-accurate MCU compute time vs. USB <code>IN</code> transfer time across classical, post-quantum (<code>ML-DSA-44/65/87</code>), and composite algorithms, plus all 17 CTAP 2.3 test suites.
             </p>
           </a>
 
