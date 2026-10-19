@@ -969,3 +969,50 @@ Comparing the **signature security** of the **Pre-Published `LMS_SHA256_M32` (`R
 | | 2. Pure `1-Cert ML-DSA-87` Root `x5c` | Cat 5 Lattice *(Stateless)* | Cat 5 Lattice | `15,065 B` (`256` fr) ⚠️ **OVER (`+7,456 B`)** | `2,840 ms` | `7,580 ms` |
 | | **3. Pre-Pub `LMS_M32_H5` `x5c`** | **Cat 5 SHA-256** *(Stateful HSM)* | Cat 5 Lattice | **`11,725 B` (`199` fr) ⚠️ OVER (`+4,116 B`)** | **`2,603 ms`** *(`-775 ms` vs #1)* | **`6,289 ms`** *(`-4,216 ms`)* |
 | | **4. `fmt: "mtc-mds"` (`83 B` only)** | **Cat 5 SHA-256** *(Stateless Tree)* | Cat 5 Lattice | **`7,470 B` (`127` fr) ✅ FITS (`-139 B`)** | **`2,303 ms`** *(`-1,075 ms` vs #1)* | **`4,657 ms`** *(`-5,848 ms`)* |
+
+---
+
+### 11.7 Normative Rules for Verifying HSS/LMS Certificates and Trust Anchors from FIDO Metadata (`attestationRootCertificates`)
+
+To enable Relying Parties and FIDO Conformance Tools to cryptographically verify **HSS/LMS Root CAs**, **Pre-Published HSS/LMS Intermediate CAs**, **LMS-signed `x5c` leaf attestation certificates**, and **LMS-signed MTC subtree checkpoints** from `MetadataStatement.attestationRootCertificates`, verifiers **MUST** implement the following normative rules:
+
+#### 11.7.1 X.509 & COSE Algorithm Identifiers and Public Key Encoding (`RFC 8708` / `RFC 9802` / `RFC 8778`)
+1. **X.509 `AlgorithmIdentifier`**:
+   - Both `TBSCertificate.signature`, `Certificate.signatureAlgorithm`, and `SubjectPublicKeyInfo.algorithm` for HSS/LMS certificates **MUST** use `id-alg-hss-lms-hashsig` (`OID 1.2.840.113549.1.9.16.3.17`, DER `06 0b 2a 86 48 86 f7 0d 01 09 10 03 11`) with absent parameters (`SEQUENCE { OID }`).
+2. **`SubjectPublicKeyInfo` (`60-Byte` HSS Public Key)**:
+   - An HSS public key (`RFC 8554 §6.1`) consists of `60 bytes`:
+     $$\text{HSS\_PubKey} = \text{u32str}(L) \parallel \text{u32str}(\text{lms\_type}) \parallel \text{u32str}(\text{lmots\_type}) \parallel I_{[16\text{ B}]} \parallel T[1]_{[32\text{ B}]}$$
+   - Verifiers **MUST** accept both raw `60-byte` `BIT STRING` encodings (`03 3d 00 <60B>`) and `RFC 8708 §3` `OCTET STRING`-wrapped `BIT STRING` encodings (`03 3f 00 04 3c <60B>`).
+   - When extracting `SubjectPublicKeyInfo` from an X.509 DER certificate that is itself signed with `id-alg-hss-lms-hashsig`, the parser **MUST** scan past `TBSCertificate.signature` (`OID 1.2.840.113549.1.9.16.3.17` followed by the `issuer` `SEQUENCE`) and extract the `BIT STRING` (`0x03`) immediately following the `SubjectPublicKeyInfo.algorithm` OID.
+3. **Approved Parameter Whitelist (`RFC 8554` $\cap$ `NIST SP 800-208` `SHA256_M32` / `N32`)**:
+   - `L` (HSS hierarchy levels): $1 \le L \le 8$ (`L = 1` recommended for both Root and Pre-Published Intermediate CAs).
+   - `lms_type`: `LMS_SHA256_M32_H5` (`0x05`), `H10` (`0x06`), `H15` (`0x07`), `H20` (`0x08`), `H25` (`0x09`) ($m = 32\text{ B}$).
+   - `lmots_type`: `LMOTS_SHA256_N32_W1` (`0x01`, $p=265, ls=7$), `W2` (`0x02`, $p=133, ls=6$), `W4` (`0x03`, $p=67, ls=4$), `W8` (`0x04`, $p=34, ls=0$) ($n = 32\text{ B}$).
+4. **COSE Algorithm Identifier**:
+   - In `MtcTrustAnchor.subtrees[].alg` (and COSE public keys), HSS/LMS **MUST** use `alg: -46` (`HSS-LMS`, `RFC 8778`) with `SHA-256`.
+
+#### 11.7.2 Metadata Statement (`attestationRootCertificates`) Validation Rules
+When validating a FIDO Metadata Statement (`Metadata.attestationRootCertificates`):
+1. **Self-Signed HSS/LMS Root CAs (`Issuer == Subject`)**:
+   - **MUST** include `BasicConstraints` (`2.5.29.19`, critical) with `cA: TRUE`.
+   - **MUST** pass cryptographic self-signature verification (`RFC 8554 §6.2` Algorithm 6a / `§5.4.2` Algorithm 6b) over `rootCert.tbsCertificate` using the `60-byte` HSS public key extracted from `rootCert.subjectPublicKeyInfo`.
+2. **Pre-Published HSS/LMS Intermediate CAs (`Issuer != Subject`)**:
+   - **MUST** include `BasicConstraints` (`2.5.29.19`, critical) with `cA: TRUE` (and `pathLenConstraint: 0` when used solely to issue batch/device leaf certificates or MTC checkpoints).
+   - **MUST** chain to a valid self-signed Root CA present in the same `Metadata.attestationRootCertificates` array (`rootCert.Subject == intCert.Issuer`, and if `AuthorityKeyIdentifier` / `SubjectKeyIdentifier` are present, `intCert.AKI == rootCert.SKI`) and pass `HSS_Verify(rootCert.spki, intCert.tbsCertificate, intCert.signatureValue)`.
+
+#### 11.7.3 End-to-End `x5c` (`fmt: "packed"`) & MTC Checkpoint (`alg: -46`) Verification Procedure
+1. **Step 1 — Match `attStmt.x5c` to MDS Trust Anchor**:
+   - Given `attStmt.x5c = [leafCert, ...optionalIntermediates]`, construct candidate validation paths by appending each certificate $C_{\text{mds}} \in \text{metadata.attestationRootCertificates}$.
+2. **Step 2 — Cryptographic Hop Verification (`RFC 8554` Algorithms 4b, 6a, 6b)**:
+   - For each hop `(ChildCert, IssuerCert)` where `ChildCert.signatureAlgorithm == 1.2.840.113549.1.9.16.3.17`:
+     - Verify `ChildCert.Issuer == IssuerCert.Subject`.
+     - Extract the raw DER `TBSCertificate` (`ChildCert.tbsCertificate`), raw HSS signature bytes (`ChildCert.signatureValue`), and `60-byte` HSS public key (`IssuerCert.spki`).
+     - Verify `Nspk == L - 1` (`0` for `L = 1`), leaf index $q < 2^h$, `sig_lmots_type == pub_lmots_type`, and `sig_lms_type == pub_lms_type`.
+     - Compute the candidate LM-OTS public key hash $K_c = \text{SHA-256}(I \parallel \text{u32str}(q) \parallel D_{\text{PBLC}} \parallel z_0 \parallel \dots \parallel z_{p-1})$ by completing each Winternitz chain from step $a_i = \text{coef}(Q \parallel \text{Cksm}(Q), i, w)$ to $2^w - 1$, where $Q = \text{SHA-256}(I \parallel \text{u32str}(q) \parallel D_{\text{MESG}} \parallel C \parallel \text{TBSCertificate})$.
+     - Compute the leaf node $T_c[2^h + q] = \text{SHA-256}(I \parallel \text{u32str}(2^h + q) \parallel D_{\text{LEAF}} \parallel K_c)$ and walk the $h$ authentication path siblings using $D_{\text{INTR}} = \text{0x8383}$ to obtain the candidate Merkle root $T_c[1]$.
+     - Assert $T_c[1] \equiv T[1]$.
+3. **Step 3 — Automatic MDS Intermediate-to-Root Chaining**:
+   - If the matched $C_{\text{mds}} \in \text{metadata.attestationRootCertificates}$ is a pre-published Intermediate CA (`Issuer != Subject`), the verifier **MUST** locate its parent Root CA $C_{\text{root}} \in \text{metadata.attestationRootCertificates}$ and verify both `(C_mds, C_root)` and `(C_root, C_root)` before accepting the chain.
+4. **Step 4 — MTC Subtree Checkpoint Verification (`alg: -46`)**:
+   - When `MtcTrustAnchor.subtrees[j].alg == -46`, the verifier reconstructs the 85-byte `FidoMtcSubtreeCheckpoint` (`"FIDO-MTC-SUBTREE-CHECKPOINT-V1\x00\x00" || u16(len(caId)) || caId || u16(logNumber) || u48(start) || u48(end) || rootHash`) and verifies `subtrees[j].signature` using Step 2 against the `60-byte` HSS public key of a verified LMS Root or Intermediate CA in `metadata.attestationRootCertificates`.
+

@@ -927,6 +927,18 @@ MtcEnterpriseExtension = {
             • <strong>Why <code>MTC</code> / <code>MTC-MDS</code> Achieves the Best of Both Worlds:</strong> While <code>LMS</code> requires strict single-HSM state isolation (<code>NIST SP 800-208 §6.1</code>) to prevent catastrophic <code>LM-OTS</code> leaf index <code>q</code> reuse, <strong><code>MTC</code> hashes <code>FidoMtcLogEntry</code> directly into the SHA-256 Merkle tree with zero <code>LM-OTS</code> signatures and zero secret/stateful keys</strong>, combining <strong>Category 5 SHA-256 security</strong> with <strong>100% statelessness</strong> and an <strong><code>83 B</code> proof</strong>.
           </p>
         </div>
+
+        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h4 class="font-semibold text-sm text-[var(--foreground)]">
+            11.7 Normative Rules for Verifying HSS/LMS Certificates and Trust Anchors from FIDO Metadata (<code>attestationRootCertificates</code>)
+          </h4>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • <strong>X.509 &amp; COSE Identifiers (<code>RFC 8708</code> / <code>RFC 9802</code> / <code>RFC 8778</code>):</strong> HSS/LMS certificates use <code>id-alg-hss-lms-hashsig</code> (OID <code>1.2.840.113549.1.9.16.3.17</code>) with absent parameters and a <code>60 B</code> HSS public key (<code>u32(L) || u32(lms_type) || u32(lmots_type) || I[16] || T[1][32]</code>) in <code>SubjectPublicKeyInfo</code> (supporting both raw <code>03 3d 00 &lt;60B&gt;</code> and <code>RFC 8708</code> <code>OCTET STRING</code>-wrapped <code>03 3f 00 04 3c &lt;60B&gt;</code>). In <code>MtcTrustAnchor.subtrees[].alg</code>, HSS/LMS uses COSE <code>alg: -46</code> with <code>SHA-256</code>.<br/>
+            • <strong>Approved Parameter Whitelist (<code>RFC 8554</code> ∩ <code>NIST SP 800-208</code>):</strong> <code>1 ≤ L ≤ 8</code> (<code>L = 1</code> recommended); <code>LMS_SHA256_M32_H{5,10,15,20,25}</code> (typecodes <code>0x05..0x09</code>, <code>m = 32 B</code>); and <code>LMOTS_SHA256_N32_W{1,2,4,8}</code> (typecodes <code>0x01..0x04</code>, <code>n = 32 B</code>).<br/>
+            • <strong>Two-Tier MDS Trust Anchor Resolution:</strong> Self-signed LMS Root CAs (<code>Issuer == Subject</code>, <code>CA:TRUE</code>) in <code>Metadata.attestationRootCertificates</code> MUST pass RFC 8554 self-signature verification; pre-published LMS Intermediate CAs (<code>Issuer != Subject</code>, <code>CA:TRUE</code>) in <code>Metadata.attestationRootCertificates</code> MUST chain to a valid self-signed Root CA in the same array.<br/>
+            • <strong>End-to-End <code>x5c</code> &amp; MTC Checkpoint Verification:</strong> When <code>attStmt.x5c</code> contains a 1-certificate leaf signed by a pre-published LMS Intermediate CA in <code>attestationRootCertificates</code>, the verifier validates <code>leafCert → Intermediate CA → Root CA</code> using RFC 8554 Algorithm 4b (<code>LMOTS_sig_to_pubkey</code> <code>K_c</code>) and Algorithm 6b (<code>LMS_Verify</code> Merkle authentication path walk to <code>T[1]</code>). When <code>MtcTrustAnchor.subtrees[j].alg == -46</code>, the 85-byte <code>FidoMtcSubtreeCheckpoint</code> signature is verified against the <code>60 B</code> HSS public key of a verified LMS CA in <code>attestationRootCertificates</code>.
+          </p>
+        </div>
       </div>
     </section>
 
