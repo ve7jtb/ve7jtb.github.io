@@ -716,6 +716,218 @@ MtcEnterpriseExtension = {
           </div>
         </div>
       </div>
+
+      <div id="section-11" class="space-y-4 pt-4 border-t border-[var(--border)]">
+        <h3 class="text-base font-semibold text-[var(--foreground)]">
+          11. Multi-Level HSS/LMS Certificate Hierarchies (<code>RFC 8554</code> &cap; <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtc</code> and <code>mtc-mds</code>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+            <h4 class="font-semibold text-sm text-[var(--foreground)]">
+              11.1–11.2 Non-Enterprise: Pre-Published <code>LMS_SHA256_M32_H5</code> Intermediates in MDS
+            </h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              • <strong>RFC 8554 &cap; SP 800-208 Sweet Spot:</strong> Only <code>L=1</code> with <code>LMOTS_SHA256_N32_W8</code> (<code>0x04</code>, <code>1,124 B</code> OTS) fits PQ credentials under <code>7,609 B</code>; <code>W4</code> (<code>2,180 B</code> OTS) and on-wire <code>L=2</code> HSS (<code>2,964 B</code> sig) exceed <code>7,609 B</code>.<br/>
+              • <strong>Offloading Intermediates to MDS:</strong> An offline Parent Root CA signs <code>4–32</code> <code>LMS_M32_H5/W8</code> Intermediates (<code>60 B</code> PK, <code>1,676 B</code> DER cert each) pre-published in MDS. Each Intermediate signs <code>32</code> stateless <code>ML-DSA-44</code> batch keys on demand (zero MDS updates; SP 800-208 §6.1 per-factory HSM isolation), keeping on-wire <code>x5c</code> locked at <strong><code>3,008 B</code> (<code>1,296 B</code> CA sig)</strong>.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+            <h4 class="font-semibold text-sm text-[var(--foreground)]">
+              11.3–11.4 Enterprise 10M–100M Scale (<code>H10</code> Root &rarr; <code>H20</code> Intermediates) &amp; <code>ML-DSA-65/-87</code> Impact
+            </h4>
+            <p class="text-xs text-[var(--muted-foreground)]">
+              • <strong>10M–100M Single-Device Enterprise Hierarchy:</strong> An <code>LMS_M32_H10</code> Parent Root CA (<code>1.07B</code> device capacity) signs <code>10</code> (<code>18.4 KB</code> DER for <code>10.5M</code> devices) to <code>96</code> (<code>176 KB</code> DER for <code>100.7M</code> devices) pre-published <code>LMS_M32_H20/W8</code> Intermediates (<code>1,048,576</code> devices each, <code>~16 s</code> HSM init), yielding a <strong><code>3,488 B</code> per-device <code>x5c</code></strong>.<br/>
+              • <strong><code>ML-DSA-65</code> &amp; <code>ML-DSA-87</code> Leaf Key Wall:</strong> Upgrading the leaf batch key adds <code>+1,529 B</code> (<code>-49</code>) or <code>+3,487 B</code> (<code>-50</code>) on the wire, making <code>"packed"</code> <code>x5c</code> exceed <code>7,609 B</code> for all PQ credentials with <code>-49</code>/<code>-50</code> batch keys and requiring <code>"mtc"</code> or <code>"mtc-mds"</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-[var(--border)] bg-[var(--content)] text-[var(--muted-foreground)]">
+                <th class="p-2.5 font-semibold">Matched Security Pair</th>
+                <th class="p-2.5 font-semibold">Attestation Approach</th>
+                <th class="p-2.5 font-semibold">Wire Size &amp; <code>7,609 B</code> HID Status</th>
+                <th class="p-2.5 font-semibold text-right">Raw USB Time</th>
+                <th class="p-2.5 font-semibold text-right">Native OS</th>
+                <th class="p-2.5 font-semibold text-right">Electron Host</th>
+                <th class="p-2.5 font-semibold text-right">BLE GATT</th>
+                <th class="p-2.5 font-semibold text-right">NFC APDU</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-2.5 font-semibold" rowspan="6">Level II (<code>-48</code> + <code>-48</code>)<br/><span class="font-normal text-[var(--muted-foreground)]">ML-DSA-44 Cred + Batch<br/>(MCU: 1,382 ms)</span></td>
+                <td class="p-2.5">1. 2-Cert ML-DSA Chain <code>x5c</code></td>
+                <td class="p-2.5"><code>16,641 B</code> (283 fr) ⚠️ <strong>OVER (+9,032 B)</strong></td>
+                <td class="p-2.5 text-right">2,542 ms</td>
+                <td class="p-2.5 text-right">2,829 ms</td>
+                <td class="p-2.5 text-right">7,782 ms</td>
+                <td class="p-2.5 text-right">3,791 ms</td>
+                <td class="p-2.5 text-right">2,464 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5">2. 1-Cert ML-DSA-87 CA <code>x5c</code></td>
+                <td class="p-2.5"><code>10,295 B</code> (175 fr) ⚠️ <strong>OVER (+2,686 B)</strong></td>
+                <td class="p-2.5 text-right">2,096 ms</td>
+                <td class="p-2.5 text-right">2,275 ms</td>
+                <td class="p-2.5 text-right">5,338 ms</td>
+                <td class="p-2.5 text-right">2,871 ms</td>
+                <td class="p-2.5 text-right">2,045 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5">3. 1-Cert ML-DSA-44 CA <code>x5c</code></td>
+                <td class="p-2.5"><code>8,077 B</code> (137 fr) ⚠️ <strong>OVER (+468 B)</strong></td>
+                <td class="p-2.5 text-right">1,938 ms</td>
+                <td class="p-2.5 text-right">2,079 ms</td>
+                <td class="p-2.5 text-right">4,477 ms</td>
+                <td class="p-2.5 text-right">2,548 ms</td>
+                <td class="p-2.5 text-right">1,904 ms</td>
+              </tr>
+              <tr class="bg-[var(--content)]/40">
+                <td class="p-2.5 font-semibold">4. Pre-Pub <code>LMS_M32_H5</code> <code>x5c</code></td>
+                <td class="p-2.5 font-semibold"><code>6,958 B</code> (118 fr) ✅ FITS (-651 B)</td>
+                <td class="p-2.5 text-right font-semibold">1,859 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,981 ms</td>
+                <td class="p-2.5 text-right font-semibold">4,046 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,385 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,826 ms</td>
+              </tr>
+              <tr class="bg-[var(--content)]/40">
+                <td class="p-2.5 font-semibold">5. <code>fmt: "mtc"</code> (<code>pubKey</code> + 83 B)</td>
+                <td class="p-2.5 font-semibold"><code>5,355 B</code> (91 fr) ✅ FITS (-2,254 B)</td>
+                <td class="p-2.5 text-right font-semibold">1,745 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,840 ms</td>
+                <td class="p-2.5 text-right font-semibold">3,433 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,150 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,730 ms</td>
+              </tr>
+              <tr class="bg-[var(--content)]/40">
+                <td class="p-2.5 font-semibold">6. <code>fmt: "mtc-mds"</code> (83 B only)</td>
+                <td class="p-2.5 font-semibold"><code>4,033 B</code> (69 fr) ✅ FITS (-3,576 B)</td>
+                <td class="p-2.5 text-right font-semibold">1,655 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,728 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,936 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,959 ms</td>
+                <td class="p-2.5 text-right font-semibold">1,638 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold" rowspan="6">Level III (<code>-49</code> + <code>-49</code>)<br/><span class="font-normal text-[var(--muted-foreground)]">ML-DSA-65 Cred + Batch<br/>(MCU: 1,955 ms)</span></td>
+                <td class="p-2.5">1. 2-Cert ML-DSA Chain <code>x5c</code></td>
+                <td class="p-2.5"><code>19,443 B</code> (330 fr) ⚠️ <strong>OVER (+11,834 B)</strong></td>
+                <td class="p-2.5 text-right">3,309 ms</td>
+                <td class="p-2.5 text-right">3,643 ms</td>
+                <td class="p-2.5 text-right">9,418 ms</td>
+                <td class="p-2.5 text-right">4,771 ms</td>
+                <td class="p-2.5 text-right">3,223 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5">2. 1-Cert ML-DSA-87 CA <code>x5c</code></td>
+                <td class="p-2.5"><code>12,461 B</code> (212 fr) ⚠️ <strong>OVER (+4,852 B)</strong></td>
+                <td class="p-2.5 text-right">2,819 ms</td>
+                <td class="p-2.5 text-right">3,035 ms</td>
+                <td class="p-2.5 text-right">6,745 ms</td>
+                <td class="p-2.5 text-right">3,755 ms</td>
+                <td class="p-2.5 text-right">2,755 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5">3. 1-Cert ML-DSA-65 CA <code>x5c</code></td>
+                <td class="p-2.5"><code>11,135 B</code> (189 fr) ⚠️ <strong>OVER (+3,526 B)</strong></td>
+                <td class="p-2.5 text-right">2,723 ms</td>
+                <td class="p-2.5 text-right">2,916 ms</td>
+                <td class="p-2.5 text-right">6,223 ms</td>
+                <td class="p-2.5 text-right">3,562 ms</td>
+                <td class="p-2.5 text-right">2,661 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold">4. Pre-Pub <code>LMS_M32_H5</code> <code>x5c</code></td>
+                <td class="p-2.5"><code>9,127 B</code> (155 fr) ⚠️ <strong>OVER (+1,518 B)</strong></td>
+                <td class="p-2.5 text-right font-semibold">2,582 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,741 ms</td>
+                <td class="p-2.5 text-right font-semibold">5,454 ms</td>
+                <td class="p-2.5 text-right font-semibold">3,270 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,551 ms</td>
+              </tr>
+              <tr class="bg-[var(--content)]/40">
+                <td class="p-2.5 font-semibold">5. <code>fmt: "mtc"</code> (<code>pubKey</code> + 83 B)</td>
+                <td class="p-2.5 font-semibold"><code>7,524 B</code> (128 fr) ✅ FITS (-85 B)</td>
+                <td class="p-2.5 text-right font-semibold">2,467 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,599 ms</td>
+                <td class="p-2.5 text-right font-semibold">4,839 ms</td>
+                <td class="p-2.5 text-right font-semibold">3,034 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,439 ms</td>
+              </tr>
+              <tr class="bg-[var(--content)]/40">
+                <td class="p-2.5 font-semibold">6. <code>fmt: "mtc-mds"</code> (83 B only)</td>
+                <td class="p-2.5 font-semibold"><code>5,562 B</code> (95 fr) ✅ FITS (-2,047 B)</td>
+                <td class="p-2.5 text-right font-semibold">2,332 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,431 ms</td>
+                <td class="p-2.5 text-right font-semibold">4,094 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,751 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,316 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold" rowspan="5">Level V (<code>-50</code> + <code>-50</code>)<br/><span class="font-normal text-[var(--muted-foreground)]">ML-DSA-87 Cred + Batch<br/>(MCU: 1,798 ms)</span></td>
+                <td class="p-2.5">1. 2-Cert ML-DSA Chain <code>x5c</code></td>
+                <td class="p-2.5"><code>22,693 B</code> (385 fr) ⚠️ <strong>OVER (+15,084 B)</strong></td>
+                <td class="p-2.5 text-right">3,378 ms</td>
+                <td class="p-2.5 text-right">3,767 ms</td>
+                <td class="p-2.5 text-right">10,505 ms</td>
+                <td class="p-2.5 text-right">5,084 ms</td>
+                <td class="p-2.5 text-right">3,267 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5">2. 1-Cert ML-DSA-87 CA <code>x5c</code></td>
+                <td class="p-2.5"><code>15,065 B</code> (256 fr) ⚠️ <strong>OVER (+7,456 B)</strong></td>
+                <td class="p-2.5 text-right">2,840 ms</td>
+                <td class="p-2.5 text-right">3,100 ms</td>
+                <td class="p-2.5 text-right">7,580 ms</td>
+                <td class="p-2.5 text-right">3,972 ms</td>
+                <td class="p-2.5 text-right">2,765 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold">3. Pre-Pub <code>LMS_M32_H5</code> <code>x5c</code></td>
+                <td class="p-2.5"><code>11,725 B</code> (199 fr) ⚠️ <strong>OVER (+4,116 B)</strong></td>
+                <td class="p-2.5 text-right font-semibold">2,603 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,806 ms</td>
+                <td class="p-2.5 text-right font-semibold">6,289 ms</td>
+                <td class="p-2.5 text-right font-semibold">3,486 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,546 ms</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold">4. <code>fmt: "mtc"</code> (<code>pubKey</code> + 83 B)</td>
+                <td class="p-2.5"><code>10,124 B</code> (172 fr) ⚠️ <strong>OVER (+2,515 B)</strong></td>
+                <td class="p-2.5 text-right font-semibold">2,487 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,663 ms</td>
+                <td class="p-2.5 text-right font-semibold">5,673 ms</td>
+                <td class="p-2.5 text-right font-semibold">3,249 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,448 ms</td>
+              </tr>
+              <tr class="bg-[var(--content)]/40">
+                <td class="p-2.5 font-semibold">5. <code>fmt: "mtc-mds"</code> (83 B only)</td>
+                <td class="p-2.5 font-semibold"><code>7,470 B</code> (127 fr) ✅ FITS (-139 B)</td>
+                <td class="p-2.5 text-right font-semibold">2,303 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,434 ms</td>
+                <td class="p-2.5 text-right font-semibold">4,657 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,866 ms</td>
+                <td class="p-2.5 text-right font-semibold">2,279 ms</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+          <h4 class="font-semibold text-sm text-[var(--foreground)]">
+            11.6 Signature Security Comparison: <code>LMS_SHA256_M32</code> <code>x5c</code> vs. Pure Level-Matched <code>ML-DSA</code> Chains vs. <code>MTC</code>
+          </h4>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            • <strong>NIST Category 5 CA Bit-Security:</strong> Every hash in <code>LMS_SHA256_M32</code> / <code>LMOTS_SHA256_N32_W8</code> is domain-separated by <code>(I, q, i, j)</code> and a 32-byte randomizer <code>C</code>, so birthday-bound collisions do not apply; forgery requires breaking <strong>256-bit SHA-256 second-preimage resistance (NIST PQC Category 5)</strong>. Unlike a pure level-matched <code>ML-DSA-44</code> (Cat 2) or <code>ML-DSA-65</code> (Cat 3) chain that downgrades the Root/Intermediate CA to Cat 2/3, <code>LMS_SHA256_M32</code> keeps the CA layer at <strong>Category 5</strong> across all tiers while saving <code>1,124–3,331 B</code> per signature.<br/>
+            • <strong>Assumption Diversity vs. Lattice Monoculture:</strong> Pairing a hash-based <code>LMS_SHA256_M32</code> CA (or <code>MTC</code> SHA-256 Merkle tree) with a lattice-based <code>ML-DSA</code> leaf protects 20-year MDS trust anchors from algebraic Module-LWE/SIS breakthroughs.<br/>
+            • <strong>Why <code>MTC</code> / <code>MTC-MDS</code> Achieves the Best of Both Worlds:</strong> While <code>LMS</code> requires strict single-HSM state isolation (<code>NIST SP 800-208 §6.1</code>) to prevent catastrophic <code>LM-OTS</code> leaf index <code>q</code> reuse, <strong><code>MTC</code> hashes <code>FidoMtcLogEntry</code> directly into the SHA-256 Merkle tree with zero <code>LM-OTS</code> signatures and zero secret/stateful keys</strong>, combining <strong>Category 5 SHA-256 security</strong> with <strong>100% statelessness</strong> and an <strong><code>83 B</code> proof</strong>.
+          </p>
+        </div>
+      </div>
     </section>
 
   </main>
