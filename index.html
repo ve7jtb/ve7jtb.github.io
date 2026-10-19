@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ve7jtb.github.io — Technical Specifications &amp; Cryptographic Architecture Reports</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen p-6 md:p-12 leading-relaxed">
+
+  <div class="max-w-5xl mx-auto space-y-10">
+
+    <!-- Top Masthead -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-10 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-widest text-[var(--primary)] mb-1">
+            ve7jtb.github.io
+          </div>
+          <h1 class="text-2xl md:text-4xl font-bold tracking-tight text-[var(--foreground)]">
+            John Bradley — Technical Specifications &amp; Architecture Reports
+          </h1>
+          <p class="text-sm md:text-base text-[var(--muted-foreground)] mt-2 max-w-3xl">
+            Working drafts, cryptographic analyses, and protocol proposals across FIDO2 / CTAP, W3C WebAuthn, IETF CFRG / JOSE / COSE, Post-Quantum Cryptography, and Decentralized / Verifiable Digital Identity.
+          </p>
+        </div>
+        <a href="https://github.com/ve7jtb" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>GitHub (@ve7jtb)</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Featured Specification Report -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Featured Specification Report
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            FIDO2 CTAP 2.3+
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            pinUvAuthProtocol = 3
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Post-Quantum HPKE &amp; ARKG
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./ctap23_hierarchical_ppuat_spec.html" class="hover:underline">
+            CTAP 2.3+ Post-Quantum PIN/UV Auth Protocol 3: Architecture, Downgrade Integrity, Hierarchical PPUAT, and Encrypted Extensions
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Defines a Post-Quantum <strong>PIN/UV Auth Protocol 3 (<code>pinUvAuthProtocol = 3</code>)</strong> for FIDO2 CTAP 2.3+ based on <strong>RFC 9180 HPKE</strong> (<code>X-Wing</code>, <code>MLKEM768-P256</code>, and <code>ML-KEM-1024</code>), addressing Harvest-Now-Decrypt-Later (HNDL) quantum threats and active bus MITM attacks while maintaining strict Relying Party unlinkability, zero extra Authenticator NVRAM, and 0-RTT key agreement caching.
+        </p>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./ctap23_hierarchical_ppuat_spec.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full HTML Report</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./ctap23_hierarchical_ppuat_spec.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep-Link Cards into the 4 Report Sections -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./ctap23_hierarchical_ppuat_spec.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Core PIN Protocol <code>keyAgreement</code> Issues &amp; Post-Quantum HPKE Architecture
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              HNDL and active MITM vulnerabilities in CTAP 2.0–2.3 Protocols 1 &amp; 2 (including unauthenticated Internal UV <code>0x0A</code>), mapping §6.5.4 to RFC 9180 HPKE with KEM agility (<code>0x2A: pinUvAuthKems</code>), comparing HPKE authentication modes (<code>mode_psk</code> vs. <code>mode_base</code>) and DEM modes (<code>AES-256-GCM</code> vs. <code>Export-Only</code>), and 0-RTT caching of <code>pk_batch</code> against <code>PPUAT_v3</code>.
+            </p>
+          </a>
+
+          <a href="./ctap23_hierarchical_ppuat_spec.html#section-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Downgrade Issues &amp; <code>authenticatorGetInfo</code> Integrity
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Defending against KEM stripping, <code>maxMsgSize</code> squeezing, UV-to-PIN modality downgrades, and back-to-back protocol-translating relay MITMs without leaking fingerprinting bits into <code>authenticatorData</code>. Introduces 4-byte vendor root indexing (<code>0x2B: batchAttestKid</code>), client-reconstructed factory attestations (<code>ReconstructedAttestation_v1</code>), and 20-year security analysis of <code>FN-DSA</code> vs. stateful hash-based <code>LMS</code>.
+            </p>
+          </a>
+
+          <a href="./ctap23_hierarchical_ppuat_spec.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              PPUAT Domain Separation Between PIN Protocols 2 and 3
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              One-way hierarchical derivation tree (<code>PPUAT_v3 &rarr; PPUAT_v2 &rarr; K_id, K_css</code>) requiring only a single 32-byte NVRAM root secret while creating a 2<sup>128</sup> quantum preimage firewall between legacy P-256 Protocol 2 hosts and Protocol 3 HPKE <code>mode_psk</code> sessions, with 100% single-response wire compatibility for <code>encIdentifier</code> (<code>0x19</code>) and <code>encCredStoreState</code> (<code>0x1E</code>).
+            </p>
+          </a>
+
+          <a href="./ctap23_hierarchical_ppuat_spec.html#section-4"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Extensions Using Encryption (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, &amp; <code>sign</code>)
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Token-bound <code>1: keyAgreement</code> elision in <code>hmac-secret</code> / <code>hmac-secret-mc</code> (saving 1.1–1.5 KB), encrypting <code>largeBlobKey</code> (<code>0x07</code>), deprecating <code>credBlob</code> (§12.5, originally designed for unreleased Kerberos KDC certificate hash pinning), and securing the WebAuthn <code>sign</code> (<code>previewSign5</code>) extension + ARKG on both the CTAP bus and end-to-end (<code>RP &lt;-&gt; Authenticator</code> via hybrid HPKE <code>mode_psk</code>).
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related Specifications & References -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
+      <h2 class="text-lg font-bold text-[var(--foreground)]">
+        Related Specifications &amp; Normative References
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <a href="https://datatracker.ietf.org/doc/draft-bradleylundberg-cfrg-arkg/" target="_blank" rel="noopener noreferrer"
+           class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <div class="font-bold text-[var(--primary)] uppercase tracking-wider">IETF CFRG Internet-Draft</div>
+          <div class="font-semibold text-sm text-[var(--foreground)] mt-1">
+            The Asynchronous Remote Key Generation (ARKG) Algorithm
+          </div>
+          <div class="text-[var(--muted-foreground)] mt-1">
+            <code>draft-bradleylundberg-cfrg-arkg</code> — E. Lundberg, J. Bradley
+          </div>
+        </a>
+
+        <a href="https://yubicolabs.github.io/webauthn-sign-extension/5-SNAPSHOT-2026-09-09T13:45/#sctn-sign-extension" target="_blank" rel="noopener noreferrer"
+           class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <div class="font-bold text-[var(--primary)] uppercase tracking-wider">W3C WebAuthn Extension Draft</div>
+          <div class="font-semibold text-sm text-[var(--foreground)] mt-1">
+            Web Authentication <code>sign</code> Extension (<code>previewSign5</code>)
+          </div>
+          <div class="text-[var(--muted-foreground)] mt-1">
+            Hardware-bound arbitrary signing &amp; ARKG integration for WebAuthn credentials
+          </div>
+        </a>
+
+        <a href="https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html" target="_blank" rel="noopener noreferrer"
+           class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <div class="font-bold text-[var(--primary)] uppercase tracking-wider">FIDO Alliance Specification</div>
+          <div class="font-semibold text-sm text-[var(--foreground)] mt-1">
+            Client to Authenticator Protocol (CTAP) v2.3
+          </div>
+          <div class="text-[var(--muted-foreground)] mt-1">
+            Proposed Standard (February 2026) — PIN/UV Auth Protocols, PPUAT &amp; Extensions
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
