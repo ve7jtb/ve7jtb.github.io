@@ -124,6 +124,202 @@ sequenceDiagram
 
 ---
 
+### 1.5 Unattested / Open-Source / Privacy Authenticators (`aaguid = 0^16`), Low-Entropy PINs in Key Agreement, and the 8-Try `pinRetries` State Machine
+
+A critical real-world deployment class for `pinUvAuthProtocol = 3` is **open-source, DIY, small-vendor, or privacy-preserving authenticators** that intentionally have:
+* **No Batch Attestation Certificate (`batchAttestSig` absent)** — because the project is open-source hardware/firmware where users flash their own MCUs and no secret vendor batch key can exist, or to eliminate batch-level correlation across Relying Parties and Platforms.
+* **An All-Zero `aaguid` (`00000000-0000-0000-0000-000000000000`)** — so FIDO MDS lookup is impossible and the Platform cannot authenticate the Authenticator's public key `pk_auth` out-of-band during initial key establishment.
+
+This raises two fundamental cryptographic questions:
+1. **Is it safe to make a low-entropy device PIN part of the key agreement (`getKeyAgreement` / `0x09`) when the Authenticator has no batch certificate or `aaguid`?**
+2. **How must the Authenticator's `pinRetries` counter (capped at 8 total tries, 3 per boot) work so that neither a malicious Platform nor a fake Authenticator / active MITM can test more than 8 PINs via key establishment?**
+
+#### 1.5.1 Why Naive PIN-in-Key-Agreement (`HPKE mode_psk` with `psk = pinHash`) Is Catastrophically Broken Without Attestation
+
+Suppose an unattested Authenticator simply returns an **unblinded** public key `pk_auth` in `getKeyAgreement` (`0x02`), and the Platform injects the user's low-entropy PIN directly into `HPKE.SetupPSKS(pk_auth, info = Transcript, psk = LEFT(SHA-256(PIN), 16))` when calling `getPinUvAuthTokenUsingPinWithPermissions` (`0x09`):
+
+> [!CAUTION]
+> **The 1-Try Offline Dictionary Attack by a Fake Authenticator / Active MITM:**
+> Because `pk_auth` has no batch certificate or `aaguid`, an active MITM on the USB/NFC bus (or a malicious USB hub / fake authenticator) replaces `pk_auth` with its own keypair `(pk_mitm, sk_mitm)`.
+> 1. The user types their 4–6 digit low-entropy PIN **once** on the Platform.
+> 2. The Platform encapsulates `(K_kem, enc) = ML-KEM.Encap(pk_mitm)` and sends `(enc, pinUvAuthParam)` where `pinUvAuthParam` is derived from `(K_kem, psk = pinHash)`.
+> 3. Because the MITM knows `sk_mitm`, it computes `K_kem = ML-KEM.Decaps(sk_mitm, enc)` and immediately runs an **offline brute-force loop** testing all $10^4\text{–}10^6$ human PINs against `pinUvAuthParam` in **under 1 millisecond**—recovering the user's PIN on the **very first try** while **completely bypassing the Authenticator's 8-try `pinRetries` counter**!
+
+Similarly, pairing an unblinded `ML-KEM` key exchange with a **classical-only PAKE** (such as P-256 `SPAKE2+` or `CPace`) fails against a **Harvest-Now-Decrypt-Later (HNDL) Active MITM**: the MITM terminates the unauthenticated `ML-KEM` layer with `pk_mitm`, records the classical `SPAKE2+` points $(X = xG + w_0 M,\; Y = yG + w_0 N)$, and later uses a quantum computer (Shor's algorithm) to solve the discrete logarithm of $X$ and recover both the low-entropy PIN $w_0$ and the issued $\text{PPUAT}_{v3}$.
+
+#### 1.5.2 When It IS Safe: Post-Quantum PAKE via `ML-KEM` $\hat{\mathbf{t}}$-Vector Blinding (`PQ-EKE` / `CAKE`)
+
+Making the device PIN part of key agreement on an unattested authenticator **is** cryptographically safe—both classically and post-quantumly—**if and only if the Authenticator's ephemeral `ML-KEM` public key in `getKeyAgreement` (`0x02`) is blinded by a salted PIN verifier $w$ (forming a lattice Encrypted Key Exchange, `PQ-EKE` / `CAKE`), and `pinRetries <= 8` is decremented in NVRAM before decapsulation**:
+
+1. **Salted PIN Verifier Provisioning (`setPIN` `0x03` / `changePIN` `0x04`):**
+   When a PIN is set, the Authenticator generates a fresh 16-byte random `pinSalt` and stores the 32-byte verifier in NVRAM:
+   $$w = \text{HKDF-SHA-256}\left(\text{salt}=\text{pinSalt},\; \text{IKM}=\text{LEFT}(\text{SHA-256}(\text{PIN}), 16),\; \text{info}=\text{"CTAP2.3-PINv3-PAKE"},\; L=32\right)$$
+2. **Blinded `getKeyAgreement` (`0x02`) on Unbound Sessions:**
+   The Authenticator generates a fresh single-use ephemeral `ML-KEM` keypair $(ek_{\text{eph}} = (\hat{\mathbf{t}}_{\text{eph}}, \rho),\; dk_{\text{eph}})$ where $\hat{\mathbf{t}}_{\text{eph}} = \hat{\mathbf{A}}\hat{\mathbf{s}} + \hat{\mathbf{e}} \bmod q$ ($q = 3329$ in $\mathbb{Z}_q^{k \times 256}$). Using `SHAKE256`, it derives a deterministic polynomial mask vector $\hat{\mathbf{m}}_w \in \mathbb{Z}_q^{k \times 256}$ and blinds $\hat{\mathbf{t}}_{\text{eph}}$ modularly before encoding:
+   $$\hat{\mathbf{m}}_w = \text{SampleUniform}_{\mathbb{Z}_q^{k \times 256}}\left(\text{SHAKE256}(\text{"CTAP2.3-PINv3-PAKE-MASK"} \parallel w \parallel \rho)\right)$$
+   $$\hat{\mathbf{t}}_{\text{blinded}} = (\hat{\mathbf{t}}_{\text{eph}} + \hat{\mathbf{m}}_w) \bmod q, \quad ek_{\text{blinded}} = \text{ByteEncode}_{12}(\hat{\mathbf{t}}_{\text{blinded}}) \parallel \rho$$
+   The Authenticator returns `(ek_blinded, pinSalt)` in `getKeyAgreement` (`0x02`).
+3. **Platform Unblinding & HPKE Encapsulation (`0x09`):**
+   The Platform computes $w$ from the user-entered PIN and `pinSalt`, computes $\hat{\mathbf{m}}_w$, unblinds the `ML-KEM` vector:
+   $$\hat{\mathbf{t}} = (\hat{\mathbf{t}}_{\text{blinded}} - \hat{\mathbf{m}}_w) \bmod q$$
+   executes $(K_{\text{kem}}, \text{enc}) = \text{ML-KEM.Encap}((\hat{\mathbf{t}}, \rho))$, and runs `HPKE.SetupPSKS` with `psk = w` and `psk_id = pinSalt` to compute `pinUvAuthParam`. (Optionally, the Platform and Authenticator can run `X-Wing` where the P-256/X25519 component is simultaneously blinded via `SPAKE2+`/`CPace` for hybrid classical+PQ PAKE assurance.)
+
+```mermaid
+sequenceDiagram
+    participant P as Unbound Platform (User enters low-entropy PIN)
+    participant K as Unattested / Open-Source Authenticator (aaguid = 0^16, pinRetries <= 8)
+
+    P->>K: 1. getKeyAgreement (0x02, pinUvAuthProtocol = 3)
+    Note over K: 1. Generates single-use (t_eph, rho, dk_eph)<br/>2. Computes mask m_w = SampleNTT(SHAKE256("...MASK" || w || rho))<br/>3. Blinds t_blinded = (t_eph + m_w) mod 3329<br/>4. Sets ephemeral state = ARMED_SINGLE_USE
+    K-->>P: COSE_Key (ek_blinded = Encode12(t_blinded) || rho, pinSalt)
+
+    Note over P: 1. Derives w = HKDF(pinSalt, LEFT(SHA256(PIN), 16))<br/>2. Unblinds t = (t_blinded - m_w) mod 3329<br/>3. (K_kem, enc) = ML-KEM.Encap((t, rho))<br/>4. ctx = HPKE.SetupPSKS(K_kem, info=Transcript, psk=w, psk_id=pinSalt)<br/>5. pinUvAuthParam = ctx.Authenticate(Transcript)
+
+    P->>K: 2. getPinUvAuthTokenUsingPinWithPermissions (0x09, keyAgreement: enc, pinUvAuthParam)
+    Note over K: Strict Write-Before-Verify State Machine:<br/>1. Check pinRetries > 0 (else PIN_BLOCKED) & bootFailures < 3<br/>2. IMMEDIATELY decrement pinRetries -= 1 in NVRAM & wipe dk_eph after read<br/>3. K_kem = ML-KEM.Decaps(dk_eph, enc) [FO implicit reject on wrong PIN!]<br/>4. Verify pinUvAuthParam with (K_kem, psk=w)<br/>5. If valid: reset pinRetries = 8 in NVRAM, issue PPUAT_v3 + pinToken
+    K-->>P: Encrypted (PPUAT_v3, pinToken)
+```
+
+#### 1.5.3 Why Both Attack Directions Are Capped at $\le 1$ Guess per Message (and $\le 8$ Total)
+
+| Threat Actor | Attack Vector | Why `ML-KEM` $\hat{\mathbf{t}}$-Blinding + `pinRetries` Completely Blocks Offline Guessing |
+| :--- | :--- | :--- |
+| **1. Malicious Platform Polling `getKeyAgreement` (`0x02`) Offline** | Platform calls `getKeyAgreement` (`0x02`) 1,000,000 times and tries to test all $10^6$ PINs $w'$ offline against $\hat{\mathbf{t}}_{\text{blinded}}$ without calling `0x09`. | By the **Module-LWE (MLWE)** assumption, $\hat{\mathbf{t}}_{\text{eph}} = \hat{\mathbf{A}}\hat{\mathbf{s}} + \hat{\mathbf{e}} \bmod q$ is computationally indistinguishable from uniform over $\mathbb{Z}_q^{k \times 256}$. Therefore, for **every** candidate PIN $w'$, the unblinded vector $\hat{\mathbf{t}}' = (\hat{\mathbf{t}}_{\text{blinded}} - \hat{\mathbf{m}}_{w'}) \bmod q$ is *also* a valid, uniform element of $\mathbb{Z}_q^{k \times 256}$! `getKeyAgreement` leaks **0 bits** of offline information about $w$; to test a single candidate $w'$, the Platform **must** submit `enc` in `0x09`. |
+| **2. Fake Authenticator / Active MITM Attacking the Platform (`0x09`)** | Fake Authenticator sends a crafted $\hat{\mathbf{t}}_{\text{blinded}}^*$ in `0x02` so that when the Platform sends `(enc, pinUvAuthParam)` in `0x09`, the MITM can brute-force the user's PIN offline. | To know a secret trapdoor vector $\hat{\mathbf{s}}_{\text{mitm}}$ for the lattice public key the Platform encapsulates to, the MITM **must commit to a single PIN guess $w_{\text{guess}}$ before sending `0x02`**: $\hat{\mathbf{t}}_{\text{blinded}}^* = (\hat{\mathbf{A}}\hat{\mathbf{s}}_{\text{mitm}} + \hat{\mathbf{e}}_{\text{mitm}} + \hat{\mathbf{m}}_{w_{\text{guess}}}) \bmod q$. If $w_{\text{guess}} \neq w_{\text{user}}$, the Platform encapsulates to $\hat{\mathbf{t}}_{\text{plat}} = \hat{\mathbf{t}}_{\text{mitm}} + (\hat{\mathbf{m}}_{w_{\text{guess}}} - \hat{\mathbf{m}}_{w_{\text{user}}}) \bmod q = \hat{\mathbf{t}}_{\text{mitm}} + \Delta$. Because $\Delta$ is a uniform SHAKE256 output in $\mathbb{Z}_q^{k \times 256}$, no short vector $\mathbf{s}_\Delta$ exists such that $\mathbf{A}\mathbf{s}_\Delta \approx \Delta$ (**Module-SIS**), and recovering the Platform's ephemeral $\mathbf{r}$ from $\mathbf{u} = \mathbf{A}^T\mathbf{r} + \mathbf{e}_1$ is hard by **Module-LWE**. Thus the MITM gets **at most 1 online guess per user PIN entry** and **0 offline guesses**! |
+| **3. Malicious Platform Testing Multiple PINs Against One `0x02`** | Platform calls `0x02` once and sends 8 rapid `0x09` requests or power-glitches the Authenticator during decapsulation. | Enforced by the **4-Rule `pinRetries` State Machine** below. |
+
+#### 1.5.4 The 4 Mandatory Rules for the `pinRetries` Counter State Machine (Max 8 Total, Max 3 Per Boot)
+
+To guarantee that a malicious Platform can never test more than **8 candidate PINs** via key establishment—even under USB power-tearing, timing analysis, or repeated `getKeyAgreement` calls—the Authenticator **MUST** enforce four state-machine invariants:
+
+1. **Rule 1 (`getKeyAgreement` Does Not Decrement `pinRetries`, But $dk_{\text{eph}}$ Is Strictly Single-Use):**
+   * Calling `getKeyAgreement` (`0x02`) **MUST NOT** decrement `pinRetries` (otherwise any unprivileged background process could lock out the token in 8 packets without knowing the PIN). Because $\hat{\mathbf{t}}_{\text{blinded}}$ is indistinguishable from uniform random (MLWE), calling `0x02` gives the attacker zero offline advantage.
+   * However, the Authenticator holds **at most one** active ephemeral keypair $(ek_{\text{eph}}, dk_{\text{eph}})$ in RAM (`state = ARMED_SINGLE_USE`). The instant **any** `0x09` (`getPinUvAuthTokenUsingPinWithPermissions`) or `0x04` (`changePIN`) command arrives, $dk_{\text{eph}}$ is consumed and permanently zeroized before returning—preventing a Platform from reusing a single `getKeyAgreement` response across attempts.
+2. **Rule 2 (Write-Before-Verify Anti-Tearing Decrement in `0x09` / `0x04`):**
+   When `0x09` or `0x04` arrives, the Authenticator **MUST** execute in strict order:
+   1. Verify `pinRetries > 0` (else immediately abort with `CTAP2_ERR_PIN_BLOCKED` `0x32`) and `bootMismatchCount < 3` (else abort with `CTAP2_ERR_PIN_AUTH_BLOCKED` `0x34`).
+   2. **Commit `pinRetries = pinRetries - 1` to non-volatile memory (NVRAM) and `bootMismatchCount += 1` in RAM BEFORE calling `ML-KEM.Decaps(dk_eph, enc)` or checking `pinUvAuthParam`.** If the attacker yanks the USB cable (power-tearing) mid-computation, the retry counter is already decremented.
+   3. Only after both `ML-KEM.Decaps` and `pinUvAuthParam` verify against $w$ does the Authenticator restore `pinRetries = 8` in NVRAM and reset `bootMismatchCount = 0`.
+3. **Rule 3 (Constant-Time Fujisaki-Okamoto Implicit Rejection — Zero Oracle Leakage):**
+   When the Platform supplies a wrong PIN $w' \neq w$, `enc` was encapsulated to $\hat{\mathbf{t}}_{\text{eph}} + \Delta$ instead of $\hat{\mathbf{t}}_{\text{eph}}$. When the Authenticator runs `ML-KEM.Decaps(dk_eph, enc)`, the Fujisaki-Okamoto (FO) re-encryption check $\text{enc}' \neq \text{enc}$ triggers **constant-time implicit rejection**, outputting a pseudorandom key $K_{\text{kem}}' = J(z \parallel \text{enc})$ rather than an error. The Authenticator then feeds $K_{\text{kem}}'$ into HPKE and verifies `pinUvAuthParam`, which fails with a single uniform error (`CTAP2_ERR_PIN_INVALID` `0x31`). This guarantees that an attacker cannot distinguish via timing or error codes between a corrupted `enc` and a wrong PIN guess.
+4. **Rule 4 (Post-Binding 256-Bit `PPUAT_v3` Shielding — Zero `pinRetries` Exposure to MITMs):**
+   Once the very first PIN ceremony succeeds on a Platform, the Authenticator issues the 256-bit `PPUAT_v3` and generates a **device-local persistent `ML-KEM` keypair** $(pk_{\text{local}}, sk_{\text{local}})$ cached alongside `PPUAT_v3` on that Platform. On all subsequent sessions on that computer, key establishment uses the **256-bit high-entropy `PPUAT_v3`** (`HPKE mode_psk`), and `pinRetries` is **only** decremented if the outer 256-bit `PPUAT_v3` authentication tag succeeds first—completely eliminating both online MITM PIN guessing and remote `pinRetries` lockout on bound hosts!
+
+---
+
+### 1.6 Multi-Tier Trust Hierarchy: Enterprise Host Authentication, Batch Key Pinning, Factory Pairing PINs, Evil-Twin Detection, and Dual Channel Modes (Asymmetric Pinning vs. Symmetric `PPUAT_v3`)
+
+To support the full spectrum of deployments—from locked-down enterprise workstations to personal laptops, public kiosks, and unattested open-source tokens—`pinUvAuthProtocol = 3` defines a **three-tier trust and mutual authentication architecture**, a **MITM-safe initial setup/reset lifecycle**, and **two post-pairing channel modes**.
+
+#### 1.6.1 Tier 1: Enterprise Mutually Authenticated Key Agreement (Host Authentication to Authenticator)
+
+In high-security enterprise environments, an organization may require that corporate authenticators **only perform key agreement with authorized enterprise hosts** that hold a deployed enterprise certificate or public key. This capability is scoped to authenticators that possess a batch key (`pk_batch`) and a non-zero `aaguid`.
+
+1. **Provisioning Trusted Host Keys/Certificates via `authenticatorConfig` (`0x0D`):**
+   * Introduces `authenticatorConfig` subcommand **`0x06: setEnterpriseHostTrustAnchors`** (protected by the `acfg` `0x20` permission):
+     ```cddl
+     ; authenticatorConfig (0x0D) subCommand 0x06 parameter map (0x02):
+     EnterpriseHostTrustConfig = {
+         0x01: bool,                    ; enterpriseHostAuthRequired (true = mandatory, false = optional)
+         0x02: [+ COSE_Key / bstr],     ; Trusted Enterprise Host CA Root Public Keys or Host Cert Fingerprints
+         ? 0x03: [+ int]                ; Allowed COSE signature / KEM algorithms (e.g., -49 ML-DSA-65, -7 ES256)
+     }
+     ```
+2. **`authenticatorGetInfo` (`0x04`) Advertisement:**
+   * **`options.enterpriseHostAuth` (`bool`):**
+     * `true`: The Authenticator is configured to **require** mutually authenticated key agreement with a trusted enterprise host; unauthenticated requests will error immediately at key agreement.
+     * `false`: The Authenticator **supports** mutually authenticated key agreement if offered by the host, but does not require it.
+     * *(Absent)*: Mutually authenticated host key agreement is not supported.
+   * **`0x2C: pinUvAuthHostAlgs` (`[+ int]`):** Array of COSE algorithm identifiers (`COSEAlgorithms`) supported by the Authenticator for verifying the host's identity during key agreement (e.g., `-49` for `ML-DSA-65`, `-50` for `ML-DSA-87`, `-7` for `ES256`, or HPKE `mode_auth` KEM IDs `0x0041` `ML-KEM-768` / `0x647a` `X-Wing`).
+3. **Host Authentication Handshake & Early Error at `getKeyAgreement` (`0x02`):**
+   * When `options.enterpriseHostAuth` is present, the Platform passes **`0x09: hostAuth`** in `getKeyAgreement` (`0x02`) (or alongside a 0-RTT `0x09` / `0x0A` request):
+     ```cddl
+     HostAuthPayload = {
+         0x01: int,                     ; Selected algorithm from 0x2C: pinUvAuthHostAlgs
+         0x02: bstr,                    ; Host X.509 / CWT certificate (chaining to Enterprise CA) or COSE_Key ID
+         0x03: bstr .size 32,           ; Fresh 256-bit hostNonce
+         0x04: bstr                     ; Signature(sk_host, "CTAP2.3-HostAuth" || SHA-256(GetInfo) || hostNonce)
+     }
+     ```
+   * **Immediate Rejection at Key Agreement:** If `options.enterpriseHostAuth == true` and `hostAuth` is omitted, uses an unsupported algorithm, fails certificate chain validation against the provisioned trust anchors, or has an invalid signature over `SHA-256(GetInfo) || hostNonce`, the Authenticator **immediately aborts `getKeyAgreement` (`0x02`) with `CTAP2_ERR_NOT_ALLOWED` (`0x27`) / `CTAP2_ERR_HOST_UNAUTHENTICATED` (`0x3E`)**—before exposing any key agreement state or allowing any PIN/UV interaction.
+   * If valid, the verified `hostAuth` transcript (`SHA-256(HostAuthPayload)`) is bound directly into the HPKE `info` `PinUvAuthTranscript_v3`, cryptographically locking the resulting session keys and `PPUAT_v3` to the authenticated enterprise host.
+
+```mermaid
+sequenceDiagram
+    participant IT as Enterprise IT Admin (acfg)
+    participant P as Enterprise Host (Holds sk_host + Enterprise Cert)
+    participant K as Enterprise Authenticator (Holds pk_batch + aaguid)
+
+    IT->>K: 0. authenticatorConfig (0x0D, subCmd=0x06: setEnterpriseHostTrustAnchors)<br/>Loads Enterprise CA Root PK + sets enterpriseHostAuth = true
+    P->>K: 1. authenticatorGetInfo (0x04)
+    K-->>P: options: {enterpriseHostAuth: true}, 0x2C: pinUvAuthHostAlgs: [-49 (ML-DSA-65), -7 (ES256)]
+
+    P->>K: 2. getKeyAgreement (0x02, kemId: 0x647a, 0x09: HostAuthPayload {alg, hostCert, hostNonce, hostSig})
+    Note over K: 1. Verifies hostCert against provisioned Enterprise Trust Anchors<br/>2. Verifies hostSig over ("CTAP2.3-HostAuth" || SHA-256(GetInfo) || hostNonce)<br/>3. If invalid -> IMMEDIATELY returns CTAP2_ERR_HOST_UNAUTHENTICATED (0x3E)!<br/>4. If valid -> Binds SHA-256(HostAuthPayload) into HPKE info transcript
+    K-->>P: 0x01: pk_batch (+ pk_eph), 0x02: attestationVersion, 0x03: batchAttestSig
+```
+
+---
+
+#### 1.6.2 Tier 2: Authenticated Authenticator + `GetInfo` with Batch Key Pinning & Evil-Twin Same-Batch Detection
+
+The next level in the trust hierarchy is **Authenticator + `authenticatorGetInfo` Authentication with Batch Key Pinning** on personal (non-kiosk) platforms:
+
+1. **Batch Key Pinning (`pk_batch` Bound to `PPUAT_v3` + `deviceIdentifier`):**
+   * Once a personal Platform completes initial pairing with an Authenticator—verifying `batchAttestSig` over `authenticatorGetInfo` (`Section 2.3`) and acquiring `(PPUAT_v3, deviceIdentifier)`—the Platform **pins `pk_batch` to `(deviceIdentifier, PPUAT_v3)`** (`PinnedAuthenticatorRecord`), analogous to TLS Public-Key Pinning.
+   * **Mandatory `PPUAT` Revocation on Batch Key Rotation:** An Authenticator's `pk_batch` is static across its lifecycle. However, if a major security firmware update ever changes or rotates `pk_batch`, the Authenticator **MUST simultaneously revoke all existing `PPUAT`s** (by regenerating its internal master secrets $K_{\text{ppuat\_master}}$ and $K_{\text{id}}$). This forces all paired Platforms to run a fresh attested `getKeyAgreement` ceremony and re-pin the new `pk_batch`.
+   * **Immunity to Man-in-the-Middle:** Once paired on a personal device, all subsequent sessions use the pinned `pk_batch` and 256-bit `PPUAT_v3`, making the paired Platform **completely immune to active MITM attacks**.
+   * **Kiosk / Stateless Fallback:** On public kiosks or stateless hosts that do not persist `PPUAT_v3` after logout, the Platform relies on its cached FIDO MDS / Vendor Root (`batchAttestKid`) trust store to verify `pk_batch` and `authenticatorGetInfo` on every session.
+
+2. **Defending Against the "Attacker-Supplied Same-Batch Authenticator" (`makeCredential` / Login Substitution Attack):**
+   * **The Attack Scenario:** Suppose an attacker wants to trick a user on their personal laptop into calling `makeCredential` (or logging in) on an **attacker-supplied physical authenticator** (e.g., via physical swap or a malicious USB device), so that the newly created passkey resides on hardware the attacker controls. Even if the attacker buys a security key from the **exact same manufacturing batch** as the user's legitimate key (so it has the **identical `aaguid`, identical `pk_batch`, and identical `batchAttestSig`**) and pre-configures it with the user's PIN (if known):
+   * **Why `encIdentifier` (`0x19`) + `PPUAT_v3` Detects the Evil Twin Immediately:**
+     * Every individual authenticator generates its own unique random 128-bit `deviceIdentifier` and unique `PPUAT` master key ($K_{\text{id}}, K_{\text{ppuat\_master}}$) inside its Secure Element upon setup/reset.
+     * When the attacker's same-batch device responds to `authenticatorGetInfo` (`0x04`), its `encIdentifier` (`0x19`) **cannot be decrypted** by any pinned `(deviceIdentifier, PPUAT_v3)` stored on the user's personal Platform!
+     * **Mandatory Personal-Platform UI Policy:** On any personal (non-kiosk) Platform that already has one or more pinned authenticators, if a connected authenticator's `encIdentifier` (`0x19`) does not match any pinned `deviceIdentifier`—**even if its `aaguid` and `pk_batch` match an already-paired key!**—the Platform **MUST NOT** silently proceed with `makeCredential` or PIN entry. Instead, the OS/Browser **MUST display an explicit "New / Unrecognized Security Key Detected" warning ceremony** alerting the user that this is a *different physical authenticator* than their paired key and requiring explicit confirmation to pair a new device.
+
+---
+
+#### 1.6.3 Initial PIN Setup, Factory Reset, and the Temporary / Factory Pairing PIN (`forcePINChange = true`)
+
+A classic vulnerability in CTAP 2.0–2.3 is **initial PIN setup (`setPIN` `0x03`)**: if an authenticator ships from the factory (or exits `authenticatorReset` `0x07`) with **no PIN configured** (`clientPin: false`), the very first `setPIN` (`0x03`) command has no shared PIN secret, allowing a bus MITM on an unattested channel to intercept or set the initial PIN.
+
+`pinUvAuthProtocol = 3` closes this initial-setup gap using a **Pre-Provisioned Temporary / Factory Pairing PIN with `forcePINChange = true`**:
+
+1. **Pre-Provisioned Temporary PIN (Enterprise) or Random 6-Digit Factory Pairing PIN (Consumer):**
+   * **Enterprise Authenticators:** Provisioned by IT prior to issuance with a unique **Temporary PIN** (delivered out-of-band to the user) and `forcePINChange: true` in `authenticatorGetInfo` (`0x04`).
+   * **Consumer / Open-Source Authenticators:** Ship with a **random 6-digit Factory Pairing PIN** (printed on a tamper-evident scratch-off insert inside the packaging, or displayed on an on-device screen / LED blink sequence during first boot) with `forcePINChange: true` enabled by default.
+   * **MITM-Safe First-Use Ceremony:** Because the device already has a Temporary/Pairing PIN configured (`clientPin: true, forcePINChange: true`), initial setup uses **`changePIN` (`0x04`)** over the **PIN-blinded PQ-PAKE (`Section 1.5`)** (or attested `pk_batch` + `HPKE mode_psk` with the Pairing PIN). An active MITM who does not know the 6-digit scratch-off Pairing PIN cannot intercept initial PIN setup!
+2. **How `authenticatorReset` (`0x07`) Restores the Temporary / Factory Pairing PIN & Solves Setup `pinRetries` Lockout:**
+   * What if `pinRetries` (8 tries) is exhausted during initial setup (or normal use) and the user invokes **`authenticatorReset` (`0x07`)**?
+   * Instead of resetting to an unauthenticated `clientPin: false` state, **`authenticatorReset` (`0x07`) restores the active PIN verifier $w$ back to the factory-immutable Pairing PIN (stored in a read-only factory flash slot)**, sets `forcePINChange = true`, regenerates `deviceIdentifier` and $K_{\text{ppuat\_master}}$, and resets **`pinRetries = 8`**!
+   * This solves both problems simultaneously:
+     1. If an attacker or user locks out the PIN during initial setup, resetting the token via physical presence (`0x07`) cleanly restores 8 fresh tries against the Factory Pairing PIN.
+     2. Even after a factory reset, the authenticator **never** enters an unauthenticated `setPIN` state—every future re-pairing still requires the Factory Pairing PIN (or an IT-issued Temporary PIN).
+
+---
+
+#### 1.6.4 Dual Post-Pairing Channel Modes: Mode A (Asymmetric with `pk_batch` Pinning) vs. Mode B (Symmetric with High-Entropy `PPUAT_v3`)
+
+Once initial PIN setup / pairing is complete and the Platform holds the **256-bit high-entropy `PPUAT_v3`** ($K_{\text{ppuat}} \in \{0,1\}^{256}$), how should the channel be authenticated on subsequent sessions—especially when the Authenticator has **no batch key (`pk_batch`)**?
+
+`pinUvAuthProtocol = 3` defines **two post-pairing channel modes**—an **Asymmetric Pinned Mode (Mode A)** for authenticators with a batch key, and a **Symmetric High-Entropy `PPUAT_v3` Mode (Mode B)** for authenticators without a batch key:
+
+| Feature | **Mode A: Asymmetric with `pk_batch` Pinning (`HPKE mode_psk`)** | **Mode B: Symmetric with High-Entropy `PPUAT_v3` (`SymPSK` / Optional Ephemeral KEM)** |
+| :--- | :--- | :--- |
+| **Target Authenticators** | Authenticators **with a static `pk_batch`** (Consumer & Enterprise vendors). | Authenticators **with NO `pk_batch`** (Open-source, DIY, small-vendor, or zero-`aaguid` privacy tokens). |
+| **What the Platform Pins at Pairing** | `(deviceIdentifier, PPUAT_v3, kemId, pk_batch, VerifiedGetInfoProfile)` | `(deviceIdentifier, PPUAT_v3, VerifiedGetInfoProfile)` |
+| **Round Trips on Paired Host** | **`0-RTT`** (`authenticatorGetInfo` `0x04` $\to$ `0x09` / `0x0A` directly; skips `getKeyAgreement` `0x02`). | **`0-RTT` in Mode B1 (Pure Symmetric)** (`authenticatorGetInfo` `0x04` $\to$ `0x09` / `0x0A` directly; skips `getKeyAgreement` `0x02`). *(Or `1-RTT` in Mode B2 if ephemeral KEM is requested).* |
+| **Wire `keyAgreement` (`0x01`) in `0x09` / `0x0A`** | HPKE `enc` encapsulated to pinned `pk_batch` (`1088–1568 B`). | **Mode B1:** 32-byte random `clientNonce` (`COSE_Key` `{1: 4 (Symmetric), -1: clientNonce_32}`).<br/>**Mode B2:** Ephemeral `ML-KEM` `enc` (`1088 B`). |
+| **Per-Session Key Derivation** | `HPKE.SetupPSKS(pk_batch, info = PinUvAuthTranscript_v3, psk = K_ppuat, psk_id = encIdentifier)` | **Mode B1 (Pure Symmetric):**<br/>`prk = HKDF-Extract(salt = IV_id \|\| clientNonce, IKM = K_ppuat)`<br/>`(key, nonce, K_HMAC) = HKDF-Expand(prk, "CTAP2.3-PINv3-SymPSK" \|\| PinUvAuthTranscript_v3, L)`<br/>**Mode B2 (Ephemeral KEM + Symmetric `PPUAT_v3`):**<br/>`HPKE.SetupPSKS(ek_eph, info = PinUvAuthTranscript_v3, psk = K_ppuat, psk_id = encIdentifier)` |
+| **Post-Quantum & MITM Security** | **256-bit PQ mutual authentication** + hybrid asymmetric (`sk_batch`) and symmetric (`PPUAT_v3`) defense-in-depth. | **256-bit PQ mutual authentication** ($2^{128}$ Grover security via 256-bit `PPUAT_v3`). An active MITM without the 256-bit `PPUAT_v3` cannot forge `pinUvAuthParam`, decrypt responses, or modify `authenticatorGetInfo`! |
+
+> [!TIP]
+> **Why Symmetric Mode B (`PPUAT_v3` Shared Secret) Is Ideal for Batchless / Open-Source Authenticators:**
+> Because `PPUAT_v3` is a **256-bit cryptographically random secret** established during the initial PIN-blinded PQ-PAKE (`Section 1.5`), it already has full post-quantum entropy. Using `PPUAT_v3` as a symmetric channel key on subsequent sessions (**Mode B1**) authenticates both the Authenticator and `authenticatorGetInfo` (`PinUvAuthTranscript_v3`) in **0-RTT with only 32 bytes on the wire**—requiring **zero batch certificates, zero `aaguid` metadata, and zero runtime `ML-KEM.KeyGen` on the open-source MCU** during daily logins! And whenever forward secrecy against future host compromise of `PPUAT_v3` is needed (such as during `changePIN` `0x04`), the Platform simply invokes **Mode B2** (`getKeyAgreement` `0x02` ephemeral `ML-KEM` authenticated by `psk = K_ppuat`).
+
+---
+
 ## 2. Downgrade Issues & `authenticatorGetInfo` Integrity
 
 ### 2.1 The Four Downgrade & Relay Attack Surfaces in CTAP 2.3

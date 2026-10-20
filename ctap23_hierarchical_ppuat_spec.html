@@ -344,6 +344,195 @@
           </div>
         </div>
       </div>
+
+      <!-- 1.5 Open-Source / Privacy Authenticators (No Batch Cert / Zero AAGUID), Low-Entropy PINs in Key Agreement & 8-Try pinRetries -->
+      <div id="section-1-5" class="space-y-5 pt-4 border-t border-[var(--border)]">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-lg font-semibold text-[var(--foreground)]">
+            1.5 Open-Source / Privacy Authenticators (<code>aaguid = 0<sup>16</sup></code>, No Batch Cert), Low-Entropy PINs in Key Agreement &amp; the 8-Try <code>pinRetries</code> State Machine
+          </h3>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-foreground)] border border-[var(--border)]">
+            PQ-PAKE &amp; Anti-Brute-Force
+          </span>
+        </div>
+
+        <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
+          A critical deployment class for <code>pinUvAuthProtocol = 3</code> includes <strong>open-source, DIY, small-vendor, or privacy-focused authenticators</strong> that intentionally have <strong>no batch attestation certificate</strong> (<code>batchAttestSig</code> absent) and an <strong>all-zero <code>aaguid</code> (<code>00000000-0000-0000-0000-000000000000</code>)</strong> so FIDO MDS lookup is impossible. This raises two fundamental security questions when the user has a <strong>low-entropy PIN</strong> (e.g., 4–6 digits):
+          <em>(1) Is it safe to make the device PIN part of key agreement?</em> and <em>(2) How must the 8-try <code>pinRetries</code> counter work so neither a malicious Platform nor a fake Authenticator / active MITM can test more than 8 PINs?</em>
+        </p>
+
+        <!-- Warning Box: Why Naive HPKE PSK Fails -->
+        <div class="p-4 rounded-xl bg-[var(--danger-bg)] border border-[var(--danger-border)] text-[var(--danger-fg)] text-xs space-y-2">
+          <div class="font-bold text-sm">Why Naive PIN-in-Key-Agreement (<code>HPKE mode_psk</code> with <code>psk = pinHash</code>) Is Catastrophically Broken Without Attestation</div>
+          <p class="leading-relaxed">
+            If an unattested authenticator sends an <strong>unblinded</strong> public key <code>pk_auth</code> in <code>getKeyAgreement</code> (<code>0x02</code>) and the Platform simply feeds <code>psk = LEFT(SHA-256(PIN), 16)</code> into <code>HPKE.SetupPSKS(pk_auth, psk)</code> in <code>0x09</code>, an <strong>active MITM or fake authenticator</strong> replaces <code>pk_auth</code> with its own keypair <code>(pk_mitm, sk_mitm)</code>. When the user types their PIN <strong>once</strong>, the Platform encapsulates <code>enc</code> to <code>pk_mitm</code> and sends <code>(enc, pinUvAuthParam)</code>. Because the MITM knows <code>sk_mitm</code>, it decapsulates <code>K_kem = ML-KEM.Decaps(sk_mitm, enc)</code> and runs an <strong>offline dictionary attack testing all 10<sup>4</sup>–10<sup>6</sup> PINs against <code>pinUvAuthParam</code> in &lt;1 millisecond</strong>—recovering the PIN on the very first attempt while <strong>completely bypassing the Authenticator's 8-try <code>pinRetries</code> counter</strong>! (Likewise, classical P-256 <code>SPAKE2+</code> alone fails against an HNDL active MITM with a future quantum computer.)
+          </p>
+        </div>
+
+        <!-- Safe Solution: ML-KEM t-Vector Blinding PQ-PAKE -->
+        <div class="p-4 rounded-xl bg-[var(--success-bg)] border border-[var(--success-border)] text-[var(--success-fg)] text-xs space-y-3">
+          <div class="font-bold text-sm">When It IS Safe: Post-Quantum PAKE via <code>ML-KEM</code> <span class="font-mono">t&#770;</span>-Vector Blinding (<code>PQ-EKE</code> / <code>CAKE</code>)</div>
+          <p class="leading-relaxed">
+            Making the low-entropy PIN part of key agreement on an unattested authenticator <strong>is</strong> cryptographically safe—both classically and post-quantumly—<strong>if and only if the Authenticator's ephemeral <code>ML-KEM</code> public key in <code>getKeyAgreement</code> (<code>0x02</code>) is blinded by a salted PIN verifier <code>w</code></strong> before transmission:
+          </p>
+          <div class="p-3 rounded-lg bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] font-mono text-[11px] space-y-1.5 overflow-x-auto">
+            <div>1. Salted Verifier (setPIN 0x03):  w = HKDF-SHA-256(salt = pinSalt, IKM = LEFT(SHA-256(PIN), 16), info = "CTAP2.3-PINv3-PAKE", L = 32)</div>
+            <div>2. Blinded getKeyAgreement (0x02): m_w = SampleUniform_Zq(SHAKE256("CTAP2.3-PINv3-PAKE-MASK" || w || rho))</div>
+            <div>                                   t_blinded = (t_eph + m_w) mod 3329   --&gt; returns (ek_blinded = Encode12(t_blinded) || rho, pinSalt)</div>
+            <div>3. Platform Unblinding (0x09):     t = (t_blinded - m_w) mod 3329       --&gt; (K_kem, enc) = ML-KEM.Encap((t, rho)) + HPKE.SetupPSKS(psk = w)</div>
+          </div>
+          <ul class="list-disc list-inside space-y-1">
+            <li><strong>Blocks Offline Guessing by a Malicious Platform (<code>0x02</code>):</strong> By <strong>Module-LWE (MLWE)</strong>, <code>t_eph = A*s + e mod 3329</code> is indistinguishable from uniform random. For every candidate PIN <code>w'</code>, <code>(t_blinded - m_{w'}) mod 3329</code> is a valid uniform public key vector. Calling <code>getKeyAgreement</code> 1,000,000 times leaks <strong>0 bits</strong> of offline PIN information.</li>
+            <li><strong>Blocks Offline Guessing by a Fake Authenticator / Active MITM (<code>0x09</code>):</strong> To know a secret trapdoor vector <code>s_mitm</code> for the key the Platform encapsulates to, the MITM must commit to a <strong>single PIN guess <code>w_guess</code> before sending <code>0x02</code></strong>. If <code>w_guess != w_user</code>, the Platform encapsulates to <code>t_mitm + (m_{w_guess} - m_{w_user}) = t_mitm + &Delta;</code>. By <strong>Module-SIS / Module-LWE</strong>, the MITM cannot decapsulate <code>enc</code> and gets <strong>0 offline guesses</strong>!</li>
+          </ul>
+        </div>
+
+        <!-- 4 Mandatory Rules for the 8-Try pinRetries State Machine -->
+        <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                <th class="p-3 font-semibold"><code>pinRetries</code> Rule</th>
+                <th class="p-3 font-semibold">Authenticator State Machine Requirement (Capping Key-Establishment Tries at &le; 8)</th>
+                <th class="p-3 font-semibold">Attack Prevented</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border)]">
+              <tr>
+                <td class="p-3 font-semibold">1. Single-Use <code>dk_eph</code> in <code>getKeyAgreement</code> (<code>0x02</code>)</td>
+                <td class="p-3">Calling <code>0x02</code> does not decrement <code>pinRetries</code> (since <code>t_blinded</code> leaks 0 bits offline), but the Authenticator holds at most <strong>1 armed <code>dk_eph</code></strong> in RAM and <strong>immediately wipes <code>dk_eph</code></strong> on the very first <code>0x09</code> / <code>0x04</code> attempt.</td>
+                <td class="p-3">Prevents unauthenticated DoS lockout via <code>0x02</code> while forbidding reuse of one <code>getKeyAgreement</code> across multiple PIN tries.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">2. Write-Before-Verify NVRAM Decrement (<code>0x09</code> / <code>0x04</code>)</td>
+                <td class="p-3">Before executing <code>ML-KEM.Decaps(dk_eph, enc)</code>, check <code>pinRetries &gt; 0</code> (max 8) and <code>bootFailures &lt; 3</code>, and <strong>write <code>pinRetries -= 1</code> to NVRAM first</strong>. Only reset <code>pinRetries = 8</code> after both <code>Decaps</code> and <code>pinUvAuthParam</code> succeed.</td>
+                <td class="p-3">Prevents USB power-tearing / glitching attacks from getting free PIN guesses; strictly enforces the <strong>8-try lifetime limit</strong> (3 per boot).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">3. Constant-Time FO Implicit Rejection</td>
+                <td class="p-3">If the Platform used a wrong PIN <code>w' != w</code>, <code>ML-KEM.Decaps(dk_eph, enc)</code> triggers constant-time Fujisaki-Okamoto implicit rejection (<code>K_kem' = J(z || enc)</code>), causing <code>pinUvAuthParam</code> to fail uniformly with <code>CTAP2_ERR_PIN_INVALID</code> (<code>0x31</code>).</td>
+                <td class="p-3">Eliminates timing and error-code side channels between lattice unblinding failure and MAC failure.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">4. Post-Binding 256-Bit <code>PPUAT_v3</code> Shield</td>
+                <td class="p-3">After the first successful PIN ceremony, the Authenticator issues 256-bit <code>PPUAT_v3</code> and a device-local persistent <code>ML-KEM</code> keypair <code>(pk_local, sk_local)</code>. Subsequent sessions require a valid 256-bit <code>PPUAT_v3</code> outer MAC before touching <code>pinRetries</code>.</td>
+                <td class="p-3">An active MITM on an already-bound computer gets <strong>0 online guesses</strong> at the PIN and cannot decrement <code>pinRetries</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 1.6 Multi-Tier Trust Hierarchy, Enterprise Host Auth, Batch Key Pinning, Pairing PINs & Dual Channel Modes -->
+      <div id="section-1-6" class="space-y-6 pt-6 border-t border-[var(--border)]">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-lg font-semibold text-[var(--foreground)]">
+            1.6 Multi-Tier Trust Hierarchy: Enterprise Host Auth, Batch Key Pinning, Factory Pairing PINs, Evil-Twin Detection &amp; Dual Channel Modes (Asymmetric Pinning vs. Symmetric <code>PPUAT_v3</code>)
+          </h3>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-foreground)] border border-[var(--border)]">
+            Mutual Auth &amp; Dual Modes
+          </span>
+        </div>
+
+        <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
+          To span locked-down enterprise workstations, personal computers, public kiosks, and batchless open-source authenticators, <code>pinUvAuthProtocol = 3</code> defines a <strong>multi-tier trust hierarchy</strong>, a <strong>MITM-safe initial setup/reset lifecycle</strong>, and <strong>two post-pairing channel modes</strong>.
+        </p>
+
+        <!-- Tier Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- 1.6.1 Tier 1: Enterprise Host Authentication -->
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-[var(--foreground)]">1.6.1 Tier 1: Enterprise Mutually Authenticated Key Agreement (Host Auth)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--info-bg)] text-[var(--info-fg)] border border-[var(--info-border)]">Enterprise (Has <code>pk_batch</code> + <code>aaguid</code>)</span>
+            </div>
+            <p class="text-[var(--muted-foreground)] leading-relaxed">
+              In high-security environments, enterprise authenticators can be configured to <strong>only perform key agreement with an enterprise host that presents a deployed corporate certificate or public key</strong>:
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-[var(--muted-foreground)]">
+              <li><strong>Provisioning (<code>authenticatorConfig</code> <code>0x0D</code>, subCmd <code>0x06: setEnterpriseHostTrustAnchors</code>):</strong> Loads trusted Enterprise CA Root keys / host public keys and sets <code>enterpriseHostAuthRequired = true</code> (requires <code>acfg</code> permission, scoped to keys with <code>pk_batch</code> and <code>aaguid</code>).</li>
+              <li><strong><code>authenticatorGetInfo</code> Advertisement:</strong> Advertises <code>options.enterpriseHostAuth: true</code> (mandatory) or <code>false</code> (supported), plus <code>0x2C: pinUvAuthHostAlgs</code> (e.g., <code>-49</code> <code>ML-DSA-65</code>, <code>-7</code> <code>ES256</code>).</li>
+              <li><strong>Early Error at <code>getKeyAgreement</code> (<code>0x02</code>):</strong> Host sends <code>0x09: HostAuthPayload {alg, hostCert, hostNonce, hostSig}</code> over <code>"CTAP2.3-HostAuth" || SHA-256(GetInfo) || hostNonce</code>. If missing or invalid, the Authenticator <strong>errors immediately at <code>getKeyAgreement</code></strong> with <code>CTAP2_ERR_HOST_UNAUTHENTICATED</code> (<code>0x3E</code>)!</li>
+            </ul>
+          </div>
+
+          <!-- 1.6.2 Tier 2: Batch Key Pinning & Evil-Twin Same-Batch Detection -->
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-[var(--foreground)]">1.6.2 Tier 2: Batch Key Pinning &amp; Same-Batch Evil-Twin Detection</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--success-bg)] text-[var(--success-fg)] border border-[var(--success-border)]">Personal vs. Kiosk</span>
+            </div>
+            <p class="text-[var(--muted-foreground)] leading-relaxed">
+              Once a personal Platform pairs with an Authenticator and obtains <code>(PPUAT_v3, deviceIdentifier)</code>, it <strong>pins <code>pk_batch</code></strong> (like TLS Certificate Pinning):
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-[var(--muted-foreground)]">
+              <li><strong>Mandatory <code>PPUAT</code> Revocation on Key Rotation:</strong> Authenticators rarely change <code>pk_batch</code>; if a firmware update ever rotates <code>pk_batch</code>, the Authenticator <strong>MUST revoke all <code>PPUAT</code>s</strong> to force a fresh attested handshake.</li>
+              <li><strong>Personal vs. Kiosk:</strong> Paired personal devices are <strong>100% immune to MITM</strong>. Unpaired/kiosk devices rely on their cached FIDO MDS / Vendor Root trust list.</li>
+              <li><strong>Same-Batch Evil-Twin Defense (<code>makeCredential</code> Substitution):</strong> If an attacker tricks a user into using an attacker-supplied device from the <strong>exact same batch</strong> (identical <code>aaguid</code> + <code>pk_batch</code>) configured with the user's PIN, its <code>encIdentifier</code> (<code>0x19</code>) has a <strong>different <code>deviceIdentifier</code></strong> that fails decryption under the user's pinned <code>PPUAT_v3</code>—triggering a prominent <strong>"New / Unrecognized Authenticator Detected" UI warning</strong>!</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 1.6.3 Initial Setup & Factory Reset with Temporary / Pairing PIN -->
+        <div class="p-4 rounded-xl bg-[var(--warning-bg)] border border-[var(--warning-border)] text-[var(--warning-fg)] text-xs space-y-2">
+          <div class="font-bold text-sm">1.6.3 Preventing MITM During Initial Setup &amp; Factory Reset: Temporary / Factory Pairing PIN + <code>forcePINChange = true</code></div>
+          <p class="leading-relaxed">
+            To prevent an active MITM during initial PIN setup (when an unconfigured device would otherwise accept an unauthenticated <code>setPIN</code> <code>0x03</code>):
+          </p>
+          <ul class="list-disc list-inside space-y-1">
+            <li><strong>Enterprise Devices (Temporary PIN) &amp; Consumer Devices (Random 6-Digit Factory Pairing PIN):</strong> Ship with a pre-configured Temporary PIN or a random 6-digit Factory Pairing PIN (printed on a tamper-evident scratch-off card in the box) with <code>forcePINChange: true</code> enabled on first use. First-time setup uses <strong><code>changePIN</code> (<code>0x04</code>) authenticated via the PIN-blinded PQ-PAKE (Section 1.5)</strong>, blocking any MITM during initial setup!</li>
+            <li><strong>How <code>authenticatorReset</code> (<code>0x07</code>) Solves Setup <code>pinRetries</code> Lockout:</strong> If the 8-try <code>pinRetries</code> counter is exhausted during initial setup (or later use), executing <code>authenticatorReset</code> (<code>0x07</code>) <strong>resets the Authenticator back to its factory-immutable Pairing PIN</strong> (with <code>forcePINChange = true</code> and <code>pinRetries = 8</code>) rather than an unauthenticated blank state.</li>
+          </ul>
+        </div>
+
+        <!-- 1.6.4 Dual Post-Pairing Channel Modes Table -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-[var(--foreground)]">
+            1.6.4 Dual Post-Pairing Channel Modes: Mode A (Asymmetric with <code>pk_batch</code> Pinning) vs. Mode B (Symmetric with High-Entropy <code>PPUAT_v3</code>)
+          </h4>
+          <p class="text-xs text-[var(--muted-foreground)]">
+            When an Authenticator has <strong>no batch key (<code>pk_batch</code>)</strong>, the <strong>256-bit high-entropy <code>PPUAT_v3</code></strong> established during initial pairing serves directly as the post-quantum shared secret to authenticate and encrypt the CTAP channel:
+          </p>
+          <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[var(--content)] border-b border-[var(--border)]">
+                  <th class="p-3 font-semibold">Feature</th>
+                  <th class="p-3 font-semibold">Mode A: Asymmetric with <code>pk_batch</code> Pinning (<code>HPKE mode_psk</code>)</th>
+                  <th class="p-3 font-semibold">Mode B: Symmetric with High-Entropy <code>PPUAT_v3</code> (For Devices With No <code>pk_batch</code>)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--border)]">
+                <tr>
+                  <td class="p-3 font-semibold">Target Authenticators</td>
+                  <td class="p-3">Authenticators <strong>with a static <code>pk_batch</code></strong> (Consumer &amp; Enterprise vendors).</td>
+                  <td class="p-3">Authenticators <strong>with NO <code>pk_batch</code></strong> (Open-source, DIY, small-vendor, or zero-<code>aaguid</code> privacy keys).</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">What the Platform Pins</td>
+                  <td class="p-3"><code>(deviceIdentifier, PPUAT_v3, kemId, pk_batch, VerifiedGetInfoProfile)</code></td>
+                  <td class="p-3"><code>(deviceIdentifier, PPUAT_v3, VerifiedGetInfoProfile)</code></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Round Trips &amp; Wire Size</td>
+                  <td class="p-3"><strong><code>0-RTT</code></strong> (skips <code>0x02</code>); sends 1088–1568 B HPKE <code>enc</code> encapsulated to pinned <code>pk_batch</code>.</td>
+                  <td class="p-3"><strong>Mode B1 (Pure Symmetric <code>0-RTT</code>):</strong> Skips <code>0x02</code>; sends only a <strong>32-byte <code>clientNonce</code></strong> in <code>keyAgreement</code>!<br/><strong>Mode B2 (Ephemeral KEM <code>1-RTT</code>):</strong> Calls <code>0x02</code> for ephemeral <code>ek_eph</code> + <code>PPUAT_v3</code> when forward secrecy is needed (e.g., <code>changePIN</code>).</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Session Key Schedule</td>
+                  <td class="p-3"><code>HPKE.SetupPSKS(pk_batch, info = PinUvAuthTranscript_v3, psk = K_ppuat, psk_id = encIdentifier)</code></td>
+                  <td class="p-3"><strong>Mode B1:</strong> <code>prk = HKDF-Extract(salt = IV_id || clientNonce, IKM = K_ppuat)</code> &rarr; <code>HKDF-Expand(prk, "CTAP2.3-PINv3-SymPSK" || PinUvAuthTranscript_v3, L)</code><br/><strong>Mode B2:</strong> <code>HPKE.SetupPSKS(ek_eph, info = PinUvAuthTranscript_v3, psk = K_ppuat, psk_id = encIdentifier)</code></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">PQ &amp; MITM Security</td>
+                  <td class="p-3"><strong>256-bit PQ mutual auth</strong> + hybrid asymmetric (<code>sk_batch</code>) and symmetric (<code>PPUAT_v3</code>) defense-in-depth.</td>
+                  <td class="p-3"><strong>256-bit PQ mutual auth</strong> (2<sup>128</sup> Grover security). Authenticates both the device and <code>GetInfo</code> in 0-RTT with zero batch certs and zero runtime <code>ML-KEM.KeyGen</code>!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ===================================================================== -->
