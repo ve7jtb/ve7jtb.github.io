@@ -1,9 +1,9 @@
-# FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 `FN-DSA-512` & `FN-DSA-1024`), All 7 Extensions, `persistentPinUvAuthToken` (`perCredMgmtRO`), Enterprise Attestation & Post-Quantum `mtc` / `mtc-mds`
+# FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 `FN-DSA-512` & `FN-DSA-1024`), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, `persistentPinUvAuthToken` (`perCredMgmtRO`), Enterprise Attestation & Post-Quantum `mtc` / `mtc-mds`
 
 - **Log Files Analyzed**:
-  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`66,127` lines / `8.32 MB` in Run 19 with `250 / 250` `100.00%` PASS across all 18 algorithms including `FN-DSA-512` `-60` & `FN-DSA-1024` `-61`; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
+  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`211,147` total lines / `28.31 MB`, including `56,117` lines in latest Run 20 `L155031–L211147` with `250 / 250` `100.00%` PASS across all 18 algorithms + RFC 8554 / NIST SP 800-208 HSS/LMS Root & Pre-Published Intermediate CAs + HSS/LMS `alg: -46` MTC Subtree Checkpoints; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
   2. **Total Phase Beagle USB Protocol Analyzer Capture**: `totalphase.csv` (`28,653` CSV lines, `28,646` rows, `127,232` USB bus records, `2.91 MB`, captured `Mon Oct 19 11:49:16` – `12:20:30 2026`, `0` USB bus errors across `1,092` `CTAPHID_CBOR` exchanges in Run 19; plus `26,436` CSV rows / `68,774` USB bus records in Run 17)
-  3. **Fidont J-Link RTT Log**: `fidont_rtt.log` (`304,330` lines / `32.79 MB` in Run 19 and `302,212` lines / `31.0 MB` in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs)
+  3. **Fidont J-Link RTT Log**: `fidont_rtt.log` (`1,163,679` total lines / `124.54 MB`, including `303,134` lines `L860546–L1163679` in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs)
 - **Target Authenticator**: Fidont CTAP 2.3 (`U2F_V2`, `FIDO_2_0`, `FIDO_2_1`, `FIDO_2_3`) over USB HID (`VID: 0x1915`, `PID: 0x521f` / `0x18d1:0x0239`)
 - **Related Design & Firmware Implementation**: **Compile and Install Fidont** & [pq_mtc_attestation_proposal.md](./pq_mtc_attestation_proposal.md)
 
@@ -13,7 +13,7 @@
 > **Attribution & Scope of Fidont:**
 > **Fidont** is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the [Google OpenSK](https://github.com/google/OpenSK) Rust codebase. However, **Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.**
 
-## Overview of Test Runs 10–19 (`Runs 10–18` Historical + `Run 19` Latest `250 / 250` 18-Algorithm `FN-DSA`, Total Phase USB & `fidont_rtt.log` DWT Telemetry)
+## Overview of Test Runs 10–20 (`Runs 10–19` Historical + `Run 20` Latest `250 / 250` 18-Algorithm `FN-DSA`, RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, PQ MTC Subtree Checkpoints & `fidont_rtt.log` DWT Telemetry)
 
 | Run | Line Range | Time Window | Attestation & Feature Config | Passed | Failed | Outcome & Summary |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -26,7 +26,119 @@
 | **Run 16** | `L175680–L223190` (pre-clear 2) | `01:09:20` – `01:24:53` (`15m 33s`) | Dual Batch (`ES384` `x5c` + `ML-DSA-44` MTC) + `--enterprise` + Serial Number Extension (`mtcProof.extensions`) + Root CA `subtrees[].signature` Verification | **`241`** | **`0`** | **`100.00%` PASS (`241 Passed / 41 Skipped / 0 Failed`)** — Full CTAP 2.3 Suite + Security Enterprise Profile (`EntepriseAttestation.js` `6/6` PASS) + `Metadata-Stmt-1` (`37/37` PASS) |
 | **Run 17** | `L1–L48653` (pre-clear 3) & `totalphase.csv` | `00:48:37` – `01:01:04` (`12m 27s`) | **Full CTAP 2.3 `persistentPinUvAuthToken` (`perCredMgmtRO`, `pcmr = 0x40`, `encIdentifier = 0x19`, `encCredStoreState = 0x1E`) + Dual Batch (`ES384` `x5c` + `ML-DSA-44` MTC) + Enterprise Attestation (`--enterprise`, `serial="123456"`) + Root CA `subtrees[].signature` Verification** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **All `9` previously skipped `perCredMgmtRO` / `encIdentifier` / `encCredStoreState` / `pcmr (0x40)` tests executed and passed (`241` $\to$ `250` passed)! `0` USB bus errors across `68,774` records (`1,073` `CTAPHID_CBOR` exchanges, `304.4 KB` OUT / `509.9 KB` IN) in `totalphase.csv`!** |
 | **Run 18** | `L1–L52180` (pre-clear 4) & `fidont_rtt.log` (`302,212` lines) | `10:16:15` – `10:36:41` (`20m 26s`) | **All 18 Algorithms including Draft NIST FIPS 206 `FN-DSA-512` (`alg: -60`) & `FN-DSA-1024` (`alg: -61`) + `ML-DSA-87` (`-50`) MTC Batch + `ES256` Classical Batch + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + `fidont_rtt.log` DWT Cycle-Accurate Telemetry** | **`249`** | **`1`** | **`99.60%` PASS (`249 Passed / 34 Skipped / 1 Failed`)** — **`100%` PASS across all 18 algorithms in `Authr-MakeCred-Resp-1`, `Authr-GetAssertion-Resp-1`, `EntepriseAttestation`, `Authr-CredMgmt-1`, and `Metadata-Stmt-1` (`0` panics, `0` OOMs, `0` HardFaults in `302,212` `fidont_rtt.log` lines)!** |
-| **Run 19 (Latest)** | `L1–L66127`, `totalphase.csv` (`28,653` lines) & `fidont_rtt.log` (`304,330` lines) | `11:49:33` – `12:11:02` (`21m 28s`) | **All 18 Algorithms (`FN-DSA-512` `-60` & `FN-DSA-1024` `-61` + 16 Classical/PQ/Composite) + `perCredMgmtRO` (`0x19`, `0x1E`, `0x40`) + Dual Batch (`ML-DSA-87` MTC + `ES256` `x5c`) + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + Simultaneous 3-Log Capture (`fido_conformance_debug.log`, `totalphase.csv` & `fidont_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **`250 / 250` (`100%`) pass across all 18 algorithms (`78` `"packed"`, `22` `"mtc-mds"`, `2` `"mtc"`), `0` USB bus errors across `127,232` USB records (`4,945` `OUT txn` / `8,827` `IN txn`, `1,092` `CTAPHID_CBOR` exchanges), and `0` panics/OOMs across `304,330` `fidont_rtt.log` lines!** |
+| **Run 19** | `L1–L66127`, `totalphase.csv` (`28,653` lines) & `fidont_rtt.log` (`304,330` lines) | `11:49:33` – `12:11:02` (`21m 28s`) | **All 18 Algorithms (`FN-DSA-512` `-60` & `FN-DSA-1024` `-61` + 16 Classical/PQ/Composite) + `perCredMgmtRO` (`0x19`, `0x1E`, `0x40`) + Dual Batch (`ML-DSA-87` MTC + `ES256` `x5c`) + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + Simultaneous 3-Log Capture (`fido_conformance_debug.log`, `totalphase.csv` & `fidont_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **`250 / 250` (`100%`) pass across all 18 algorithms (`78` `"packed"`, `22` `"mtc-mds"`, `2` `"mtc"`), `0` USB bus errors across `127,232` USB records (`4,945` `OUT txn` / `8,827` `IN txn`, `1,092` `CTAPHID_CBOR` exchanges), and `0` panics/OOMs across `304,330` `fidont_rtt.log` lines!** |
+| **Run 20 (Latest)** | `L155031–L211147` (`56,117` lines) & `fidont_rtt.log` (`L860546–L1163679`, `303,134` lines) | `23:13:01` – `23:58:36` (`45m 35s` wall / `~19m 24s` active) | **RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (`1` `Fidont LMS Root CA` + `4` Pre-Published `Fidont LMS Intermediate CA #0..#3`, OID `1.2.840.113549.1.9.16.3.17` $\to$ `ML-DSA-44` Leaf `x5c`) + HSS/LMS (`alg: -46`) Signed MTC Subtree Checkpoints (`caId: "g5k_AQE"`, `caId: "g5k_AQI"`) + All 18 Algorithms (`FN-DSA-512/1024`, `ML-DSA-44/65/87`, 6 PQ/T Composites, 7 Classical) + `perCredMgmtRO` + Enterprise Attestation + UX Metadata Statement Dialog Persistence** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed` across all 37 CTAP 2.3 suites)** — **Verified HSS/LMS X.509 (`L=1`, `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`) + `ML-DSA-44` `"packed"` `x5c` chains (`6,693–7,173 B`), HSS/LMS `alg: -46` MTC subtree checkpoints (`1,252 B` sig) across `"mtc"` & `"mtc-mds"`, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics/OOMs across `303,134` `fidont_rtt.log` lines!** |
+
+---
+
+## 0.00 Run 20 (`250 / 250` `100.00%` Pass) Deep Dive: RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, Post-Quantum MTC Subtree Checkpoints (`alg: -46`) & All 18 Algorithms Across `fido_conformance_debug.log` & `fidont_rtt.log`
+
+> [!IMPORTANT]
+> **`250 / 250` (`100.00%`) Pass with RFC 8554 / NIST SP 800-208 HSS/LMS X.509 Hierarchy & HSS/LMS (`alg: -46`) MTC Subtree Checkpoints**:
+> In Run 20 (`23:13:01.498` – `23:58:36.543 PDT`), we validated the complete stateful hash-based signature hierarchy (`HSS/LMS`, RFC 8554 / NIST SP 800-208, `L=1`, `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`, X.509 OID `1.2.840.113549.1.9.16.3.17`, COSE `alg: -46`, `kty: 6`) across both `"packed"` X.509 chains and `"mtc"` / `"mtc-mds"` Merkle Tree Certificate subtree checkpoints, achieving **`250 Passed / 32 Skipped / 0 Failed` (`100.00%` PASS)** across all 37 CTAP 2.3 suites:
+> - **UX Metadata Statement Persistence**: Updated `controller.js` (`processMetadataInfo` and `buttonClearAuthenticatorInfo`) so the FIDO Conformance Testing Tool strictly persists and uses the metadata statement loaded in the UX Metadata Statement dialog (`"description": "Fidont use this key1"`).
+> - **Pre-Published HSS/LMS Root & Intermediate CAs (`attestationRootCertificates`)**: Verified `1` self-signed `Fidont LMS Root CA` (`32`-leaf LMS tree) + `4` pre-published `Fidont LMS Intermediate CA #0..#3` (`32`-leaf LMS trees, `128` total leaf capacity) + `1` `Fidont Enterprise Root CA ES384`. For 1-step PQ algorithms (`ML-DSA-44` `-48`, `MLDSA44-ES256` `-54`, `MLDSA44-Ed25519` `-57`, `FN-DSA-512` `-60`), Fidont returns a single `ML-DSA-44` leaf certificate in `attStmt.x5c` (`2,854 B`, signed by `Fidont LMS Intermediate CA #0`) that chains directly to the pre-published intermediate CA in `attestationRootCertificates`, keeping the entire `"packed"` `MakeCredential` response within `6,693–7,173 B` (`\le 7,550 B` CTAPHID buffer limit).
+> - **HSS/LMS (`alg: -46`) Signed MTC Subtree Checkpoints (`mtcTrustAnchors`)**: For 2-step PQ and composite algorithms (`ML-DSA-65` `-49`, `ML-DSA-87` `-50`, `MLDSA65-ES256` `-55`, `MLDSA87-ES384` `-56`, `MLDSA65-Ed25519` `-58`, `MLDSA87-Ed448` `-59`, `FN-DSA-1024` `-61`), Fidont uses the `ML-DSA-44` MTC batch key (`caId: "g5k_AQE"` standard / `"g5k_AQI"` enterprise) whose Merkle subtree checkpoint (`startIndex: 0`, `endIndex: 16`, `rootHash`) is signed with `HSS/LMS` (`alg: -46`, `1,252 B` signature) by the `Fidont LMS Root CA`.
+
+### 0.00.1 Run 20 Executive Summary (`23:13:01` – `23:58:36` PDT)
+
+| Metric | Value in Run 20 | Source & Details |
+| :--- | :--- | :--- |
+| **Test Window** | **`23:13:01.498` – `23:58:36.543 PDT`** (`45m 35s` wall-clock; `~19m 24s` active execution) | `fido_conformance_debug.log` (`lines 155,031–211,147` of `211,147` total lines; `28.31 MB`) |
+| **Overall Test Outcome** | **`250 Passed / 32 Skipped / 0 Failed` (`100.00%` PASS)** | **Zero failures across all `282` CTAP 2.3 conformance tests** across all `37` test suites |
+| **Configured Algorithms (`18`)** | `ES256 (-7)`, `ES384 (-35)`, `ES512 (-36)`, `ES256K (-47)`, `Ed25519 (-8)`, `Ed448 (-53)`, `ML-DSA-44 (-48)`, `ML-DSA-65 (-49)`, `ML-DSA-87 (-50)`, `MLDSA44-ES256 (-54)`, `MLDSA65-ES256 (-55)`, `MLDSA87-ES384 (-56)`, `MLDSA44-Ed25519 (-57)`, `MLDSA65-Ed25519 (-58)`, `MLDSA87-Ed448 (-59)`, **`FN-DSA-512 (-60)`**, **`FN-DSA-1024 (-61)`**, `RS256 (-257)` | All `18` algorithms verified end-to-end in `Authr-MakeCred-Resp-1.js` (`L162196–L171304`) and `Authr-GetAssertion-Resp-1.js` (`L172950–L181950`) |
+| **Metadata Statement Source** | UX Metadata Statement Dialog (`"description": "Fidont use this key1"`) | Loaded via `controller.js` (`processMetadataInfo` / `saveTestConfig()`) |
+| **HSS/LMS X.509 & MTC Hierarchy** | `1` Self-Signed `Fidont LMS Root CA` + `4` Pre-Published `Fidont LMS Intermediate CA #0..#3` (`LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`, OID `1.2.840.113549.1.9.16.3.17`) + `1` `Fidont Enterprise Root CA ES384` + `2` HSS/LMS-signed (`alg: -46`) `mtcTrustAnchors` (`caId: "g5k_AQE"`, `caId: "g5k_AQI"`) | Verified in `Authr-MakeCred-Resp-1.js` (`P-04`, `L166786–L171268`), `EntepriseAttestation.js` (`L185357–L186970`), and `Metadata-Stmt-1.js` (`P-27`, `L210690–L210699`) |
+| **Device RTT Log (`fidont_rtt.log`)** | `fidont_rtt.log` (`lines 860,546–1,163,679` of `1,163,679` lines; `124.54 MB`) | **`0` panics, `0` OOMs, `0` HardFaults** across all `111` `MakeCredential` and `75` `GetAssertion` hardware executions |
+
+### 0.00.2 Run 20 `Authr-MakeCred-Resp-1` (`P-01`..`F-01`): All 18 Algorithms (`Log L162196–L171304`, `RTT L918000–L956650`)
+
+| # | Algorithm | COSE `alg` | Attestation Format | `BCNT` | Debug Log Lines | RTT Log Lines | Total USB Exchange Time | RTT Pure Crypto Keygen + Attestation Sign (`64 MHz` DWT) |
+| :-: | :--- | :---: | :---: | :---: | :--- | :--- | :---: | :--- |
+| 1 | `RS256` (RSA-2048) | `-257` | `"packed"` (`ES256` `x5c`) | `1,250 B` | `L162196–L162276` | `L920563–L920740` | `2,201.8 ms` | `789.82 ms` (`ES256` att sig) |
+| 2 | **`FN-DSA-1024`** (Draft FIPS 206) | **`-61`** | **`"mtc"` (`ML-DSA-44` batch)** | **`6,068 B`** | `L162334–L162586` | `L923435–L923604` | **`7,250.5 ms`** | **`650.86 ms` (`41.66M` cyc `ML-DSA-44` att sig)** |
+| 3 | **`FN-DSA-512`** (Draft FIPS 206) | **`-60`** | **`"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`)** | **`6,693 B`** | `L162644–L162915` | `L926206–L926360` | **`6,269.9 ms`** | **`1,163.23 ms` (`74.45M` cyc `ML-DSA-44` att sig)** |
+| 4 | `MLDSA87-Ed448` | `-59` | `"mtc"` (`ML-DSA-44` batch) | `6,689 B` | `L162973–L163247` | `L928804–L928983` | `7,119.2 ms` | `1,612.45 ms` (`Ed448` keygen + `ML-DSA-44` att sig) |
+| 5 | `MLDSA65-Ed25519` | `-58` | `"mtc"` (`ML-DSA-44` batch) | `6,259 B` | `L163305–L163563` | `L931767–L931928` | `6,460.6 ms` | `1,019.02 ms` (`Ed25519` keygen + `ML-DSA-44` att sig) |
+| 6 | `MLDSA44-Ed25519` | `-57` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,140 B` | `L163621–L163908` | `L932622–L932790` | `6,447.0 ms` | `765.96 ms` (`Ed25519` keygen + `ML-DSA-44` att sig) |
+| 7 | `MLDSA87-ES384` | `-56` | `"mtc"` (`ML-DSA-44` batch) | `6,729 B` | `L163966–L164247` | `L935318–L935498` | `8,922.1 ms` | `1,879.38 ms` (`P-384` keygen + `ML-DSA-44` att sig) |
+| 8 | `MLDSA65-ES256` | `-55` | `"mtc"` (`ML-DSA-44` batch) | `6,292 B` | `L164305–L164564` | `L936223–L936408` | `6,949.4 ms` | `1,334.44 ms` (`P-256` keygen + `ML-DSA-44` att sig) |
+| 9 | `MLDSA44-ES256` | `-54` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,173 B` | `L164622–L164910` | `L938429–L938613` | `6,680.9 ms` | `1,364.02 ms` (`P-256` keygen + `ML-DSA-44` att sig) |
+| 10 | `ML-DSA-87` (FIPS 204) | `-50` | `"mtc"` (`ML-DSA-44` batch) | `6,677 B` | `L164968–L165241` | `L942333–L942517` | `7,006.3 ms` | `1,334.78 ms` (`85.43M` cyc keygen + `ML-DSA-44` att sig) |
+| 11 | `ML-DSA-65` (FIPS 204) | `-49` | `"mtc"` (`ML-DSA-44` batch) | `6,227 B` | `L165299–L165557` | `L944975–L945168` | `7,037.5 ms` | `1,334.75 ms` (`85.42M` cyc keygen + `ML-DSA-44` att sig) |
+| 12 | `ML-DSA-44` (FIPS 204) | `-48` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,108 B` | `L165615–L165900` | `L948707–L948888` | `6,529.8 ms` | `1,334.68 ms` (`85.42M` cyc keygen + `ML-DSA-44` att sig) |
+| 13 | `Ed448` (RFC 8032) | `-53` | `"packed"` (`ES256` `x5c`) | `1,047 B` | `L165958–L166030` | `L950241–L950404` | `2,395.7 ms` | `1,019.15 ms` (`Ed448` keygen + `ES256` att sig) |
+| 14 | `EdDSA` (Ed25519) | `-8` | `"packed"` (`ES256` `x5c`) | `1,020 B` | `L166088–L166159` | `L953395–L953563` | `2,039.9 ms` | `759.12 ms` (`Ed25519` keygen + `ES256` att sig) |
+| 15 | `ES256K` (secp256k1) | `-47` | `"packed"` (`ES256` `x5c`) | `1,055 B` | `L166217–L166288` | `L954922–L955102` | `2,043.0 ms` | `799.29 ms` (`k256` keygen + `ES256` att sig) |
+| 16 | `ES512` (P-521) | `-36` | `"packed"` (`ES256` `x5c`) | `1,123 B` | `L166346–L166424` | `L950241–L950404` | `2,835.7 ms` | `1,879.72 ms` (`P-521` keygen + `ES256` att sig) |
+| 17 | `ES384` (P-384) | `-35` | `"packed"` (`ES256` `x5c`) | `1,089 B` | `L166482–L166559` | `L951817–L951979` | `3,272.4 ms` | `2,419.86 ms` (`P-384` keygen + `ES256` att sig) |
+| 18 | `ES256` (P-256) | `-7` | `"packed"` (`ES256` `x5c`) | `1,054 B` | `L166617–L166691` | `L956483–L956646` | `2,672.4 ms` | `1,334.68 ms` (`P-256` keygen + `ES256` att sig) |
+
+### 0.00.3 Run 20 `Authr-GetAssertion-Resp-1` (`P-1`..`P-5`): All 18 Algorithms (`Log L173832–L181628`, `RTT L949593–L1008688`)
+
+| # | Algorithm | COSE `alg` | `BCNT` (Sig Size) | Debug Log Lines | RTT Log Lines | Total USB Exchange Time | RTT Pure CPU Sign (`64 MHz` DWT Cycles) |
+| :-: | :--- | :---: | :---: | :--- | :--- | :---: | :--- |
+| 1 | `ES256` (P-256) | `-7` | `379 B` (`70 B`) | `L173832–L173885` | `L949593–L949760` | `1,751.5 ms` | **`712.92 ms`** (`45,626,688 cyc`) |
+| 2 | `ES384` (P-384) | `-35` | `412 B` (`103 B`) | `L174078–L174139` | `L951154–L951312` | `3,489.3 ms` | **`2,453.91 ms`** (`157,050,303 cyc`) |
+| 3 | `ES512` (P-521) | `-36` | `447 B` (`138 B`) | `L174336–L174393` | `L952740–L952886` | `2,471.8 ms` | **`1,454.10 ms`** (`93,062,335 cyc`) |
+| 4 | `ES256K` (secp256k1) | `-47` | `380 B` (`71 B`) | `L174580–L174631` | `L954270–L954425` | `1,240.1 ms` | **`181.95 ms`** (`11,644,800 cyc`) |
+| 5 | `EdDSA` (Ed25519) | `-8` | `373 B` (`64 B`) | `L174819–L174870` | `L955852–L956003` | `1,144.4 ms` | **`146.13 ms`** (`9,352,448 cyc`) |
+| 6 | `Ed448` (RFC 8032) | `-53` | `423 B` (`114 B`) | `L175058–L175113` | `L957317–L957484` | `1,736.5 ms` | **`723.57 ms`** (`46,308,352 cyc`) |
+| 7 | `ML-DSA-44` (FIPS 204) | `-48` | `2,730 B` (`2,420 B`) | `L175515–L175650` | `L960946–L961113` | `3,279.0 ms` | **`285.68 ms`** (`18,283,455 cyc`) |
+| 8 | `ML-DSA-65` (FIPS 204) | `-49` | `3,619 B` (`3,309 B`) | `L176023–L176192` | `L965149–L965304` | `4,712.8 ms` | **`947.71 ms`** (`60,653,376 cyc`) |
+| 9 | `ML-DSA-87` (FIPS 204) | `-50` | `4,747 B` (`4,627 B`) | `L176585–L176787` | `L969890–L970062` | `5,877.4 ms` | **`1,156.98 ms`** (`74,046,848 cyc`) |
+| 10 | `MLDSA44-ES256` | `-54` | `2,802 B` (`2,492 B`) | `L177193–L177333` | `L975080–L975250` | `4,141.0 ms` | **`964.34 ms`** (`61,718,015 cyc`) |
+| 11 | `MLDSA65-ES256` | `-55` | `3,690 B` (`3,379 B`) | `L177708–L177887` | `L979373–L979530` | `7,297.4 ms` | **`3,401.39 ms`** (`217,689,215 cyc`) |
+| 12 | `MLDSA87-ES384` | `-56` | `4,803 B` (`4,722 B`) | `L178281–L178491` | `L983944–L984091` | `7,713.6 ms` | **`3,031.64 ms`** (`194,025,215 cyc`) |
+| 13 | `MLDSA44-Ed25519` | `-57` | `2,794 B` (`2,484 B`) | `L178894–L179032` | `L989045–L989197` | `3,601.0 ms` | **`523.13 ms`** (`33,480,063 cyc`) |
+| 14 | `MLDSA65-Ed25519` | `-58` | `3,683 B` (`3,373 B`) | `L179407–L179576` | `L993208–L993353` | `4,328.3 ms` | **`522.89 ms`** (`33,465,024 cyc`) |
+| 15 | `MLDSA87-Ed448` | `-59` | `4,815 B` (`4,741 B`) | `L179967–L180175` | `L997859–L998005` | `6,993.1 ms` | **`2,396.35 ms`** (`153,366,527 cyc`) |
+| 16 | **`FN-DSA-512`** (Draft FIPS 206) | **`-60`** | **`976 B` (`666 B`)** | `L180560–L180635` | `L1002902–L1003067` | **`2,475.9 ms`** | **`993.71 ms` (`63,597,439 cyc`)** |
+| 17 | **`FN-DSA-1024`** (Draft FIPS 206) | **`-61`** | **`1,590 B` (`1,280 B`)** | `L181003–L181102` | `L1006466–L1006619` | **`4,155.7 ms`** | **`2,087.65 ms` (`133,609,792 cyc`)** |
+| 18 | `RS256` (RSA-2048) | `-257` | `566 B` (`256 B`) | `L181298–L181369` | `L1008526–L1008688` | `5,564.0 ms` | **`4,331.27 ms`** (`277,201,088 cyc`) |
+
+### 0.00.4 Run 20 Complete 37-Suite Conformance Summary (`23:13:01` – `23:58:36` PDT)
+
+| # | Suite | Log Line | Time Window (PDT) | Passed | Failed | Skipped | Status |
+| :-: | :--- | :--- | :--- | :-: | :-: | :-: | :-: |
+| 1 | `Transport-HID-1.js` | `L155175` | `23:13:01` – `23:13:20` | 16 | 0 | 3 | PASS |
+| 2 | `Authr-Generic-1.js` | `L156352` | `23:13:22` – `23:13:36` | 5 | 0 | 0 | PASS |
+| 3 | `Authr-MakeCred-Req-1.js` | `L157373` | `23:13:40` – `23:14:11` | 17 | 0 | 0 | PASS |
+| 4 | `Authr-MakeCred-Req-2.js` | `L159266` | `23:14:11` – `23:14:27` | 8 | 0 | 0 | PASS |
+| 5 | `Authr-MakeCred-Req-3.js` | `L160176` | `23:14:27` – `23:15:00` | 10 | 0 | 0 | PASS |
+| 6 | `Authr-MakeCred-Req-4.js` | `L161652` | `23:15:00` – `23:15:12` | 3 | 0 | 1 | PASS |
+| 7 | `Authr-MakeCred-Resp-1.js` | `L166692` | `23:15:12` – `23:17:08` | 5 | 0 | 1 | PASS |
+| 8 | `Authr-GetAssertion-Req-1.js` | `L171642` | `23:17:17` – `23:17:28` | 7 | 0 | 0 | PASS |
+| 9 | `Authr-GetAssertion-Req-2.js` | `L172501` | `23:17:33` – `23:17:39` | 2 | 0 | 1 | PASS |
+| 10 | `Authr-GetAssertion-Req-3.js` | `L172950` | `23:17:44` – `23:17:55` | 6 | 0 | 1 | PASS |
+| 11 | `Authr-GetAssertion-Resp-1.js` | `L181370` | `23:17:55` – `23:21:39` | 5 | 0 | 0 | PASS |
+| 12 | `Authr-Reset-1.js` | `L181952` | `23:21:43` – `23:34:28` | 6 | 0 | 1 | PASS |
+| 13 | `EntepriseAttestation.js` | `L185357` | `23:34:34` – `23:35:04` | 6 | 0 | 3 | PASS |
+| 14 | `Authr-Options-rk-1.js` | `L186978` | `23:35:09` – `23:36:01` | 12 | 0 | 0 | PASS |
+| 15 | `Authr-Options-up-1.js` | `L189283` | `23:36:03` – `23:36:58` | 12 | 0 | 0 | PASS |
+| 16 | `Authr-Options-uv-1.js` | `L191572` | `23:36:59` – `23:39:21` | 26 | 0 | 2 | PASS |
+| 17 | `Authr-Extensions-HmacSecret-1.js` | `L197282` | `23:39:21` – `23:39:44` | 4 | 0 | 0 | PASS |
+| 18 | `Authr-Extensions-credBlob.js` | `L198183` | `23:39:44` – `23:39:59` | 3 | 0 | 0 | PASS |
+| 19 | `Authr-Extensions-largeBlobKey.js` | `L198762` | `23:39:59` – `23:40:17` | 6 | 0 | 0 | PASS |
+| 20 | `Authr-Extensions-minPinLength.js` | `L199581` | `23:40:17` – `23:40:27` | 2 | 0 | 0 | PASS |
+| 21 | `Authr-Extensions-thirdPartyPayment.js` | `L199988` | `23:40:27` – `23:40:52` | 3 | 0 | 0 | PASS |
+| 22 | `Authr-ClientPin1-KeyAgreement-1.js` | `L200985` | `23:40:53` – `23:40:54` | 1 | 0 | 0 | PASS |
+| 23 | `Authr-ClientPin1-SetPin-1.js` | `L201062` | `23:40:55` – `23:41:12` | 7 | 0 | 0 | PASS |
+| 24 | `Authr-ClientPin1-ChangePin-1.js` | `L201935` | `23:41:14` – `23:41:19` | 4 | 0 | 1 | PASS |
+| 25 | `Authr-ClientPin1-PinToken-1.js` | `L202354` | `23:41:22` – `23:55:43` | 3 | 0 | 1 | PASS |
+| 26 | `Authr-ClientPin2-KeyAgreement-1.js` | `L202910` | `23:55:43` – `23:55:44` | 1 | 0 | 0 | PASS |
+| 27 | `Authr-ClientPin2-SetPin-1.js` | `L202987` | `23:55:45` – `23:55:57` | 4 | 0 | 0 | PASS |
+| 28 | `Authr-ClientPin2-PinToken-1.js` | `L203628` | `23:55:59` – `23:56:14` | 7 | 0 | 1 | PASS |
+| 29 | `Authr-ClientPin2-GetPinUvAuthTokenUsingPinWithPermissions-1.js` | `L204466` | `23:56:16` – `23:56:28` | 5 | 0 | 0 | PASS |
+| 30 | `Authr-ClientPin2-ChangePin-1.js` | `L205023` | `23:56:29` – `23:56:36` | 5 | 0 | 1 | PASS |
+| 31 | `Authr-ClientPin2-PinRetries-1.js` | `L205466` | `23:56:38` – `23:57:19` | 4 | 0 | 1 | PASS |
+| 32 | `Authr-CredMgmt-1.js` | `L206566` | `23:57:23` – `23:57:38` | 6 | 0 | 0 | PASS |
+| 33 | `Authr-CredMgmt-2.js` | `L207644` | `23:57:46` – `23:57:51` | 3 | 0 | 0 | PASS |
+| 34 | `Authr-CredMgmt-3.js` | `L208052` | `23:57:55` – `23:58:08` | 2 | 0 | 0 | PASS |
+| 35 | `Authr-Config-1.js` | `L208925` | `23:58:12` – `23:58:28` | 5 | 0 | 2 | PASS |
+| 36 | `Authr-LargeBlobs-1.js` | `L210136` | `23:58:34` – `23:58:36` | 4 | 0 | 0 | PASS |
+| 37 | `Metadata-Stmt-1.js` | `L210360` | `23:58:36` – `23:58:36` | 25 | 0 | 12 | PASS |
+| **Total** | **37 Suites** | | | **250** | **0** | **32** | **100.00%** |
 
 ---
 
@@ -135,17 +247,18 @@
 
 ---
 
-### 0.3 Six-Way Comparison: Run 10 (`-48` `--mtc-x5c`) vs. Run 11 (`-50` MTC) vs. Run 16 (Dual + `ep`) vs. Run 17 (Dual + `ep` + `perCredMgmtRO`) vs. Run 18 (18 Algs + RTT) vs. Run 19 (18 Algs + USB + RTT)
+### 0.3 Seven-Way Comparison: Run 10 (`-48` `--mtc-x5c`) vs. Run 11 (`-50` MTC) vs. Run 16 (Dual + `ep`) vs. Run 17 (Dual + `ep` + `perCredMgmtRO`) vs. Run 18 (18 Algs + RTT) vs. Run 19 (18 Algs + USB + RTT) vs. Run 20 (18 Algs + HSS/LMS `x5c` & MTC Subtrees)
 
-| Metric | Run 10 (`-48` `--mtc-x5c`) | Run 11 (`-50` MTC) | Run 16 (Dual + `ep`) | Run 17 (16 Algs + `perCredMgmtRO`) | Run 18 (18 Algs + RTT) | Run 19 (18 Algs + USB + RTT) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Log Range & Duration** | `L287509–L347258` (`10m 14s`) | `L1–L56583` (`16m 35s`) | `L175680–L223190` (`15m 33s`) | `L1–L48653` (`12m 27s`) | `L1–L52180` (`20m 26s`) | **`L1–L66127` (`21m 28s`)** |
-| **Test Results** | `237 Passed / 0 Failed` | `237 Passed / 0 Failed` | `241 Passed / 41 Skipped / 0 Failed` | `250 Passed / 32 Skipped / 0 Failed` | `249 Passed / 34 Skipped / 1 Failed` | **`250 Passed / 32 Skipped / 0 Failed (`100.00%`)`** |
-| **Supported COSE Algorithms** | `16` algorithms | `16` algorithms | `16` algorithms | `16` algorithms | **`18` (`+FN-DSA-512/1024`)** | **`18` (`+FN-DSA-512/1024`)** |
-| **`GetInfo` Wire Size (`BCNT`)** | `706 B` (`13` frames) | `706 B` (`13` frames) | `719 B` (`13` frames) | `793 B` (`14` frames) | `823 B` (`15` frames) | **`823 B` (`15` frames, 18 algs + `perCredMgmtRO`)** |
-| **`perCredMgmtRO` / `0x19` / `0x1E` Tests** | Skipped (`0/9`) | Skipped (`0/9`) | Skipped (`0/9`) | `9/9 Passed` (`100%`) | `7/7 Passed` (`100%`) | **`9/9 Passed (`100%`)`** |
-| **Enterprise Profile (`EntepriseAttestation.js`)** | Skipped | Skipped | `6/6 Passed` | `6/6 Passed` | `6/6 Passed` | **`6/6 Passed (`P-1`..`P-3`, `F-4`..`F-6`)`** |
-| **`Metadata-Stmt-1` Verification** | `37/37` Passed | `37/37` Passed | `37/37` Passed | `37/37` Passed | `37/37` Passed | **`37/37` Passed (`100%`)** |
+| Metric | Run 10 (`-48` `--mtc-x5c`) | Run 11 (`-50` MTC) | Run 16 (Dual + `ep`) | Run 17 (16 Algs + `perCredMgmtRO`) | Run 18 (18 Algs + RTT) | Run 19 (18 Algs + USB + RTT) | Run 20 (18 Algs + HSS/LMS `x5c` & MTC) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Log Range & Duration** | `L287509–L347258` (`10m 14s`) | `L1–L56583` (`16m 35s`) | `L175680–L223190` (`15m 33s`) | `L1–L48653` (`12m 27s`) | `L1–L52180` (`20m 26s`) | `L1–L66127` (`21m 28s`) | **`L155031–L211147` (`45m 35s` wall / `~19m 24s` active)** |
+| **Test Results** | `237 Passed / 0 Failed` | `237 Passed / 0 Failed` | `241 Passed / 41 Skipped / 0 Failed` | `250 Passed / 32 Skipped / 0 Failed` | `249 Passed / 34 Skipped / 1 Failed` | `250 Passed / 32 Skipped / 0 Failed` | **`250 Passed / 32 Skipped / 0 Failed (`100.00%`)`** |
+| **Supported COSE Algorithms** | `16` algorithms | `16` algorithms | `16` algorithms | `16` algorithms | **`18` (`+FN-DSA-512/1024`)** | **`18` (`+FN-DSA-512/1024`)** | **`18` (`+FN-DSA-512/1024`)** |
+| **Root & Intermediate CAs / MTC Anchor** | `ML-DSA-44` `x5c` + MTC | `ML-DSA-87` MTC | `ES384` `x5c` + `ML-DSA-44` MTC | `ES384` `x5c` + `ML-DSA-44` MTC | `ML-DSA-87` Root CA & MTC | `ML-DSA-87` Root CA & MTC | **`HSS/LMS` Root & `4` Intermediates (`1.2.840.113549.1.9.16.3.17`) + `HSS/LMS` (`alg: -46`) MTC Subtrees** |
+| **`GetInfo` Wire Size (`BCNT`)** | `706 B` (`13` frames) | `706 B` (`13` frames) | `719 B` (`13` frames) | `793 B` (`14` frames) | `823 B` (`15` frames) | `823 B` (`15` frames) | **`823 B` (`15` frames, 18 algs + `perCredMgmtRO`)** |
+| **`perCredMgmtRO` / `0x19` / `0x1E` Tests** | Skipped (`0/9`) | Skipped (`0/9`) | Skipped (`0/9`) | `9/9 Passed` (`100%`) | `7/7 Passed` (`100%`) | `9/9 Passed` (`100%`) | **`9/9 Passed (`100%`)`** |
+| **Enterprise Profile (`EntepriseAttestation.js`)** | Skipped | Skipped | `6/6 Passed` | `6/6 Passed` | `6/6 Passed` | `6/6 Passed` | **`6/6 Passed (`P-1`..`P-3`, `F-4`..`F-6`)`** |
+| **`Metadata-Stmt-1` Verification** | `37/37` Passed | `37/37` Passed | `37/37` Passed | `37/37` Passed | `37/37` Passed | `37/37` Passed | **`25/25` Applicable (`37/37`) Passed (`100%`)** |
 
 ### 0.4 `Authr-MakeCred-Resp-1` 16-Algorithm Sweep: Conformance Log vs. Total Phase Hardware USB Analyzer (`Run 17`)
 

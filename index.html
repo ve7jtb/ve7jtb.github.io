@@ -75,7 +75,10 @@
             18 Algorithms (incl. FN-DSA-512 &amp; FN-DSA-1024)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            250 / 250 Passed &amp; PQ MTC
+            HSS/LMS Hierarchy &amp; PQ MTC
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            250 / 250 Passed (100%)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             perCredMgmtRO &amp; Enterprise Attestation
@@ -87,11 +90,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtc-mds</code>
+            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtc-mds</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–19, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms with Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors) and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>304,330</code> lines of <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–20, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, RFC 8554 / NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (OID <code>1.2.840.113549.1.9.16.3.17</code>), HSS/LMS-signed (<code>alg: -46</code>) MTC Subtree Checkpoints, Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>1,163,679</code> lines of <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -114,9 +117,20 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-00"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00 (New — Run 20: 250 / 250 Pass with HSS/LMS Hierarchy &amp; MTC Subtree Checkpoints)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (<code>1.2.840.113549.1.9.16.3.17</code>), HSS/LMS (<code>alg: -46</code>) MTC Subtree Checkpoints &amp; All 18 Algorithms: <code>250 / 250</code> (<code>100.00%</code>) Pass
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              <code>250 / 250</code> (<code>100.00%</code>) pass across all 37 CTAP 2.3 suites verifying pre-published HSS/LMS Root &amp; Intermediate CAs chaining to <code>ML-DSA-44</code> leaf <code>x5c</code> (<code>6,693–7,173 B</code>), HSS/LMS-signed (<code>alg: -46</code>) Merkle Tree Certificate subtree checkpoints across <code>&quot;mtc&quot;</code> and <code>&quot;mtc-mds&quot;</code>, Enterprise Attestation (<code>6/6</code>), and all 18 algorithms with <code>64 MHz</code> DWT cycle telemetry.
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-0"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0 (New — Run 19: 250 / 250 Pass)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0 (Run 19: 250 / 250 Pass — Simultaneous 3-Log Capture)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
               18-Algorithm Hardware Conformance: <code>250 / 250</code> (<code>100.00%</code>) Pass with Draft NIST FIPS 206 <code>FN-DSA-512</code> (<code>alg: -60</code>) &amp; <code>FN-DSA-1024</code> (<code>alg: -61</code>) + TotalPhase USB + <code>fidont_rtt.log</code> DWT Cycle Telemetry
             </h3>
