@@ -1,5 +1,8 @@
 # CTAP 2.3+ Post-Quantum PIN/UV Auth Protocol 3 (`pinUvAuthProtocol = 3`): Architecture, Downgrade Integrity, Hierarchical PPUAT, and Encrypted Extensions
 
+> [!IMPORTANT]
+> **Notice:** This document is a very early draft for discussion only. It has not been adopted by the FIDO CTAP working group.
+
 This specification defines a Post-Quantum **PIN/UV Auth Protocol 3 (`pinUvAuthProtocol = 3`)** for **FIDO2 CTAP 2.3+**, organized into four core architectural domains:
 1. **[Section 1 — Core PIN Protocol `keyAgreement` Issues & Post-Quantum HPKE Architecture](#1-core-pin-protocol-keyagreement-issues--post-quantum-hpke-architecture)**
 2. **[Section 2 — Downgrade Issues & `authenticatorGetInfo` Integrity](#2-downgrade-issues--authenticatorgetinfo-integrity)**
