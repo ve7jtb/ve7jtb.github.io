@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIDO2 CTAP 2.3+ Proposal: PIN Protocol 4 Using RFC 9180 HPKE Export-Only (aead_id = 0xFFFF)</title>
+  <title>FIDO2 CTAP 2.3+ Proposal: Post-Quantum PIN/UV Auth Protocol 4 Using RFC 9180 HPKE Export-Only (aead_id = 0xFFFF)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -18,20 +18,6 @@
       --primary-foreground: #ffffff;
       --secondary: #e2e8f0;
       --secondary-foreground: #1e293b;
-      --accent: #eff6ff;
-      --accent-foreground: #1d4ed8;
-      --success-bg: #f0fdf4;
-      --success-border: #bbf7d0;
-      --success-fg: #15803d;
-      --warning-bg: #fffbeb;
-      --warning-border: #fde68a;
-      --warning-fg: #b45309;
-      --danger-bg: #fef2f2;
-      --danger-border: #fecaca;
-      --danger-fg: #b91c1c;
-      --info-bg: #eff6ff;
-      --info-border: #bfdbfe;
-      --info-fg: #1d4ed8;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -45,20 +31,6 @@
         --primary-foreground: #ffffff;
         --secondary: #1e293b;
         --secondary-foreground: #e2e8f0;
-        --accent: #1e3a8a;
-        --accent-foreground: #bfdbfe;
-        --success-bg: #052e16;
-        --success-border: #14532d;
-        --success-fg: #86efac;
-        --warning-bg: #451a03;
-        --warning-border: #78350f;
-        --warning-fg: #fde68a;
-        --danger-bg: #450a0a;
-        --danger-border: #7f1d1d;
-        --danger-fg: #fca5a5;
-        --info-bg: #172554;
-        --info-border: #1e3a8a;
-        --info-fg: #93c5fd;
       }
     }
     html {
@@ -67,7 +39,23 @@
     code, pre {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
 
@@ -75,319 +63,665 @@
   <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">Normative Specification Proposal</span>
-        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">FIDO2 CTAP 2.3+</span>
-        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">pinUvAuthProtocol = 4</span>
-        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">RFC 9180 HPKE Export-Only (aead_id = 0xFFFF, AES-256-CBC + HMAC-SHA-256)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">FIDO2 CTAP 2.3+</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">pinUvAuthProtocol = 4</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">HPKE Export-Only (0xFFFF)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Zero AEAD State Overhead</span>
       </div>
-      <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      <div class="flex items-center gap-4">
+        <a href="./ctap23_pin_protocol_4_hpke_export_only_proposal.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      FIDO2 CTAP 2.3+ Proposal: Post-Quantum PIN/UV Auth Protocol 4 (<code>pinUvAuthProtocol = 4</code>) Using RFC 9180 HPKE Export-Only (<code>aead_id = 0xFFFF</code>)
+      FIDO2 CTAP 2.3+ Proposal: Post-Quantum PIN/UV Auth Protocol 4 Using RFC 9180 HPKE Export-Only (aead_id = 0xFFFF)
     </h1>
-    <div class="mb-4 p-3.5 rounded-xl bg-[var(--warning-bg)] border border-[var(--warning-border)] text-[var(--warning-fg)] text-xs md:text-sm font-medium">
-      <strong>Notice:</strong> This document is a very early draft for discussion only. It has not been adopted by the FIDO CTAP working group.
-    </div>
-    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-6">
-      A normative specification proposal for <strong><code>pinUvAuthProtocol = 4</code></strong> built on <strong>RFC 9180 HPKE Export-Only (<code>kdf_id = 0x0001</code>, <code>aead_id = 0xFFFF</code>)</strong>, designed for <strong>100% firmware and hardware accelerator reuse of CTAP 2.1–2.3 Protocol 2's <code>AES-256-CBC</code> and <code>HMAC-SHA-256</code> primitives</strong> (<code>sharedSecret = K_HMAC || K_AES</code>) while providing Post-Quantum KEM agility (<code>X-Wing</code>, <code>MLKEM768-P256</code>, <code>ML-KEM-1024</code>), a <strong>Multi-Tier Trust Hierarchy</strong> (Enterprise Host Authentication, Batch Key Pinning, Factory Pairing PINs, Same-Batch Evil-Twin detection, Unattested <code>ML-KEM</code> PQ-PAKE with an 8-try <code>pinRetries</code> state machine, Dual Asymmetric/Symmetric <code>PPUAT_v4</code> modes, and stateless <code>0-RTT</code> NFC power-loss recovery), <code>authenticatorGetInfo</code> downgrade integrity, one-way hierarchical <code>PPUAT</code> domain separation, and extension security.
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Defines an alternative PIN Protocol 4 operating entirely through RFC 9180 Secret Exporter (export-only mode), retaining zero authenticator-side AEAD context state while matching Protocol 3 downgrade protection.
     </p>
 
-    <!-- Quick Navigation Bar -->
-    <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-4 border-t border-[var(--border)]">
-      <a href="#section-1" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
-        <div class="text-xs font-semibold text-[var(--foreground)] mt-0.5">HPKE Export-Only Core</div>
-        <div class="text-[11px] text-[var(--muted-foreground)] mt-1"><code>K_HMAC || K_AES</code> &amp; Protocol 2 reuse</div>
-      </a>
-      <a href="#section-2" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
-        <div class="text-xs font-semibold text-[var(--foreground)] mt-0.5">Multi-Tier Trust &amp; NFC</div>
-        <div class="text-[11px] text-[var(--muted-foreground)] mt-1">Host Auth, Pinning, PQ-PAKE &amp; NFC</div>
-      </a>
-      <a href="#section-3" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
-        <div class="text-xs font-semibold text-[var(--foreground)] mt-0.5">Downgrade &amp; GetInfo</div>
-        <div class="text-[11px] text-[var(--muted-foreground)] mt-1"><code>PinUvAuthTranscript_v4</code> &amp; <code>batchAttestKid</code></div>
-      </a>
-      <a href="#section-4" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</div>
-        <div class="text-xs font-semibold text-[var(--foreground)] mt-0.5">Hierarchical PPUAT (v2/v4)</div>
-        <div class="text-[11px] text-[var(--muted-foreground)] mt-1">One-way HKDF quantum firewall</div>
-      </a>
-      <a href="#section-5" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</div>
-        <div class="text-xs font-semibold text-[var(--foreground)] mt-0.5">Export-Only Extensions</div>
-        <div class="text-[11px] text-[var(--muted-foreground)] mt-1"><code>hmac-secret</code>, <code>largeBlobKey</code> &amp; <code>sign</code></div>
-      </a>
-      <a href="#section-6" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</div>
-        <div class="text-xs font-semibold text-[var(--foreground)] mt-0.5">Protocol 3 vs. 4 &amp; Code</div>
-        <div class="text-[11px] text-[var(--muted-foreground)] mt-1">Comparison &amp; Python engine</div>
-      </a>
-    </nav>
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+        <a href="#abstract" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Overview</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Abstract &amp; Executive Summary</div>
+        </a>
+        <a href="#table-of-contents" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Overview</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Table of Contents</div>
+        </a>
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Normative Core Protocol: <code>pinUvAuthProtocol = 4</code> with HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Multi-Tier Trust Hierarchy, Pairing PINs, Unattested PQ-PAKE, Dual Modes &amp; NFC Recovery</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Downgrade Prevention &amp; <code>authenticatorGetInfo</code> Integrity</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Hierarchical <code>PPUAT</code> Domain Separation Between Protocols 2 and 4</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Extensions Under HPKE Export-Only (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, and <code>sign</code>)</div>
+        </a>
+        <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 6</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Protocol 3 vs. Protocol 4 Comparison &amp; Reference Python Implementation</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#abstract" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Abstract &amp; Executive Summary</a>
+
+        </li>
+        <li>
+          <a href="#table-of-contents" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Table of Contents</a>
+
+        </li>
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Normative Core Protocol: <code>pinUvAuthProtocol = 4</code> with HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#11-why-hpke-export-only-aead_id-0xffff-maximizes-firmware-hardware-reuse" class="hover:underline">&sect;1.1 Why HPKE Export-Only (<code>aead_id = 0xFFFF</code>) Maximizes Firmware &amp; Hardware Reuse</a></div>
+            <div><a href="#12-normative-hpke-contextexport-key-schedule-ctap-654-abstract-function-mapping" class="hover:underline">&sect;1.2 Normative HPKE <code>Context.Export</code> Key Schedule &amp; CTAP §6.5.4 Abstract Function Mapping</a></div>
+            <div><a href="#13-normative-mapping-of-authenticatorclientpin-0x06-subcommands-in-protocol-4" class="hover:underline">&sect;1.3 Normative Mapping of <code>authenticatorClientPIN</code> (<code>0x06</code>) Subcommands in Protocol 4</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Multi-Tier Trust Hierarchy, Pairing PINs, Unattested PQ-PAKE, Dual Modes &amp; NFC Recovery</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-tier-1-enterprise-mutually-authenticated-key-agreement-host-authentication-to-authenticator" class="hover:underline">&sect;2.1 Tier 1: Enterprise Mutually Authenticated Key Agreement (Host Authentication to Authenticator)</a></div>
+            <div><a href="#22-tier-2-authenticated-authenticator-getinfo-with-batch-key-pinning-same-batch-evil-twin-detection" class="hover:underline">&sect;2.2 Tier 2: Authenticated Authenticator + <code>GetInfo</code> with Batch Key Pinning &amp; Same-Batch Evil-Twin Detection</a></div>
+            <div><a href="#23-mitm-safe-initial-setup-factory-reset-temporary-factory-pairing-pin-forcepinchange-true" class="hover:underline">&sect;2.3 MITM-Safe Initial Setup &amp; Factory Reset: Temporary / Factory Pairing PIN (<code>forcePINChange = true</code>)</a></div>
+            <div><a href="#24-tier-3-unattested-open-source-authenticators-aaguid-016-ml-kem-pq-pake-the-8-try-pinretries-state-machine" class="hover:underline">&sect;2.4 Tier 3: Unattested / Open-Source Authenticators (<code>aaguid = 0^16</code>), <code>ML-KEM</code> PQ-PAKE &amp; the 8-Try <code>pinRetries</code> State Machine</a></div>
+            <div><a href="#25-dual-post-pairing-channel-modes-mode-a-asymmetric-pinning-vs-mode-b-symmetric-high-entropy-ppuat_v4" class="hover:underline">&sect;2.5 Dual Post-Pairing Channel Modes: Mode A (Asymmetric Pinning) vs. Mode B (Symmetric High-Entropy <code>PPUAT_v4</code>)</a></div>
+            <div><a href="#26-nfc-intermittent-transport-recovery-volatile-state-loss-puat-dk_texteph-cached-pin-silent-recovery-and-getpinuvauthtokenusinguv-0x0a-recovery" class="hover:underline">&sect;2.6 NFC &amp; Intermittent Transport Recovery: Volatile State Loss (<code>PUAT</code> &amp; $dk_{\text{eph}}$), Cached-PIN Silent Recovery, and <code>getPinUvAuthTokenUsingUv</code> (<code>0x0A</code>) Recovery</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Downgrade Prevention &amp; <code>authenticatorGetInfo</code> Integrity</a>
+
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Hierarchical <code>PPUAT</code> Domain Separation Between Protocols 2 and 4</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Extensions Under HPKE Export-Only (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, and <code>sign</code>)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#51-unified-per-command-extension-key-pair-k_ext_hmac-k_ext_aes" class="hover:underline">&sect;5.1 Unified Per-Command Extension Key Pair (<code>K_ext_HMAC</code> &amp; <code>K_ext_AES</code>)</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-6" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">6. Protocol 3 vs. Protocol 4 Comparison &amp; Reference Python Implementation</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#61-side-by-side-comparison-protocol-3-hpke-stateful-aead-0x0002-vs-protocol-4-hpke-export-only-0xffff" class="hover:underline">&sect;6.1 Side-by-Side Comparison: Protocol 3 (HPKE Stateful AEAD <code>0x0002</code>) vs. Protocol 4 (HPKE Export-Only <code>0xFFFF</code>)</a></div>
+            <div><a href="#62-end-to-end-reference-implementation-of-pinuvauthprotocol-4-python" class="hover:underline">&sect;6.2 End-to-End Reference Implementation of <code>pinUvAuthProtocol = 4</code> (Python)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
   </header>
 
   <main class="max-w-6xl mx-auto space-y-10">
 
     <!-- ===================================================================== -->
-    <!-- SECTION 1: NORMATIVE CORE PROTOCOL: HPKE EXPORT-ONLY (aead_id=0xFFFF) -->
+    <!-- SECTION abstract -->
     <!-- ===================================================================== -->
-    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
+    <section id="abstract" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Abstract &amp; Executive Summary</h2>
+      </div>
+<p class="text-sm my-2">This document specifies a normative proposal for <strong>PIN/UV Auth Protocol 4 (<code>pinUvAuthProtocol = 4</code>)</strong> in <strong>FIDO2 CTAP 2.3+</strong>, built on <strong>RFC 9180 Hybrid Public Key Encryption (HPKE)</strong> in <strong>Export-Only Mode (<code>kdf_id = 0x0001</code> <code>HKDF-SHA256</code>, <code>aead_id = 0xFFFF</code> <code>Export-only</code>)</strong>.</p>
+<p class="text-sm my-2">Whereas <strong>Protocol 3 (<code>pinUvAuthProtocol = 3</code>)</strong> replaces the CTAP symmetric transport layer with HPKE Stateful AEAD (<code>aead_id = 0x0002</code>, <code>AES-256-GCM</code>), <strong>Protocol 4 (<code>pinUvAuthProtocol = 4</code>)</strong> is designed for <strong>maximum firmware and hardware crypto-accelerator reuse from CTAP 2.1–2.3 Protocol 2</strong>:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>100% Reuse of Protocol 2's <code>encrypt()</code>, <code>decrypt()</code>, <code>authenticate()</code>, and <code>verify()</code> Primitives:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Many hardware Secure Elements (SEs) have dedicated ROM/hardware accelerators for <strong><code>AES-256-CBC</code></strong> and <strong><code>HMAC-SHA-256</code></strong> and already implement Protocol 2's 64-byte <code>sharedSecret = K_HMAC (32B) || K_AES (32B)</code> architecture, but lack hardware <code>AES-256-GCM</code> or wish to avoid stateful sequence-counter (<code>seq</code>) management across CTAP commands.</li>
+<li>Protocol 4 replaces <strong>only</strong> <code>kdf(Z)</code> and P-256 ECDH with <strong>RFC 9180 HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</strong>, exporting the exact same 64-byte <code>sharedSecret</code>:<div class="overflow-x-auto py-1 text-sm my-2">$$K_{\text{HMAC}} = \text{ctx.Export}(\text{"CTAP2 HMAC key"}, 32), \quad K_{\text{AES}} = \text{ctx.Export}(\text{"CTAP2 AES key"}, 32)$$</div></li>
+</ul></li>
+<li><strong>Post-Quantum &amp; Hybrid KEM Agility (<code>0x2A: pinUvAuthKems</code>):</strong> Supports <code>X-Wing</code> (<code>0x647a</code>, MTI default), <code>MLKEM768-P256</code> (<code>0x0050</code>), <code>ML-KEM-768</code> (<code>0x0041</code>), and <code>ML-KEM-1024</code> (<code>0x0042</code>).</li>
+<li><strong>Authenticated <code>0x0A</code> UV &amp; Authenticated Responses (<code>pinToken</code>, <code>hmac-secret</code>, <code>largeBlobKey</code>) Using <code>HMAC-SHA-256</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Closes Protocol 2's unauthenticated <code>0x0A</code> (<code>getPinUvAuthTokenUsingUvWithPermissions</code>) and unauthenticated <code>AES-256-CBC</code> response gaps using the Authenticator's existing <code>HMAC-SHA-256(K_HMAC, ...)</code> engine—requiring <strong>0 bytes of <code>AES-GCM</code> code</strong>!</li>
+</ul></li>
+<li><strong>Multi-Tier Trust Hierarchy, Pairing PINs, Unattested <code>ML-KEM</code> PQ-PAKE, Dual <code>0-RTT</code> Modes &amp; Fast NFC Recovery:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Includes <strong>Tier 1 Enterprise Host Authentication</strong> (<code>setEnterpriseHostTrustAnchors</code> <code>0x06</code>, early abort at <code>getKeyAgreement</code>), <strong>Tier 2 Batch Key Pinning &amp; Same-Batch Evil-Twin Detection</strong> via <code>encIdentifier</code> (<code>0x19</code>), <strong>MITM-Safe Initial Setup &amp; Factory Reset</strong> via a Temporary / 6-Digit Factory Pairing PIN (<code>forcePINChange = true</code>), <strong>Tier 3 Unattested <code>ML-KEM</code> $\hat{\mathbf{t}}$-Vector Blinding PQ-PAKE</strong> with the <strong>4-rule write-before-verify 8-try <code>pinRetries</code> state machine</strong>, <strong>Dual <code>0-RTT</code> Post-Pairing Modes</strong> (Mode A Asymmetric <code>pk_batch</code> Pinning vs. Mode B Symmetric 256-bit <code>PPUAT_v4</code> <code>SymPSK</code>), and <strong>Stateless <code>0-RTT</code> NFC Power-Loss Recovery</strong> for both cached PIN (<code>0x09</code>) and on-device UV (<code>0x0A</code>).</li>
+</ul></li>
+<li><strong>CTAP-Local <code>authenticatorGetInfo</code> Integrity, Hierarchical <code>PPUAT</code> (<code>PPUAT_v4 -&gt; PPUAT_v2</code>), &amp; Extension Security:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Protects <code>authenticatorGetInfo</code> via <code>PinUvAuthTranscript_v4</code> and <code>batchAttestKid</code> (<code>0x2B</code>), isolates legacy Protocol 2 hosts via a one-way HKDF firewall, elides the redundant 1.1–1.5 KB <code>keyAgreement</code> in <code>hmac-secret</code>, encrypts <code>largeBlobKey</code> (<code>0x07</code>), formally deprecates <code>credBlob</code> (§12.5), and secures WebAuthn <code>sign</code> (<code>previewSign5</code> / ARKG).</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION table-of-contents -->
+    <!-- ===================================================================== -->
+    <section id="table-of-contents" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Table of Contents</h2>
+      </div>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong><a href="#1-normative-core-protocol-pinuvauthprotocol--4-with-hpke-export-only-aead_id--0xffff" class="text-[var(--primary)] hover:underline">Section 1 — Normative Core Protocol: <code>pinUvAuthProtocol = 4</code> with HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</a></strong></li>
+<li><strong><a href="#2-multi-tier-trust-hierarchy-pairing-pins-unattested-pq-pake-dual-modes--nfc-recovery" class="text-[var(--primary)] hover:underline">Section 2 — Multi-Tier Trust Hierarchy, Pairing PINs, Unattested PQ-PAKE, Dual Modes &amp; NFC Recovery</a></strong></li>
+<li><strong><a href="#3-downgrade-prevention--authenticatorgetinfo-integrity" class="text-[var(--primary)] hover:underline">Section 3 — Downgrade Prevention &amp; <code>authenticatorGetInfo</code> Integrity</a></strong></li>
+<li><strong><a href="#4-hierarchical-ppuat-domain-separation-between-protocols-2-and-4" class="text-[var(--primary)] hover:underline">Section 4 — Hierarchical <code>PPUAT</code> Domain Separation Between Protocols 2 and 4</a></strong></li>
+<li><strong><a href="#5-extensions-under-hpke-export-only-hmac-secret-largeblobkey-credblob-and-sign" class="text-[var(--primary)] hover:underline">Section 5 — Extensions Under HPKE Export-Only (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, and <code>sign</code>)</a></strong></li>
+<li><strong><a href="#6-protocol-3-vs-protocol-4-comparison--reference-python-implementation" class="text-[var(--primary)] hover:underline">Section 6 — Protocol 3 vs. Protocol 4 Comparison &amp; Reference Python Implementation</a></strong></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
-          Normative Core Protocol: <code>pinUvAuthProtocol = 4</code> with HPKE Export-Only (<code>aead_id = 0xFFFF</code>)
-        </h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Normative Core Protocol: <code>pinUvAuthProtocol = 4</code> with HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</h2>
       </div>
+<h3 id="11-why-hpke-export-only-aead_id-0xffff-maximizes-firmware-hardware-reuse" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.1 Why HPKE Export-Only (<code>aead_id = 0xFFFF</code>) Maximizes Firmware &amp; Hardware Reuse</h3>
+<p class="text-sm my-2">In CTAP 2.1–2.3, <code>pinUvAuthProtocol = 2</code> derives a 64-byte <code>sharedSecret</code> consisting of a 32-byte <code>HMAC-SHA-256</code> key ($K_{\text{HMAC}}$) and a 32-byte <code>AES-256-CBC</code> key ($K_{\text{AES}}$), and defines four abstract operations (<code>encrypt</code>, <code>decrypt</code>, <code>authenticate</code>, <code>verify</code>).</p>
+<p class="text-sm my-2"><strong><code>pinUvAuthProtocol = 4</code></strong> preserves <strong>100% of Protocol 2's symmetric encryption and MAC layer</strong> while upgrading key establishment to <strong>RFC 9180 HPKE Export-Only Mode (<code>kdf_id = 0x0001</code>, <code>aead_id = 0xFFFF</code>)</strong>:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>HPKE <code>kdf_id</code>:</strong> <strong><code>0x0001</code> (<code>HKDF-SHA256</code>)</strong></li>
+<li><strong>HPKE <code>aead_id</code>:</strong> <strong><code>0xFFFF</code> (<code>Export-only</code> — RFC 9180 §5.3)</strong></li>
+<li><strong>HPKE <code>kem_id</code> (<code>0x2A: pinUvAuthKems</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>0x647a</code> (<code>X-Wing</code>: <code>ML-KEM-768</code> + <code>X25519</code>)</strong> — Mandatory-to-Implement (MTI) Default (<code>ek = 1,216 B</code>, <code>enc = 1,120 B</code>).</li>
+<li><strong><code>0x0050</code> (<code>MLKEM768-P256</code>: <code>ML-KEM-768</code> + <code>P-256</code>)</strong> — Recommended Hardware SE Default (<code>ek = 1,249 B</code>, <code>enc = 1,153 B</code>).</li>
+<li><strong><code>0x0041</code> (<code>ML-KEM-768</code>)</strong> — Pure PQ Cat 3 (<code>ek = 1,184 B</code>, <code>enc = 1,088 B</code>).</li>
+<li><strong><code>0x0042</code> (<code>ML-KEM-1024</code>)</strong> — Pure PQ Cat 5 / CNSA 2.0 (<code>ek = 1,568 B</code>, <code>enc = 1,568 B</code>).</li>
+</ul></li>
+</ul>
+<h3 id="12-normative-hpke-contextexport-key-schedule-ctap-654-abstract-function-mapping" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.2 Normative HPKE <code>Context.Export</code> Key Schedule &amp; CTAP §6.5.4 Abstract Function Mapping</h3>
+<p class="text-sm my-2">Once the Platform (<code>SetupBaseS</code> / <code>SetupPSKS</code>) and Authenticator (<code>SetupBaseR</code> / <code>SetupPSKR</code>) initialize an RFC 9180 HPKE Export-Only context <code>ctx</code> with <code>info = SHA-256(CBOR(PinUvAuthTranscript_v4))</code>, both sides export the 64-byte <code>sharedSecret</code>:</p>
+<div class="overflow-x-auto py-1 text-sm my-2">$$K_{\text{HMAC}} = \text{ctx.Export}(\text{"CTAP2 HMAC key"}, 32)$$</div>
+<div class="overflow-x-auto py-1 text-sm my-2">$$K_{\text{AES}} = \text{ctx.Export}(\text{"CTAP2 AES key"}, 32)$$</div>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{sharedSecret} = K_{\text{HMAC}} \parallel K_{\text{AES}} \quad (64\text{ bytes})$$</div>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart LR
+    subgraph Handshake["RFC 9180 HPKE Export-Only (kdf_id = 0x0001, aead_id = 0xFFFF)"]
+        KS["HPKE KeyScheduleBase / KeySchedulePSK&lt;br/&gt;info = SHA-256(CBOR(PinUvAuthTranscript_v4))&lt;br/&gt;Outputs exporter_secret (32B)"]
+    end
 
-      <!-- 1.1 Why HPKE Export-Only -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-[var(--foreground)]">
-          1.1 Why RFC 9180 HPKE Export-Only (<code>aead_id = 0xFFFF</code>) Maximizes Protocol 2 Firmware &amp; Hardware Reuse
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-1.5">
-            <div class="font-bold text-sm text-[var(--foreground)]">1. 100% Reuse of Protocol 2's <code>encrypt()</code>, <code>decrypt()</code>, <code>authenticate()</code>, &amp; <code>verify()</code></div>
-            <p class="text-[var(--muted-foreground)]">
-              Exports a 64-byte <code>sharedSecret = K_HMAC (32B) || K_AES (32B)</code> via RFC 9180 <code>Context.Export</code>. Existing Secure Elements with hardware <code>AES-256-CBC</code> and <code>HMAC-SHA-256</code> require <strong>0 bytes of <code>AES-GCM</code> code and no sequence-counter state</strong>!
-            </p>
-          </div>
-          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-1.5">
-            <div class="font-bold text-sm text-[var(--foreground)]">2. Post-Quantum &amp; Hybrid KEM Agility (<code>0x2A: pinUvAuthKems</code>)</div>
-            <p class="text-[var(--muted-foreground)]">
-              Supports <code>X-Wing</code> (<code>0x647a</code>, MTI default), <code>MLKEM768-P256</code> (<code>0x0050</code>, hardware SE default), <code>ML-KEM-768</code> (<code>0x0041</code>), and <code>ML-KEM-1024</code> (<code>0x0042</code>).
-            </p>
-          </div>
-          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-1.5">
-            <div class="font-bold text-sm text-[var(--foreground)]">3. Authenticated <code>0x0A</code> UV Requests via <code>HMAC-SHA-256</code></div>
-            <p class="text-[var(--muted-foreground)]">
-              Closes CTAP 2.3's unauthenticated <code>getPinUvAuthTokenUsingUvWithPermissions</code> (<code>0x0A</code>) gap by requiring <code>0x04: pinUvAuthParam = HMAC-SHA-256(K_HMAC, PinUvAuthTranscript_v4)</code>.
-            </p>
-          </div>
-          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-1.5">
-            <div class="font-bold text-sm text-[var(--foreground)]">4. Authenticated Responses (<code>0x02: pinToken</code>) via <code>HMAC-SHA-256</code></div>
-            <p class="text-[var(--muted-foreground)]">
-              Eliminates unauthenticated <code>AES-256-CBC</code> malleability on <code>pinToken</code> (<code>0x02</code>) by returning <code>0x04: pinUvAuthParam = HMAC-SHA-256(K_HMAC, Transcript || pinToken)</code> alongside <code>0x02</code>.
-            </p>
-          </div>
-        </div>
-      </div>
+    subgraph Exported_Keys["64-Byte Protocol 4 sharedSecret (100% Protocol 2 Compatible)"]
+        KHMAC["K_HMAC (32 Bytes)&lt;br/&gt;ctx.Export('CTAP2 HMAC key', 32)"]
+        KAES["K_AES (32 Bytes)&lt;br/&gt;ctx.Export('CTAP2 AES key', 32)"]
+    end
 
-      <!-- 1.2 Export Key Schedule & CTAP Function Mapping -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-[var(--foreground)]">
-          1.2 Normative HPKE <code>Context.Export</code> Key Schedule &amp; <code>authenticatorClientPIN</code> Subcommand Mapping
-        </h3>
-        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] font-mono text-xs space-y-1.5 overflow-x-auto">
-          <div># Fixed HPKE Ciphersuite: kdf_id = 0x0001 (HKDF-SHA256), aead_id = 0xFFFF (Export-only)</div>
-          <div>K_HMAC       = ctx.Export("CTAP2 HMAC key", 32)</div>
-          <div>K_AES        = ctx.Export("CTAP2 AES key", 32)</div>
-          <div>sharedSecret = K_HMAC || K_AES   # 64 bytes — 100% drop-in compatible with Protocol 2!</div>
-          <div class="pt-2"># Unchanged Protocol 2 Symmetric Functions:</div>
-          <div>encrypt(K_AES, pt)       = IV_16 || AES-256-CBC(K_AES, IV_16, pt)</div>
-          <div>authenticate(K_HMAC, m)  = HMAC-SHA-256(K_HMAC, m)</div>
-        </div>
+    subgraph Primitives["Reused CTAP 2.3 Protocol 2 Hardware / Firmware Primitives"]
+        AUTH["authenticate(K_HMAC, msg) / verify()&lt;br/&gt;HMAC-SHA-256(K_HMAC, msg)"]
+        ENC["encrypt(K_AES, pt) / decrypt()&lt;br/&gt;IV_16 || AES-256-CBC(K_AES, IV_16, pt)"]
+    end
 
-        <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-[var(--content)] border-b border-[var(--border)]">
-                <th class="p-3 font-semibold">Subcommand (<code>0x06</code>)</th>
-                <th class="p-3 font-semibold">Request Ciphertexts (<code>encrypt(K_AES, ...)</code>)</th>
-                <th class="p-3 font-semibold">Request <code>0x04: pinUvAuthParam</code> (<code>HMAC-SHA-256</code>)</th>
-                <th class="p-3 font-semibold">Response <code>0x02: pinToken</code> &amp; <code>0x04: pinUvAuthParam</code></th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[var(--border)]">
-              <tr>
-                <td class="p-3 font-semibold"><code>0x03: setPIN</code></td>
-                <td class="p-3"><code>0x05: newPinEnc = IV_16 || AES-256-CBC(K_AES, IV_16, paddedNewPin_64)</code> (<strong>80 B</strong>)</td>
-                <td class="p-3"><code>HMAC-SHA-256(K_HMAC, Transcript || newPinEnc)</code> (<strong>32 B</strong>)</td>
-                <td class="p-3 text-[var(--muted-foreground)]"><em>(Empty on success)</em></td>
-              </tr>
-              <tr>
-                <td class="p-3 font-semibold"><code>0x04: changePIN</code><br/><span class="text-[11px] font-normal text-[var(--muted-foreground)]">(Also initial setup with Pairing PIN)</span></td>
-                <td class="p-3"><code>0x05: newPinEnc</code> (<strong>80 B</strong>)<br/><code>0x06: pinHashEnc</code> (<strong>32 B</strong>)</td>
-                <td class="p-3"><code>HMAC-SHA-256(K_HMAC, Transcript || newPinEnc || pinHashEnc)</code> (<strong>32 B</strong>)</td>
-                <td class="p-3 text-[var(--muted-foreground)]"><em>(Empty on success)</em></td>
-              </tr>
-              <tr>
-                <td class="p-3 font-semibold"><code>0x09: getPinUvAuthTokenUsingPinWithPermissions</code></td>
-                <td class="p-3"><code>0x06: pinHashEnc = IV_16 || AES-256-CBC(K_AES, IV_16, LEFT(SHA256(PIN), 16))</code> (<strong>32 B</strong>)</td>
-                <td class="p-3"><code>HMAC-SHA-256(K_HMAC, Transcript || pinHashEnc)</code> (<strong>32 B</strong>)</td>
-                <td class="p-3"><code>0x02: pinToken</code> (<strong>48 B</strong>)<br/><code>0x04: HMAC-SHA-256(K_HMAC, Transcript || pinToken)</code> (<strong>32 B</strong>)</td>
-              </tr>
-              <tr>
-                <td class="p-3 font-semibold"><code>0x0A: getPinUvAuthTokenUsingUvWithPermissions</code></td>
-                <td class="p-3 text-[var(--muted-foreground)]"><em>(None)</em></td>
-                <td class="p-3"><strong><code>HMAC-SHA-256(K_HMAC, Transcript)</code> (32 B authenticating UV request!)</strong></td>
-                <td class="p-3"><code>0x02: pinToken</code> (<strong>48 B</strong>)<br/><code>0x04: HMAC-SHA-256(K_HMAC, Transcript || pinToken)</code> (<strong>32 B</strong>)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    KS --&gt; KHMAC --&gt; AUTH
+    KS --&gt; KAES --&gt; ENC</pre></div>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">CTAP 2.3 §6.5.4 Abstract Function</th>
+<th class="p-3 font-semibold align-bottom text-left">Normative Definition in <code>pinUvAuthProtocol = 4</code> (HPKE Export-Only <code>0xFFFF</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Code Change vs. Protocol 2</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>kdf(Z)</code> $\to$ <code>ctx.Export</code></strong></td>
+<td class="p-3 align-top text-left"><code>K_HMAC = ctx.Export("CTAP2 HMAC key", 32)</code><br/><code>K_AES = ctx.Export("CTAP2 AES key", 32)</code><br/><code>return K_HMAC || K_AES</code></td>
+<td class="p-3 align-top text-left">Replaces P-256 <code>kdf(Z)</code> with RFC 9180 <code>KeySchedule</code> (<code>aead_id = 0xFFFF</code>).</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>encrypt(key, demPlaintext)</code></strong></td>
+<td class="p-3 align-top text-left">Uses <code>K_AES = key[32:64]</code>. Samples fresh 16-byte random <code>IV_16</code> and returns:<br/><code>IV_16 || AES-256-CBC(K_AES, IV_16, demPlaintext)</code></td>
+<td class="p-3 align-top text-left"><strong>Zero changes (100% identical to Protocol 2!)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>decrypt(key, demCiphertext)</code></strong></td>
+<td class="p-3 align-top text-left">Uses <code>K_AES = key[32:64]</code>. Splits <code>IV_16 = demCiphertext[0:16]</code>, <code>ct = demCiphertext[16:]</code>, and returns:<br/><code>AES-256-CBC-Decrypt(K_AES, IV_16, ct)</code></td>
+<td class="p-3 align-top text-left"><strong>Zero changes (100% identical to Protocol 2!)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>authenticate(key, message)</code></strong></td>
+<td class="p-3 align-top text-left">Uses <code>K_HMAC = key[0:32]</code> (or 32-byte <code>pinUvAuthToken</code>). Returns:<br/><code>HMAC-SHA-256(K_HMAC, message)</code> (full 32 bytes during <code>ClientPIN</code>, or <code>LEFT(..., 16)</code> when using <code>pinUvAuthToken</code>).</td>
+<td class="p-3 align-top text-left"><strong>Zero changes (100% identical to Protocol 2!)</strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="13-normative-mapping-of-authenticatorclientpin-0x06-subcommands-in-protocol-4" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.3 Normative Mapping of <code>authenticatorClientPIN</code> (<code>0x06</code>) Subcommands in Protocol 4</h3>
+<p class="text-sm my-2">To close Protocol 2's two authentication gaps—(1) unauthenticated <code>0x0A</code> (<code>getPinUvAuthTokenUsingUvWithPermissions</code>) requests and (2) unauthenticated <code>0x02: pinToken</code> responses—using <strong>only <code>HMAC-SHA-256</code> and <code>AES-256-CBC</code></strong>, Protocol 4 specifies:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Subcommand (<code>0x06</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Request Ciphertext (<code>encrypt(K_AES, ...)</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Request <code>0x04: pinUvAuthParam</code> (<code>HMAC-SHA-256(K_HMAC, ...)</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Response <code>0x02: pinToken</code> &amp; <code>0x04: pinUvAuthParam</code></th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>0x03: setPIN</code></strong></td>
+<td class="p-3 align-top text-left"><code>0x05: newPinEnc = IV_16 || AES-256-CBC(K_AES, IV_16, paddedNewPin_64)</code> (<code>80 B</code>)</td>
+<td class="p-3 align-top text-left"><code>HMAC-SHA-256(K_HMAC, Transcript || newPinEnc)</code> (<code>32 B</code>)</td>
+<td class="p-3 align-top text-left"><em>(Empty response on success)</em></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>0x04: changePIN</code></strong> <em>(Also initial setup with Pairing PIN)</em></td>
+<td class="p-3 align-top text-left"><code>0x05: newPinEnc</code> (<code>80 B</code> with <code>IV_new_16</code>)<br/><code>0x06: pinHashEnc</code> (<code>32 B</code> with <code>IV_old_16</code>)</td>
+<td class="p-3 align-top text-left"><code>HMAC-SHA-256(K_HMAC, Transcript || newPinEnc || pinHashEnc)</code> (<code>32 B</code>)</td>
+<td class="p-3 align-top text-left"><em>(Empty response on success)</em></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>0x09: getPinUvAuthTokenUsingPinWithPermissions</code></strong></td>
+<td class="p-3 align-top text-left"><code>0x06: pinHashEnc = IV_16 || AES-256-CBC(K_AES, IV_16, LEFT(SHA256(PIN), 16))</code> (<code>32 B</code>)</td>
+<td class="p-3 align-top text-left"><code>HMAC-SHA-256(K_HMAC, Transcript || pinHashEnc)</code> (<code>32 B</code>)</td>
+<td class="p-3 align-top text-left"><code>0x02: pinToken = IV_16 || AES-256-CBC(K_AES, IV_16, token_32)</code> (<code>48 B</code>)<br/><code>0x04: pinUvAuthParam = HMAC-SHA-256(K_HMAC, Transcript || 0x02_pinToken)</code> (<code>32 B</code> authenticating the response!)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>0x0A: getPinUvAuthTokenUsingUvWithPermissions</code></strong></td>
+<td class="p-3 align-top text-left"><em>(None)</em></td>
+<td class="p-3 align-top text-left"><strong><code>HMAC-SHA-256(K_HMAC, Transcript)</code> (<code>32 B</code> authenticating the UV request!)</strong></td>
+<td class="p-3 align-top text-left"><code>0x02: pinToken = IV_16 || AES-256-CBC(K_AES, IV_16, token_32)</code> (<code>48 B</code>)<br/><code>0x04: pinUvAuthParam = HMAC-SHA-256(K_HMAC, Transcript || 0x02_pinToken)</code> (<code>32 B</code>)</td>
+</tr>
+</tbody></table></div>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 2: MULTI-TIER TRUST HIERARCHY, PAIRING PINS, PQ-PAKE & NFC    -->
+    <!-- SECTION section-2 -->
     <!-- ===================================================================== -->
-    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
-          Multi-Tier Trust Hierarchy, Pairing PINs, Unattested PQ-PAKE, Dual Modes &amp; NFC Recovery
-        </h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Multi-Tier Trust Hierarchy, Pairing PINs, Unattested PQ-PAKE, Dual Modes &amp; NFC Recovery</h2>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
-          <div class="font-bold text-sm text-[var(--foreground)]">2.1 Tier 1: Enterprise Mutually Authenticated Key Agreement (Host Auth)</div>
-          <p class="text-[var(--muted-foreground)]">
-            Scoped to authenticators with <code>pk_batch</code> and <code>aaguid</code>. Provisioned via <code>authenticatorConfig</code> (<code>0x0D</code>, subCmd <code>0x06: setEnterpriseHostTrustAnchors</code>), advertised via <code>options.enterpriseHostAuth</code> and <code>0x2C: pinUvAuthHostAlgs</code>, and enforced at <code>getKeyAgreement</code> (<code>0x02</code>) with immediate <code>CTAP2_ERR_HOST_UNAUTHENTICATED</code> (<code>0x3E</code>) rejection if <code>0x09: HostAuthPayload</code> is invalid.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
-          <div class="font-bold text-sm text-[var(--foreground)]">2.2 Tier 2: Batch Key Pinning &amp; Same-Batch Evil-Twin Detection</div>
-          <p class="text-[var(--muted-foreground)]">
-            Personal platforms pin <code>(deviceIdentifier, PPUAT_v4, kemId, pk_batch, VerifiedGetInfoProfile)</code> for <strong>0-RTT MITM immunity</strong>, require mandatory <code>PPUAT</code> revocation if <code>pk_batch</code> rotates, and trigger a mandatory <strong>"New / Unrecognized Authenticator Detected" UI warning</strong> if an attacker supplies a different device from the exact same batch (detected via <code>encIdentifier</code> <code>0x19</code> mismatch).
-          </p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-        <div class="p-4 rounded-xl bg-[var(--warning-bg)] border border-[var(--warning-border)] text-[var(--warning-fg)] space-y-2">
-          <div class="font-bold text-sm">2.3 Initial Setup &amp; Reset: Temporary / 6-Digit Factory Pairing PIN (<code>forcePINChange = true</code>)</div>
-          <p>
-            Devices ship with an IT Temporary PIN or random 6-digit scratch-off Factory Pairing PIN and <code>forcePINChange: true</code>, using <code>changePIN</code> (<code>0x04</code>) over the PIN-blinded PQ-PAKE to prevent initial-setup MITM. Executing <code>authenticatorReset</code> (<code>0x07</code>) restores the factory-immutable Pairing PIN and resets <code>pinRetries = 8</code>.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-xl bg-[var(--success-bg)] border border-[var(--success-border)] text-[var(--success-fg)] space-y-2">
-          <div class="font-bold text-sm">2.4 Tier 3: Unattested (<code>aaguid = 0<sup>16</sup></code>) <code>ML-KEM</code> PQ-PAKE &amp; 8-Try <code>pinRetries</code></div>
-          <p>
-            Blinds <code>t_blinded = (t_eph + m_w) mod 3329</code> in <code>getKeyAgreement</code> (<code>0x02</code>) and uses <code>HPKE.SetupPSKS(..., psk = w, aead_id = 0xFFFF)</code> with the 4-rule write-before-verify <code>pinRetries</code> state machine (&le; 8 tries total, &le; 3 per boot, single-use <code>dk_eph</code>, constant-time FO implicit rejection).
-          </p>
-        </div>
-      </div>
-
-      <!-- 2.5 Dual Modes & 2.6 NFC Recovery -->
-      <div class="p-4 rounded-xl bg-[var(--info-bg)] border border-[var(--info-border)] text-[var(--info-fg)] text-xs space-y-2">
-        <div class="font-bold text-sm">2.5 Dual Post-Pairing Modes (Mode A Asymmetric Pinning vs. Mode B Symmetric <code>PPUAT_v4</code>) &amp; 2.6 Stateless <code>0-RTT</code> NFC Recovery</div>
-        <ul class="list-disc list-inside space-y-1">
-          <li><strong>Mode A (Asymmetric Pinning) &amp; Mode B1 (Symmetric 256-Bit <code>PPUAT_v4</code> with 32B <code>clientNonce</code>):</strong> Both run RFC 9180 <code>KeySchedulePSK</code> (<code>aead_id = 0xFFFF</code>) in <strong>0-RTT</strong> to export <code>(K_HMAC, K_AES)</code>, verifying <code>HMAC-SHA-256(K_HMAC, ...)</code> before touching <code>pinRetries</code>.</li>
-          <li><strong>NFC Cached-PIN Silent Recovery (<code>0x09</code>):</strong> When an NFC field drop wipes the volatile PUAT, the Client uses its RAM-cached PIN and <code>PPUAT_v4</code> (Mode B1 32B <code>clientNonce</code> or Mode A <code>pk_batch</code>) to send a <strong><code>0-RTT</code> <code>0x09</code></strong> without re-prompting the user or calling <code>GetInfo</code> (<code>0x04</code>) / <code>getKeyAgreement</code> (<code>0x02</code>). If NFC dropped between <code>0x02</code> and <code>0x09</code> on an unbound host, <code>0x09</code> returns <code>CTAP2_ERR_KEY_AGREEMENT_EXPIRED</code> (<code>0x3F</code>) with <strong>0 <code>pinRetries</code> lost</strong>.</li>
-          <li><strong>NFC On-Device UV Recovery (<code>0x0A</code>):</strong> While the hardware sensor must re-verify the finger on re-tap (unless brief retention SRAM is used), Protocol 4 <strong>skips <code>GetInfo</code> (<code>0x04</code>) and <code>getKeyAgreement</code> (<code>0x02</code>) completely</strong> and jumps directly to <strong><code>0-RTT</code> <code>0x0A</code></strong>!</li>
-        </ul>
-      </div>
+<h3 id="21-tier-1-enterprise-mutually-authenticated-key-agreement-host-authentication-to-authenticator" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Tier 1: Enterprise Mutually Authenticated Key Agreement (Host Authentication to Authenticator)</h3>
+<p class="text-sm my-2">In high-security enterprise environments, authenticators with a batch key (<code>pk_batch</code>) and non-zero <code>aaguid</code> can be configured to <strong>only perform key agreement with an authorized enterprise host</strong> that presents a deployed corporate certificate or public key:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Provisioning (<code>authenticatorConfig</code> <code>0x0D</code>, subCommand <code>0x06: setEnterpriseHostTrustAnchors</code>):</strong> Protected by <code>acfg</code> (<code>0x20</code>). Loads trusted Enterprise Host CA Root public keys or host public keys/fingerprints and sets <code>enterpriseHostAuthRequired</code> (<code>true</code>/<code>false</code>).</li>
+<li><strong><code>authenticatorGetInfo</code> (<code>0x04</code>) Advertisement:</strong> Advertises <code>options.enterpriseHostAuth: true | false</code> and <code>0x2C: pinUvAuthHostAlgs</code> (e.g., <code>-49</code> <code>ML-DSA-65</code>, <code>-50</code> <code>ML-DSA-87</code>, <code>-7</code> <code>ES256</code>).</li>
+<li><strong>Early Rejection at <code>getKeyAgreement</code> (<code>0x02</code>):</strong> The host sends <code>0x09: HostAuthPayload {alg, hostCert, hostNonce, hostSig}</code> over <code>"CTAP2.3-HostAuth" || SHA-256(GetInfo) || hostNonce</code>. If missing or invalid when required, the Authenticator <strong>immediately aborts <code>getKeyAgreement</code> (<code>0x02</code>) with <code>CTAP2_ERR_HOST_UNAUTHENTICATED</code> (<code>0x3E</code>) / <code>CTAP2_ERR_NOT_ALLOWED</code> (<code>0x27</code>)</strong>. When valid, <code>SHA-256(HostAuthPayload)</code> is bound into <code>PinUvAuthTranscript_v4</code>.</li>
+</ol>
+<h3 id="22-tier-2-authenticated-authenticator-getinfo-with-batch-key-pinning-same-batch-evil-twin-detection" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 Tier 2: Authenticated Authenticator + <code>GetInfo</code> with Batch Key Pinning &amp; Same-Batch Evil-Twin Detection</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Batch Key Pinning &amp; Mandatory <code>PPUAT</code> Revocation on Rotation:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Once a personal Platform completes initial pairing—validating <code>batchAttestSig</code> over <code>authenticatorGetInfo</code> and obtaining <code>(PPUAT_v4, deviceIdentifier)</code>—it pins <code>(deviceIdentifier, PPUAT_v4, kemId, pk_batch, VerifiedGetInfoProfile)</code>.</li>
+<li><strong>Normative Rule:</strong> If a firmware update ever rotates <code>pk_batch</code>, the Authenticator <strong>MUST revoke all <code>PPUAT</code>s</strong> (by regenerating its internal master secrets) to force paired Platforms to re-attest and update their pin.</li>
+<li>Once paired, the personal Platform is <strong>completely immune to active Man-in-the-Middle attacks</strong>. Stateless/kiosk devices rely on their cached FIDO MDS / Vendor Root (<code>batchAttestKid</code>) trust list.</li>
+</ul></li>
+<li><strong>Defending Against the "Attacker-Supplied Same-Batch Authenticator" (<code>makeCredential</code> Evil-Twin Attack):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If an attacker tricks a user on their personal computer into calling <code>makeCredential</code> (or logging in) on an <strong>attacker-supplied physical authenticator</strong> from the <strong>exact same manufacturing batch</strong> (identical <code>aaguid</code>, <code>pk_batch</code>, and <code>batchAttestSig</code>) pre-configured with the user's PIN, its <code>encIdentifier</code> (<code>0x19</code>) has a <strong>different <code>deviceIdentifier</code></strong> and fails decryption under every pinned <code>PPUAT_v4</code> on the user's computer.</li>
+<li><strong>Mandatory Personal-Platform UI Policy:</strong> On any personal (non-kiosk) Platform with paired authenticators, if <code>encIdentifier</code> (<code>0x19</code>) does not match any pinned <code>deviceIdentifier</code>, the Platform <strong>MUST display a prominent "New / Unrecognized Security Key Detected" warning ceremony</strong> before permitting <code>makeCredential</code> or PIN entry.</li>
+</ul></li>
+</ol>
+<h3 id="23-mitm-safe-initial-setup-factory-reset-temporary-factory-pairing-pin-forcepinchange-true" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.3 MITM-Safe Initial Setup &amp; Factory Reset: Temporary / Factory Pairing PIN (<code>forcePINChange = true</code>)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Temporary PIN (Enterprise) or Random 6-Digit Factory Pairing PIN (Consumer / Open-Source):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Enterprise authenticators ship with an IT-provisioned <strong>Temporary PIN</strong>; consumer/open-source authenticators ship with a <strong>random 6-digit Factory Pairing PIN</strong> (printed on a tamper-evident scratch-off card in the box) and <code>forcePINChange: true</code> enabled on first use.</li>
+<li>First-time setup uses <strong><code>changePIN</code> (<code>0x04</code>)</strong> over the <strong>PIN-blinded PQ-PAKE (<code>Section 2.4</code>)</strong>, preventing any active MITM during initial PIN setup.</li>
+</ul></li>
+<li><strong>How <code>authenticatorReset</code> (<code>0x07</code>) Solves Setup <code>pinRetries</code> Lockout:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If the 8-try <code>pinRetries</code> counter is exhausted during initial setup (or later use), executing <code>authenticatorReset</code> (<code>0x07</code>) <strong>restores the active PIN verifier $w$ back to the factory-immutable Pairing PIN</strong>, sets <code>forcePINChange = true</code>, and resets <strong><code>pinRetries = 8</code></strong>—recovering cleanly without ever opening an unauthenticated <code>setPIN</code> (<code>0x03</code>) window.</li>
+</ul></li>
+</ol>
+<h3 id="24-tier-3-unattested-open-source-authenticators-aaguid-016-ml-kem-pq-pake-the-8-try-pinretries-state-machine" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.4 Tier 3: Unattested / Open-Source Authenticators (<code>aaguid = 0^16</code>), <code>ML-KEM</code> PQ-PAKE &amp; the 8-Try <code>pinRetries</code> State Machine</h3>
+<p class="text-sm my-2">For open-source, DIY, small-vendor, or privacy authenticators with <strong>no batch certificate (<code>batchAttestSig</code> absent)</strong> and <strong><code>aaguid = 0^16</code></strong>, feeding a low-entropy PIN into an unblinded HPKE <code>mode_psk</code> handshake would allow an active MITM / fake authenticator to substitute <code>(pk_mitm, sk_mitm)</code>, decapsulate <code>enc</code>, and brute-force all $10^4\text{–}10^6$ human PINs <strong>offline in &lt; 1 ms</strong> (bypassing <code>pinRetries</code>).</p>
+<h4 id="normative-solution-in-protocol-4-ml-kem-hatmathbft-vector-blinding-pq-eke-hpke-export-only-0xffff" class="text-base font-semibold text-[var(--foreground)]">Normative Solution in Protocol 4: <code>ML-KEM</code> $\hat{\mathbf{t}}$-Vector Blinding (<code>PQ-EKE</code>) + HPKE Export-Only (<code>0xFFFF</code>)</h4>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Salted PIN Verifier (<code>setPIN</code> / <code>changePIN</code> / Pairing PIN):</strong><div class="overflow-x-auto py-1 text-sm my-2">$$w = \text{HKDF-SHA-256}\left(\text{salt}=\text{pinSalt},\; \text{IKM}=\text{LEFT}(\text{SHA-256}(\text{PIN}), 16),\; \text{info}=\text{"CTAP2.3-PINv4-PAKE"},\; L=32\right)$$</div></li>
+<li><strong>Blinded <code>getKeyAgreement</code> (<code>0x02</code>) on Unbound Hosts:</strong> Generates single-use $(ek_{\text{eph}} = (\hat{\mathbf{t}}_{\text{eph}}, \rho),\; dk_{\text{eph}})$, computes $\hat{\mathbf{m}}_w = \text{SampleUniform}_{\mathbb{Z}_q^{k \times 256}}(\text{SHAKE256}(\text{"CTAP2.3-PINv4-PAKE-MASK"} \parallel w \parallel \rho))$, blinds $\hat{\mathbf{t}}_{\text{blinded}} = (\hat{\mathbf{t}}_{\text{eph}} + \hat{\mathbf{m}}_w) \bmod 3329$, and returns <code>(ek_blinded, pinSalt)</code>.</li>
+<li><strong>Platform Unblinding &amp; HPKE Export-Only Setup (<code>0x09</code> / <code>0x04</code>):</strong> Unblinds $\hat{\mathbf{t}} = (\hat{\mathbf{t}}_{\text{blinded}} - \hat{\mathbf{m}}_w) \bmod 3329$, runs $(K_{\text{kem}}, \text{enc}) = \text{ML-KEM.Encap}((\hat{\mathbf{t}}, \rho))$, initializes <code>ctx = HPKE.SetupPSKS(K_kem, info = Transcript, psk = w, psk_id = pinSalt, aead_id = 0xFFFF)</code>, exports <code>(K_HMAC, K_AES)</code>, encrypts <code>pinHashEnc</code> with <code>AES-256-CBC(K_AES, IV_16, ...)</code>, and authenticates with <code>HMAC-SHA-256(K_HMAC, ...)</code>.</li>
+<li><strong>The 4 Mandatory <code>pinRetries</code> State Machine Rules ($\le 8$ Total Tries, $\le 3$ Per Boot):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Rule 1 (Single-Use $dk_{\text{eph}}$):</strong> <code>0x02</code> leaks 0 bits offline (Module-LWE) and does not decrement <code>pinRetries</code>, but holds at most 1 armed $dk_{\text{eph}}$ in RAM that is wiped on the first <code>0x09</code> / <code>0x04</code> attempt.</li>
+<li><strong>Rule 2 (Write-Before-Verify NVRAM Decrement):</strong> On <code>0x09</code> / <code>0x04</code>, verify <code>pinRetries &gt; 0</code> and <code>bootFailures &lt; 3</code>, and <strong>commit <code>pinRetries -= 1</code> to NVRAM FIRST</strong> before running <code>ML-KEM.Decaps(dk_eph, enc)</code>. Only restore <code>pinRetries = 8</code> after both <code>Decaps</code> and <code>HMAC-SHA-256</code> verify.</li>
+<li><strong>Rule 3 (Constant-Time FO Implicit Rejection):</strong> Wrong PIN $w' \neq w$ triggers constant-time Fujisaki-Okamoto implicit rejection in <code>ML-KEM.Decaps</code>, causing <code>HMAC-SHA-256(K_HMAC, ...)</code> to fail uniformly with <code>CTAP2_ERR_PIN_INVALID</code> (<code>0x31</code>).</li>
+<li><strong>Rule 4 (Zero Offline Guesses for Fake Authenticators):</strong> A fake authenticator must commit to 1 guess $w_{\text{guess}}$ before sending <code>0x02</code>; if $w_{\text{guess}} \neq w_{\text{user}}$, it gets <strong>0 offline guesses</strong> (Module-SIS / Module-LWE).</li>
+</ul></li>
+</ol>
+<h3 id="25-dual-post-pairing-channel-modes-mode-a-asymmetric-pinning-vs-mode-b-symmetric-high-entropy-ppuat_v4" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.5 Dual Post-Pairing Channel Modes: Mode A (Asymmetric Pinning) vs. Mode B (Symmetric High-Entropy <code>PPUAT_v4</code>)</h3>
+<p class="text-sm my-2">Once paired, the Platform holds the <strong>256-bit high-entropy <code>PPUAT_v4</code></strong> ($K_{\text{ppuat}} = \text{HKDF-SHA-256}(0^{32}, \text{PPUAT}_{v4}, \text{"CTAP2.3-PINv4-PSK"}, 32)$). Both Mode A and Mode B use <strong>HPKE Export-Only (<code>aead_id = 0xFFFF</code>)</strong> to export the exact same 64-byte <code>(K_HMAC, K_AES)</code> pair in <strong>0-RTT</strong>:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Feature</th>
+<th class="p-3 font-semibold align-bottom text-left"><strong>Mode A: Asymmetric with <code>pk_batch</code> Pinning (<code>HPKE mode_psk = 0x01</code>)</strong></th>
+<th class="p-3 font-semibold align-bottom text-left"><strong>Mode B: Symmetric with High-Entropy <code>PPUAT_v4</code> (<code>SymPSK</code> Export-Only)</strong></th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Target Authenticators</strong></td>
+<td class="p-3 align-top text-left">Authenticators <strong>with a static <code>pk_batch</code></strong> (Consumer &amp; Enterprise keys).</td>
+<td class="p-3 align-top text-left">Authenticators <strong>with NO <code>pk_batch</code></strong> (Open-source, DIY, small-vendor, or zero-<code>aaguid</code> privacy keys).</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Round Trips &amp; Wire <code>keyAgreement</code> (<code>0x01</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>0-RTT</code></strong> (skips <code>0x02</code>); sends HPKE <code>enc</code> encapsulated to pinned <code>pk_batch</code> (<code>1,088–1,568 B</code>).</td>
+<td class="p-3 align-top text-left"><strong>Mode B1 (Pure Symmetric <code>0-RTT</code>):</strong> Skips <code>0x02</code>; sends a <strong>32-byte <code>clientNonce</code></strong> (<code>COSE_Key</code> <code>{1: 4, -1: clientNonce_32}</code>)!<br/><strong>Mode B2 (Ephemeral KEM <code>1-RTT</code>):</strong> Calls <code>0x02</code> for ephemeral <code>ek_eph</code> + <code>PPUAT_v4</code> when forward secrecy is desired (e.g., <code>changePIN</code>).</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>HPKE Export-Only (<code>0xFFFF</code>) Derivation of <code>(K_HMAC, K_AES)</code></strong></td>
+<td class="p-3 align-top text-left"><code>ctx = HPKE.SetupPSKS(pk_batch, info = Transcript, psk = K_ppuat, psk_id = encIdentifier, aead_id = 0xFFFF)</code> $\to$ <code>K_HMAC = ctx.Export("CTAP2 HMAC key", 32)</code>, <code>K_AES = ctx.Export("CTAP2 AES key", 32)</code>.</td>
+<td class="p-3 align-top text-left"><strong>Mode B1 (<code>SymPSK</code> KeySchedule):</strong> Runs RFC 9180 <code>KeySchedulePSK</code> (<code>aead_id = 0xFFFF</code>) with <code>shared_secret = clientNonce_32 || IV_id_16</code>, <code>psk = K_ppuat</code>, <code>psk_id = encIdentifier</code>, <code>info = Transcript</code> $\to$ exports <code>(K_HMAC, K_AES)</code>!</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>PIN Retry Shielding</strong></td>
+<td class="p-3 align-top text-left">Authenticator verifies <code>HMAC-SHA-256(K_HMAC, ...)</code> <strong>before</strong> decrypting <code>pinHashEnc</code> or touching <code>pinRetries</code>.</td>
+<td class="p-3 align-top text-left">Authenticator verifies <code>HMAC-SHA-256(K_HMAC, ...)</code> (256-bit <code>PPUAT_v4</code>) <strong>before</strong> decrypting <code>pinHashEnc</code> or touching <code>pinRetries</code>.</td>
+</tr>
+</tbody></table></div>
+<h3 id="26-nfc-intermittent-transport-recovery-volatile-state-loss-puat-dk_texteph-cached-pin-silent-recovery-and-getpinuvauthtokenusinguv-0x0a-recovery" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.6 NFC &amp; Intermittent Transport Recovery: Volatile State Loss (<code>PUAT</code> &amp; $dk_{\text{eph}}$), Cached-PIN Silent Recovery, and <code>getPinUvAuthTokenUsingUv</code> (<code>0x0A</code>) Recovery</h3>
+<p class="text-sm my-2">Over <strong>NFC (ISO 14443 / CTAP NFC)</strong>, when a brief RF field drop reboots the Authenticator MCU and wipes volatile RAM (<code>pinUvAuthToken</code> <strong>PUAT</strong>, $dk_{\text{eph}}$, and any RAM-cached <code>GetInfo</code> nonce) while retaining NVRAM (<code>PPUAT_v4</code>, <code>sk_batch</code>, <code>deviceIdentifier</code>, $w$, <code>pinRetries</code>), Protocol 4 recovers identically to Protocol 3:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Stateless <code>encIdentifier</code> (<code>0x0B</code> in <code>0x09</code> / <code>0x0A</code>) — Zero <code>GetInfo</code> RAM State Required:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The Client sends <code>0x0B: encIdentifier</code> in <code>0x09</code> / <code>0x0A</code>. The Authenticator statelessly decrypts <code>0x0B</code> using NVRAM $K_{\text{id}}$ and verifies <code>plaintext == deviceIdentifier</code>, so an NFC power drop after <code>authenticatorGetInfo</code> (<code>0x04</code>) requires <strong>0 recovery round trips</strong>.</li>
+</ul></li>
+<li><strong>Simultaneous <code>PUAT</code> + <code>PPUAT_v4</code> Issuance on Tap 1 (<code>0x05: ppuatToken</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Even on an initially unbound host, Tap 1's <code>0x09</code> / <code>0x0A</code> response returns both the volatile <code>0x02: pinToken</code> (PUAT) and NVRAM-backed <code>0x05: ppuatToken</code> (<code>IV_16 || AES-256-CBC(K_AES, IV_16, PPUAT_v4 || encIdentifier)</code>), authenticated by <code>0x04: pinUvAuthParam = HMAC-SHA-256(K_HMAC, ...)</code>.</li>
+</ul></li>
+<li><strong>Protecting <code>pinRetries</code> on NFC Drops Between <code>0x02</code> and <code>0x09</code> (<code>CTAP2_ERR_KEY_AGREEMENT_EXPIRED</code> <code>0x3F</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If an unbound host's NFC drops after <code>getKeyAgreement</code> (<code>0x02</code>) (wiping $dk_{\text{eph}}$ so <code>ephemeral_state == UNARMED</code>), <code>0x09</code> immediately returns <code>CTAP2_ERR_KEY_AGREEMENT_EXPIRED</code> (<code>0x3F</code>) with <strong>0 <code>pinRetries</code> decremented</strong>.</li>
+</ul></li>
+<li><strong>Case A — Cached-PIN Silent Recovery (<code>0x09</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>When Tap 2's <code>makeCredential</code> / <code>getAssertion</code> gets <code>CTAP2_ERR_PIN_AUTH_INVALID</code> (<code>0x33</code>) because the volatile PUAT was wiped, the Client <strong>never re-prompts the user</strong> and <strong>never goes back to <code>GetInfo</code> (<code>0x04</code>) or <code>getKeyAgreement</code> (<code>0x02</code>)</strong>. Using its RAM-cached PIN and <code>PPUAT_v4</code> (Mode B1 32B <code>clientNonce</code> or Mode A <code>pk_batch</code>), it sends a <strong>0-RTT <code>0x09</code></strong> (<code>32B clientNonce + 32B pinHashEnc + 32B pinUvAuthParam = 96B</code>) and immediately retries <code>makeCredential</code> / <code>getAssertion</code> in the same tap!</li>
+</ul></li>
+<li><strong>Case B — <code>getPinUvAuthTokenUsingUvWithPermissions</code> (<code>0x0A</code>) Recovery Over NFC (Does Not Go Back to the Start!):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Because the Client never holds the biometric secret, the on-device sensor must re-verify the user's finger (which is already resting on the NFC biometric key during the re-tap, unless a 2–5 s hold-up capacitor retains the 48 B PUAT in SRAM).</li>
+<li>However, <strong>Protocol 4 does NOT go back to <code>authenticatorGetInfo</code> (<code>0x04</code>) or <code>getKeyAgreement</code> (<code>0x02</code>)</strong>: on both paired hosts (<code>PPUAT_v4</code> Mode A / Mode B1) and unbound hosts with a cached <code>pk_batch</code>, the Client jumps <strong>directly to <code>0-RTT</code> <code>0x0A</code></strong> $\to$ <code>getAssertion</code> (<strong>2 RTTs</strong> instead of 3–4 RTTs)!</li>
+</ul></li>
+</ol>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTIONS 3, 4 & 5: GETINFO, HIERARCHICAL PPUAT & EXTENSIONS           -->
+    <!-- SECTION section-3 -->
     <!-- ===================================================================== -->
-    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
-        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3, 4 &amp; 5</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
-          <code>GetInfo</code> Integrity, Hierarchical <code>PPUAT_v4 &rarr; PPUAT_v2</code> &amp; Export-Only Extension Encryption
-        </h2>
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Downgrade Prevention &amp; <code>authenticatorGetInfo</code> Integrity</h2>
       </div>
-
-      <div id="section-4" class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] font-mono text-xs text-center">
-        PPUAT_v4 (32B NVRAM Root) &mdash;[ HKDF-SHA-256(0^32, PPUAT_v4, "CTAP-PPUAT-v2", 32) ]&rarr; PPUAT_v2 &rarr; (K_id, K_css)
-      </div>
-
-      <div id="section-5" class="overflow-x-auto rounded-xl border border-[var(--border)]">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="bg-[var(--content)] border-b border-[var(--border)]">
-              <th class="p-3 font-semibold">Extension</th>
-              <th class="p-3 font-semibold">Protocol 4 Encryption (<code>K_ext_AES</code> / <code>K_ext_HMAC</code> from <code>HKDF(pinUvAuthToken, clientDataHash)</code>)</th>
-              <th class="p-3 font-semibold">Firmware Reuse &amp; Wire Gain</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--border)]">
-            <tr>
-              <td class="p-3 font-semibold"><code>hmac-secret</code> / <code>hmac-secret-mc</code></td>
-              <td class="p-3">Req: <code>2: saltEnc = IV_16 || AES-256-CBC(K_ext_AES, IV_16, salt1 [|| salt2])</code> (<strong><code>1: keyAgreement</code> &amp; <code>3: saltAuth</code> OMITTED!</strong>)<br/>Rsp: <code>output = IV_16 || AES-256-CBC(K_ext_AES, IV_16, out1 [|| out2])</code> (<strong>48 B / 80 B</strong>).</td>
-              <td class="p-3"><strong>Saves 1,152–1,600 B on request wire</strong> and reuses 100% of Protocol 2's <code>AES-256-CBC</code> extension code!</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold"><code>largeBlobKey</code> (<code>0x07</code>)</td>
-              <td class="p-3">Rsp: <code>0x07: largeBlobKey = IV_16 || AES-256-CBC(K_ext_AES, IV_16, rawKey_32)</code> (<strong>48 B</strong>) + <code>HMAC-SHA-256(K_ext_HMAC, ...)</code>.</td>
-              <td class="p-3">Closes the CTAP 2.3 plaintext <code>largeBlobKey</code> bus leak using existing <code>AES-256-CBC</code>!</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold"><code>credBlob</code> (§12.5)</td>
-              <td class="p-3 font-semibold text-[var(--danger-fg)]"><strong>FORMALLY DEPRECATED IN PROTOCOL 4</strong> (Unreleased Kerberos KDC cert hash origin; leaks plaintext without UV).</td>
-              <td class="p-3">Replaced by <code>largeBlobs</code> (<code>0x0C</code>) and <code>hmac-secret</code> (<code>prf</code>).</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold"><code>sign</code> (<code>previewSign5</code> &amp; ARKG)</td>
-              <td class="p-3">Bus &amp; E2E layers use HPKE Export-Only (<code>aead_id = 0xFFFF</code>) exporting <code>(K_HMAC, K_AES)</code>; commits <code>8: sigCommitment = SHA-256(tbs || sig)</code> in signed <code>authenticatorData</code>.</td>
-              <td class="p-3">Secures <code>previewSign5</code> and makes classical <code>ARKG-P256</code> PQ-unlinkable against HNDL using only <code>AES-256-CBC</code> + <code>HMAC-SHA-256</code>!</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<p class="text-sm my-2">Protocol 4 uses the exact same dual-layer downgrade defense as Protocol 3, substituting version string <code>"CTAP2.3-PINv4-Export"</code> in <code>PinUvAuthTranscript_v4</code>:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>PinUvAuthTranscript_v4 = [
+    version:             "CTAP2.3-PINv4-Export",
+    subCommand:          uint8,          ; 0x03 (setPIN), 0x04 (changePIN), 0x09 (PinToken), 0x0A (UvToken)
+    channelMode:         uint8,          ; 1 = Mode A (Asymmetric), 2 = Mode B1 (SymPSK), 3 = PQ-PAKE
+    kemId:               uint16,         ; Selected KEM ID (or 0x0000 in Mode B1 SymPSK)
+    pinUvAuthProtocols:  [+ uint],       ; From authenticatorGetInfo (0x06)
+    pinUvAuthKems:       [+ uint16],     ; From authenticatorGetInfo (0x2A)
+    maxMsgSize:          uint,           ; From authenticatorGetInfo (0x05, default 1024)
+    uvCapabilityMask:    uint8,          ; Key presence in 0x04 options: bit0=clientPin, bit1=uv, bit2=pinUvAuthToken, bit3=enterpriseHostAuth
+    ? hostAuthHash:      bstr .size 32   ; SHA-256(HostAuthPayload) when Tier 1 Enterprise Host Auth is used
+]</code></pre></div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>SHA-256(CBOR(PinUvAuthTranscript_v4))</code> is passed as <strong><code>info</code></strong> into HPKE <code>KeySchedule</code> (<code>aead_id = 0xFFFF</code>) <strong>and</strong> prepended to the message input of <strong><code>HMAC-SHA-256(K_HMAC, ...)</code></strong> in every <code>authenticatorClientPIN</code> command.</li>
+<li>Vendor root indexing (<code>0x2B: batchAttestKid</code>) and <code>ReconstructedAttestation_v1</code> (<code>FN-DSA</code> or <code>LMS_SHA256_M32_H10</code>) are 100% identical to Protocol 3.</li>
+</ul>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 6: PROTOCOL 3 VS. PROTOCOL 4 COMPARISON & PYTHON CODE         -->
+    <!-- SECTION section-4 -->
     <!-- ===================================================================== -->
-    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Hierarchical <code>PPUAT</code> Domain Separation Between Protocols 2 and 4</h2>
+      </div>
+<p class="text-sm my-2">A single 32-byte NVRAM root secret (<strong><code>PPUAT_v4</code></strong>) is stored on the Authenticator and separated from legacy Protocol 2 hosts by a one-way SHA-256 PRF firewall ($2^{128}$ quantum preimage resistance):</p>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{PPUAT}_{v4} \text{ (32B NVRAM Root)} \xrightarrow[\text{One-Way } (2^{128} \text{ Quantum Preimage})]{\text{HKDF-SHA-256}(0^{32}, \text{PPUAT}_{v4}, \text{"CTAP-PPUAT-v2"}, 32)} \text{PPUAT}_{v2} \xrightarrow{\text{CTAP 2.3 §6.4}} (K_{\text{id}}, K_{\text{css}})$$</div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Extensions Under HPKE Export-Only (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, and <code>sign</code>)</h2>
+      </div>
+<h3 id="51-unified-per-command-extension-key-pair-k_ext_hmac-k_ext_aes" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Unified Per-Command Extension Key Pair (<code>K_ext_HMAC</code> &amp; <code>K_ext_AES</code>)</h3>
+<p class="text-sm my-2">When <code>makeCredential</code> (<code>0x01</code>) or <code>getAssertion</code> (<code>0x02</code>) is called with a Protocol 4 <code>pinUvAuthToken</code>, <strong>there is no need to send a second 1.1–1.5 KB Post-Quantum <code>keyAgreement</code> ciphertext inside extension inputs</strong>!</p>
+<p class="text-sm my-2">Instead, both Platform and Authenticator deterministically derive a 64-byte <strong>Per-Command Extension Shared Secret (<code>K_ext_HMAC || K_ext_AES</code>)</strong> from <code>(pinUvAuthToken, clientDataHash)</code>:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><pre class="text-xs leading-relaxed"><code>prk_ext       = HKDF-Extract(salt = clientDataHash, IKM = pinUvAuthToken)
+K_ext_HMAC    = HKDF-Expand(prk_ext, "CTAP2.3-PINv4-Ext-HMAC-Key", 32)
+K_ext_AES     = HKDF-Expand(prk_ext, "CTAP2.3-PINv4-Ext-AES-Key", 32)</code></pre></div>
+<p class="text-sm my-2">And <code>pinUvAuthParam</code> (<code>0x08</code> in <code>makeCredential</code> / <code>getAssertion</code>) authenticates <code>extensions</code> (<code>0x04</code>) alongside <code>clientDataHash</code>:</p>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{pinUvAuthParam} = \text{HMAC-SHA-256}\left(\text{key}=\text{pinUvAuthToken},\; \text{clientDataHash} \parallel \text{CBOR}(\text{extensions})\right)$$</div>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Extension</th>
+<th class="p-3 font-semibold align-bottom text-left">Request Encryption (<code>K_ext_AES</code> / <code>K_ext_HMAC</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Response Encryption (<code>K_ext_AES</code> / <code>K_ext_HMAC</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Wire Format &amp; Firmware Reuse Gain</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>hmac-secret</code> / <code>hmac-secret-mc</code></strong></td>
+<td class="p-3 align-top text-left"><code>2: saltEnc = IV_16 || AES-256-CBC(K_ext_AES, IV_16, salt1 [|| salt2])</code> (<code>48 B</code> or <code>80 B</code>).<br/><strong><code>1: keyAgreement</code> and <code>3: saltAuth</code> OMITTED!</strong> <em>(Authenticated by outer <code>pinUvAuthParam</code> covering <code>extensions</code>)</em>.</td>
+<td class="p-3 align-top text-left"><code>output = IV_16 || AES-256-CBC(K_ext_AES, IV_16, out1 [|| out2])</code> (<code>48 B</code> or <code>80 B</code>, <strong>100% identical to Protocol 2!</strong>).</td>
+<td class="p-3 align-top text-left"><strong>Saves 1,152–1,600 B on request wire</strong>, avoids a second <code>ML-KEM.Decaps()</code>, and <strong>reuses 100% of Protocol 2's <code>AES-256-CBC</code> extension code</strong>!</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>largeBlobKey</code> (<code>0x07</code>)</strong></td>
+<td class="p-3 align-top text-left"><em>(Requested via boolean <code>largeBlobKey: true</code>)</em></td>
+<td class="p-3 align-top text-left"><code>0x07: largeBlobKey = IV_16 || AES-256-CBC(K_ext_AES, IV_16, rawKey_32)</code> (<code>48 B</code> = <code>16B IV + 32B CBC ct</code>) + <code>HMAC-SHA-256(K_ext_HMAC, ...)</code> in <code>unsignedExtensionOutputs</code>.</td>
+<td class="p-3 align-top text-left">Closes the CTAP 2.3 plaintext <code>largeBlobKey</code> USB/NFC bus leak using existing <code>AES-256-CBC</code>!</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>credBlob</code> (§12.5)</strong></td>
+<td class="p-3 align-top text-left"><strong>FORMALLY DEPRECATED IN PROTOCOL 4</strong> (Originally intended for unreleased Kerberos KDC certificate hash pinning; leaks plaintext without UV).</td>
+<td class="p-3 align-top text-left"><em>(Deprecated)</em></td>
+<td class="p-3 align-top text-left">Replaced by <code>largeBlobs</code> (<code>0x0C</code>) and <code>hmac-secret</code> (<code>prf</code>).</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>sign</code> (<code>previewSign5</code> &amp; ARKG)</strong></td>
+<td class="p-3 align-top text-left"><strong>CTAP Bus Layer:</strong> <code>IV_16 || AES-256-CBC(K_ext_AES, IV_16, CBOR(signInput))</code> (authenticated by outer <code>pinUvAuthParam</code>).<br/><strong>RP $\leftrightarrow$ Auth E2E Layer:</strong> HPKE <code>mode_psk</code> (<code>aead_id = 0xFFFF</code>, <code>pk_kem</code> + <code>K_e2e</code>) exporting <code>(K_e2e_HMAC, K_e2e_AES)</code>.</td>
+<td class="p-3 align-top text-left"><strong>CTAP Bus Layer:</strong> <code>unsignedExtensionOutputs["previewSign5"]</code> encrypted with <code>AES-256-CBC(K_ext_AES)</code> + <code>HMAC-SHA-256(K_ext_HMAC)</code>.<br/><strong>Signed <code>authenticatorData</code>:</strong> <code>8: sigCommitment = SHA-256(tbs || sig)</code> (<code>32 B</code>).</td>
+<td class="p-3 align-top text-left">Secures <code>previewSign5</code> on both the CTAP bus and end-to-end (<code>RP &lt;-&gt; Authenticator</code>) using only <code>AES-256-CBC</code> and <code>HMAC-SHA-256</code>!</td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-6 -->
+    <!-- ===================================================================== -->
+    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">
-          Side-by-Side Comparison: Protocol 3 (Stateful AEAD <code>0x0002</code>) vs. Protocol 4 (Export-Only <code>0xFFFF</code>)
-        </h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Protocol 3 vs. Protocol 4 Comparison &amp; Reference Python Implementation</h2>
       </div>
+<h3 id="61-side-by-side-comparison-protocol-3-hpke-stateful-aead-0x0002-vs-protocol-4-hpke-export-only-0xffff" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.1 Side-by-Side Comparison: Protocol 3 (HPKE Stateful AEAD <code>0x0002</code>) vs. Protocol 4 (HPKE Export-Only <code>0xFFFF</code>)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Architectural Dimension</th>
+<th class="p-3 font-semibold align-bottom text-left"><strong>Protocol 3 (<code>pinUvAuthProtocol = 3</code>)</strong><br/>HPKE Stateful AEAD (<code>aead_id = 0x0002</code>, <code>AES-256-GCM</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left"><strong>Protocol 4 (<code>pinUvAuthProtocol = 4</code>)</strong><br/>HPKE Export-Only (<code>aead_id = 0xFFFF</code>, <code>AES-256-CBC</code> + <code>HMAC-SHA-256</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Symmetric Crypto Primitives Required on MCU</strong></td>
+<td class="p-3 align-top text-left">Requires <strong><code>AES-256-GCM</code></strong> + <code>HKDF-SHA-256</code> + <code>HMAC-SHA-256</code>.</td>
+<td class="p-3 align-top text-left">Requires <strong>ONLY <code>AES-256-CBC</code> + <code>HMAC-SHA-256</code> + <code>HKDF-SHA-256</code></strong> (0 bytes of <code>AES-GCM</code> code!).</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Protocol 2 Symmetric Code Reuse</strong></td>
+<td class="p-3 align-top text-left">Replaces <code>encrypt()</code> / <code>decrypt()</code> with stateful <code>ctx.Seal()</code> / <code>ctx_rsp.Seal()</code>.</td>
+<td class="p-3 align-top text-left"><strong>100% Drop-In Reuse</strong> of Protocol 2's <code>encrypt()</code>, <code>decrypt()</code>, <code>authenticate()</code>, and <code>verify()</code>!</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Nonce / IV Management</strong></td>
+<td class="p-3 align-top text-left">Deterministic 12-byte nonce (<code>base_nonce XOR seq</code>); <strong>0 bytes of wire IV</strong>, requires tracking <code>seq_req</code> / <code>seq_rsp</code>.</td>
+<td class="p-3 align-top text-left">Stateless per-ciphertext 16-byte random <code>IV_16</code> prepended on the wire; <strong>no sequence counters (<code>seq</code>) to track</strong>.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>changePIN</code> (<code>0x04</code>) Request Size</strong></td>
+<td class="p-3 align-top text-left"><code>newPinEnc</code> (<code>80 B</code>) + <code>pinHashEnc</code> (<code>32 B</code>) = <strong><code>112 B</code></strong></td>
+<td class="p-3 align-top text-left"><code>newPinEnc</code> (<code>80 B</code>) + <code>pinHashEnc</code> (<code>32 B</code>) + <code>pinUvAuthParam</code> (<code>32 B</code>) = <strong><code>144 B</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>0x09</code> (<code>PinToken</code>) Request / Response Size</strong></td>
+<td class="p-3 align-top text-left">Req: <code>32 B</code> (<code>pinHashEnc</code>)<br/>Rsp: <code>48 B</code> (<code>pinToken</code>)</td>
+<td class="p-3 align-top text-left">Req: <code>32 B</code> (<code>pinHashEnc</code>) + <code>32 B</code> (<code>pinUvAuthParam</code>) = <code>64 B</code><br/>Rsp: <code>48 B</code> (<code>pinToken</code>) + <code>32 B</code> (<code>pinUvAuthParam</code>) = <code>80 B</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>hmac-secret</code> Request / Response Size (1 Salt)</strong></td>
+<td class="p-3 align-top text-left">Req: <code>48 B</code> (<code>1: keyAgreement</code> &amp; <code>3: saltAuth</code> elided)<br/>Rsp: <code>48 B</code> (<code>32B ct + 16B GCM tag</code>)</td>
+<td class="p-3 align-top text-left">Req: <code>48 B</code> (<code>1: keyAgreement</code> &amp; <code>3: saltAuth</code> elided)<br/>Rsp: <code>48 B</code> (<code>16B IV + 32B CBC ct</code>, <strong>100% identical to Protocol 2</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Multi-Tier Trust, Pairing PIN, PQ-PAKE, <code>SymPSK</code> &amp; NFC Recovery</strong></td>
+<td class="p-3 align-top text-left"><strong>Supported</strong> (Identical KEM &amp; trust layer).</td>
+<td class="p-3 align-top text-left"><strong>Supported</strong> (Identical KEM &amp; trust layer).</td>
+</tr>
+</tbody></table></div>
+<h3 id="62-end-to-end-reference-implementation-of-pinuvauthprotocol-4-python" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.2 End-to-End Reference Implementation of <code>pinUvAuthProtocol = 4</code> (Python)</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">python</div><pre class="text-xs leading-relaxed"><code>import hmac
+import os
+from dataclasses import dataclass
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF, HKDFExpand
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-      <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="bg-[var(--content)] border-b border-[var(--border)]">
-              <th class="p-3 font-semibold">Dimension</th>
-              <th class="p-3 font-semibold">Protocol 3 (<code>pinUvAuthProtocol = 3</code>)<br/>HPKE Stateful AEAD (<code>aead_id = 0x0002</code>, <code>AES-256-GCM</code>)</th>
-              <th class="p-3 font-semibold">Protocol 4 (<code>pinUvAuthProtocol = 4</code>)<br/>HPKE Export-Only (<code>aead_id = 0xFFFF</code>, <code>AES-256-CBC</code> + <code>HMAC-SHA-256</code>)</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--border)]">
-            <tr>
-              <td class="p-3 font-semibold">Symmetric Crypto on MCU</td>
-              <td class="p-3">Requires <strong><code>AES-256-GCM</code></strong> + <code>HKDF-SHA-256</code> + <code>HMAC-SHA-256</code>.</td>
-              <td class="p-3">Requires <strong>ONLY <code>AES-256-CBC</code> + <code>HMAC-SHA-256</code> + <code>HKDF-SHA-256</code></strong> (0 B of <code>AES-GCM</code> code!).</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold">Protocol 2 Symmetric Reuse</td>
-              <td class="p-3">Replaces <code>encrypt()</code>/<code>decrypt()</code> with stateful <code>ctx.Seal()</code>/<code>ctx_rsp.Seal()</code>.</td>
-              <td class="p-3"><strong>100% Drop-In Reuse</strong> of Protocol 2's <code>encrypt()</code>, <code>decrypt()</code>, <code>authenticate()</code>, and <code>verify()</code>!</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold">Nonce / IV Management</td>
-              <td class="p-3">Deterministic 12 B nonce (<code>base_nonce XOR seq</code>); <strong>0 B wire IV</strong>, tracks <code>seq_req</code> / <code>seq_rsp</code>.</td>
-              <td class="p-3">Stateless per-ciphertext 16 B random <code>IV_16</code> prepended on wire; <strong>no sequence counters (<code>seq</code>)</strong>.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <pre class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs overflow-x-auto leading-relaxed"><code>class HPKEExportOnlyProtocol4Context:
-    """RFC 9180 HPKE Export-Only (kdf_id = 0x0001, aead_id = 0xFFFF) for pinUvAuthProtocol = 4."""
-    def __init__(self, exporter_secret: bytes):
+def hkdf_extract(salt: bytes, ikm: bytes) -&gt; bytes:
+    return HKDF.extract(hashes.SHA256(), salt, ikm)
+
+
+def hkdf_expand(prk: bytes, info: bytes, length: int) -&gt; bytes:
+    return HKDFExpand(hashes.SHA256(), length, info).derive(prk)
+
+
+def hkdf_sha256(ikm: bytes, info: bytes, length: int, salt: bytes = b"\x00" * 32) -&gt; bytes:
+    return HKDF(algorithm=hashes.SHA256(), length=length, salt=salt, info=info).derive(ikm)
+
+
+def hmac_sha256(key: bytes, data: bytes) -&gt; bytes:
+    h = hmac.new(key, data, digestmod="sha256")
+    return h.digest()
+
+
+@dataclass
+class HPKEExportOnlyProtocol4Context:
+    """
+    RFC 9180 HPKE Export-Only Context (kdf_id = 0x0001, aead_id = 0xFFFF)
+    for CTAP 2.3+ pinUvAuthProtocol = 4:
+      Exports 64-byte sharedSecret = K_HMAC (32B) || K_AES (32B) and reuses
+      100% of CTAP 2.3 Protocol 2's encrypt(), decrypt(), authenticate(), and verify()!
+    """
+    k_hmac: bytes
+    k_aes: bytes
+    exporter_secret: bytes
+
+    @classmethod
+    def setup_export_only(
+        cls,
+        shared_secret: bytes,
+        transcript_info: bytes,
+        psk: bytes = b"",
+        psk_id: bytes = b"",
+    ) -&gt; "HPKEExportOnlyProtocol4Context":
+        # suite_id = "HPKE" || kem_id (0x647a X-Wing) || kdf_id (0x0001) || aead_id (0xFFFF Export-only)
         suite_id = b"HPKE\x64\x7a\x00\x01\xff\xff"
-        self.k_hmac = hkdf_expand(exporter_secret, suite_id + b"sec" + b"CTAP2 HMAC key", 32)
-        self.k_aes  = hkdf_expand(exporter_secret, suite_id + b"sec" + b"CTAP2 AES key", 32)
+        mode = b"\x01" if psk else b"\x00"
+        psk_id_hash = hkdf_extract(b"", suite_id + b"psk_id_hash" + psk_id)
+        info_hash = hkdf_extract(b"", suite_id + b"info_hash" + transcript_info)
+        ks_context = mode + psk_id_hash + info_hash
 
-    def encrypt(self, pt: bytes) -&gt; bytes:
+        secret = hkdf_extract(shared_secret, suite_id + b"secret" + psk)
+        exporter_secret = hkdf_expand(secret, suite_id + b"exp" + ks_context, 32)
+
+        # Export Protocol 2-compatible K_HMAC (32B) and K_AES (32B)
+        k_hmac = hkdf_expand(exporter_secret, suite_id + b"sec" + b"CTAP2 HMAC key", 32)
+        k_aes = hkdf_expand(exporter_secret, suite_id + b"sec" + b"CTAP2 AES key", 32)
+        return cls(k_hmac=k_hmac, k_aes=k_aes, exporter_secret=exporter_secret)
+
+    # --- 100% Unchanged Protocol 2 Symmetric Primitives ---
+    def encrypt(self, plaintext: bytes) -&gt; bytes:
         iv = os.urandom(16)
-        return iv + Cipher(algorithms.AES(self.k_aes), modes.CBC(iv)).encryptor().update(pt)
+        ct = Cipher(algorithms.AES(self.k_aes), modes.CBC(iv)).encryptor().update(plaintext)
+        return iv + ct
 
-    def authenticate(self, msg: bytes) -&gt; bytes:
-        return hmac.new(self.k_hmac, msg, "sha256").digest()</code></pre>
+    def decrypt(self, ciphertext: bytes) -&gt; bytes:
+        iv, ct = ciphertext[:16], ciphertext[16:]
+        return Cipher(algorithms.AES(self.k_aes), modes.CBC(iv)).decryptor().update(ct)
+
+    def authenticate(self, message: bytes) -&gt; bytes:
+        return hmac_sha256(self.k_hmac, message)
+
+    def verify(self, message: bytes, signature: bytes) -&gt; bool:
+        return hmac.compare_digest(self.authenticate(message), signature)
+
+
+# --- Demonstration: Mode B1 (0-RTT SymPSK), changePIN (0x04), and Authenticated pinToken (0x02) ---
+if __name__ == "__main__":
+    transcript = b"CTAP2.3-PINv4-Export-Transcript-Example"
+    ppuat_v4 = os.urandom(32)
+    k_ppuat = hkdf_sha256(ppuat_v4, b"CTAP2.3-PINv4-PSK", 32)
+    iv_id = os.urandom(16)
+    client_nonce = os.urandom(32)
+
+    # 1. Mode B1 (0-RTT Symmetric High-Entropy PPUAT_v4 for Batchless Authenticators)
+    plat_ctx = HPKEExportOnlyProtocol4Context.setup_export_only(
+        shared_secret=client_nonce + iv_id,
+        transcript_info=transcript,
+        psk=k_ppuat,
+        psk_id=iv_id,
+    )
+    auth_ctx = HPKEExportOnlyProtocol4Context.setup_export_only(
+        shared_secret=client_nonce + iv_id,
+        transcript_info=transcript,
+        psk=k_ppuat,
+        psk_id=iv_id,
+    )
+
+    # 2. changePIN (0x04): Reuses Protocol 2 encrypt() and authenticate()
+    padded_new_pin = b"MyNewPin1234".ljust(64, b"\x00")
+    old_pin_hash = hashes.Hash(hashes.SHA256())
+    old_pin_hash.update(b"123456")
+    old_pin_16 = old_pin_hash.finalize()[:16]
+
+    new_pin_enc = plat_ctx.encrypt(padded_new_pin)  # 16B IV + 64B AES-256-CBC = 80B
+    pin_hash_enc = plat_ctx.encrypt(old_pin_16)     # 16B IV + 16B AES-256-CBC = 32B
+    req_auth = plat_ctx.authenticate(transcript + new_pin_enc + pin_hash_enc)
+
+    assert auth_ctx.verify(transcript + new_pin_enc + pin_hash_enc, req_auth)
+    assert auth_ctx.decrypt(new_pin_enc) == padded_new_pin
+    assert auth_ctx.decrypt(pin_hash_enc) == old_pin_16
+
+    # 3. Authenticated Response: 0x02 pinToken (48B) + 0x04 pinUvAuthParam (32B)
+    issued_pin_token = os.urandom(32)
+    enc_pin_token = auth_ctx.encrypt(issued_pin_token)
+    rsp_auth = auth_ctx.authenticate(transcript + enc_pin_token)
+
+    assert plat_ctx.verify(transcript + enc_pin_token, rsp_auth)
+    assert plat_ctx.decrypt(enc_pin_token) == issued_pin_token
+    print("SUCCESS: PIN Protocol 4 HPKE Export-Only (0xFFFF) verified end-to-end!")</code></pre></div>
     </section>
-
   </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./ctap23_pin_protocol_4_hpke_export_only_proposal.md" class="text-[var(--primary)] hover:underline">ctap23_pin_protocol_4_hpke_export_only_proposal.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
 </body>
 </html>

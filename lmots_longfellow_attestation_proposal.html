@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Batch Post-Quantum FIDO Attestation via LM-OTS &amp; Google Longfellow Specification Report</title>
+  <title>Multi-Batch Post-Quantum FIDO Attestation via LM-OTS &amp; Google Longfellow (longfellow-lmots-zk and Direct Enterprise LMS)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -18,11 +18,6 @@
       --primary-foreground: #ffffff;
       --secondary: #e2e8f0;
       --secondary-foreground: #1e293b;
-      --accent: #dbeafe;
-      --accent-foreground: #1e40af;
-      --warning-bg: #fef3c7;
-      --warning-border: #f59e0b;
-      --warning-fg: #92400e;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -36,11 +31,6 @@
         --primary-foreground: #ffffff;
         --secondary: #1e293b;
         --secondary-foreground: #e2e8f0;
-        --accent: #1e3a8a;
-        --accent-foreground: #bfdbfe;
-        --warning-bg: #451a03;
-        --warning-border: #d97706;
-        --warning-fg: #fde68a;
       }
     }
     html {
@@ -48,6 +38,14 @@
     }
     code, pre {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
     }
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
@@ -58,10 +56,6 @@
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
     mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
   </script>
-  <style>
-    main td code, main th code, main li code, main p code { background: var(--content); padding: 0 0.25rem; border-radius: 0.25rem; }
-    main table td, main table th { min-width: 6rem; }
-  </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
 
@@ -69,10 +63,10 @@
   <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">FIDO2 CTAP 2.3 &amp; WebAuthn L3</span>
-        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: "longfellow-lmots-zk"</span>
-        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">RFC 8554 LM-OTS + ML-DSA-65</span>
-        <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">Google Longfellow (GKR + Ligero GF(2^k))</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">FIDO2 CTAP 2.3 &amp; WebAuthn L3</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: &quot;longfellow-lmots-zk&quot;</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">RFC 8554 LM-OTS + ML-DSA-65</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Google Longfellow (GKR + Ligero GF(2^k))</span>
       </div>
       <div class="flex items-center gap-4">
         <a href="./lmots_longfellow_attestation_proposal.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
@@ -80,63 +74,120 @@
       </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      Multi-Batch Post-Quantum FIDO Attestation via LM-OTS &amp; Google Longfellow (<code>longfellow-lmots-zk</code> and Direct Enterprise LMS)
+      Multi-Batch Post-Quantum FIDO Attestation via LM-OTS &amp; Google Longfellow (longfellow-lmots-zk and Direct Enterprise LMS)
     </h1>
-    <div class="mb-4 p-3.5 rounded-xl bg-[var(--warning-bg)] border border-[var(--warning-border)] text-[var(--warning-fg)] text-xs md:text-sm font-medium">
-      <strong>Notice:</strong> This document is an early architectural proposal for discussion only. It is aligned with the FIDO Client to Authenticator Protocol (CTAP) v2.3 Proposed Standard (<code>2026-02-26</code>) and W3C WebAuthn Level 3, and has not been adopted by the FIDO Alliance or W3C WebAuthn Working Group.
-    </div>
-    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-6">
-      A post-quantum FIDO2/WebAuthn attestation architecture combining <strong>128-byte core state RFC 8554 LM-OTS</strong> on resource-constrained Secure Elements with <strong>Google Longfellow</strong> (GKR layered sumcheck + Ligero over binary extension fields <code>GF(2^k)</code>) on participating host platforms. Covers on-the-fly device subtree derivation (eliminating host SQLite/RocksDB databases), <code>authenticatorGetInfo</code> capability signaling, platform-side <code>fmt</code> rewriting, multi-batch AAGUID routing, 47-layer GKR SIMD circuit optimization, and a <strong>1.6 KB self-contained Enterprise Direct Attestation profile</strong> verifying in <code>80 &mu;s</code>.
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      A post-quantum FIDO2/WebAuthn attestation architecture combining 128-byte core state RFC 8554 LM-OTS on resource-constrained Secure Elements with Google Longfellow (GKR layered sumcheck + Ligero over binary extension fields GF(2^k)) on participating host platforms. Covers on-the-fly device subtree derivation, authenticatorGetInfo capability signaling, platform-side fmt rewriting, multi-batch AAGUID routing, 47-layer GKR SIMD circuit optimization, and a 1.6 KB self-contained Enterprise Direct Attestation profile verifying in 80 µs.
     </p>
 
-    <!-- Sticky / Quick Navigation Bar -->
-    <nav class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-4 border-t border-[var(--border)]">
-      <a href="#section-1" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 1</div>
-        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">128-Byte Core &amp; Black-Box Profiles</div>
-        <div class="text-xs text-[var(--muted-foreground)] mt-1">NVM layout, Profile 1 (BDS) vs. Profile 2 (RO Cache)</div>
-      </a>
-      <a href="#section-2" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 2</div>
-        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">CTAP 2.3 Pipeline &amp; Format Rewriting</div>
-        <div class="text-xs text-[var(--muted-foreground)] mt-1"><code>getInfo</code> signaling, on-the-fly path &amp; host blinding</div>
-      </a>
-      <a href="#section-3" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 3</div>
-        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Multi-Batch AAGUID Routing</div>
-        <div class="text-xs text-[var(--muted-foreground)] mt-1">WebAuthn L3 <code>attStmt.batchRootId</code> &amp; FIDO MDS</div>
-      </a>
-      <a href="#section-4" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 4</div>
-        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Google Longfellow Circuit Optimization</div>
-        <div class="text-xs text-[var(--muted-foreground)] mt-1">33-block pre-padding, <code>GF(2^k)</code> MUX &amp; 67-wide GKR SIMD</div>
-      </a>
-      <a href="#section-5" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 5</div>
-        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Consumer ZK Performance (31-Level)</div>
-        <div class="text-xs text-[var(--muted-foreground)] mt-1">131k keys/batch, 16k signs/key, 47 layers, 310–345 KB</div>
-      </a>
-      <a href="#section-6" class="block p-3 rounded-xl bg-[var(--content)] hover:opacity-90 border border-[var(--border)] transition">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Section 6</div>
-        <div class="text-sm font-semibold text-[var(--foreground)] mt-0.5">Enterprise Direct Profile (25-Level)</div>
-        <div class="text-xs text-[var(--muted-foreground)] mt-1">No host ZK, 1.6 KB flash, 40 ms sign, 3.0 KB, 80 &mu;s verify</div>
-      </a>
-    </nav>
+    <div class="mb-4 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs md:text-sm font-medium">
+      <strong>Notice:</strong> This document is an early architectural proposal for discussion only. It is aligned with the FIDO Client to Authenticator Protocol (CTAP) v2.3 Proposed Standard (2026-02-26) and W3C WebAuthn Level 3, and has not yet been adopted by the FIDO Alliance or W3C WebAuthn Working Group.
+    </div>
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Hardware Layer: 128-Byte Core State &amp; Black-Box Manufacturer Profiles</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Component Pipeline, <code>authenticatorGetInfo</code> Signaling &amp; Witness Sourcing (CTAP 2.3 &amp; WebAuthn Level 3)</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Multi-Batch AAGUID Routing &amp; WebAuthn Level 3 Public Input Structure</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Circuit Optimization for Google Longfellow (GKR SIMD + $\text{GF}(2^k)$)</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overhead &amp; Performance Summary (Consumer Anonymous ZK Profile — 31-Level Tree)</div>
+        </a>
+        <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 6</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Enterprise Direct Attestation Profile (No Host ZK — 25-Level Self-Contained Tree)</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Hardware Layer: 128-Byte Core State &amp; Black-Box Manufacturer Profiles</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#11-core-persistent-state-layout-128-bytes-total-112-b-read-only-16-b-mutable" class="hover:underline">&sect;1.1 Core Persistent State Layout (128 Bytes Total: 112 B Read-Only + 16 B Mutable)</a></div>
+            <div><a href="#12-black-box-manufacturer-implementation-choices-for-the-14-level-device-subtree" class="hover:underline">&sect;1.2 Black-Box Manufacturer Implementation Choices for the 14-Level Device Subtree</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Component Pipeline, <code>authenticatorGetInfo</code> Signaling &amp; Witness Sourcing (CTAP 2.3 &amp; WebAuthn Level 3)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-the-edge-operation-security-key-on-the-fly-signing-subtree-path-derivation" class="hover:underline">&sect;2.1 The Edge Operation (Security Key — On-the-Fly Signing &amp; Subtree Path Derivation)</a></div>
+            <div><a href="#22-the-blinding-operation-host-client-prover-platform-format-rewriting" class="hover:underline">&sect;2.2 The Blinding Operation (Host Client Prover — Platform Format Rewriting)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Multi-Batch AAGUID Routing &amp; WebAuthn Level 3 Public Input Structure</a>
+
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Circuit Optimization for Google Longfellow (GKR SIMD + $\text{GF}(2^k)$)</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Overhead &amp; Performance Summary (Consumer Anonymous ZK Profile — 31-Level Tree)</a>
+
+        </li>
+        <li>
+          <a href="#section-6" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">6. Enterprise Direct Attestation Profile (No Host ZK — 25-Level Self-Contained Tree)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#61-self-contained-on-authenticator-storage-16-kb-total-persistent-storage" class="hover:underline">&sect;6.1 Self-Contained On-Authenticator Storage (~1.6 KB Total Persistent Storage)</a></div>
+            <div><a href="#62-end-to-end-comparison-consumer-anonymous-zk-mode-vs-enterprise-direct-mode" class="hover:underline">&sect;6.2 End-to-End Comparison: Consumer Anonymous ZK Mode vs. Enterprise Direct Mode</a></div>
+            <div><a href="#63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-fmt-mtc-fido-mtc-ent" class="hover:underline">&sect;6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. <code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code></a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
   </header>
 
   <main class="max-w-6xl mx-auto space-y-10">
 
     <!-- ===================================================================== -->
-    <!-- SECTION 1 -->
+    <!-- SECTION section-1 -->
     <!-- ===================================================================== -->
     <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Hardware Layer: 128-Byte Core State &amp; Black-Box Manufacturer Profiles</h2>
       </div>
-<p class="text-sm">To enable seamless post-quantum attestation on resource-constrained Secure Element microcontrollers without storing multi-megabyte hash trees or executing heavy post-quantum group signature schemes on-chip, the authenticator maintains a <strong>128-byte core persistent state</strong> in Non-Volatile Memory (NVM) and derives its one-time signing keys and local subtree path nodes on the fly.</p>
-<h3 id="11-core-persistent-state-layout-128-bytes-total-112-b-read-only--16-b-mutable" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.1 Core Persistent State Layout (128 Bytes Total: 112 B Read-Only + 16 B Mutable)</h3>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2">To enable seamless post-quantum attestation on resource-constrained Secure Element microcontrollers without storing multi-megabyte hash trees or executing heavy post-quantum group signature schemes on-chip, the authenticator maintains a <strong>128-byte core persistent state</strong> in Non-Volatile Memory (NVM) and derives its one-time signing keys and local subtree path nodes on the fly.</p>
+<h3 id="11-core-persistent-state-layout-128-bytes-total-112-b-read-only-16-b-mutable" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.1 Core Persistent State Layout (128 Bytes Total: 112 B Read-Only + 16 B Mutable)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Component Group</th>
@@ -203,9 +254,9 @@
 </tr>
 </tbody></table></div>
 <h3 id="12-black-box-manufacturer-implementation-choices-for-the-14-level-device-subtree" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.2 Black-Box Manufacturer Implementation Choices for the 14-Level Device Subtree</h3>
-<p class="text-sm">In the <strong>31-level Consumer Anonymous configuration</strong> ($17\text{ batch levels} + 14\text{ device levels} = 31\text{ levels}$), each authenticator is assigned a <strong>14-level ($2^{14} = 16,384$-leaf) device subtree</strong>.</p>
-<p class="text-sm">Because the authenticator outputs the <strong>exact same 14 sibling hashes (448 bytes)</strong> of its $16,384$-leaf subtree regardless of how they are computed internally, <strong>the on-key traversal mechanism is a complete black box</strong> to the CTAP 2.3 wire protocol, the Host Longfellow Prover, and the Relying Party Verifier. Authenticator manufacturers can select between two implementation profiles based on their Secure Element's NVM/flash characteristics:</p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2">In the <strong>31-level Consumer Anonymous configuration</strong> ($17\text{ batch levels} + 14\text{ device levels} = 31\text{ levels}$), each authenticator is assigned a <strong>14-level ($2^{14} = 16,384$-leaf) device subtree</strong>.</p>
+<p class="text-sm my-2">Because the authenticator outputs the <strong>exact same 14 sibling hashes (448 bytes)</strong> of its $16,384$-leaf subtree regardless of how they are computed internally, <strong>the on-key traversal mechanism is a complete black box</strong> to the CTAP 2.3 wire protocol, the Host Longfellow Prover, and the Relying Party Verifier. Authenticator manufacturers can select between two implementation profiles based on their Secure Element's NVM/flash characteristics:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Manufacturer Profile</th>
@@ -239,15 +290,15 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 2 -->
+    <!-- SECTION section-2 -->
     <!-- ===================================================================== -->
     <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Component Pipeline, <code>authenticatorGetInfo</code> Signaling &amp; Witness Sourcing (CTAP 2.3 &amp; WebAuthn Level 3)</h2>
       </div>
-<p class="text-sm">Before credential registration, an authenticator supporting this scheme advertises its capability in the <strong>CTAP 2.3 <code>authenticatorGetInfo</code> (<code>0x04</code>)</strong> response (via <code>attestationFormats</code> <code>0x16</code> / <code>extensions</code>), signaling to a participating host platform that it can emit a structured LM-OTS witness for host-side Longfellow proof generation.</p>
-<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto"><pre class="mermaid">sequenceDiagram
+<p class="text-sm my-2">Before credential registration, an authenticator supporting this scheme advertises its capability in the <strong>CTAP 2.3 <code>authenticatorGetInfo</code> (<code>0x04</code>)</strong> response (via <code>attestationFormats</code> <code>0x16</code> / <code>extensions</code>), signaling to a participating host platform that it can emit a structured LM-OTS witness for host-side Longfellow proof generation.</p>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">sequenceDiagram
     participant RP as Relying Party (WebAuthn L3)
     participant P as Participating Host Platform (Longfellow ZK Prover)
     participant A as Security Key (CTAP 2.3 / ML-DSA-65 + LM-OTS)
@@ -266,20 +317,20 @@
 
     P--&gt;&gt;RP: WebAuthn AttestationObject {fmt: "longfellow-lmots-zk", authData (unmodified), attStmt: {batchRootId, zkProof}}
     Note over RP: 1. Extracts AAGUID from authData + batchRootId from attStmt -&gt; Resolves Batch Master Root in FIDO MDS&lt;br/&gt;2. Verifies Longfellow ZK proof against (authData, clientDataHash, batchRootId) in ~480 ms</pre></div>
-<h3 id="21-the-edge-operation-security-key--on-the-fly-signing--subtree-path-derivation" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 The Edge Operation (Security Key — On-the-Fly Signing &amp; Subtree Path Derivation)</h3>
-<ol class="list-decimal pl-6 space-y-2 text-sm">
+<h3 id="21-the-edge-operation-security-key-on-the-fly-signing-subtree-path-derivation" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 The Edge Operation (Security Key — On-the-Fly Signing &amp; Subtree Path Derivation)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Post-Quantum Credential Generation:</strong> The key generates a new post-quantum credential key pair (<strong><code>ML-DSA-65</code></strong>, COSE <code>alg: -49</code>, raw public key footprint of <code>1,952 bytes</code>) and constructs the canonical CTAP 2.3 <code>authData</code> byte string (<code>rpIdHash</code> 32 B, <code>flags</code> 1 B, <code>signCount</code> 4 B, <code>aaguid</code> 16 B, fixed 32-byte <code>credentialId</code>, and canonical <code>COSE_Key</code> map).</li>
-<li><strong>CTAP 2.3 Compliant LM-OTS Signing:</strong> Per CTAP 2.3 Section 6.1 and WebAuthn Level 3, the key reads its internal leaf index $q$, derives the corresponding one-time LM-OTS private key ($w = 4, p = 67$ chains) from its 32-byte <code>Master Seed</code>, and signs the constant-length concatenation:<div class="overflow-x-auto py-1 text-sm">$$\text{SignedPayload} = \texttt{authData} \parallel \texttt{clientDataHash} \quad (\sim 2,053\text{ bytes} = 33\text{ SHA-256 blocks})$$</div>
-<p class="text-sm">using native hardware SHA-256 in <code>&lt;8 ms</code>.</p></li>
+<li><strong>CTAP 2.3 Compliant LM-OTS Signing:</strong> Per CTAP 2.3 Section 6.1 and WebAuthn Level 3, the key reads its internal leaf index $q$, derives the corresponding one-time LM-OTS private key ($w = 4, p = 67$ chains) from its 32-byte <code>Master Seed</code>, and signs the constant-length concatenation:<div class="overflow-x-auto py-1 text-sm my-2">$$\text{SignedPayload} = \texttt{authData} \parallel \texttt{clientDataHash} \quad (\sim 2,053\text{ bytes} = 33\text{ SHA-256 blocks})$$</div>
+<p class="text-sm my-2">using native hardware SHA-256 in <code>&lt;8 ms</code>.</p></li>
 <li><strong>On-the-Fly Device Subtree Path Generation:</strong> Using either <strong>Manufacturer Profile 1</strong> (incremental BDS traversal in <code>~6.2 ms</code>) or <strong>Manufacturer Profile 2</strong> (stateless bottom-7 RAM derivation + read-only top-7 flash cache in <code>~130 ms</code>), the key produces the <strong>14 dynamic sibling nodes (<code>448 bytes</code>)</strong> of its $16,384$-leaf ($2^{14}$) device subtree on the fly for leaf $q$.</li>
-<li><strong>CTAP 2.3 Response Framing:</strong> The key returns a standard CTAP 2.3 response (<strong><code>~4.66 KB</code> total</strong>, or <strong><code>~5.20 KB</code></strong> if the 544-byte static batch path is also stored on-key—both fitting comfortably inside a single <code>7,609-byte</code> USB CTAPHID frame, or fragmented over BLE/NFC):<ul class="list-disc pl-6 space-y-2 text-sm">
+<li><strong>CTAP 2.3 Response Framing:</strong> The key returns a standard CTAP 2.3 response (<strong><code>~4.66 KB</code> total</strong>, or <strong><code>~5.20 KB</code></strong> if the 544-byte static batch path is also stored on-key—both fitting comfortably inside a single <code>7,609-byte</code> USB CTAPHID frame, or fragmented over BLE/NFC):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><code>0x01</code> (<code>fmt</code>): Initial authenticator attestation format (e.g., <code>"batch"</code> / <code>"lmots-batch-witness"</code>).</li>
 <li><code>0x02</code> (<code>authData</code>): Canonical Authenticator Data containing the <code>ML-DSA-65</code> public key.</li>
 <li><code>0x03</code> (<code>attStmt</code>) / <code>0x06</code> (<code>unsignedExtensionOutputs</code>): Carries the <code>2,180-byte</code> LM-OTS signature ($4\text{ B type} + 32\text{ B } C + 67 \times 32\text{ B chains}$), the 14 on-the-fly device-subtree path nodes (<code>448 bytes</code>), leaf index $q$, Key Identifier $I$, and <code>batchRootId</code>.</li>
 </ul></li>
 </ol>
-<h3 id="22-the-blinding-operation-host-client-prover--platform-format-rewriting" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 The Blinding Operation (Host Client Prover — Platform Format Rewriting)</h3>
-<ol class="list-decimal pl-6 space-y-2 text-sm">
+<h3 id="22-the-blinding-operation-host-client-prover-platform-format-rewriting" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 The Blinding Operation (Host Client Prover — Platform Format Rewriting)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Witness Extraction (Zero Host Database Required):</strong> Having detected the authenticator's capability via <code>authenticatorGetInfo</code>, a participating host platform intercepts the <code>makeCredential</code> response, parses the LM-OTS signature and the 14 on-the-fly dynamic path nodes from the authenticator's raw/batch attestation statement, and keeps <code>authData</code> untouched. Because the security key generates its 14 device-subtree path nodes on the fly, <strong>the host requires no local SQLite/RocksDB leaf database</strong>.</li>
 <li><strong>Full 31-Node Path Assembly:</strong> The host pairs the <strong>14 dynamic path nodes (<code>448 bytes</code>)</strong> received from the key with the <strong>17 static batch ancestor hashes (<code>544 bytes</code>)</strong> (either from its cached Subtree Token or emitted directly by the key), forming a complete <strong>31-node (<code>992-byte</code>) Merkle authentication path</strong> to the Batch Master Root.</li>
 <li><strong>Longfellow Private Witness Packing:</strong> The 31-node Merkle path, the raw LM-OTS signature ($67 \times 32\text{ B}$ chain values + 32-byte randomizer $C$), Key Identifier $I$, and 31-bit leaf index $q$ (whose binary bits control left/right child ordering at each of the 31 Merkle levels) are packed into the private witness of the Google Longfellow circuit.</li>
@@ -288,15 +339,15 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 3 -->
+    <!-- SECTION section-3 -->
     <!-- ===================================================================== -->
     <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Multi-Batch AAGUID Routing &amp; WebAuthn Level 3 Public Input Structure</h2>
       </div>
-<p class="text-sm">To support production models where a single 16-byte <code>AAGUID</code> spans multiple distinct manufacturing batches—each tied to an isolated Master Root—the attestation output provides a dynamic routing anchor without compromising user anonymity or mutating <code>authData</code>:</p>
-<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; WebAuthn Level 3 AttestationObject emitted by a Participating Platform
+<p class="text-sm my-2">To support production models where a single 16-byte <code>AAGUID</code> spans multiple distinct manufacturing batches—each tied to an isolated Master Root—the attestation output provides a dynamic routing anchor without compromising user anonymity or mutating <code>authData</code>:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; WebAuthn Level 3 AttestationObject emitted by a Participating Platform
 LongfellowZkAttestationObject = {
     "fmt": "longfellow-lmots-zk",
     "authData": bstr,                  ; Unmodified from Authenticator (includes AAGUID &amp; ML-DSA-65 COSE_Key)
@@ -305,7 +356,7 @@ LongfellowZkAttestationObject = {
         "zkProof": bstr                ; 310-345 KB Google Longfellow GKR+Ligero ZK Proof
     }
 }</code></pre></div>
-<ul class="list-disc pl-6 space-y-2 text-sm">
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Standard WebAuthn Level 3 Encapsulation:</strong> Because WebAuthn Level 3 forbids host modification of <code>authData</code> while explicitly permitting platform replacement of <code>fmt</code> and <code>attStmt</code>, encapsulating <code>batchRootId</code> and <code>zkProof</code> inside <code>attStmt</code> ensures <strong>100% compatibility with existing WebAuthn Level 3 browser APIs</strong> (<code>getAuthenticatorData()</code>, <code>getPublicKey()</code>, <code>getPublicKeyAlgorithm()</code>) with zero Web IDL changes.</li>
 <li><strong>Relying Party Resolution (WebAuthn Level 3 Section 7.1):</strong> During credential registration verification (<code>Verify(attStmt, authData, clientDataHash)</code>), the RP extracts the 16-byte <code>aaguid</code> from <code>authData.attestedCredentialData.aaguid</code> and pairs it with <code>attStmt.batchRootId</code> to query its FIDO Metadata Service (MDS) catalog, resolving the exact public Master Root anchor for the target manufacturing batch (e.g., <em>"Titan Batch 2026-B"</em>).</li>
 <li><strong>Privacy Isolation ($&gt;100,000$ Keys / $&gt;2.14\text{B}$ Signatures per Batch):</strong> Because each Master Root encompasses an entire production batch of up to <strong>$131,072$ ($2^{17}$) authenticators</strong>—each supporting <strong>$16,384$ ($2^{14}$) <code>makeCredential</code> registrations</strong> for over <strong>$2.14\text{ billion}$ ($2^{31}$) total leaf signatures per batch</strong>—revealing <code>batchRootId</code> identifies only the manufacturing batch while eliminating individual token tracking or cross-site correlation.</li>
@@ -313,15 +364,15 @@ LongfellowZkAttestationObject = {
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 4 -->
+    <!-- SECTION section-4 -->
     <!-- ===================================================================== -->
     <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Circuit Optimization for Google Longfellow (GKR SIMD + $\text{GF}(2^k)$)</h2>
       </div>
-<p class="text-sm">Google Longfellow (combining a <strong>GKR layered sumcheck</strong> with <strong>Ligero</strong> over binary extension fields $\text{GF}(2^k)$) is uniquely suited to LM-OTS + Merkle attestation by exploiting fixed-bound structural constraints and <strong>SIMD data-parallelism</strong> across Winternitz chains:</p>
-<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto"><pre class="mermaid">flowchart LR
+<p class="text-sm my-2">Google Longfellow (combining a <strong>GKR layered sumcheck</strong> with <strong>Ligero</strong> over binary extension fields $\text{GF}(2^k)$) is uniquely suited to LM-OTS + Merkle attestation by exploiting fixed-bound structural constraints and <strong>SIMD data-parallelism</strong> across Winternitz chains:</p>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart LR
     subgraph L1["Layer Group 1: Message Digest (Public + Private Prefix)"]
         M["authData || clientDataHash (~2,053 B)&lt;br/&gt;+ Private (I, q, D_MESG, C)&lt;br/&gt;33 SHA-256 Blocks"] --&gt; D["256-Bit Randomized Digest Q&lt;br/&gt;+ 3-Nibble Checksum (67 Nibbles)"]
     end
@@ -335,28 +386,28 @@ LongfellowZkAttestationObject = {
         K --&gt; P["31-Level Merkle Path Verification&lt;br/&gt;Controlled by 31 Bits of Secret Index q&lt;br/&gt;(31 Sequential SHA-256 Layers)"]
         P --&gt; R[" Public Output:&lt;br/&gt;batchRootId (32 B)"]
     end</pre></div>
-<ol class="list-decimal pl-6 space-y-2 text-sm">
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Fixed-Bound SHA-256 Pre-Padding:</strong> Because the <code>credentialId</code> (fixed 32 bytes), canonical COSE-encoded <code>ML-DSA-65</code> public key (<code>1,952 bytes</code> + fixed CBOR header), <code>authData</code> header, and <code>clientDataHash</code> (32 bytes) have a known compile-time constant length (<strong><code>~2,053 bytes = 33 SHA-256 blocks</code></strong>), all SHA-256 bit-padding logic and message block boundaries are hardcoded into Longfellow's circuit configuration, eliminating dynamic length-validation overhead.</li>
 <li><strong>Bit-Sliced Winternitz Multiplexing &amp; Checksum in $\text{GF}(2^k)$:</strong> Longfellow extracts the $w = 4$ Winternitz nibbles ($a_0, \dots, a_{63}$) directly from bit-sliced SHA-256 output wires, computes the 3-nibble Winternitz checksum $C_{\text{sum}} = \sum_{i=0}^{63}(15 - a_i)$ ($a_{64}, a_{65}, a_{66}$), and evaluates conditional step-count multiplexers (selecting between applying SHA-256 for steps $j \ge a_i$ and bypassing for steps $j &lt; a_i$ across all 15 steps) natively in $\text{GF}(2^k)$ without the bit-decomposition/re-packing overhead required by prime-field provers.</li>
-<li><strong>GKR SIMD Data-Parallelism &amp; Trace Uniformity (1,100 Blocks in 47 Sequential Layers):</strong> Full in-circuit verification evaluates <strong><code>~1,100 SHA-256 compression blocks</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm">
+<li><strong>GKR SIMD Data-Parallelism &amp; Trace Uniformity (1,100 Blocks in 47 Sequential Layers):</strong> Full in-circuit verification evaluates <strong><code>~1,100 SHA-256 compression blocks</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><code>33 blocks</code> for <code>I || q || D_MESG || C || authData || clientDataHash</code></li>
 <li><code>67 × 15 = 1,005 blocks</code> for the 67 Winternitz chains ($w = 4$)</li>
 <li><code>34 blocks</code> to compress the 67 chain endpoints ($2,144\text{ B} + \text{prefix}$) into the LM-OTS leaf hash</li>
 <li><code>31–62 blocks</code> for the 31-level Merkle authentication path</li>
 </ul>
-<p class="text-sm">Crucially, because all <strong>67 Winternitz chains execute identical 15-step SHA-256 subcircuits in parallel</strong>, Longfellow's GKR sumcheck evaluates all 67 chains simultaneously as a <strong>single SIMD-batched subcircuit of depth 15</strong> (adding only $\lceil\log_2(67)\rceil = 7$ sumcheck variables per layer), compressing the entire execution trace into just <strong>47 sequential SHA-256 circuit layers</strong>.</p></li>
+<p class="text-sm my-2">Crucially, because all <strong>67 Winternitz chains execute identical 15-step SHA-256 subcircuits in parallel</strong>, Longfellow's GKR sumcheck evaluates all 67 chains simultaneously as a <strong>single SIMD-batched subcircuit of depth 15</strong> (adding only $\lceil\log_2(67)\rceil = 7$ sumcheck variables per layer), compressing the entire execution trace into just <strong>47 sequential SHA-256 circuit layers</strong>.</p></li>
 </ol>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 5 -->
+    <!-- SECTION section-5 -->
     <!-- ===================================================================== -->
     <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overhead &amp; Performance Summary (Consumer Anonymous ZK Profile — 31-Level Tree)</h2>
       </div>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Metric</th>
@@ -402,24 +453,24 @@ LongfellowZkAttestationObject = {
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SECTION 6 -->
+    <!-- SECTION section-6 -->
     <!-- ===================================================================== -->
     <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Enterprise Direct Attestation Profile (No Host ZK — 25-Level Self-Contained Tree)</h2>
       </div>
-<p class="text-sm">When deployed for <strong>Enterprise Attestation (<code>AttestationConveyancePreference: "enterprise"</code>)</strong> where zero-knowledge blinding is not required, where <strong>$\ge 1,000$ <code>makeCredential</code> registrations per device</strong> ($2^{10} = 1,024, h_{\text{device}} = 10$) is sufficient, and where manufacturing batches are up to <strong>$\ge 20,000$ keys</strong> ($2^{15} = 32,768, h_{\text{batch}} = 15$), the architecture simplifies into a <strong>25-level hierarchical LMS/LM-OTS Merkle tree</strong> that operates <strong>100% self-contained on the security key</strong> with zero host software or storage.</p>
-<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm"><strong>Standard RFC 8554 HSS/LMS encoding (Section 6 only):</strong> The Enterprise Direct profile uses an <strong>unmodified RFC 8554 / NIST SP 800-208 tree</strong>, so any stock HSS/LMS verifier (COSE <code>alg: -46</code>, RFC 8778 / RFC 9802) can check it:</p>
-<ul class="list-disc pl-6 space-y-2 text-sm">
+<p class="text-sm my-2">When deployed for <strong>Enterprise Attestation (<code>AttestationConveyancePreference: "enterprise"</code>)</strong> where zero-knowledge blinding is not required, where <strong>$\ge 1,000$ <code>makeCredential</code> registrations per device</strong> ($2^{10} = 1,024, h_{\text{device}} = 10$) is sufficient, and where manufacturing batches are up to <strong>$\ge 20,000$ keys</strong> ($2^{15} = 32,768, h_{\text{batch}} = 15$), the architecture simplifies into a <strong>25-level hierarchical LMS/LM-OTS Merkle tree</strong> that operates <strong>100% self-contained on the security key</strong> with zero host software or storage.</p>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Standard RFC 8554 HSS/LMS encoding (Section 6 only):</strong> The Enterprise Direct profile uses an <strong>unmodified RFC 8554 / NIST SP 800-208 tree</strong>, so any stock HSS/LMS verifier (COSE <code>alg: -46</code>, RFC 8778 / RFC 9802) can check it:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Parameter set:</strong> <code>LMS_SHA256_M32_H25</code> (<code>0x09</code>), with <code>LMOTS_SHA256_N32_W4</code> (<code>0x03</code>) or <code>LMOTS_SHA256_N32_W8</code> (<code>0x04</code>).</li>
 <li><strong>Public key and identifier:</strong> an HSS <code>L = 1</code> public key of <code>60 B</code> (<code>u32 L</code> + LMS type + LM-OTS type + <strong>16-byte <code>I</code></strong> + 32-byte root <code>T[1]</code>).</li>
 <li><strong>Tree hashing:</strong> standard leaf hashing, $T[r] = H(I \parallel r \parallel \texttt{D\_LEAF} \parallel K)$, and standard internal hashing, $H(I \parallel r \parallel \texttt{D\_INTR} \parallel \text{left} \parallel \text{right})$.</li>
 </ul>
-<p class="text-sm">Each of the $2^{15}$ devices owns a disjoint, contiguous range of $2^{10}$ leaves ($q \in [1024d,\ 1024d + 1023]$), so no signing state is shared between devices. Only the per-leaf LM-OTS private-key derivation is implementation-specific, which RFC 8554 §4 / Appendix A allows. The Consumer profile in Sections 2–5 keeps its 32-byte <code>I</code> and custom witness format.</p></div>
+<p class="text-sm my-2">Each of the $2^{15}$ devices owns a disjoint, contiguous range of $2^{10}$ leaves ($q \in [1024d,\ 1024d + 1023]$), so no signing state is shared between devices. Only the per-leaf LM-OTS private-key derivation is implementation-specific, which RFC 8554 §4 / Appendix A allows. The Consumer profile in Sections 2–5 keeps its 32-byte <code>I</code> and custom witness format.</p></div>
 <h3 id="61-self-contained-on-authenticator-storage-16-kb-total-persistent-storage" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.1 Self-Contained On-Authenticator Storage (~1.6 KB Total Persistent Storage)</h3>
-<p class="text-sm">Because the 15 static batch ancestor hashes occupy only <strong>$15 \times 32\text{ B} = \mathbf{480\text{ bytes}}$</strong>, they are stored directly in read-only flash on the authenticator, eliminating the host Subtree Token completely. Splitting the 10-level ($1,024$-leaf) device subtree into <strong>Top 5 levels ($2^5 = 32$ roots)</strong> cached in read-only factory flash + <strong>Bottom 5 levels ($2^5 = 32$ leaves)</strong> computed statelessly in RAM yields:</p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2">Because the 15 static batch ancestor hashes occupy only <strong>$15 \times 32\text{ B} = \mathbf{480\text{ bytes}}$</strong>, they are stored directly in read-only flash on the authenticator, eliminating the host Subtree Token completely. Splitting the 10-level ($1,024$-leaf) device subtree into <strong>Top 5 levels ($2^5 = 32$ roots)</strong> cached in read-only factory flash + <strong>Bottom 5 levels ($2^5 = 32$ leaves)</strong> computed statelessly in RAM yields:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">On-Key Storage Component</th>
@@ -464,9 +515,9 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-left">6-node stack during stateless 32-leaf bottom sub-subtree evaluation</td>
 </tr>
 </tbody></table></div>
-<p class="text-sm"><em>(Note: If a manufacturer omits the 1,024 B Read-Only Top-5 cache, total persistent storage drops to just <strong>592 bytes</strong>—112 B core + counter + 480 B batch path—and computing all $1,023$ sibling leaves statelessly from scratch takes <code>~1.0 s</code> on a hardware SHA-256 engine.)</em></p>
+<p class="text-sm my-2"><em>(Note: If a manufacturer omits the 1,024 B Read-Only Top-5 cache, total persistent storage drops to just <strong>592 bytes</strong>—112 B core + counter + 480 B batch path—and computing all $1,023$ sibling leaves statelessly from scratch takes <code>~1.0 s</code> on a hardware SHA-256 engine.)</em></p>
 <h3 id="62-end-to-end-comparison-consumer-anonymous-zk-mode-vs-enterprise-direct-mode" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.2 End-to-End Comparison: Consumer Anonymous ZK Mode vs. Enterprise Direct Mode</h3>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Metric</th>
@@ -524,19 +575,19 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-left"><strong>Dual-Mode Ready:</strong> The exact same <code>1.6 KB</code> key can pass the <code>3.0 KB</code> <code>attStmt</code> directly for <code>"enterprise"</code> RPs <strong>or</strong> let a participating platform wrap the 25-node witness in a 41-layer Longfellow ZK proof for <code>"indirect"</code> / <code>"direct"</code> consumer anonymity</td>
 </tr>
 </tbody></table></div>
-<h3 id="63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-fmt-mtc--fido-mtc-ent" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. <code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code></h3>
-<p class="text-sm">This section compares <strong>only the two Enterprise Attestation designs</strong> (<code>enterpriseAttestation</code> <code>0x0A = 1</code> or <code>2</code>). Both carry the <strong>same signed device serial number</strong>:</p>
-<ul class="list-disc pl-6 space-y-2 text-sm">
+<h3 id="63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-fmt-mtc-fido-mtc-ent" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. <code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code></h3>
+<p class="text-sm my-2">This section compares <strong>only the two Enterprise Attestation designs</strong> (<code>enterpriseAttestation</code> <code>0x0A = 1</code> or <code>2</code>). Both carry the <strong>same signed device serial number</strong>:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Direct Enterprise HSS/LMS:</strong> the standard RFC 8554 tree described above.</li>
 <li><strong>Enterprise MTC (<code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code>):</strong> from <a href="./pq_mtc_attestation_proposal.html" class="text-[var(--primary)] hover:underline">pq_mtc_attestation_proposal.md §8.1–§8.3</a>. It uses one stateless <code>ML-DSA</code>/<code>FN-DSA</code> key per device, sends <code>pubKey</code> inline, and carries a 17-hash <code>mtcCert</code>.</li>
 </ul>
-<p class="text-sm">Non-enterprise batch formats (<code>mtc-mds</code>, batch <code>mtc</code>) are left out. They cannot carry a per-device serial.</p>
+<p class="text-sm my-2">Non-enterprise batch formats (<code>mtc-mds</code>, batch <code>mtc</code>) are left out. They cannot carry a per-device serial.</p>
 <h4 id="631-carrying-the-device-serial-number-in-both-designs" class="text-base font-semibold text-[var(--foreground)]">6.3.1 Carrying the Device Serial Number in Both Designs</h4>
-<p class="text-sm">Both designs set the <code>ED</code> flag (<code>0x80</code>) and add the <strong>same signed <code>authenticatorData.extensions</code> entry</strong> (<code>pq_mtc_attestation_proposal.md</code> §8.3):</p>
-<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>"fido-mtc-ent": { "deviceSerial": tstr / uint }   ; e.g. { "deviceSerial": "123456" }</code></pre></div>
-<p class="text-sm">The CBOR encoding is <code>A1</code> + <code>"fido-mtc-ent"</code> (13 B) + <code>A1</code> + <code>"deviceSerial"</code> (13 B) + <code>"123456"</code> (7 B) = <code>35 B</code>. This section budgets <strong><code>36 B</code></strong> for it. In both designs the attestation signature covers it.</p>
-<p class="text-sm">Neither design pays extra wire bytes to also bind the serial to the CA or factory. The difference is <em>how</em> that binding is made:</p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2">Both designs set the <code>ED</code> flag (<code>0x80</code>) and add the <strong>same signed <code>authenticatorData.extensions</code> entry</strong> (<code>pq_mtc_attestation_proposal.md</code> §8.3):</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>"fido-mtc-ent": { "deviceSerial": tstr / uint }   ; e.g. { "deviceSerial": "123456" }</code></pre></div>
+<p class="text-sm my-2">The CBOR encoding is <code>A1</code> + <code>"fido-mtc-ent"</code> (13 B) + <code>A1</code> + <code>"deviceSerial"</code> (13 B) + <code>"123456"</code> (7 B) = <code>35 B</code>. This section budgets <strong><code>36 B</code></strong> for it. In both designs the attestation signature covers it.</p>
+<p class="text-sm my-2">Neither design pays extra wire bytes to also bind the serial to the CA or factory. The difference is <em>how</em> that binding is made:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Binding Layer</th>
@@ -560,9 +611,9 @@ LongfellowZkAttestationObject = {
 </tr>
 </tbody></table></div>
 <h4 id="632-fixed-attstmt-components" class="text-base font-semibold text-[var(--foreground)]">6.3.2 Fixed <code>attStmt</code> Components</h4>
-<p class="text-sm">Both designs use the same <code>authData</code> baseline as §2.1 and §6.2: <code>PK_len + 70 B</code> (16-byte <code>credentialId</code>) <strong>plus <code>36 B</code> for <code>"fido-mtc-ent"</code></strong>, giving <code>authData = PK_len + 106 B</code>. A 32-byte <code>credentialId</code> plus full CTAP CBOR framing adds <code>+52 B</code> to every column and does not change the deltas. CBOR map-key framing inside <code>attStmt</code> (<code>~30–40 B</code>) is left out on both sides.</p>
-<p class="text-sm"><strong>Standard RFC 8554 HSS signature (<code>L = 1</code>, <code>LMS_SHA256_M32_H25</code>):</strong> <code>u32 Nspk = 0</code> (4 B) + <code>u32 q</code> (4 B) + LM-OTS signature + <code>u32</code> LMS type (4 B) + 25 × 32 B path (800 B), plus the 16-byte <code>I</code> so the RP can select the tree's 60 B public key from MDS:</p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2">Both designs use the same <code>authData</code> baseline as §2.1 and §6.2: <code>PK_len + 70 B</code> (16-byte <code>credentialId</code>) <strong>plus <code>36 B</code> for <code>"fido-mtc-ent"</code></strong>, giving <code>authData = PK_len + 106 B</code>. A 32-byte <code>credentialId</code> plus full CTAP CBOR framing adds <code>+52 B</code> to every column and does not change the deltas. CBOR map-key framing inside <code>attStmt</code> (<code>~30–40 B</code>) is left out on both sides.</p>
+<p class="text-sm my-2"><strong>Standard RFC 8554 HSS signature (<code>L = 1</code>, <code>LMS_SHA256_M32_H25</code>):</strong> <code>u32 Nspk = 0</code> (4 B) + <code>u32 q</code> (4 B) + LM-OTS signature + <code>u32</code> LMS type (4 B) + 25 × 32 B path (800 B), plus the 16-byte <code>I</code> so the RP can select the tree's 60 B public key from MDS:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">HSS/LMS Profile</th>
@@ -597,8 +648,8 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-right"><em><code>3,140 B</code></em></td>
 </tr>
 </tbody></table></div>
-<p class="text-sm"><strong>Enterprise MTC <code>attStmt</code> = <code>sig</code> + <code>pubKey</code> (<code>COSE_Key</code>, <code>PK + 10 B</code>) + <code>563 B</code> <code>mtcCert</code>:</strong></p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2"><strong>Enterprise MTC <code>attStmt</code> = <code>sig</code> + <code>pubKey</code> (<code>COSE_Key</code>, <code>PK + 10 B</code>) + <code>563 B</code> <code>mtcCert</code>:</strong></p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Enterprise MTC Key</th>
@@ -655,8 +706,8 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-center">HSS/LMS is <code>5,840 B</code> smaller</td>
 </tr>
 </tbody></table></div>
-<p class="text-sm"><strong>Where the gap comes from</strong> (fixed <code>ML-DSA-44</code> key vs. HSS/LMS <code>W4</code>):</p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2"><strong>Where the gap comes from</strong> (fixed <code>ML-DSA-44</code> key vs. HSS/LMS <code>W4</code>):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Component</th>
@@ -689,10 +740,10 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-right"><strong><code>-1,297 B</code></strong></td>
 </tr>
 </tbody></table></div>
-<p class="text-sm">HSS/LMS needs no attestation public key on the wire because the RP rebuilds the leaf $T[q]$ from the LM-OTS signature itself. <strong>Serial binding contributes <code>0 B</code> to the difference.</strong></p>
+<p class="text-sm my-2">HSS/LMS needs no attestation public key on the wire because the RP rebuilds the leaf $T[q]$ from the LM-OTS signature itself. <strong>Serial binding contributes <code>0 B</code> to the difference.</strong></p>
 <h4 id="633-end-to-end-makecredential-wire-size-all-3-ml-dsa-and-both-fn-dsa-credential-algorithms" class="text-base font-semibold text-[var(--foreground)]">6.3.3 End-to-End <code>MakeCredential</code> Wire Size: All 3 <code>ML-DSA</code> and Both <code>FN-DSA</code> Credential Algorithms</h4>
-<p class="text-sm">The <code>7,609 B</code> USB CTAPHID single-message limit is 1 init packet (<code>57 B</code>) plus 128 continuation packets (<code>59 B</code> each). Entries over the limit are marked ⚠️, and their size is still calculated.</p>
-<div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+<p class="text-sm my-2">The <code>7,609 B</code> USB CTAPHID single-message limit is 1 init packet (<code>57 B</code>) plus 128 continuation packets (<code>59 B</code> each). Entries over the limit are marked ⚠️, and their size is still calculated.</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">User Credential (<code>COSE alg</code>)</th>
@@ -761,15 +812,15 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-center"><code>-1,297 B</code> / <code>-4,784 B</code></td>
 </tr>
 </tbody></table></div>
-<div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm"><strong>Normalization:</strong> <code>pq_mtc_attestation_proposal.md</code> §8.1.1 quotes <code>5,931 / 6,571 / 7,211 B</code> for Enterprise <code>fmt: "mtc"</code> with a fixed <code>ML-DSA-44</code> key. Those figures use its larger <code>authData</code> estimate (<code>~198 B</code> more) and leave out the serial extension. The figures here put both designs on the same baseline. Sizing the MTC subtree to this section's <code>2^15</code> batch would shrink <code>mtcCert</code> to <code>499 B</code> (<code>-64 B</code>).</p></div>
-<div class="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm space-y-2"><div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Warning</div><p class="text-sm"><strong>Standard-tree provisioning tradeoff (<code>L = 1</code> vs. <code>L = 2</code>):</strong></p>
-<ul class="list-disc pl-6 space-y-2 text-sm">
+<div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2"><strong>Normalization:</strong> <code>pq_mtc_attestation_proposal.md</code> §8.1.1 quotes <code>5,931 / 6,571 / 7,211 B</code> for Enterprise <code>fmt: "mtc"</code> with a fixed <code>ML-DSA-44</code> key. Those figures use its larger <code>authData</code> estimate (<code>~198 B</code> more) and leave out the serial extension. The figures here put both designs on the same baseline. Sizing the MTC subtree to this section's <code>2^15</code> batch would shrink <code>mtcCert</code> to <code>499 B</code> (<code>-64 B</code>).</p></div>
+<div class="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Warning</div><p class="text-sm my-2"><strong>Standard-tree provisioning tradeoff (<code>L = 1</code> vs. <code>L = 2</code>):</strong></p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Single <code>H25</code> root (<code>L = 1</code>):</strong> the root depends on all <code>2^25</code> leaf public keys. The entire <code>32,768</code>-device batch must therefore be keyed before any device receives its 25-node path. That means either HSM key injection (the same constraint as the MTC proposal §8.4.3 Model A) or on-chip key generation followed by a write-back of the batch path.</li>
 <li><strong>Split signing keys and SP 800-208:</strong> NIST SP 800-208 expects an LMS private key to stay in one validated module. Splitting one <code>H25</code> key's leaf ranges across <code>32,768</code> authenticators is outside the configurations it describes.</li>
 <li><strong>Standard <code>L = 2</code> HSS alternative:</strong> the factory HSM's <code>H15</code> top tree signs each device's own on-chip-generated <code>H10</code> LMS public key. Devices can be keyed one at a time, and each device's private key never leaves it. The cost is a second LM-OTS signature on the wire, for a <code>3,140 B</code> <code>attStmt</code> with <code>W8/W8</code>. That is still <code>1,165 B</code> smaller than Enterprise MTC with <code>ML-DSA-44</code>, and <code>ML-DSA-87</code> fits at <code>5,838 B</code>.</li>
 </ul></div>
 <h4 id="634-key-takeaways-enterprise-only-with-serial-number-in-both-standard-rfc-8554" class="text-base font-semibold text-[var(--foreground)]">6.3.4 Key Takeaways (Enterprise Only, With Serial Number in Both, Standard RFC 8554)</h4>
-<ol class="list-decimal pl-6 space-y-2 text-sm">
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Serial binding costs the same <code>36 B</code> in both designs and has no effect on the size difference.</strong> MTC commits the serial inside its CA leaf. Standard HSS/LMS cannot do that, so it commits the Device ID through the leaf position and relies on a factory manifest (or <code>deviceSerial</code> := <code>I</code>‖<code>d</code>).</li>
 <li><strong>The size advantage comes from HSS/LMS sending no attestation public key</strong> (<code>-1,322 B</code>) <strong>and a smaller signature</strong> (<code>-240 B</code>). It pays <code>+265 B</code> for its longer path. Net: <strong><code>1,297 B</code> smaller (<code>W4</code>) or <code>2,353 B</code> smaller (<code>W8</code>)</strong> than Enterprise MTC with the provisioned <code>ML-DSA-44</code> key, for every credential algorithm.</li>
 <li><strong>With level-matched Enterprise keys,</strong> MTC exceeds the <code>7,609 B</code> limit for <code>ML-DSA-65</code> (<code>7,892 B</code>) and <code>ML-DSA-87</code> (<code>10,490 B</code>). Standard HSS/LMS stays at <code>5,066 / 5,706 B</code> (<code>W4</code>), <code>4,010 / 4,650 B</code> (<code>W8</code>), or <code>5,198 / 5,838 B</code> (<code>L = 2</code>). HSS/LMS attestation is NIST Category 5 (<code>SHA-256</code>, <code>N32</code>) in every case.</li>
@@ -777,7 +828,6 @@ LongfellowZkAttestationObject = {
 <li><strong>Interoperability:</strong> with the standard encoding, any RFC 8554 / RFC 9802 HSS/LMS verifier (COSE <code>-46</code>) can check Direct Enterprise attestations with no custom tree code.</li>
 </ol>
     </section>
-
   </main>
 
   <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
