@@ -485,7 +485,7 @@ LongfellowZkAttestationObject = {
                 <td class="p-3 font-semibold">Top-5 Device Subtree Cache</td>
                 <td class="p-3 font-mono">1,024 B</td>
                 <td class="p-3">Read-Only Flash</td>
-                <td class="p-3">The 32 roots (<code>32 &times; 32 B</code>) of the bottom 5-level (32-leaf) sub-subtrees <em>(omitting this drops total storage to 608 B with ~1.0 s compute)</em></td>
+                <td class="p-3">The 32 roots (<code>32 &times; 32 B</code>) of the bottom 5-level (32-leaf) sub-subtrees <em>(omitting this drops total storage to 592 B with ~1.0 s compute)</em></td>
               </tr>
               <tr class="bg-[var(--content)] font-semibold">
                 <td class="p-3">Total Persistent Storage</td>
@@ -544,6 +544,11 @@ LongfellowZkAttestationObject = {
                 <td class="p-3"><strong><code>3,008 B (~2.94 KB)</code></strong> (<code>2,992 B</code> standard RFC 8554 HSS <code>L=1</code> signature: <code>2,180 B</code> LM-OTS sig + <code>800 B</code> 25-node path + <code>12 B</code> framing; plus <code>16 B</code> <code>I</code> — <strong>&gt;100&times; smaller</strong>)</td>
               </tr>
               <tr>
+                <td class="p-3 font-semibold">Total CTAP 2.3 / WebAuthn Frame Size</td>
+                <td class="p-3"><code>~4.66–5.20 KB</code> on USB bus &rarr; <code>~312–347 KB</code> to RP</td>
+                <td class="p-3"><strong><code>~4,011–5,706 B (~3.92–5.57 KB)</code> end-to-end</strong>, including the signed <code>"fido-mtc-ent"</code> <code>deviceSerial</code> extension (<code>5,066 B</code> for <code>ML-DSA-65</code>). Fits in a single <code>7,609 B</code> USB CTAPHID message for all 5 PQ credential algorithms (see §6.3)</td>
+              </tr>
+              <tr>
                 <td class="p-3 font-semibold">Relying Party Verification Time</td>
                 <td class="p-3"><strong><code>~480 ms</code></strong> (Longfellow GKR+Ligero verifier)</td>
                 <td class="p-3"><strong><code>~0.08 ms (80 &mu;s)</code></strong> (<code>~600–1,120</code> SHA-256 blocks — <strong>~6,000&times; faster</strong>)</td>
@@ -551,7 +556,7 @@ LongfellowZkAttestationObject = {
               <tr>
                 <td class="p-3 font-semibold">Auditability &amp; Dual-Mode Compatibility</td>
                 <td class="p-3">Zero-knowledge batch anonymity across all <code>131,072</code> keys in batch</td>
-                <td class="p-3"><strong>Built-In Subtree Auditability:</strong> Upper 15 bits of <code>q</code> = exact Device ID; lower 10 bits = exact registration count. Same <code>1.6 KB</code> key can also feed a 41-layer Longfellow prover for consumer anonymity.</td>
+                <td class="p-3"><strong>Built-In Subtree Auditability:</strong> Upper 15 bits of <code>q</code> = exact Device ID; lower 10 bits = exact registration count. RP trusts a single <code>60 B</code> standard HSS/LMS public key (<code>I</code> + <code>T[1]</code>) with zero X.509 <code>x5c</code> chains. Same <code>1.6 KB</code> key can also feed a 41-layer Longfellow prover for consumer anonymity.</td>
               </tr>
             </tbody>
           </table>
@@ -701,6 +706,15 @@ LongfellowZkAttestationObject = {
         <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
           <strong>&#9888;&#65039; Standard-tree provisioning tradeoff:</strong> A single <code>H25</code> root (<code>L=1</code>) depends on all <code>2<sup>25</sup></code> leaf public keys. The whole batch must be keyed (HSM injection, or on-chip key generation plus a path write-back) before any device gets its 25-node path. Also, NIST SP 800-208 expects one LMS key to stay in one module, which splitting leaf ranges across devices does not do. The standard <strong><code>L=2</code> HSS</strong> alternative avoids both: the factory <code>H15</code> tree signs each device's own on-chip <code>H10</code> public key. The cost is a second LM-OTS signature (<code>3,140 B</code> <code>attStmt</code> with <code>W8/W8</code>), which is still <code>1,165 B</code> smaller than Enterprise MTC with <code>ML-DSA-44</code>.
         </p>
+
+        <h4 class="text-sm font-semibold text-[var(--foreground)]">6.3.4 Key Takeaways (Enterprise Only, With Serial Number in Both, Standard RFC 8554)</h4>
+        <ol class="list-decimal pl-5 space-y-2 text-xs text-[var(--muted-foreground)] leading-relaxed">
+          <li><strong>Serial binding costs the same <code>36 B</code> in both designs and has no effect on the size difference.</strong> MTC commits the serial inside its CA leaf. Standard HSS/LMS cannot do that, so it commits the Device ID through the leaf position and relies on a factory manifest (or <code>deviceSerial := I || d</code>).</li>
+          <li><strong>The size advantage comes from HSS/LMS sending no attestation public key</strong> (<code>-1,322 B</code>) and a smaller signature (<code>-240 B</code>), offset by a longer path (<code>+265 B</code>). Net: <strong><code>1,297 B</code> smaller (<code>W4</code>) or <code>2,353 B</code> smaller (<code>W8</code>)</strong> than Enterprise MTC with the provisioned <code>ML-DSA-44</code> key, for every credential algorithm.</li>
+          <li><strong>With level-matched Enterprise keys,</strong> MTC exceeds the <code>7,609 B</code> limit for <code>ML-DSA-65</code> (<code>7,892 B</code>) and <code>ML-DSA-87</code> (<code>10,490 B</code>). Standard HSS/LMS stays at <code>5,066 / 5,706 B</code> (<code>W4</code>), <code>4,010 / 4,650 B</code> (<code>W8</code>), or <code>5,198 / 5,838 B</code> (<code>L=2</code>). HSS/LMS attestation is NIST Category 5 (<code>SHA-256</code>, <code>N32</code>) in every case.</li>
+          <li><strong><code>FN-DSA-512</code> is the one case where MTC is smaller:</strong> <code>3,139 B</code>, which is <code>872 B</code> smaller than <code>W4</code> but <code>184 B</code> larger than <code>W8</code>. That case gives only Level I attestation and requires constant-time <code>FN-DSA</code> signing on the device.</li>
+          <li><strong>Interoperability:</strong> with the standard encoding, any RFC 8554 / RFC 9802 HSS/LMS verifier (COSE <code>-46</code>) can check Direct Enterprise attestations with no custom tree code.</li>
+        </ol>
       </div>
     </section>
 
