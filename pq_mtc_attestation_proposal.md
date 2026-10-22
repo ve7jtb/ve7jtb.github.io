@@ -123,7 +123,7 @@ mtcEntryDesc = {
     notAfter: uint,           ; uint64 Unix epoch seconds
     ? fwVersion: uint,        ; Optional firmware version (replaces id-fido-gen-ce-fw-version)
     mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
-}
+}                             ; REQUIRED in fmt "mtc": the inline pubKey is authenticated only by this proof
 ```
 
 ### 3.2 Format 2: MDS-Assisted MTC Attestation Statement Format (`fmt: "mtc-mds"`)
@@ -141,9 +141,18 @@ $$attStmtType //= (
 mtcMdsStmtFormat = {
     alg: COSEAlgorithmIdentifier,
     sig: bytes,
-    mtcCert: mtcEntryDesc,    ; Attestation public key is omitted; RP fetches pubKey by (caId, serial) from MDS/log
+    mtcCert: mtcEntryDesc / mtcKeyRef,  ; Attestation public key is omitted; RP fetches pubKey by (caId, serial) from MDS/log/manifest
+}
+
+mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid when the RP holds the full,
+    caId: bytes,              ; signed key table (MDS batchKeys or Enterprise manifest) for this caId
+    serial: uint,             ; uint64: (log_number << 48) | index — the lookup key
 }
 ```
+
+Key identification in `"mtc-mds"` always uses **`(caId, serial)`**, for both Non-Enterprise and Enterprise attestation. The device serial number is never used as a lookup key (§8.6.1). The Merkle proof is **optional** in `"mtc-mds"`:
+- **With proof (`mtcEntryDesc`):** the RP trusts only a 32-byte landmark `rootHash`, plus the key it resolves.
+- **Without proof (`mtcKeyRef`):** the RP holds the complete key table, signed by the vendor or CA, so the proof would be redundant.
 
 ---
 
@@ -216,6 +225,8 @@ Given `(fmt, attStmt, authenticatorData, clientDataHash)`:
    - Reconstruct `FidoMtcLogEntry` from `(mtcCert.caId, mtcCert.serial, mtcCert.notBefore, mtcCert.notAfter, authenticatorData.aaguid, mtcCert.fwVersion, pubKeyHash, mtcProof.extensions)`.
    - Compute `expectedSubtreeHash` using RFC 9162 §2.1.3.2 over `(index = mtcCert.serial & 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)`.
    - Verify that `(mtcProof.start, mtcProof.end, expectedSubtreeHash)` matches an active landmark entry in `mtcTrustAnchor.trustedSubtrees` (or, if `mtcProof.signatures` is non-empty, satisfies `mtcTrustAnchor.quorum` over `mtcTrustAnchor.cosigners`).
+   - **Proof-less `mtcKeyRef` (`"mtc-mds"` only, §8.6):** if `mtcCert` has no `mtcProof`, skip this step. In step 5, use the matched `MtcBatchKeyEntry`'s `notBefore` / `notAfter` in place of `mtcCert`'s. This is permitted only if the RP verified the signature (or `rootHash`) over the whole `mtcTrustAnchor.batchKeys` table when it loaded the table. Otherwise fail verification.
+   - **Enterprise device serial (§8.3, §8.6):** if the matched entry contains `deviceSerial`, return it as the device serial. If `authenticatorData.extensions["fido-mtc-ent"]` is also present, verify that the two are equal. The extension is optional for proof-less `"mtc-mds"`, but required for `"mtc"`, where it is the only source of the serial.
 7. **Return Result:**
    - Return Attestation Type `Basic` (or `AttCA`) and the matched `mtcTrustAnchor`.
 
@@ -239,6 +250,9 @@ dictionary MtcBatchKeyEntry {
     required unsigned long long serial;    // uint64: (logNumber << 48) | index
     required long               alg;       // COSEAlgorithmIdentifier (-48, -49, -50, ...)
     required DOMString          coseKey;   // base64url canonical CBOR-encoded COSE_Key (used by "mtc-mds")
+    unsigned long long          notBefore;    // Optional; REQUIRED when proof-less mtcKeyRef is used (§8.6)
+    unsigned long long          notAfter;     // Optional; REQUIRED when proof-less mtcKeyRef is used (§8.6)
+    DOMString                   deviceSerial; // Enterprise manifest only (§8.6); MUST be absent in public FIDO MDS
 };
 
 dictionary MtcCosigner {
@@ -401,8 +415,13 @@ In CTAP 2.3 §6.4 (`authenticatorGetInfo` `(0x04)`), response member **`0x16` (`
    Per CTAP 2.3 §6.1.1, a platform (browser/OS) intersects the Relying Party's `PublicKeyCredentialCreationOptions.attestationFormats` with `authenticatorGetInfo.attestationFormats` (`0x16`) before sending `attestationFormatsPreference` (`0x0B`) in `authenticatorMakeCredential`.
 2. **Zero-Overhead `"none"` Attestation (`attestation: "none"`)**:
    In WebAuthn, the default `attestation` conveyance preference is `"none"`. When a CTAP 2.3 platform requests `attestationFormatsPreference: ["none"]` (`0x0B`):
-   - The authenticator sets `fmt: "none"`, `attStmt: {}` (`0xA0`, 1 byte), and zeros `aaguid` (`[0u8; 16]`) in `attestedCredentialData`.
-   - It **completely skips computing the post-quantum attestation signature**, saving **2,420–4,699 bytes** of signature and **1,322–2,602 bytes** of attestation public key on the wire, while cutting `authenticatorMakeCredential` latency roughly in half on Cortex-M4 hardware.
+    - The authenticator sets `fmt: "none"` and `attStmt: {}` (`0xA0`, 1 byte), and **keeps its real `aaguid`** in `attestedCredentialData`. That holds for both roaming and platform authenticators.
+    - It **completely skips computing the post-quantum attestation signature**, saving **2,420–4,699 bytes** of signature and **1,322–2,602 bytes** of attestation public key on the wire, while cutting `authenticatorMakeCredential` latency roughly in half on Cortex-M4 hardware.
+
+    > [!NOTE]
+    > **AAGUID under `"none"` (WebAuthn Level 3 §5.1.3):** For `"none"`, the client's only action is to set `fmt` to `"none"` and `attStmt` to an empty map. A self attestation (all-zero `aaguid` + `fmt: "packed"` + no `x5c`) is left unchanged. The Level 3 change log says: *"aaguid in attested credential data is no longer zeroed when attestation preference is none."* (Level 2 replaced it with 16 zero bytes.)
+    >
+    > The rule is the same for roaming and platform authenticators, so the RP receives the real AAGUID. It can be used for display, such as the authenticator name or icon from MDS. It is **not provably authentic without attestation** (§6), so it must not be used for policy decisions. Only `"indirect"` lets the client replace the `aaguid` (for example via an Anonymization CA). `"direct"` and `"enterprise"` convey it unaltered.
 3. **Dynamic Capability Advertising from Persisted Material**:
    Because `"none"` attestation support is implied in CTAP / WebAuthn, `process_get_info` omits `"none"` from `0x16` (`attestationFormats`) while still supporting `"none"` when requested via `0x0B` (`attestationFormatsPreference`):
    - **When an MTC descriptor is provisioned (`ProvisionedMtcAttestation::from_bytes` succeeds)**:
@@ -428,8 +447,8 @@ sequenceDiagram
     else RP uses default attestation: "none"
         RP->>Client: navigator.credentials.create({ attestation: "none" })
         Client->>Authnr: authenticatorMakeCredential (0x01) { 0x0B: ["none"] }
-        Note over Authnr: Skips PQ attestation signature!<br/>Zeroes AAGUID, sets attStmt = {}
-        Authnr-->>Client: { 0x01: "none", 0x02: authData (aaguid=0), 0x03: {} }
+        Note over Authnr: Skips PQ attestation signature!<br/>Keeps real AAGUID (WebAuthn L3), sets attStmt = {}
+        Authnr-->>Client: { 0x01: "none", 0x02: authData (real aaguid), 0x03: {} }
     end
 ```
 
@@ -442,6 +461,9 @@ When the client omits `attestationFormatsPreference` (`0x0B`), `process_make_cre
 1. **Tier 1 — `"packed"` (with batch `x5c`)**: If `auth_data.len() + sig.len() + x5c.len() + 60 <= 7550`, Fidont returns standard WebAuthn **`fmt: "packed"`** with `x5c: [batch_cert_der]` signed by the batch key.
 2. **Tier 2 — `"mtc"` (with inline `pubKey` + `mtcCert`)**: Otherwise, if `auth_data.len() + sig.len() + pk_bytes.len() + 260 <= 7550`, Fidont returns **`fmt: "mtc"`** with inline `pubKey` and `mtcCert`.
 3. **Tier 3 — `"mtc-mds"` (`mtcCert` only, `pubKey` omitted)**: Otherwise, Fidont returns **`fmt: "mtc-mds"`**, omitting `pubKey` so the response always fits under `7,609 B`.
+
+> [!NOTE]
+> This cascade applies only to **modern clients** (CTAP 2.2 / 2.3). When the authenticator detects a **legacy client** that negotiates only `pinUvAuthProtocol` 1, such as Windows 10, it skips the cascade and uses the backward-compatible default in [§7.5](#75-legacy-client-detection-pinuvauthprotocol-1-and-backward-compatible-attestation-defaults).
 
 | Credential Signing Algorithm | Batch Key = `-48` (`ML-DSA-44`, `x5c`=`4,127 B`) | Batch Key = `-49` (`ML-DSA-65`, `x5c`=`5,656 B`) | Batch Key = `-50` (`ML-DSA-87`, `x5c`=`7,614 B`) |
 | :--- | :---: | :---: | :---: |
@@ -461,6 +483,60 @@ When the client omits `attestationFormatsPreference` (`0x0B`), `process_make_cre
    - Implement the 3-tier `"packed"` (`x5c`) $\to$ `"mtc"` (`pubKey`) $\to$ `"mtc-mds"` cascade and `"none"` support in `process_make_credential`.
 4. **`tools/configure.py`**:
    - Bundle `"x5c": cert_der` inside `provisioned_mtc` and automatically split `cert_or_mtc_bytes` into a `6,000 B` initial chunk (`0x02`) + continuation chunk (`0x03`) when needed.
+
+### 7.5 Legacy Client Detection (`pinUvAuthProtocol` 1) and Backward-Compatible Attestation Defaults
+
+Older CTAP 2.0 / 2.1 platform clients, such as **Windows 10's built-in WebAuthn stack (`webauthn.dll`)**, negotiate **only PIN/UV Auth Protocol 1**. Browsers on Windows 10 delegate to that stack. These clients:
+- never send `pinUvAuthProtocol = 2`, even when the authenticator lists `[2, 1]` in `authenticatorGetInfo.pinUvAuthProtocols` (`0x06`);
+- never send `attestationFormatsPreference` (`0x0B`, added in CTAP 2.2), so they cannot request `"mtc"`, `"mtc-mds"`, or `"none"`;
+- are hard-limited to the `7,609 B` CTAPHID single-message ceiling, and pass the attestation object through to RPs that predate PQ and MTC attestation formats.
+
+> [!NOTE]
+> PIN/UV Auth Protocol 2 was **defined in CTAP 2.1**, so the precise signal is "the client only uses protocol 1", not "the client is CTAP 2.1". In practice, clients limited to protocol 1 are the older Windows 10-era (CTAP 2.0 / early 2.1) stacks. Modern CTAP 2.2 / 2.3 clients pick protocol 2 when the authenticator lists it first.
+
+#### 7.5.1 Detection Signals
+
+The authenticator records a per-session `ClientProfile`. It is reset on power-up, or per CTAPHID channel (`CID`) for USB.
+
+| Signal Observed by Authenticator | Inferred `ClientProfile` | Notes |
+| :--- | :--- | :--- |
+| `authenticatorMakeCredential` contains `attestationFormatsPreference` (`0x0B`) | **Modern** (CTAP 2.2+) | Strongest signal. Always honour `0x0B` as specified in §7.1–§7.3 |
+| `authenticatorClientPin` (`getPinUvAuthTokenUsing…` / `getPinToken`) or `pinUvAuthParam` uses **`pinUvAuthProtocol = 2`** | **Modern** | Protocol 2 is preferred by every current client when listed first in `0x06` |
+| PIN/UV token obtained with **`pinUvAuthProtocol = 1`**, and no `0x0B` in `makeCredential` | **Legacy** (Windows 10-class) | Advertise `pinUvAuthProtocols: [2, 1]` so that choosing `1` is meaningful |
+| No PIN/UV used and no `0x0B` | **Unknown → treated as Legacy** | Fail safe. A client that wants PQ attestation can always opt in by sending `0x0B` |
+
+> [!WARNING]
+> **Heuristic, not a security boundary.** A client can always choose protocol 1, and protocol 1 is still valid in CTAP 2.3. The profile only selects the **default** when `0x0B` is absent. An explicit `0x0B` always wins, so a modern client is never downgraded. A legacy client is never sent a format it cannot carry or that its RP cannot parse.
+
+#### 7.5.2 Attestation Defaults by Client Profile
+
+| `ClientProfile` | Default When `0x0B` Is Absent | Rationale |
+| :--- | :--- | :--- |
+| **Modern** (CTAP 2.2 / 2.3) | 3-tier size-aware cascade (§7.3): `"packed"` (PQ `x5c`) $\to$ `"mtc"` $\to$ `"mtc-mds"` | The client can carry, and the RP can request, PQ / MTC formats |
+| **Legacy, Option A — `"none"`** | `fmt: "none"`, `attStmt: {}`, real `aaguid` (§7.1) | Smallest response (no attestation signature or certificate). Zero risk of exceeding `7,609 B` or confusing a legacy RP parser. The RP still sees the AAGUID for display |
+| **Legacy, Option B (Recommended for Compatibility) — classical `ES256` batch** | `fmt: "packed"` signed by the **Non-Enterprise classical `ES256` batch key** (`cKey`) with its `512 B` `cX5c` certificate (§8.5, signed by the `ES384` Root CA) | Gives existing RPs a verifiable, standard `packed` attestation that every WebAuthn library already supports. The batch shares one key across ≥ 100,000 devices, as FIDO requires |
+
+Wire sizes for the Legacy Option B default (`ES256` attestation signature `~71 B` + `512 B` `cX5c` + `~60 B` CBOR):
+
+| Credential Algorithm | `authData` | Legacy Option B: `packed` + `ES256` `cX5c` | Legacy Option A: `"none"` | PQ `packed` (`ML-DSA-44` batch `x5c`, §7.3) |
+| :--- | ---: | ---: | ---: | ---: |
+| Classical `ES256` (`-7`) | `~220 B` | **`~736 B`** ✅ | `~225 B` ✅ | `~6,704 B` ✅ |
+| `ML-DSA-44` (`-48`) | `~1,470 B` | **`~2,113 B`** ✅ | `~1,475 B` ✅ | `~8,077 B` ❌ (over `7,609 B`) |
+| `ML-DSA-65` (`-49`) | `~2,110 B` | **`~2,753 B`** ✅ | `~2,115 B` ✅ | `~8,717 B` ❌ |
+| `ML-DSA-87` (`-50`) | `~2,750 B` | **`~3,393 B`** ✅ | `~2,755 B` ✅ | `~9,357 B` ❌ |
+
+> [!IMPORTANT]
+> **Security tradeoff of Legacy Option B:** a classical `ES256` attestation is **not post-quantum secure**. It proves the authenticator model to today's RPs, but a future quantum adversary could forge it. This is acceptable as a compatibility default because a legacy client cannot deliver a PQ attestation anyway. RPs that need PQ attestation must use a modern client that sends `0x0B` (e.g. `["mtc", "packed"]`). **Enterprise Attestation (`0x0A`)** is unaffected: it is only reachable through clients that implement CTAP 2.1 enterprise attestation, and follows §8.1.1.
+
+#### 7.5.3 Fidont Implementation Notes
+
+1. **`libraries/opensk/src/ctap/mod.rs`**:
+   - Add `client_profile: ClientProfile { Unknown, Legacy, Modern }` to the volatile CTAP state, reset on power-up and on `CTAPHID_INIT` for a new `CID`.
+   - Set `Modern` when `process_make_credential` sees `attestation_formats_preference`, or when `process_client_pin` / `pin_uv_auth_param` uses `PinUvAuthProtocol::V2`.
+   - Set `Legacy` when a PIN/UV token is obtained with `PinUvAuthProtocol::V1` and the state is not already `Modern`.
+   - In `process_make_credential`, when `0x0B` is absent and the profile is `Legacy` or `Unknown`, select the configured legacy default (`LegacyAttestationDefault::None` or `LegacyAttestationDefault::ClassicalPacked`). Otherwise run the §7.3 cascade.
+2. **`tools/configure.py`**: add `--legacy-attestation {none,es256}` (default `es256` when a `cKey`/`cX5c` bundle is provisioned, otherwise `none`).
+3. **`process_get_info`**: keep advertising `pinUvAuthProtocols: [2, 1]` (protocol 2 first) so that modern clients identify themselves by choosing protocol 2.
 
 ---
 
@@ -503,7 +579,12 @@ Loading **both** the Enterprise `mtcCert` and the per-enterprise-batch-key X.509
 
 2. **Case B — `"mtc"` First in `0x0B`, OR `0x0B` Empty/Omitted and `x5c` Exceeds `7,609 B` Budget**:
    - When `"mtc"` precedes `"packed"` in `0x0B` (`0x0B: ["mtc", ...]`), **or** when `0x0B` is empty/omitted and including the post-quantum `x5c` certificate would exceed the `7,609 B` USB HID frame limit, the authenticator returns **`fmt: "mtc"`** with its unique inline `pubKey` (`1,322 B` for `ML-DSA-44`), its 17-hash `mtcCert` (`563 B`), and the signed `"fido-mtc-ent"` extension in `authenticatorData`.
-   - Unlike Non-Enterprise attestation (which has a Tier 3 `"mtc-mds"` fallback using MDS `batchKeys`), Enterprise attestation stops at Tier 2 (`"mtc"`) because single-device Enterprise public keys are never published in MDS (`batchKeys: []`), and `"mtc"` with an `ML-DSA-44` Enterprise key fits inside `7,609 B` for all credential algorithms (`5,931 B` for `ML-DSA-44`, `6,571 B` for `ML-DSA-65`, and `7,211 B` for `ML-DSA-87`).
+   - Unlike Non-Enterprise attestation (which has a Tier 3 `"mtc-mds"` fallback using MDS `batchKeys`), single-device Enterprise public keys are never published in **public** FIDO MDS (`batchKeys: []`). For RPs that do not hold the manufacturer's manifest, Enterprise attestation therefore stops at Tier 2 (`"mtc"`). With an `ML-DSA-44` Enterprise key, `"mtc"` fits inside `7,609 B` for all credential algorithms (`5,931 B` for `ML-DSA-44`, `6,571 B` for `ML-DSA-65`, and `7,211 B` for `ML-DSA-87`).
+
+3. **Case C — `"mtc-mds"` via the Enterprise Manifest (§8.6)**:
+   - Applies when `"mtc-mds"` is first in `0x0B`, **or** when `0x0B` is empty/omitted and Enterprise Attestation is requested, in **either** mode: vendor-facilitated (`0x0A = 1`) or platform-managed (`0x0A = 2`). Manufacturers provide the signed manifest to every key purchaser, and the RP receiving Enterprise Attestation is normally that purchaser.
+   - The authenticator returns `fmt: "mtc-mds"` with a proof-less `mtcKeyRef` (`{caId, serial}`, `~20–30 B`). The RP resolves the device `pubKey` and `deviceSerial` by `(caId, serial)` from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. The signed `"fido-mtc-ent"` serial extension is **OPTIONAL** here (§8.6.1).
+   - An RP without the manifest (e.g. keys bought through a reseller, or BYOD into another organization) requests `0x0B: ["mtc"]` or `["packed"]`. It then receives Case B or Case A, **with** `"fido-mtc-ent"`.
 
 ```mermaid
 flowchart TD
@@ -584,7 +665,7 @@ For Enterprise MTC Attestation (`fmt: "mtc"`), because each authenticator has it
 
 #### Signed Extension in `authenticatorData.extensions`: `"fido-mtc-ent"`
 
-When `enterpriseAttestation` (`0x0A`) is requested and accepted by the authenticator:
+When `enterpriseAttestation` (`0x0A`) is requested and accepted by the authenticator, it adds the signed serial extension. This is **REQUIRED** for `"mtc"` and `"packed"` (`x5c`), and **OPTIONAL** for proof-less `"mtc-mds"`, where the RP obtains the serial from the manufacturer's manifest (§8.6.1):
 1. The authenticator sets the **`ED` (Extension Data included, bit 7 = `0x80`)** flag in `authenticatorData.flags`.
 2. It constructs the `"fido-mtc-ent"` CBOR map inside `authenticatorData.extensions` containing only `"deviceSerial"`:
 
@@ -700,6 +781,89 @@ To ensure backward compatibility with classical WebAuthn Relying Parties while p
 | **Primary Non-Enterprise PQ Batch Key** | `ML-DSA-44` (`-48`), `ML-DSA-65` (`-49`), or `ML-DSA-87` (`-50`) | `crypto_data_mldsa44/fidont.key`<br/>`crypto_data_mldsa44/fidont_cert.pem` | `ML-DSA-87` Root CA (`enterprise_root_ca.pem`) + MTC tree `"g5k_AQE"` | Used on **ML-DSA / PQ composite `MakeCredential` operations** (`!ep_att`), or when `"mtc"` / `"mtc-mds"` is explicitly requested in `0x0B`. |
 | **Second Non-Enterprise Classical Batch Key (`cKey` + `cX5c`)** | `ES256` (`P-256`, `-7`) | `crypto_data/fidont.key`<br/>`crypto_data/fidont_cert.pem` | `ES384` Root CA (`enterprise_root_ca_es384.pem`) | Used on **non-ML-DSA `MakeCredential` operations** (`ES256`, `ES384`, `ES512`, `Ed25519`, `Ed448`, `RS256` when `!ep_att` and no explicit MTC preference is set in `0x0B`), returning `fmt: "packed"` with the `512 B` `ES256` X.509 certificate (`x5c`). |
 | **Enterprise Single-Device Batch Key** | `ML-DSA-44` (`-48`) | `crypto_data_enterprise/fidont.key`<br/>`crypto_data_enterprise/fidont_cert.pem` | `ML-DSA-87` Root CA (`enterprise_root_ca.pem`) + MTC tree `"g5k_AQI"` | Used whenever **Enterprise Attestation (`ep_att = true`, `0x0A = 1` or `2`)** is requested. |
+
+---
+
+### 8.6 Unified `(caId, serial)` Key Lookup: Enterprise Manifest and Non-Enterprise MDS (Proof-Optional `"mtc-mds"`)
+
+For Enterprise Attestation, the manufacturer delivers a file out of band to the purchasing enterprise. It lists the **device serial number and attestation public key for every authenticator** sold to that enterprise. An RP holding that file already has every key the authenticator could send inline, and it can check the whole file once against the manufacturer's signature. On the wire, both the inline `pubKey` (`"mtc"`) and the Merkle `mtcProof` are then redundant.
+
+#### 8.6.1 Lookup Key: Send `(caId, serial)`, Not the Device Serial
+
+| Criterion | **Send `(caId, serial)` and look up `pubKey` (+ `deviceSerial`)** ✅ | Send device serial and look up `(caId, serial)` + `pubKey` |
+| :--- | :--- | :--- |
+| **Non-Enterprise compatible** | ✅ Identical to today's `"mtc-mds"` MDS `batchKeys` lookup | ❌ A Non-Enterprise batch key is shared by ≥ 100,000 devices, so a device serial **must not** be sent. A second identifier and code path would be needed |
+| **One format** | ✅ One `mtcCert` structure. The proof is optional (`mtcEntryDesc` / `mtcKeyRef`) | ❌ Separate Enterprise-only format |
+| **Unambiguous key** | ✅ `serial` = (log number, leaf index) maps to exactly one key | ❌ A device may hold several keys (PQ + classical `cKey`, key rotation, re-provisioning) |
+| **Revocation** | ✅ Reuses `revokedSerials` | ❌ Needs a separate device-level revocation list |
+| **Lookup** | Fixed-size `uint64` index | Vendor-specific string, scoped by AAGUID |
+| **Wire size** | `~20–30 B` | `~10–36 B` (negligible difference) |
+
+**Rule:** `"mtc-mds"` always identifies the attestation key by `(caId, serial)`. The **device serial** is never a lookup key. In Enterprise mode:
+1. The device serial is **delivered by the manifest entry** (`MtcBatchKeyEntry.deviceSerial`). This is the authoritative source. The device signature verified with that entry's key proves the response came from the device holding that `(caId, serial)` key, and therefore from that serial.
+2. The signed `authenticatorData.extensions["fido-mtc-ent"]` copy (§8.3) is **OPTIONAL with proof-less `"mtc-mds"`**. The authenticator MAY omit it, saving `36 B` and leaving the `ED` flag clear if there are no other extensions.
+3. If both are present, the RP MUST check that they are equal (§5, step 6). A mismatch means a mixed-up or tampered manifest entry.
+
+`"fido-mtc-ent"` **remains REQUIRED** in `"mtc"` and `"packed"` (`x5c`) Enterprise responses. Those responses do not involve a manifest lookup, so the signed extension is how the serial reaches the RP.
+
+#### 8.6.2 One Schema, Two Trust Sources
+
+The Enterprise manifest **is** an `MtcTrustAnchor` (§6), with the same JSON layout as the public MDS entry. Its `batchKeys` are populated per device and include the optional `deviceSerial`, `notBefore`, and `notAfter` fields:
+
+| Mode | Trust Source | `caId` | `batchKeys` Entries | Lookup | RP Obtains |
+| :--- | :--- | :---: | :--- | :--- | :--- |
+| **Non-Enterprise `"mtc-mds"`** | Public FIDO MDS `mtcTrustAnchors` | `g5k_AQE` | 1 per batch (≥ 100k devices), no `deviceSerial` | `(caId, serial)` | Batch `pubKey` |
+| **Enterprise `"mtc-mds"`** | Manufacturer manifest, delivered privately to the buyer | `g5k_AQI` | 1 per device, **with `deviceSerial`** | `(caId, serial)` | Device `pubKey` + `deviceSerial` |
+
+```json
+// Enterprise manifest (delivered out-of-band to the purchasing enterprise; never published in public MDS)
+{
+  "caId": "g5k_AQI",
+  "hashAlg": "sha-256",
+  "maxBatchWindow": 315360000,
+  "subtrees": [{ "logNumber": 7, "start": 0, "end": 131072,
+                 "rootHash": "lrYcEjQc8PxtR8uQs80rCVyagfpo8Uq-hFooo57I_U0",
+                 "alg": -50, "signature": "<ML-DSA-87 Enterprise Root CA signature over FidoMtcSubtreeCheckpoint>" }],
+  "revokedSerials": [],
+  "batchKeys": [
+    { "serial": 1970324836974592, "alg": -48, "coseKey": "owEHAzgvIFkFIG0b...",
+      "notBefore": 1767225600, "notAfter": 2082758400, "deviceSerial": "123456" },
+    { "serial": 1970324836974593, "alg": -48, "coseKey": "owEHAzgvIFkFIKx9...",
+      "notBefore": 1767225600, "notAfter": 2082758400, "deviceSerial": "123457" }
+  ]
+}
+```
+
+**Authenticating the manifest without a new signature:** each `batchKeys` entry carries every field of `FidoMtcLogEntry` (§4.1). The `aaguid` is taken from the metadata entry, and `deviceSerial` is committed as the entry's `extensions`. When the RP loads the manifest, it can rebuild the Merkle tree from all entries and compare the result with the signed `subtrees[].rootHash`. This is a **one-time check**. After it passes, every per-registration proof is redundant.
+
+#### 8.6.3 Wire Size: Proof-Less `"mtc-mds"` vs. `"mtc"`
+
+These figures use the same `authData` baseline as `lmots_longfellow_attestation_proposal.md` §6.3: `PK_len + 106 B` with the `36 B` `"fido-mtc-ent"` serial, or `PK_len + 70 B` without it. The Enterprise key is level-matched to the credential algorithm.
+
+| Credential = Enterprise Key | `"mtc"` (sig + `pubKey` + `563 B` proof, serial ext required) | `"mtc-mds"` with proof (sig + `563 B`, serial ext) | `"mtc-mds"` proof-less, with optional serial ext | **`"mtc-mds"` proof-less, serial from manifest only** |
+| :--- | ---: | ---: | ---: | ---: |
+| `ML-DSA-44` (`-48`) | `5,723 B` ✅ | `4,401 B` ✅ | `3,868 B` ✅ | **`3,832 B`** ✅ |
+| `ML-DSA-65` (`-49`) | `7,892 B` ⚠️ **OVER HID LIMIT (`+283 B`)** | `5,930 B` ✅ | `5,397 B` ✅ | **`5,361 B`** ✅ |
+| `ML-DSA-87` (`-50`) | `10,490 B` ⚠️ **OVER HID LIMIT (`+2,881 B`)** | `7,888 B` ⚠️ **OVER HID LIMIT (`+279 B`)** | `7,355 B` ✅ *(`254 B` margin)* | **`7,319 B`** ✅ *(`290 B` margin)* |
+
+Dropping the proof is what gets a **level-matched `ML-DSA-87` Enterprise attestation** under the `7,609 B` CTAPHID limit. Omitting the optional serial extension saves another `36 B`.
+
+#### 8.6.4 Format Selection by Enterprise Attestation Mode
+
+Manufacturers are expected to provide the manifest to **every key purchaser**, whether Enterprise Attestation is vendor-facilitated or platform-managed (browser/platform-facilitated). In both modes, the RP that receives Enterprise Attestation is normally the purchasing enterprise (or its IdP).
+
+| Scenario | RP Holds Manifest? | Default Format (when `0x0B` is absent) |
+| :--- | :---: | :--- |
+| **Vendor-facilitated EA** (`0x0A = 1`): RP ID on the authenticator's preconfigured list | ✅ (purchaser) | **`"mtc-mds"` proof-less** (`mtcKeyRef`), `"fido-mtc-ent"` optional. §8.1.1 Case C |
+| **Platform-managed EA** (`0x0A = 2`): enterprise policy on the browser/platform permits EA for the RP | ✅ (purchaser) | **`"mtc-mds"` proof-less** (`mtcKeyRef`), `"fido-mtc-ent"` optional. §8.1.1 Case C |
+| Exception: an RP that did not purchase the keys (reseller or retail purchase, BYOD into another organization) | ❌ | The RP or client requests `0x0B: ["mtc"]` or `["packed"]`. The authenticator then returns `"mtc"` / `"packed"` `x5c` **with** `"fido-mtc-ent"` |
+| **Non-Enterprise** | Public MDS | §7.3 cascade. `"mtc-mds"` sends the proof unless the RP syncs and verifies the full `batchKeys` table |
+
+> [!WARNING]
+> **Operational costs of the manifest:**
+> - **Size:** one public key per device, about `133 MB` / `197 MB` / `261 MB` per 100,000 devices for `ML-DSA-44` / `-65` / `-87`. A 10,000-device enterprise needs `13–26 MB`.
+> - **Distribution:** every verifying RP needs the manifest, or a central enterprise IdP does all verification. Each new purchase requires a manifest update, and revocations are delivered as `revokedSerials` updates.
+> - **Fallback:** if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with `0x0B: ["mtc"]`, which carries the inline `pubKey`, the proof, and the required `"fido-mtc-ent"` serial.
 
 ---
 
