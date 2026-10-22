@@ -356,6 +356,17 @@ DOCUMENT_CONFIGS = {
             ("overview" if "overview" in title.lower() else
             (f"section-{num}" if num else slug(title)))))
         ),
+    },
+    "enterprise_attestation_mtc_vs_lmots_comparison": {
+        "title": "Post-Quantum Enterprise Attestation: MTC-MDS vs. Direct LM-OTS (RFC 8554) Comparison Report",
+        "badges": [
+            ("Enterprise Attestation (0x0A)", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("MTC-MDS vs. RFC 8554 LM-OTS", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("7,609 B USB HID Wire Analysis", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("RP Validation Complexity", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Comprehensive technical comparison between MDS/Manifest-Assisted Merkle Tree Certificates (fmt: 'mtc-mds') and Standard RFC 8554 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS) across wire payload budgets, manifest distribution logistics, and Relying Party verification complexity.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 

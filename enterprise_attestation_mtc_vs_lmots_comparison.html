@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post-Quantum Enterprise Attestation: MTC-MDS vs. Direct LM-OTS (RFC 8554) Comparison Report</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Enterprise Attestation (0x0A)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">MTC-MDS vs. RFC 8554 LM-OTS</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">7,609 B USB HID Wire Analysis</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">RP Validation Complexity</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./enterprise_attestation_mtc_vs_lmots_comparison.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      Post-Quantum Enterprise Attestation: MTC-MDS vs. Direct LM-OTS (RFC 8554) Comparison Report
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Comprehensive technical comparison between MDS/Manifest-Assisted Merkle Tree Certificates (fmt: 'mtc-mds') and Standard RFC 8554 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS) across wire payload budgets, manifest distribution logistics, and Relying Party verification complexity.
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Architectural Anatomy &amp; Extraction of <code>mtc-mds</code></div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Wire Size Analysis: Enterprise <code>mtc-mds</code> vs. Direct LM-OTS</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Relying Party Validation Architecture &amp; Complexity</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Comprehensive Evaluation &amp; Decision Matrix</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Conclusions &amp; Strategic Recommendation</div>
+        </a>
+        <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 6</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Normative References</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Architectural Anatomy &amp; Extraction of <code>mtc-mds</code></a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#11-non-enterprise-mtc-mds-public-fido-metadata-service" class="hover:underline">&sect;1.1 Non-Enterprise <code>mtc-mds</code> (Public FIDO Metadata Service)</a></div>
+            <div><a href="#12-enterprise-mtc-mds-manifest-assisted-distribution" class="hover:underline">&sect;1.2 Enterprise <code>mtc-mds</code> (Manifest-Assisted Distribution)</a></div>
+            <div><a href="#13-architectural-comparison-non-enterprise-vs-enterprise-mtc-mds" class="hover:underline">&sect;1.3 Architectural Comparison: Non-Enterprise vs. Enterprise <code>mtc-mds</code></a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Wire Size Analysis: Enterprise <code>mtc-mds</code> vs. Direct LM-OTS</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-wire-framing-components" class="hover:underline">&sect;2.1 Wire Framing Components</a></div>
+            <div><a href="#22-comprehensive-wire-size-matrix-across-5-algorithms" class="hover:underline">&sect;2.2 Comprehensive Wire Size Matrix Across 5 Algorithms</a></div>
+            <div><a href="#23-key-wire-size-findings" class="hover:underline">&sect;2.3 Key Wire Size Findings</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Relying Party Validation Architecture &amp; Complexity</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#31-the-5-branching-verification-paths-in-mtc-mds" class="hover:underline">&sect;3.1 The 5 Branching Verification Paths in <code>mtc-mds</code></a></div>
+            <div><a href="#32-single-pure-algebraic-path-in-rfc-8554-lm-ots-80mutexts" class="hover:underline">&sect;3.2 Single Pure-Algebraic Path in RFC 8554 LM-OTS ($80\,\mu\text{s}$)</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Comprehensive Evaluation &amp; Decision Matrix</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Conclusions &amp; Strategic Recommendation</a>
+
+        </li>
+        <li>
+          <a href="#section-6" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">6. Normative References</a>
+
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Architectural Anatomy &amp; Extraction of <code>mtc-mds</code></h2>
+      </div>
+<p class="text-sm my-2">The <code>mtc-mds</code> format (<code>fmt: "mtc-mds"</code>) eliminates the multi-kilobyte post-quantum attestation public key from the authenticator's wire payload by referencing a pre-distributed public key table.</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>$$attStmtType //= (
+    fmt: "mtc-mds",
+    attStmt: mtcMdsStmtFormat
+)
+
+mtcMdsStmtFormat = {
+    alg: COSEAlgorithmIdentifier,
+    sig: bytes,
+    mtcCert: mtcEntryDesc / mtcKeyRef, ; Public key omitted; fetched by (caId, serial)
+}
+
+mtcKeyRef = {                          ; Proof-less reference (§8.6)
+    caId: bytes,                       ; 5-byte CA identifier
+    serial: uint,                      ; uint64: (log_number &lt;&lt; 48) | leaf_index
+}</code></pre></div>
+<h3 id="11-non-enterprise-mtc-mds-public-fido-metadata-service" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.1 Non-Enterprise <code>mtc-mds</code> (Public FIDO Metadata Service)</h3>
+<p class="text-sm my-2">In non-enterprise deployments (batch attestation):</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Key Discovery</strong>: Public keys are published in the FIDO Alliance Metadata Service (MDS3) BLOB inside <code>MtcTrustAnchor.batchKeys</code>.</li>
+<li><strong>Lookup Key</strong>: The authenticator sends <code>(mtcCert.caId, mtcCert.serial)</code>.</li>
+<li><strong>Anonymity &amp; Privacy</strong>: $\ge 100,000$ authenticators share the exact same attestation keypair. No physical device serial number is emitted or stored.</li>
+<li><strong>Merkle Proof (<code>mtcProof</code>)</strong>: The authenticator transmits an inclusion proof (<code>mtcEntryDesc</code>) proving its leaf binds to an active landmark <code>rootHash</code> published in MDS.</li>
+</ul>
+<h3 id="12-enterprise-mtc-mds-manifest-assisted-distribution" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.2 Enterprise <code>mtc-mds</code> (Manifest-Assisted Distribution)</h3>
+<p class="text-sm my-2">In enterprise deployments (<code>enterpriseAttestation</code> <code>0x0A = 1</code> or <code>2</code>):</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Key Discovery</strong>: Public keys are distributed <strong>out of band</strong> via a manufacturer manifest file delivered to key purchasers (e.g., enterprise IT administrators).</li>
+<li><strong>Lookup Key</strong>: Uniformly uses <strong><code>(caId, serial)</code></strong>—the device serial number is never used as the primary dictionary lookup key.</li>
+<li><strong>Individual Binding</strong>: The manifest maps each <code>(caId, serial)</code> to a physical <code>deviceSerial</code>.</li>
+<li><strong>Proof-Less Optimization (<code>mtcKeyRef</code>)</strong>: Because the purchaser's Relying Party (RP) already holds and cryptographically verifies the entire manifest, the $563\text{-byte}$ Merkle inclusion proof is redundant and can be omitted.</li>
+<li><strong>Wire Serial Extension</strong>: The <code>36 B</code> <code>"fido-mtc-ent"</code> extension in <code>authData.extensions</code> is optional on the wire because the manifest already binds the key to the hardware serial.</li>
+</ul>
+<h3 id="13-architectural-comparison-non-enterprise-vs-enterprise-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.3 Architectural Comparison: Non-Enterprise vs. Enterprise <code>mtc-mds</code></h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Architectural Dimension</th>
+<th class="p-3 font-semibold align-bottom text-left">Non-Enterprise <code>mtc-mds</code></th>
+<th class="p-3 font-semibold align-bottom text-left">Enterprise <code>mtc-mds</code> (Manifest-Assisted)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Trust Source / Key Store</strong></td>
+<td class="p-3 align-top text-left"><strong>Public FIDO MDS3 BLOB</strong> (<code>mtcTrustAnchors[].batchKeys</code>)</td>
+<td class="p-3 align-top text-left"><strong>Private Vendor Manifest</strong> (<code>MtcTrustAnchor</code> JSON/CBOR schema)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Key Lookup Identifier</strong></td>
+<td class="p-3 align-top text-left"><code>(caId, serial)</code></td>
+<td class="p-3 align-top text-left"><strong><code>(caId, serial)</code></strong> <em>(strictly identical for protocol uniformity)</em></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Device Anonymity / Scope</strong></td>
+<td class="p-3 align-top text-left"><strong>Batch Privacy</strong>: $\ge 100,000$ devices share 1 key</td>
+<td class="p-3 align-top text-left"><strong>Individual Auditability</strong>: 1 unique key per physical device</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Device Serial Number</strong></td>
+<td class="p-3 align-top text-left"><strong>None</strong> (Strictly omitted to prevent tracking)</td>
+<td class="p-3 align-top text-left">Bound in manifest (<code>deviceSerial</code>); wire extension is optional</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Merkle Proof (<code>mtcProof</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Required (<code>mtcEntryDesc</code>)</strong>: RP checks landmark inclusion</td>
+<td class="p-3 align-top text-left"><strong>Optional (<code>mtcKeyRef</code>)</strong>: RP holds pre-verified full table</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Wire Payload Overhead</strong></td>
+<td class="p-3 align-top text-left">$563\text{ B}$ proof + signature + <code>authData</code></td>
+<td class="p-3 align-top text-left"><strong>$\sim 30\text{ B}$ key reference</strong> + signature + <code>authData</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Target Fleet Size</strong></td>
+<td class="p-3 align-top text-left">$16\text{–}256$ batches per model ($1.6\text{M}–25\text{M}$ devices)</td>
+<td class="p-3 align-top text-left">$10,000\text{–}5,000,000$ enterprise keys per customer fleet</td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Wire Size Analysis: Enterprise <code>mtc-mds</code> vs. Direct LM-OTS</h2>
+      </div>
+<p class="text-sm my-2">Under CTAP 2.0–2.3, USB HID frames enforce a maximum single-message payload of <strong>$7,609\text{ bytes}$</strong> (1 initialization packet of $57\text{ B}$ + 128 continuation packets of $59\text{ B}$).</p>
+<h3 id="21-wire-framing-components" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Wire Framing Components</h3>
+<p class="text-sm my-2">For both schemes, the total <code>MakeCredential</code> response consists of:</p>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$</div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>authData</code> Baseline</strong>: $70\text{ B}$ (RP ID hash, flags, counter, credential ID, and user public key) + $36\text{ B}$ if carrying the signed <code>"fido-mtc-ent"</code> serial number.</li>
+<li><strong>Enterprise <code>mtc-mds</code> <code>attStmt</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><em>With Proof</em>: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $563\text{ B}$ <code>MTCProof</code>.</li>
+<li><em>Proof-Less</em>: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $\sim 30\text{ B}$ <code>mtcKeyRef</code>.</li>
+</ul></li>
+<li><strong>Direct LM-OTS <code>attStmt</code> (Standard RFC 8554 Single Tree <code>H25</code>, $L=1$)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><em>$W=8$ Profile</em>: $1,120\text{ B}$ (LM-OTS sig) + $800\text{ B}$ (25-node Merkle path) + $32\text{ B}$ (Tree ID $I$, leaf index $q$) = <strong>$1,952\text{ B}$ constant</strong>.</li>
+<li><em>$W=4$ Profile</em>: $2,176\text{ B}$ (LM-OTS sig) + $800\text{ B}$ (25-node Merkle path) + $32\text{ B}$ (Tree ID $I$, leaf index $q$) = <strong>$3,008\text{ B}$ constant</strong>.</li>
+</ul></li>
+</ul>
+<h3 id="22-comprehensive-wire-size-matrix-across-5-algorithms" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 Comprehensive Wire Size Matrix Across 5 Algorithms</h3>
+<p class="text-sm my-2">The table below contrasts the end-to-end <code>MakeCredential</code> payload sizes across NIST post-quantum credential algorithms, evaluated against the <strong>$7,609\text{-byte}$ USB CTAPHID limit</strong>:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Credential Algorithm</th>
+<th class="p-3 font-semibold align-bottom text-center">Inline <code>"mtc"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof + serial)</th>
+<th class="p-3 font-semibold align-bottom text-center">Enterprise <code>"mtc-mds"</code> (with <code>563 B</code> proof + serial)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>Enterprise <code>"mtc-mds"</code> Proof-Less</strong> (serial in manifest only)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=4$)</strong> ($3,008\text{ B}$ <code>attStmt</code> + serial)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=8$)</strong> ($1,952\text{ B}$ <code>attStmt</code> + serial)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>ML-DSA-44</code></strong> (<code>-48</code>)</td>
+<td class="p-3 align-top text-center">$5,723\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center">$4,401\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$3,832\text{ B}$</strong> ✅</td>
+<td class="p-3 align-top text-center">$4,441\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$3,385\text{ B}$</strong> ✅</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>ML-DSA-65</code></strong> (<code>-49</code>)</td>
+<td class="p-3 align-top text-center">$7,892\text{ B}$ ⚠️ <em>(+283 B)</em></td>
+<td class="p-3 align-top text-center">$5,930\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$5,361\text{ B}$</strong> ✅</td>
+<td class="p-3 align-top text-center">$5,081\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$4,025\text{ B}$</strong> ✅</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>ML-DSA-87</code></strong> (<code>-50</code>)</td>
+<td class="p-3 align-top text-center">$10,490\text{ B}$ ⚠️ <em>(+2,881 B)</em></td>
+<td class="p-3 align-top text-center">$7,888\text{ B}$ ⚠️ <em>(+279 B)</em></td>
+<td class="p-3 align-top text-center"><strong>$7,319\text{ B}$</strong> ✅ <em>(290 B margin)</em></td>
+<td class="p-3 align-top text-center">$5,721\text{ B}$ ✅ <em>(1,888 B margin)</em></td>
+<td class="p-3 align-top text-center"><strong>$4,665\text{ B}$</strong> ✅ <em>(2,944 B margin)</em></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>FN-DSA-512</code></strong> (<code>-60</code>)</td>
+<td class="p-3 align-top text-center">$4,499\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center">$3,177\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$2,608\text{ B}$</strong> ✅</td>
+<td class="p-3 align-top text-center">$3,990\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$2,934\text{ B}$</strong> ✅</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>FN-DSA-1024</code></strong> (<code>-61</code>)</td>
+<td class="p-3 align-top text-center">$5,861\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center">$4,539\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$3,970\text{ B}$</strong> ✅</td>
+<td class="p-3 align-top text-center">$4,886\text{ B}$ ✅</td>
+<td class="p-3 align-top text-center"><strong>$3,830\text{ B}$</strong> ✅</td>
+</tr>
+</tbody></table></div>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">xychart-beta
+    title "Total MakeCredential Wire Size vs 7,609 B HID Limit (Bytes)"
+    x-axis ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87", "FN-DSA-512", "FN-DSA-1024"]
+    y-axis "Wire Size (Bytes)" 2000 --&gt; 11000
+    bar [5723, 7892, 10490, 4499, 5861]
+    bar [3832, 5361, 7319, 2608, 3970]
+    bar [3385, 4025, 4665, 2934, 3830]</pre></div>
+<p class="text-sm my-2"><em>(Legend: Bar 1 = Inline <code>"mtc"</code>; Bar 2 = Proof-Less <code>"mtc-mds"</code>; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)</em></p>
+<h3 id="23-key-wire-size-findings" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.3 Key Wire Size Findings</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>The Category 5 <code>ML-DSA-87</code> Bottleneck</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In <code>mtc-mds</code>, if the proof is transmitted on the wire, <code>ML-DSA-87</code> <strong>fails the USB HID limit ($7,888\text{ B} &gt; 7,609\text{ B}$)</strong>. Proof-less <code>mtc-mds</code> barely squeezes under with only <strong>$290\text{ bytes}$ of margin</strong>.</li>
+<li>In contrast, <strong>LM-OTS ($W=8$)</strong> delivers <code>ML-DSA-87</code> in <strong>$4,665\text{ B}$</strong>, leaving <strong>$2,944\text{ bytes}$ of safety margin</strong> without requiring any out-of-band manifest infrastructure.</li>
+</ul></li>
+<li><strong>Fixed vs. Variable Attestation Overhead</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In <code>mtc-mds</code>, the attestation statement scales with the post-quantum signature size of the attestation key ($2,420\text{–}4,627\text{ B}$).</li>
+<li>In LM-OTS, the attestation statement size is completely <strong>independent of the credential algorithm</strong> ($1,952\text{ B}$ constant for $W=8$).</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Relying Party Validation Architecture &amp; Complexity</h2>
+      </div>
+<p class="text-sm my-2">The primary operational difference between <code>mtc-mds</code> and LM-OTS lies in <strong>verification state, database dependency, and validation branching</strong>.</p>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TD
+    subgraph MTC["MTC-MDS: Multi-Path Stateful Verification"]
+        A[Receive MakeCredential] --&gt; B{fmt?}
+        B --&gt;|mtc-mds| C{Is mtcCert an mtcKeyRef or mtcEntryDesc?}
+        C --&gt;|mtcKeyRef Proof-less| D[Branch 1: Local Manifest Lookup]
+        C --&gt;|mtcEntryDesc With-Proof| E[Branch 2: Landmark Subtree Proof]
+        
+        D --&gt; D1{Held manifest for caId?}
+        D1 --&gt;|No| D2[Fail or Request Client Retry with fmt: mtc]
+        D1 --&gt;|Yes| D3[Lookup batchKeys by caId, serial]
+        D3 --&gt; D4[Check deviceSerial matches authData ext if present]
+        D4 --&gt; D5[Verify ML-DSA Signature over authData]
+        
+        E --&gt; E1[Reconstruct FidoMtcLogEntry]
+        E1 --&gt; E2[Verify RFC 9162 Merkle Path to Landmark rootHash]
+        E2 --&gt; E5[Fetch key from MDS BLOB &amp; Verify Sig]
+    end
+
+    subgraph LMOTS["LM-OTS: Single-Path Pure Algebraic Verification"]
+        X[Receive MakeCredential] --&gt; Y[Verify Standard RFC 8554 Single Tree H25]
+        Y --&gt; Y1["1. Evaluate Winternitz chain from sig (34 or 67 hashes)"]
+        Y1 --&gt; Y2["2. Hash leaf OTS_PUB with I, q"]
+        Y2 --&gt; Y3["3. Ascend 25-level Merkle path with standard internal hashing"]
+        Y3 --&gt; Y4["4. Compare calculated root with pre-pinned 60B Enterprise Root PK"]
+        Y4 --&gt; Y5["5. Check authData.extensions deviceSerial in company inventory"]
+    end</pre></div>
+<h3 id="31-the-5-branching-verification-paths-in-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.1 The 5 Branching Verification Paths in <code>mtc-mds</code></h3>
+<p class="text-sm my-2">To verify an <code>mtc-mds</code> attestation statement, an Enterprise Relying Party must implement five branching code paths and state management engines:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Branch 1 (Proof-Less Manifest Key Reference — <code>mtcKeyRef</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The RP must query an offline relational or key-value store holding individual public keys ($13.3\text{–}26.1\text{ MB}$ per $100\text{k}$ devices).</li>
+<li><strong>Upfront Table Validation</strong>: Before accepting any lookup result, the RP must have verified the manifest table against the manufacturer's Root CA signature or recomputed the Merkle tree over all leaves to verify <code>subtrees[].rootHash</code>.</li>
+</ul></li>
+<li><strong>Branch 2 (Landmark Proof Inclusion — <code>mtcEntryDesc</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If the authenticator belongs to a contractor or BYOD scenario where the RP does not hold the manifest, the RP parses <code>mtcProof</code>, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB.</li>
+</ul></li>
+<li><strong>Branch 3 (Serial Extension Discrepancy Resolution)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In proof-less <code>mtc-mds</code>, the serial is bound in the manifest, making <code>"fido-mtc-ent"</code> on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).</li>
+</ul></li>
+<li><strong>Branch 4 (Manifest Drift &amp; Reseller Fallback)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, <code>mtc-mds</code> fails. The RP/client must initiate a fallback to inline <code>fmt: "mtc"</code> or <code>fmt: "packed"</code>, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.</li>
+</ul></li>
+<li><strong>Branch 5 (Revocation &amp; Key Life-Cycle Management)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Revocation requires tracking delta arrays of <code>revokedSerials</code> inside every manifest update.</li>
+</ul></li>
+</ol>
+<h3 id="32-single-pure-algebraic-path-in-rfc-8554-lm-ots-80mutexts" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Single Pure-Algebraic Path in RFC 8554 LM-OTS ($80\,\mu\text{s}$)</h3>
+<p class="text-sm my-2">In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branching paths entirely:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Zero Out-of-Band Database Lookups</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The RP requires only the manufacturer's <strong>60-byte Enterprise Batch Root Public Key</strong> (<code>u32 lms_type</code>, <code>u32 lmots_type</code>, <code>16 B I</code>, <code>32 B K</code>).</li>
+</ul></li>
+<li><strong>Pure Algorithmic Execution</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Every registration follows the <strong>exact same RFC 8554 §5 verification routine</strong>:<div class="overflow-x-auto py-1 text-sm my-2">$$\text{Candidate Leaf} \leftarrow \text{Winternitz}(\text{sig}, \text{msgHash})$$</div>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{Calculated Root} \leftarrow \text{MerkleAscend}(\text{Candidate Leaf}, \text{path}_{0..24}, I, q)$$</div>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{Assert}(\text{Calculated Root} == K)$$</div></li>
+</ul></li>
+<li><strong>No Revocation Lists / Key Lifecycle Ingestion</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The monotonic leaf index $q$ ($0 \le q &lt; 2^{25}$) guarantees one-time signature freshness. Monotonic counters on the authenticator prevent state reuse.</li>
+</ul></li>
+<li><strong>Blazing Fast Performance</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Entire RP validation completes in <strong>$\sim 80\,\mu\text{s}$ ($0.08\text{ ms}$)</strong> on commodity server hardware, compared to several milliseconds of database lookups, CBOR parsing, and lattice verification in <code>mtc-mds</code>.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Comprehensive Evaluation &amp; Decision Matrix</h2>
+      </div>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Evaluation Dimension</th>
+<th class="p-3 font-semibold align-bottom text-left"><strong>Enterprise <code>mtc-mds</code> (Manifest-Assisted)</strong></th>
+<th class="p-3 font-semibold align-bottom text-left"><strong>Enterprise LM-OTS (RFC 8554 Single Tree)</strong></th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Wire Footprint (<code>ML-DSA-87</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>$7,319\text{ B}$</strong> <em>(dangerously tight, $290\text{ B}$ margin)</em></td>
+<td class="p-3 align-top text-left"><strong>$4,665\text{ B}$ ($W=8$)</strong> <em>(comfortable $2,944\text{ B}$ margin)</em></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>RP Pre-Requisite Knowledge</strong></td>
+<td class="p-3 align-top text-left"><strong>Large Out-of-Band Manifest</strong> ($13\text{–}260\text{ MB}$ database)</td>
+<td class="p-3 align-top text-left"><strong>Single 60-byte Root Public Key</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>RP Validation Architecture</strong></td>
+<td class="p-3 align-top text-left"><strong>Multi-path branching</strong>: manifest lookup, landmark verification, fallback X.509 engine</td>
+<td class="p-3 align-top text-left"><strong>Single, uniform algebraic path</strong>: RFC 8554 standard tree traversal</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>RP Compute Latency</strong></td>
+<td class="p-3 align-top text-left">$1.2\text{–}3.5\text{ ms}$ (DB fetch + lattice signature verification)</td>
+<td class="p-3 align-top text-left"><strong>$0.08\text{ ms}$ ($80\,\mu\text{s}$)</strong> (pure SHA-256 tree hashing)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Fragility to Out-of-Band Desync</strong></td>
+<td class="p-3 align-top text-left"><strong>High</strong>: Missing manifest entries cause hard authentication failures</td>
+<td class="p-3 align-top text-left"><strong>Zero</strong>: Completely self-contained within the wire <code>MakeCredential</code> response</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Standardization Baseline</strong></td>
+<td class="p-3 align-top text-left">Draft IETF (<code>draft-ietf-plants-merkle-tree-certs</code>)</td>
+<td class="p-3 align-top text-left">Approved <strong>RFC 8554</strong> &amp; NIST SP 800-208</td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Conclusions &amp; Strategic Recommendation</h2>
+      </div>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>For General Non-Enterprise Attestation (<code>fmt: "none"</code> / <code>fmt: "mtc-mds"</code> / <code>fmt: "mtc"</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>mtc-mds</code> via FIDO MDS3 is the optimal path.</strong> It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.</li>
+</ul></li>
+<li><strong>For High-Assurance Enterprise Direct Attestation (<code>0x0A</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>RFC 8554 LM-OTS Direct Attestation is the superior architectural choice.</strong> It is completely immune to out-of-band manifest desynchronization, provides comfortable wire safety margins for all NIST Level 5 algorithms (<code>ML-DSA-87</code>), and reduces RP verification to a deterministic, $80\text{-microsecond}$ stateless hash calculation.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-6 -->
+    <!-- ===================================================================== -->
+    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Normative References</h2>
+      </div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><a href="https://www.rfc-editor.org/rfc/rfc8554.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">RFC 8554: Leighton-Micali Hash-Based Signatures</a></li>
+<li><a href="https://csrc.nist.gov/pubs/sp/800/208/final" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">NIST SP 800-208: Recommendation for Stateful Hash-Based Signature Schemes</a></li>
+<li><a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">draft-ietf-plants-merkle-tree-certs: Merkle Tree Certificates</a></li>
+<li><a href="https://www.w3.org/TR/webauthn-3/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">W3C Web Authentication (WebAuthn) Level 3</a></li>
+<li><a href="https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">FIDO Client to Authenticator Protocol (CTAP) v2.3</a></li>
+<li><a href="https://fidoalliance.org/specs/mds/fido-metadata-statement-v3.0-ps-20210518.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">FIDO Metadata Statement (MDS3)</a></li>
+</ul>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./enterprise_attestation_mtc_vs_lmots_comparison.md" class="text-[var(--primary)] hover:underline">enterprise_attestation_mtc_vs_lmots_comparison.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>
