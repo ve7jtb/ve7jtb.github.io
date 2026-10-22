@@ -173,20 +173,28 @@ flowchart LR
 
 When deployed for **Enterprise Attestation (`AttestationConveyancePreference: "enterprise"`)** where zero-knowledge blinding is not required, where **$\ge 1,000$ `makeCredential` registrations per device** ($2^{10} = 1,024, h_{\text{device}} = 10$) is sufficient, and where manufacturing batches are up to **$\ge 20,000$ keys** ($2^{15} = 32,768, h_{\text{batch}} = 15$), the architecture simplifies into a **25-level hierarchical LMS/LM-OTS Merkle tree** that operates **100% self-contained on the security key** with zero host software or storage.
 
+> [!IMPORTANT]
+> **Standard RFC 8554 HSS/LMS encoding (Section 6 only):** The Enterprise Direct profile uses an **unmodified RFC 8554 / NIST SP 800-208 tree**, so any stock HSS/LMS verifier (COSE `alg: -46`, RFC 8778 / RFC 9802) can check it:
+> - **Parameter set:** `LMS_SHA256_M32_H25` (`0x09`), with `LMOTS_SHA256_N32_W4` (`0x03`) or `LMOTS_SHA256_N32_W8` (`0x04`).
+> - **Public key and identifier:** an HSS `L = 1` public key of `60 B` (`u32 L` + LMS type + LM-OTS type + **16-byte `I`** + 32-byte root `T[1]`).
+> - **Tree hashing:** standard leaf hashing, $T[r] = H(I \parallel r \parallel \texttt{D\_LEAF} \parallel K)$, and standard internal hashing, $H(I \parallel r \parallel \texttt{D\_INTR} \parallel \text{left} \parallel \text{right})$.
+>
+> Each of the $2^{15}$ devices owns a disjoint, contiguous range of $2^{10}$ leaves ($q \in [1024d,\ 1024d + 1023]$), so no signing state is shared between devices. Only the per-leaf LM-OTS private-key derivation is implementation-specific, which RFC 8554 §4 / Appendix A allows. The Consumer profile in Sections 2–5 keeps its 32-byte `I` and custom witness format.
+
 ### 6.1 Self-Contained On-Authenticator Storage (~1.6 KB Total Persistent Storage)
 
 Because the 15 static batch ancestor hashes occupy only **$15 \times 32\text{ B} = \mathbf{480\text{ bytes}}$**, they are stored directly in read-only flash on the authenticator, eliminating the host Subtree Token completely. Splitting the 10-level ($1,024$-leaf) device subtree into **Top 5 levels ($2^5 = 32$ roots)** cached in read-only factory flash + **Bottom 5 levels ($2^5 = 32$ leaves)** computed statelessly in RAM yields:
 
 | On-Key Storage Component | Size | Memory Type | Purpose |
 | :--- | :---: | :---: | :--- |
-| **Core Secret & Bounds** | **112 B** | Read-Only Flash | 32 B `Master Seed` + 32 B `Key ID (I)` + 32 B `Batch Root ID` + 16 B subtree bounds |
+| **Core Secret & Bounds** | **96 B** | Read-Only Flash | 32 B `Master Seed` + 16 B RFC 8554 `I` + 32 B root `T[1]` + 16 B leaf-range bounds |
 | **Monotonic Counter State** | **16 B** | **Mutable NVM** | 8 B `Global Leaf Index (q)` + 8 B `Reservation Milestone Guard` *(only mutable bytes written)* |
 | **15 Batch Ancestor Hashes** | **480 B** | Read-Only Flash | Static upper Merkle path for the $2^{15}$ ($32,768$-key) manufacturing batch |
 | **Top-5 Device Subtree Cache** | **1,024 B** | Read-Only Flash | The 32 roots ($32 \times 32\text{ B}$) of the bottom 5-level ($32$-leaf) sub-subtrees |
-| **Total Persistent Storage** | **1,632 B (~1.6 KB)** | **1,616 B RO + 16 B Mutable** | **100% self-contained on-key; zero flash wear from tree state updates** |
+| **Total Persistent Storage** | **1,616 B (~1.6 KB)** | **1,600 B RO + 16 B Mutable** | **100% self-contained on-key; zero flash wear from tree state updates** |
 | **Peak Volatile RAM** | **~192 B** | Volatile SRAM | 6-node stack during stateless 32-leaf bottom sub-subtree evaluation |
 
-*(Note: If a manufacturer omits the 1,024 B Read-Only Top-5 cache, total persistent storage drops to just **608 bytes**—128 B core + 480 B batch path—and computing all $1,023$ sibling leaves statelessly from scratch takes `~1.0 s` on a hardware SHA-256 engine.)*
+*(Note: If a manufacturer omits the 1,024 B Read-Only Top-5 cache, total persistent storage drops to just **592 bytes**—112 B core + counter + 480 B batch path—and computing all $1,023$ sibling leaves statelessly from scratch takes `~1.0 s` on a hardware SHA-256 engine.)*
 
 ---
 
@@ -195,80 +203,102 @@ Because the 15 static batch ancestor hashes occupy only **$15 \times 32\text{ B}
 | Metric | Consumer Anonymous Mode (With Longfellow ZK)<br/>*(17-Batch + 14-Device = 31 Levels)* | Enterprise Direct Mode (No Host ZK)<br/>*(15-Batch + 10-Device = 25 Levels)* |
 | :--- | :--- | :--- |
 | **Batch Capacity / Registrations per Key** | **131,072 keys** ($2^{17}$) / **16,384 registrations** ($2^{14}$) | **32,768 keys** ($2^{15}$) / **1,024 registrations** ($2^{10}$) |
-| **Authenticator Total Flash / NVM** | `128 B` core + `1.44 KB` BDS *(or `4.1 KB` RO cache; `+544 B` batch path)* | **`16 B` mutable + `1,616 B` Read-Only (`~1.6 KB` total, 100% self-contained)** |
+| **Authenticator Total Flash / NVM** | `128 B` core + `1.44 KB` BDS *(or `4.1 KB` RO cache; `+544 B` batch path)* | **`16 B` mutable + `1,600 B` Read-Only (`~1.6 KB` total, 100% self-contained)** |
 | **Authenticator Peak Volatile RAM** | `~320–512 B` | **`~192 B`** |
 | **Authenticator `makeCredential` Latency** | `~15 ms` (Profile 1 BDS) or `~138 ms` (Profile 2 RO Cache) | **`~40 ms`** (`~8 ms` sign + `~32 ms` for 31 stateless leaves / `32,209` SHA-256 blocks) |
 | **Host Storage & Prover Latency** | `544 B` Subtree Token (if not on-key) + **`~785–1,470 ms` Longfellow ZK prover** | **`0 Bytes` + `0 ms` (pure CTAP 2.3 passthrough)** |
-| **WebAuthn `attStmt` Payload Size** | **310–345 KB** (`zkProof` + `batchRootId`) | **`3,048 B (~2.98 KB)`** (`2,180 B` LM-OTS sig + `800 B` 25-node path + `68 B` IDs — **$>100\times$ smaller**) |
-| **Total CTAP 2.3 / WebAuthn Frame Size** | `~4.66–5.20 KB` on USB bus $\to$ `~312–347 KB` to RP | **`~4,051–5,746 B (~3.96–5.61 KB)` end-to-end** including the signed `"fido-mtc-ent"` `deviceSerial` extension (`5,106 B` for `ML-DSA-65`; fits in a single `7,609 B` USB CTAPHID message for all 5 PQ credential algorithms — see §6.3) |
+| **WebAuthn `attStmt` Payload Size** | **310–345 KB** (`zkProof` + `batchRootId`) | **`3,008 B (~2.94 KB)`** (`2,992 B` standard RFC 8554 HSS `L=1` signature: `4 B` `Nspk` + `4 B` $q$ + `2,180 B` LM-OTS sig + `4 B` LMS type + `800 B` 25-node path; plus `16 B` `I` to select the tree — **$>100\times$ smaller**) |
+| **Total CTAP 2.3 / WebAuthn Frame Size** | `~4.66–5.20 KB` on USB bus $\to$ `~312–347 KB` to RP | **`~4,011–5,706 B (~3.92–5.57 KB)` end-to-end**, including the signed `"fido-mtc-ent"` `deviceSerial` extension (`5,066 B` for `ML-DSA-65`). Fits in a single `7,609 B` USB CTAPHID message for all 5 PQ credential algorithms (see §6.3) |
 | **Relying Party Verification Time** | **`~480 ms`** (Longfellow GKR+Ligero verifier) | **`~0.08 ms (80 µs)`** (`~600–1,120` SHA-256 blocks — **`~6,000×` faster**) |
-| **Hardware Auditability & Trust Anchor** | **Zero-Knowledge Anonymity:** Unlinkable across RPs; RP trusts single 32 B `Batch Root ID` in FIDO MDS | **Built-In Subtree Auditability:** Upper 15 bits of $q$ ($\lfloor q / 1024 \rfloor$) = exact Device ID; lower 10 bits ($q \bmod 1024$) = exact registration count; RP trusts single 32 B `Batch Root ID` with zero X.509 `x5c` chains |
+| **Hardware Auditability & Trust Anchor** | **Zero-Knowledge Anonymity:** Unlinkable across RPs; RP trusts single 32 B `Batch Root ID` in FIDO MDS | **Built-In Subtree Auditability:** Upper 15 bits of $q$ ($\lfloor q / 1024 \rfloor$) = exact Device ID; lower 10 bits ($q \bmod 1024$) = exact registration count; RP trusts a single `60 B` standard HSS/LMS public key (`I` + `T[1]`) with zero X.509 `x5c` chains |
 | **Dual-Mode Hardware Compatibility** | Native `"longfellow-lmots-zk"` (with optional `"enterprise"` passthrough) | **Dual-Mode Ready:** The exact same `1.6 KB` key can pass the `3.0 KB` `attStmt` directly for `"enterprise"` RPs **or** let a participating platform wrap the 25-node witness in a 41-layer Longfellow ZK proof for `"indirect"` / `"direct"` consumer anonymity |
 
 ---
 
-### 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Direct `LM-OTS` vs. `fmt: "mtc"` + `"fido-mtc-ent"`
+### 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. `fmt: "mtc"` + `"fido-mtc-ent"`
 
 This section compares **only the two Enterprise Attestation designs** (`enterpriseAttestation` `0x0A = 1` or `2`). Both carry the **same signed device serial number**:
-- **Direct Enterprise `LM-OTS`**: this section's 25-level self-contained tree.
-- **Enterprise MTC (`fmt: "mtc"` + `"fido-mtc-ent"`)**: from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses a stateless single-device `ML-DSA`/`FN-DSA` key per device, an inline `pubKey`, and a 17-hash `mtcCert`.
+- **Direct Enterprise HSS/LMS:** the standard RFC 8554 tree described above.
+- **Enterprise MTC (`fmt: "mtc"` + `"fido-mtc-ent"`):** from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses one stateless `ML-DSA`/`FN-DSA` key per device, sends `pubKey` inline, and carries a 17-hash `mtcCert`.
 
-Non-enterprise batch formats (`mtc-mds`, batch `mtc`) are left out on purpose. They need a shared batch key across at least 100,000 devices, so they cannot carry a per-device serial.
+Non-enterprise batch formats (`mtc-mds`, batch `mtc`) are left out. They cannot carry a per-device serial.
 
 #### 6.3.1 Carrying the Device Serial Number in Both Designs
 
-Both designs set the `ED` flag (`0x80`) and add the **same signed `authenticatorData.extensions` entry** from `pq_mtc_attestation_proposal.md` §8.3:
+Both designs set the `ED` flag (`0x80`) and add the **same signed `authenticatorData.extensions` entry** (`pq_mtc_attestation_proposal.md` §8.3):
 
 ```cddl
 "fido-mtc-ent": { "deviceSerial": tstr / uint }   ; e.g. { "deviceSerial": "123456" }
 ```
 
-The CBOR encoding is `A1` + `"fido-mtc-ent"` (13 B) + `A1` + `"deviceSerial"` (13 B) + `"123456"` (7 B) = `35 B`. This section budgets **`36 B`** so there is room for longer serials. The extension is inside `authenticatorData`, so the attestation signature covers it in both designs.
+The CBOR encoding is `A1` + `"fido-mtc-ent"` (13 B) + `A1` + `"deviceSerial"` (13 B) + `"123456"` (7 B) = `35 B`. This section budgets **`36 B`** for it. In both designs the attestation signature covers it.
 
-The table below shows how each design gets a **CA-committed** serial on top of the **device-signed** one:
+Neither design pays extra wire bytes to also bind the serial to the CA or factory. The difference is *how* that binding is made:
 
-| Binding Layer | Enterprise MTC (`fmt: "mtc"` + `"fido-mtc-ent"`) | Direct Enterprise `LM-OTS` |
+| Binding Layer | Enterprise MTC (`"fido-mtc-ent"`) | Standard RFC 8554 HSS/LMS |
 | :--- | :--- | :--- |
-| **Device-signed serial** | `"fido-mtc-ent".deviceSerial` in `authData`, signed by the single-device `ML-DSA` key (`attStmt.sig`) | `"fido-mtc-ent".deviceSerial` in `authData`, signed by the one-time `LM-OTS` leaf key (`lmotsSig`) |
-| **CA-committed serial (leaf binding)** | `deviceSerial` goes in `MtcProof.extensions`, which is hashed into the `FidoMtcLogEntry` leaf. This adds **`~10 B`** to `mtcCert` (`2 B` type + `2 B` length + `6 B` serial), so `563 B` becomes **`573 B`** | The factory binds the serial at the batch/device boundary of the tree. Device $d$'s level-15 batch leaf is $H(\texttt{0x83} \parallel \text{deviceSubtreeRoot}_d \parallel \text{SHA-256}(\text{deviceSerial}))$. The RP rebuilds it from the `deviceSerial` already in `authData`, so it costs **`0 B` on the wire** and one extra `SHA-256` call |
-| **Index ↔ serial cross-check** | `mtcCert.serial & 0xFFFFFFFFFFFF` = leaf index $k$ | $\lfloor q / 1024 \rfloor$ = Device ID, and $q \bmod 1024$ = registration count. Both are authenticated by the 25-node path |
-| **Result** | The serial is attested by the CA (leaf hash) and signed by the device | The serial is attested by the factory (batch-level leaf hash) and signed by the device. This gives parity with X.509 `id-fido-gen-ce-sernum` (`1.3.6.1.4.1.45724.1.1.2`) |
+| **Device-signed serial** | `deviceSerial` in `authData`, signed by the single-device `ML-DSA` key | `deviceSerial` in `authData`, signed by the one-time LM-OTS key at leaf $q$ |
+| **CA-committed serial** | `FidoMtcLogEntry` is a FIDO-defined leaf. The RP rebuilds it using `deviceSerial` taken from `authData`, the same way it already takes `aaguid` (§4.1). This adds **`0 B`**, so `mtcCert` stays **`563 B`**. *(Sending the serial again in `MtcProof.extensions`, as §8.3 also permits, would add `~10 B`.)* | A standard RFC 8554 leaf is fixed: $T[r] = H(I \parallel r \parallel \texttt{D\_LEAF} \parallel K)$, so there is **no room for a serial in the leaf**. Instead, the tree position authenticates the **Device ID** $d = \lfloor q / 1024 \rfloor$. The factory's signed provisioning manifest (`d → deviceSerial`, delivered to the enterprise IdP with the inventory) completes the binding. This adds **`0 B`** on the wire. Alternatively, define `deviceSerial` := `I`‖`d`, and no manifest is needed |
+| **Where the binding lives** | Inside the CA's Merkle commitment (self-contained) | In the tree position plus an out-of-band factory manifest. This is a **functional (not size) advantage for MTC** |
 
 #### 6.3.2 Fixed `attStmt` Components
 
-All totals use the same `authData` baseline as §2.1 and §6.2: `PK_len + 70 B` with a 16-byte `credentialId`, **plus `36 B` for `"fido-mtc-ent"`**, giving `authData = PK_len + 106 B`. A 32-byte `credentialId` plus full top-level CTAP CBOR framing adds `+52 B` to every column, so the deltas do not change. CBOR map-key framing inside `attStmt` (`~30–40 B` in both designs) is left out of both sides.
+Both designs use the same `authData` baseline as §2.1 and §6.2: `PK_len + 70 B` (16-byte `credentialId`) **plus `36 B` for `"fido-mtc-ent"`**, giving `authData = PK_len + 106 B`. A 32-byte `credentialId` plus full CTAP CBOR framing adds `+52 B` to every column and does not change the deltas. CBOR map-key framing inside `attStmt` (`~30–40 B`) is left out on both sides.
 
-- **Direct `LM-OTS` (`w = 4`, `LMOTS_SHA256_N32_W4`, dual-mode ZK-compatible):** `2,180 B` sig + `800 B` 25-node path + `68 B` IDs = **`3,048 B`**, the same for every credential algorithm.
-- **Direct `LM-OTS` (`w = 8`, `LMOTS_SHA256_N32_W8`, enterprise-only):** `1,124 B` sig + `800 B` path + `68 B` IDs = **`1,992 B`**, the same for every credential algorithm.
-- **Enterprise MTC `attStmt` = `sig` + `pubKey` (`COSE_Key`, `PK + 10 B`) + `573 B` `mtcCert` (17-hash proof including the serial extension):**
+**Standard RFC 8554 HSS signature (`L = 1`, `LMS_SHA256_M32_H25`):** `u32 Nspk = 0` (4 B) + `u32 q` (4 B) + LM-OTS signature + `u32` LMS type (4 B) + 25 × 32 B path (800 B), plus the 16-byte `I` so the RP can select the tree's 60 B public key from MDS:
 
-| Enterprise MTC Attestation Key | `sig` | `pubKey` (`COSE_Key`) | `mtcCert` | **Enterprise MTC `attStmt`** | vs. `LM-OTS` `w = 4` (`3,048 B`) | vs. `LM-OTS` `w = 8` (`1,992 B`) |
+| HSS/LMS Profile | LM-OTS Sig | Path | HSS Framing | `I` | **`attStmt`** |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| **`L = 1`, `H25` + `LMOTS_SHA256_N32_W4`** *(dual-mode, Longfellow-ZK-compatible)* | `2,180 B` | `800 B` | `12 B` | `16 B` | **`3,008 B`** |
+| **`L = 1`, `H25` + `LMOTS_SHA256_N32_W8`** *(enterprise-only)* | `1,124 B` | `800 B` | `12 B` | `16 B` | **`1,952 B`** |
+| *`L = 2`, `(H15, H10)` + `W8/W8` (alternative, see note)* | `2 × 1,124 B` | `480 + 320 B` | `20 B` + `56 B` child pubkey | `16 B` | *`3,140 B`* |
+
+**Enterprise MTC `attStmt` = `sig` + `pubKey` (`COSE_Key`, `PK + 10 B`) + `563 B` `mtcCert`:**
+
+| Enterprise MTC Key | `sig` | `pubKey` | `mtcCert` | **MTC `attStmt`** | vs. HSS/LMS `W4` (`3,008 B`) | vs. HSS/LMS `W8` (`1,952 B`) |
 | :--- | ---: | ---: | ---: | ---: | :---: | :---: |
-| `FN-DSA-512` (`-60`) | `666 B` | `907 B` | `573 B` | **`2,146 B`** | MTC is `902 B` smaller | MTC is `154 B` larger |
-| **`ML-DSA-44` (`-48`)** *(the proposal's provisioned Enterprise key)* | `2,420 B` | `1,322 B` | `573 B` | **`4,315 B`** | `LM-OTS` is `1,267 B` smaller | `LM-OTS` is `2,323 B` smaller |
-| `FN-DSA-1024` (`-61`) | `1,280 B` | `1,803 B` | `573 B` | **`3,656 B`** | `LM-OTS` is `608 B` smaller | `LM-OTS` is `1,664 B` smaller |
-| `ML-DSA-65` (`-49`) | `3,309 B` | `1,962 B` | `573 B` | **`5,844 B`** | `LM-OTS` is `2,796 B` smaller | `LM-OTS` is `3,852 B` smaller |
-| `ML-DSA-87` (`-50`) | `4,627 B` | `2,602 B` | `573 B` | **`7,802 B`** | `LM-OTS` is `4,754 B` smaller | `LM-OTS` is `5,810 B` smaller |
+| `FN-DSA-512` (`-60`) | `666 B` | `907 B` | `563 B` | **`2,136 B`** | MTC is `872 B` smaller | HSS/LMS is `184 B` smaller |
+| **`ML-DSA-44` (`-48`)** *(provisioned Enterprise key)* | `2,420 B` | `1,322 B` | `563 B` | **`4,305 B`** | HSS/LMS is `1,297 B` smaller | HSS/LMS is `2,353 B` smaller |
+| `FN-DSA-1024` (`-61`) | `1,280 B` | `1,803 B` | `563 B` | **`3,646 B`** | HSS/LMS is `638 B` smaller | HSS/LMS is `1,694 B` smaller |
+| `ML-DSA-65` (`-49`) | `3,309 B` | `1,962 B` | `563 B` | **`5,834 B`** | HSS/LMS is `2,826 B` smaller | HSS/LMS is `3,882 B` smaller |
+| `ML-DSA-87` (`-50`) | `4,627 B` | `2,602 B` | `563 B` | **`7,792 B`** | HSS/LMS is `4,784 B` smaller | HSS/LMS is `5,840 B` smaller |
+
+**Where the gap comes from** (fixed `ML-DSA-44` key vs. HSS/LMS `W4`):
+
+| Component | MTC | HSS/LMS | Difference |
+| :--- | ---: | ---: | ---: |
+| Signature | `2,420 B` | `2,180 B` | `-240 B` |
+| Attestation public key | `1,322 B` | `0 B` | **`-1,322 B`** |
+| Proof, framing, and identifiers | `563 B` | `828 B` | `+265 B` |
+| **Total** | **`4,305 B`** | **`3,008 B`** | **`-1,297 B`** |
+
+HSS/LMS needs no attestation public key on the wire because the RP rebuilds the leaf $T[q]$ from the LM-OTS signature itself. **Serial binding contributes `0 B` to the difference.**
 
 #### 6.3.3 End-to-End `MakeCredential` Wire Size: All 3 `ML-DSA` and Both `FN-DSA` Credential Algorithms
 
 The `7,609 B` USB CTAPHID single-message limit is 1 init packet (`57 B`) plus 128 continuation packets (`59 B` each). Entries over the limit are marked ⚠️, and their size is still calculated.
 
-| User Credential (`COSE alg`) | NIST Level / `PK_len` | `authData` incl. `"fido-mtc-ent"` (`PK + 106 B`) | **Direct `LM-OTS` `w = 4`** (`authData` + `3,048 B`) | **Direct `LM-OTS` `w = 8`** (`authData` + `1,992 B`) | **Enterprise MTC: Fixed `ML-DSA-44` Key** (`authData` + `4,315 B`) | **Enterprise MTC: Level-Matched Key** (`Att Key == Cred Key`) | **`LM-OTS` `w = 4` Saving vs. MTC** (Fixed / Matched) |
-| :--- | :---: | ---: | :---: | :---: | :---: | :---: | :---: |
-| **`FN-DSA-512` (`-60`)** | I / `897 B` | `1,003 B` | **`4,051 B`** (`69` fr) ✅ | **`2,995 B`** (`51` fr) ✅ | `5,318 B` (`91` fr) ✅ | `3,149 B` (`54` fr) ✅ *(`-60` key)* | `-1,267 B` / **`+902 B`** *(MTC smaller)* |
-| **`ML-DSA-44` (`-48`)** | II / `1,312 B` | `1,418 B` | **`4,466 B`** (`76` fr) ✅ | **`3,410 B`** (`58` fr) ✅ | `5,733 B` (`98` fr) ✅ | `5,733 B` (`98` fr) ✅ *(same `-48` key)* | `-1,267 B` / `-1,267 B` |
-| **`FN-DSA-1024` (`-61`)** | V / `1,793 B` | `1,899 B` | **`4,947 B`** (`84` fr) ✅ | **`3,891 B`** (`66` fr) ✅ | `6,214 B` (`106` fr) ✅ | `5,555 B` (`95` fr) ✅ *(`-61` key)* | `-1,267 B` / `-608 B` |
-| **`ML-DSA-65` (`-49`)** | III / `1,952 B` | `2,058 B` | **`5,106 B`** (`87` fr) ✅ | **`4,050 B`** (`69` fr) ✅ | `6,373 B` (`109` fr) ✅ | **`7,902 B`** (`134` fr) ⚠️ **OVER HID LIMIT (`+293 B`)** *(`-49` key)* | `-1,267 B` / `-2,796 B` |
-| **`ML-DSA-87` (`-50`)** | V / `2,592 B` | `2,698 B` | **`5,746 B`** (`98` fr) ✅ | **`4,690 B`** (`80` fr) ✅ | `7,013 B` (`119` fr) ✅ *(`596 B` margin)* | **`10,500 B`** (`178` fr) ⚠️ **OVER HID LIMIT (`+2,891 B`)** *(`-50` key)* | `-1,267 B` / `-4,754 B` |
+| User Credential (`COSE alg`) | NIST Level / `PK_len` | `authData` incl. serial (`PK + 106 B`) | **HSS/LMS `L=1` `W4`** (+`3,008 B`) | **HSS/LMS `L=1` `W8`** (+`1,952 B`) | *HSS/LMS `L=2` `W8/W8`* (+`3,140 B`) | **Ent. MTC: Fixed `ML-DSA-44` Key** (+`4,305 B`) | **Ent. MTC: Level-Matched Key** | **`W4` Saving vs. MTC** (Fixed / Matched) |
+| :--- | :---: | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`FN-DSA-512` (`-60`)** | I / `897 B` | `1,003 B` | **`4,011 B`** (`69` fr) ✅ | **`2,955 B`** (`51` fr) ✅ | *`4,143 B`* (`71` fr) ✅ | `5,308 B` (`90` fr) ✅ | `3,139 B` (`54` fr) ✅ | `-1,297 B` / **`+872 B`** *(MTC smaller)* |
+| **`ML-DSA-44` (`-48`)** | II / `1,312 B` | `1,418 B` | **`4,426 B`** (`76` fr) ✅ | **`3,370 B`** (`58` fr) ✅ | *`4,558 B`* (`78` fr) ✅ | `5,723 B` (`98` fr) ✅ | `5,723 B` (`98` fr) ✅ | `-1,297 B` / `-1,297 B` |
+| **`FN-DSA-1024` (`-61`)** | V / `1,793 B` | `1,899 B` | **`4,907 B`** (`84` fr) ✅ | **`3,851 B`** (`66` fr) ✅ | *`5,039 B`* (`86` fr) ✅ | `6,204 B` (`106` fr) ✅ | `5,545 B` (`95` fr) ✅ | `-1,297 B` / `-638 B` |
+| **`ML-DSA-65` (`-49`)** | III / `1,952 B` | `2,058 B` | **`5,066 B`** (`86` fr) ✅ | **`4,010 B`** (`68` fr) ✅ | *`5,198 B`* (`89` fr) ✅ | `6,363 B` (`108` fr) ✅ | **`7,892 B`** (`134` fr) ⚠️ **OVER HID LIMIT (`+283 B`)** | `-1,297 B` / `-2,826 B` |
+| **`ML-DSA-87` (`-50`)** | V / `2,592 B` | `2,698 B` | **`5,706 B`** (`97` fr) ✅ | **`4,650 B`** (`79` fr) ✅ | *`5,838 B`* (`99` fr) ✅ | `7,003 B` (`119` fr) ✅ *(`606 B` margin)* | **`10,490 B`** (`178` fr) ⚠️ **OVER HID LIMIT (`+2,881 B`)** | `-1,297 B` / `-4,784 B` |
 
 > [!NOTE]
-> **Normalization:** `pq_mtc_attestation_proposal.md` §8.1.1 quotes `5,931 B`, `6,571 B`, and `7,211 B` for Enterprise `fmt: "mtc"` with a fixed `ML-DSA-44` key. Those figures use that document's larger `authData` estimate (`~198 B` more). The numbers above recompute both designs on the same §6.2 `authData` baseline, so every byte of difference comes from `attStmt`. The `573 B` `mtcCert` assumes the proposal's `100k`-device `2^17` Enterprise subtree. Sizing the MTC subtree to this section's `2^15` (`32,768`-device) batch would make it `509 B` (`-64 B`).
+> **Normalization:** `pq_mtc_attestation_proposal.md` §8.1.1 quotes `5,931 / 6,571 / 7,211 B` for Enterprise `fmt: "mtc"` with a fixed `ML-DSA-44` key. Those figures use its larger `authData` estimate (`~198 B` more) and leave out the serial extension. The figures here put both designs on the same baseline. Sizing the MTC subtree to this section's `2^15` batch would shrink `mtcCert` to `499 B` (`-64 B`).
 
-#### 6.3.4 Key Takeaways (Enterprise Only, With Serial Number in Both)
+> [!WARNING]
+> **Standard-tree provisioning tradeoff (`L = 1` vs. `L = 2`):**
+> - **Single `H25` root (`L = 1`):** the root depends on all `2^25` leaf public keys. The entire `32,768`-device batch must therefore be keyed before any device receives its 25-node path. That means either HSM key injection (the same constraint as the MTC proposal §8.4.3 Model A) or on-chip key generation followed by a write-back of the batch path.
+> - **Split signing keys and SP 800-208:** NIST SP 800-208 expects an LMS private key to stay in one validated module. Splitting one `H25` key's leaf ranges across `32,768` authenticators is outside the configurations it describes.
+> - **Standard `L = 2` HSS alternative:** the factory HSM's `H15` top tree signs each device's own on-chip-generated `H10` LMS public key. Devices can be keyed one at a time, and each device's private key never leaves it. The cost is a second LM-OTS signature on the wire, for a `3,140 B` `attStmt` with `W8/W8`. That is still `1,165 B` smaller than Enterprise MTC with `ML-DSA-44`, and `ML-DSA-87` fits at `5,838 B`.
 
-1. **The serial number costs the same `36 B` in both designs.** MTC spends another `~10 B` committing it in `MtcProof.extensions`. `LM-OTS` binds it into the batch-level leaf hash at no wire cost, because the RP reads `deviceSerial` from `authData`.
-2. **Against the proposal's provisioned `ML-DSA-44` Enterprise key, `LM-OTS` is a constant `1,267 B` smaller (`w = 4`) or `2,323 B` smaller (`w = 8`) for every credential algorithm.** The reason is that `LM-OTS` sends no attestation public key, while MTC sends `1,322 B`.
-3. **With level-matched Enterprise keys, the gap widens for `ML-DSA`.** Enterprise MTC goes over the `7,609 B` limit for `ML-DSA-65` (`7,902 B`) and `ML-DSA-87` (`10,500 B`). Direct `LM-OTS` stays at `5,106 B` and `5,746 B` (`w = 4`), or `4,050 B` and `4,690 B` (`w = 8`). The `LM-OTS` attestation is NIST Category 5 (`SHA-256`, `N32`) in every row.
-4. **`FN-DSA-512` is the one case where MTC is smaller.** A level-matched `FN-DSA-512` Enterprise key gives `3,149 B` total, which is `902 B` smaller than `LM-OTS` `w = 4` but `154 B` larger than `LM-OTS` `w = 8`. That MTC configuration only gives Level I attestation, and it requires constant-time `FN-DSA` floating-point signing on the authenticator.
-5. **Operational tradeoff:** Enterprise MTC keys are **stateless** (unlimited registrations). Direct `LM-OTS` is **bounded to `1,024` registrations per device** and needs a `16 B` monotonic counter. In exchange, `LM-OTS` gets smaller wire size, `~40 ms` hardware `SHA-256` attestation signing (vs. `~700–1,400 ms` software `ML-DSA` on Cortex-M4), and no `pubKey` or `batchKeys` in MDS (a single `32 B` `Batch Root ID`).
+#### 6.3.4 Key Takeaways (Enterprise Only, With Serial Number in Both, Standard RFC 8554)
+
+1. **Serial binding costs the same `36 B` in both designs and has no effect on the size difference.** MTC commits the serial inside its CA leaf. Standard HSS/LMS cannot do that, so it commits the Device ID through the leaf position and relies on a factory manifest (or `deviceSerial` := `I`‖`d`).
+2. **The size advantage comes from HSS/LMS sending no attestation public key** (`-1,322 B`) **and a smaller signature** (`-240 B`). It pays `+265 B` for its longer path. Net: **`1,297 B` smaller (`W4`) or `2,353 B` smaller (`W8`)** than Enterprise MTC with the provisioned `ML-DSA-44` key, for every credential algorithm.
+3. **With level-matched Enterprise keys,** MTC exceeds the `7,609 B` limit for `ML-DSA-65` (`7,892 B`) and `ML-DSA-87` (`10,490 B`). Standard HSS/LMS stays at `5,066 / 5,706 B` (`W4`), `4,010 / 4,650 B` (`W8`), or `5,198 / 5,838 B` (`L = 2`). HSS/LMS attestation is NIST Category 5 (`SHA-256`, `N32`) in every case.
+4. **`FN-DSA-512` is the one case where MTC is smaller:** `3,139 B`, which is `872 B` smaller than `W4` but `184 B` larger than `W8`. That case gives only Level I attestation and requires constant-time `FN-DSA` signing on the device.
+5. **Interoperability:** with the standard encoding, any RFC 8554 / RFC 9802 HSS/LMS verifier (COSE `-46`) can check Direct Enterprise attestations with no custom tree code.

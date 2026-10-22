@@ -443,6 +443,9 @@ LongfellowZkAttestationObject = {
       <p class="text-sm text-[var(--muted-foreground)]">
         When deployed for <strong>Enterprise Attestation (<code>AttestationConveyancePreference: "enterprise"</code>)</strong> where zero-knowledge blinding is not required, where <strong><code>&ge;1,000</code> <code>makeCredential</code> registrations per device</strong> (<code>2<sup>10</sup> = 1,024, h_device = 10</code>) is sufficient, and where manufacturing batches are up to <strong><code>&ge;20,000</code> keys</strong> (<code>2<sup>15</sup> = 32,768, h_batch = 15</code>), the architecture simplifies into a <strong>25-level hierarchical LMS/LM-OTS Merkle tree</strong> that operates <strong>100% self-contained on the security key</strong> with zero host software or storage.
       </p>
+      <div class="rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-4 text-xs leading-relaxed">
+        <strong>Standard RFC 8554 HSS/LMS encoding (Section 6 only):</strong> The Enterprise Direct profile uses an unmodified RFC 8554 / NIST SP 800-208 tree, so any stock HSS/LMS verifier (COSE <code>alg: -46</code>, RFC 8778 / RFC 9802) can check it. It uses <code>LMS_SHA256_M32_H25</code> (<code>0x09</code>) with <code>LMOTS_SHA256_N32_W4</code> (<code>0x03</code>) or <code>W8</code> (<code>0x04</code>), and an HSS <code>L = 1</code> public key of <code>60 B</code> with a <strong>16-byte <code>I</code></strong> and 32-byte root <code>T[1]</code>. Leaf hashing is the standard <code>T[r] = H(I || r || D_LEAF || K)</code> and internal hashing is <code>H(I || r || D_INTR || left || right)</code>. Each device owns a disjoint range of <code>2<sup>10</sup></code> leaves (<code>q &isin; [1024d, 1024d+1023]</code>), so no signing state is shared. The Consumer profile (Sections 2&ndash;5) keeps its 32-byte <code>I</code>.
+      </div>
 
       <!-- 6.1 Self-Contained On-Authenticator Storage -->
       <div class="space-y-4">
@@ -462,9 +465,9 @@ LongfellowZkAttestationObject = {
             <tbody class="divide-y divide-[var(--border)]">
               <tr>
                 <td class="p-3 font-semibold">Core Secret &amp; Bounds</td>
-                <td class="p-3 font-mono">112 B</td>
+                <td class="p-3 font-mono">96 B</td>
                 <td class="p-3">Read-Only Flash</td>
-                <td class="p-3"><code>32 B Master Seed</code> + <code>32 B Key ID (I)</code> + <code>32 B Batch Root ID</code> + <code>16 B</code> subtree bounds</td>
+                <td class="p-3"><code>32 B Master Seed</code> + <code>16 B</code> RFC 8554 <code>I</code> + <code>32 B</code> root <code>T[1]</code> + <code>16 B</code> leaf-range bounds</td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold">Monotonic Counter State</td>
@@ -486,8 +489,8 @@ LongfellowZkAttestationObject = {
               </tr>
               <tr class="bg-[var(--content)] font-semibold">
                 <td class="p-3">Total Persistent Storage</td>
-                <td class="p-3 font-mono">1,632 B (~1.6 KB)</td>
-                <td class="p-3">1,616 B RO + 16 B Mutable</td>
+                <td class="p-3 font-mono">1,616 B (~1.6 KB)</td>
+                <td class="p-3">1,600 B RO + 16 B Mutable</td>
                 <td class="p-3">100% self-contained on-key; zero flash wear from tree state updates; ~192 B peak volatile RAM</td>
               </tr>
             </tbody>
@@ -518,7 +521,7 @@ LongfellowZkAttestationObject = {
               <tr>
                 <td class="p-3 font-semibold">Authenticator Total Flash / NVM</td>
                 <td class="p-3"><code>128 B</code> core + <code>1.44 KB</code> BDS <em>(or <code>4.1 KB</code> RO cache; <code>+544 B</code> batch path)</em></td>
-                <td class="p-3"><strong><code>16 B</code> mutable + <code>1,616 B</code> Read-Only (<code>~1.6 KB</code> total, 100% self-contained)</strong></td>
+                <td class="p-3"><strong><code>16 B</code> mutable + <code>1,600 B</code> Read-Only (<code>~1.6 KB</code> total, 100% self-contained)</strong></td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold">Authenticator Peak Volatile RAM</td>
@@ -538,7 +541,7 @@ LongfellowZkAttestationObject = {
               <tr>
                 <td class="p-3 font-semibold">WebAuthn <code>attStmt</code> Payload Size</td>
                 <td class="p-3"><strong><code>310–345 KB</code></strong> (<code>zkProof</code> + <code>batchRootId</code>)</td>
-                <td class="p-3"><strong><code>3,048 B (~2.98 KB)</code></strong> (<code>2,180 B</code> LM-OTS sig + <code>800 B</code> 25-node path + <code>68 B</code> IDs — <strong>&gt;100&times; smaller</strong>)</td>
+                <td class="p-3"><strong><code>3,008 B (~2.94 KB)</code></strong> (<code>2,992 B</code> standard RFC 8554 HSS <code>L=1</code> signature: <code>2,180 B</code> LM-OTS sig + <code>800 B</code> 25-node path + <code>12 B</code> framing; plus <code>16 B</code> <code>I</code> — <strong>&gt;100&times; smaller</strong>)</td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold">Relying Party Verification Time</td>
@@ -555,18 +558,18 @@ LongfellowZkAttestationObject = {
         </div>
       </div>
 
-      <!-- 6.3 Enterprise Wire-Size Comparison with Device Serial Number: LM-OTS vs fido-mtc-ent -->
+      <!-- 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs fido-mtc-ent -->
       <div class="space-y-4 pt-4 border-t border-[var(--border)]">
         <h3 class="text-lg font-semibold text-[var(--foreground)]">
-          6.3 Enterprise Wire-Size Comparison with Device Serial Number: Direct <code>LM-OTS</code> vs. <code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code>
+          6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. <code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code>
         </h3>
         <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
-          This section compares <strong>only the two Enterprise Attestation designs</strong> (<code>0x0A = 1</code> or <code>2</code>), and both carry the <strong>same signed device serial number</strong>. The first is this section's 25-level self-contained Direct <code>LM-OTS</code> tree. The second is Enterprise MTC (<code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code>) from the <a href="pq_mtc_attestation_proposal.html" class="underline text-emerald-600 dark:text-emerald-400">MTC proposal &sect;8.1&ndash;&sect;8.3</a>. Non-enterprise batch formats (<code>mtc-mds</code>, batch <code>mtc</code>) are left out because they cannot carry a per-device serial.
+          This section compares <strong>only the two Enterprise Attestation designs</strong> (<code>0x0A = 1</code> or <code>2</code>), and both carry the <strong>same signed device serial number</strong>. The first is the standard RFC 8554 <code>LMS_SHA256_M32_H25</code> tree above. The second is Enterprise MTC (<code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code>) from the <a href="pq_mtc_attestation_proposal.html" class="underline text-emerald-600 dark:text-emerald-400">MTC proposal &sect;8.1&ndash;&sect;8.3</a>. Non-enterprise batch formats are left out because they cannot carry a per-device serial.
         </p>
 
         <h4 class="text-sm font-semibold text-[var(--foreground)]">6.3.1 Carrying the Device Serial Number in Both Designs</h4>
         <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
-          Both designs set the <code>ED</code> flag and add the same signed extension, <code>"fido-mtc-ent": { "deviceSerial": "123456" }</code>, to <code>authenticatorData.extensions</code>. It encodes to <code>35 B</code> and is budgeted at <strong><code>36 B</code></strong>. The attestation signature covers it in both designs.
+          Both designs set the <code>ED</code> flag and add the same signed extension, <code>"fido-mtc-ent": { "deviceSerial": "123456" }</code>, to <code>authenticatorData.extensions</code>. It encodes to <code>35 B</code> and is budgeted at <strong><code>36 B</code></strong>. Neither design pays extra wire bytes for the CA/factory binding; only the binding mechanism differs:
         </p>
         <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
           <table class="w-full text-left border-collapse text-xs">
@@ -574,24 +577,24 @@ LongfellowZkAttestationObject = {
               <tr class="bg-[var(--content)] border-b border-[var(--border)]">
                 <th class="p-3 font-semibold">Binding Layer</th>
                 <th class="p-3 font-semibold">Enterprise MTC (<code>"fido-mtc-ent"</code>)</th>
-                <th class="p-3 font-semibold">Direct Enterprise <code>LM-OTS</code></th>
+                <th class="p-3 font-semibold">Standard RFC 8554 HSS/LMS</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[var(--border)]">
               <tr>
                 <td class="p-3 font-semibold">Device-signed serial</td>
                 <td class="p-3"><code>deviceSerial</code> in <code>authData</code>, signed by the single-device <code>ML-DSA</code> key</td>
-                <td class="p-3"><code>deviceSerial</code> in <code>authData</code>, signed by the one-time <code>LM-OTS</code> leaf key</td>
+                <td class="p-3"><code>deviceSerial</code> in <code>authData</code>, signed by the one-time LM-OTS key at leaf <code>q</code></td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold">CA-committed serial</td>
-                <td class="p-3">Goes in <code>MtcProof.extensions</code>, which is hashed into the leaf. Adds <strong><code>~10 B</code></strong>, so <code>mtcCert</code> grows from <code>563 B</code> to <strong><code>573 B</code></strong></td>
-                <td class="p-3">Device <em>d</em>'s level-15 leaf is <code>H(0x83 || deviceSubtreeRoot_d || SHA-256(deviceSerial))</code>. The RP rebuilds it from <code>authData</code>, so it costs <strong><code>0 B</code> on the wire</strong> and one extra hash</td>
+                <td class="p-3">The RP rebuilds the FIDO-defined <code>FidoMtcLogEntry</code> leaf using <code>deviceSerial</code> from <code>authData</code> (as it already does for <code>aaguid</code>). This adds <strong><code>0 B</code></strong>, so <code>mtcCert</code> stays <strong><code>563 B</code></strong>. Sending it again in <code>MtcProof.extensions</code> would add <code>~10 B</code></td>
+                <td class="p-3">The standard leaf <code>T[r] = H(I || r || D_LEAF || K)</code> has <strong>no room for a serial</strong>. Instead, the tree position authenticates the Device ID <code>d = &lfloor;q/1024&rfloor;</code>, and a signed factory manifest (<code>d &rarr; deviceSerial</code>) completes the binding. This adds <strong><code>0 B</code></strong>. Alternatively, define <code>deviceSerial := I || d</code></td>
               </tr>
               <tr>
-                <td class="p-3 font-semibold">Index cross-check</td>
-                <td class="p-3"><code>mtcCert.serial &amp; 0xFFFFFFFFFFFF</code> = leaf index</td>
-                <td class="p-3"><code>&lfloor;q/1024&rfloor;</code> = Device ID and <code>q mod 1024</code> = registration count, both authenticated by the 25-node path</td>
+                <td class="p-3 font-semibold">Where the binding lives</td>
+                <td class="p-3">Inside the CA Merkle commitment (self-contained)</td>
+                <td class="p-3">In the tree position plus an out-of-band manifest. This is a <strong>functional (not size) advantage for MTC</strong></td>
               </tr>
             </tbody>
           </table>
@@ -599,7 +602,7 @@ LongfellowZkAttestationObject = {
 
         <h4 class="text-sm font-semibold text-[var(--foreground)]">6.3.2 Fixed <code>attStmt</code> Components</h4>
         <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
-          <code>authData = PK_len + 106 B</code>: the §6.2 baseline of <code>PK + 70 B</code> plus the <code>36 B</code> serial extension. A 32-byte <code>credentialId</code> plus CBOR framing adds <code>+52 B</code> to every column. <code>LM-OTS</code> <code>attStmt</code> is fixed at <strong><code>3,048 B</code></strong> (<code>w = 4</code>) or <strong><code>1,992 B</code></strong> (<code>w = 8</code>). Enterprise MTC <code>attStmt</code> = <code>sig</code> + <code>pubKey</code> (<code>PK + 10 B</code>) + the <code>573 B</code> <code>mtcCert</code>:
+          <code>authData = PK_len + 106 B</code>: the §6.2 baseline plus the <code>36 B</code> serial. A standard HSS <code>L=1</code> signature is <code>Nspk</code> (4) + <code>q</code> (4) + LM-OTS sig + LMS type (4) + 800 B path, plus the 16 B <code>I</code>. That gives <strong><code>3,008 B</code></strong> with <code>W4</code> or <strong><code>1,952 B</code></strong> with <code>W8</code>; the standard <code>L=2</code> <code>(H15,H10)</code> <code>W8/W8</code> alternative is <code>3,140 B</code>. Enterprise MTC <code>attStmt</code> = <code>sig</code> + <code>pubKey</code> (<code>PK + 10 B</code>) + the <code>563 B</code> <code>mtcCert</code>:
         </p>
         <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
           <table class="w-full text-left border-collapse text-xs">
@@ -610,19 +613,22 @@ LongfellowZkAttestationObject = {
                 <th class="p-3 font-semibold"><code>pubKey</code></th>
                 <th class="p-3 font-semibold"><code>mtcCert</code></th>
                 <th class="p-3 font-semibold">MTC <code>attStmt</code></th>
-                <th class="p-3 font-semibold">vs. <code>LM-OTS</code> <code>w = 4</code></th>
-                <th class="p-3 font-semibold">vs. <code>LM-OTS</code> <code>w = 8</code></th>
+                <th class="p-3 font-semibold">vs. HSS/LMS <code>W4</code> (<code>3,008 B</code>)</th>
+                <th class="p-3 font-semibold">vs. HSS/LMS <code>W8</code> (<code>1,952 B</code>)</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[var(--border)]">
-              <tr><td class="p-3"><code>FN-DSA-512</code> (<code>-60</code>)</td><td class="p-3"><code>666 B</code></td><td class="p-3"><code>907 B</code></td><td class="p-3"><code>573 B</code></td><td class="p-3 font-semibold"><code>2,146 B</code></td><td class="p-3">MTC is <code>902 B</code> smaller</td><td class="p-3">MTC is <code>154 B</code> larger</td></tr>
-              <tr class="bg-emerald-500/5"><td class="p-3 font-semibold"><code>ML-DSA-44</code> (<code>-48</code>) <span class="font-normal text-[var(--muted-foreground)]">(provisioned)</span></td><td class="p-3"><code>2,420 B</code></td><td class="p-3"><code>1,322 B</code></td><td class="p-3"><code>573 B</code></td><td class="p-3 font-semibold"><code>4,315 B</code></td><td class="p-3"><code>LM-OTS</code> is <code>1,267 B</code> smaller</td><td class="p-3"><code>LM-OTS</code> is <code>2,323 B</code> smaller</td></tr>
-              <tr><td class="p-3"><code>FN-DSA-1024</code> (<code>-61</code>)</td><td class="p-3"><code>1,280 B</code></td><td class="p-3"><code>1,803 B</code></td><td class="p-3"><code>573 B</code></td><td class="p-3 font-semibold"><code>3,656 B</code></td><td class="p-3"><code>LM-OTS</code> is <code>608 B</code> smaller</td><td class="p-3"><code>LM-OTS</code> is <code>1,664 B</code> smaller</td></tr>
-              <tr><td class="p-3"><code>ML-DSA-65</code> (<code>-49</code>)</td><td class="p-3"><code>3,309 B</code></td><td class="p-3"><code>1,962 B</code></td><td class="p-3"><code>573 B</code></td><td class="p-3 font-semibold"><code>5,844 B</code></td><td class="p-3"><code>LM-OTS</code> is <code>2,796 B</code> smaller</td><td class="p-3"><code>LM-OTS</code> is <code>3,852 B</code> smaller</td></tr>
-              <tr><td class="p-3"><code>ML-DSA-87</code> (<code>-50</code>)</td><td class="p-3"><code>4,627 B</code></td><td class="p-3"><code>2,602 B</code></td><td class="p-3"><code>573 B</code></td><td class="p-3 font-semibold"><code>7,802 B</code></td><td class="p-3"><code>LM-OTS</code> is <code>4,754 B</code> smaller</td><td class="p-3"><code>LM-OTS</code> is <code>5,810 B</code> smaller</td></tr>
+              <tr><td class="p-3"><code>FN-DSA-512</code> (<code>-60</code>)</td><td class="p-3"><code>666 B</code></td><td class="p-3"><code>907 B</code></td><td class="p-3"><code>563 B</code></td><td class="p-3 font-semibold"><code>2,136 B</code></td><td class="p-3">MTC is <code>872 B</code> smaller</td><td class="p-3">HSS/LMS is <code>184 B</code> smaller</td></tr>
+              <tr class="bg-emerald-500/5"><td class="p-3 font-semibold"><code>ML-DSA-44</code> (<code>-48</code>) <span class="font-normal text-[var(--muted-foreground)]">(provisioned)</span></td><td class="p-3"><code>2,420 B</code></td><td class="p-3"><code>1,322 B</code></td><td class="p-3"><code>563 B</code></td><td class="p-3 font-semibold"><code>4,305 B</code></td><td class="p-3">HSS/LMS is <code>1,297 B</code> smaller</td><td class="p-3">HSS/LMS is <code>2,353 B</code> smaller</td></tr>
+              <tr><td class="p-3"><code>FN-DSA-1024</code> (<code>-61</code>)</td><td class="p-3"><code>1,280 B</code></td><td class="p-3"><code>1,803 B</code></td><td class="p-3"><code>563 B</code></td><td class="p-3 font-semibold"><code>3,646 B</code></td><td class="p-3">HSS/LMS is <code>638 B</code> smaller</td><td class="p-3">HSS/LMS is <code>1,694 B</code> smaller</td></tr>
+              <tr><td class="p-3"><code>ML-DSA-65</code> (<code>-49</code>)</td><td class="p-3"><code>3,309 B</code></td><td class="p-3"><code>1,962 B</code></td><td class="p-3"><code>563 B</code></td><td class="p-3 font-semibold"><code>5,834 B</code></td><td class="p-3">HSS/LMS is <code>2,826 B</code> smaller</td><td class="p-3">HSS/LMS is <code>3,882 B</code> smaller</td></tr>
+              <tr><td class="p-3"><code>ML-DSA-87</code> (<code>-50</code>)</td><td class="p-3"><code>4,627 B</code></td><td class="p-3"><code>2,602 B</code></td><td class="p-3"><code>563 B</code></td><td class="p-3 font-semibold"><code>7,792 B</code></td><td class="p-3">HSS/LMS is <code>4,784 B</code> smaller</td><td class="p-3">HSS/LMS is <code>5,840 B</code> smaller</td></tr>
             </tbody>
           </table>
         </div>
+        <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+          <strong>Where the gap comes from</strong> (fixed <code>ML-DSA-44</code> key vs. <code>W4</code>): signature <code>-240 B</code>, attestation public key <strong><code>-1,322 B</code></strong>, proof/framing/<code>I</code> <code>+265 B</code>, net <strong><code>-1,297 B</code></strong>. HSS/LMS sends no attestation public key because the RP rebuilds <code>T[q]</code> from the LM-OTS signature. Serial binding contributes <code>0 B</code>.
+        </p>
 
         <h4 class="text-sm font-semibold text-[var(--foreground)]">6.3.3 End-to-End <code>MakeCredential</code> Wire Size (<code>7,609 B</code> CTAPHID Limit)</h4>
         <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
@@ -632,59 +638,68 @@ LongfellowZkAttestationObject = {
                 <th class="p-3 font-semibold">User Credential</th>
                 <th class="p-3 font-semibold">Level / <code>PK_len</code></th>
                 <th class="p-3 font-semibold"><code>authData</code> (+ serial)</th>
-                <th class="p-3 font-semibold">Direct <code>LM-OTS</code> <code>w = 4</code></th>
-                <th class="p-3 font-semibold">Direct <code>LM-OTS</code> <code>w = 8</code></th>
-                <th class="p-3 font-semibold">Ent. MTC (Fixed <code>-48</code> Key)</th>
-                <th class="p-3 font-semibold">Ent. MTC (Level-Matched Key)</th>
-                <th class="p-3 font-semibold"><code>LM-OTS</code> <code>w = 4</code> Saving (Fixed / Matched)</th>
+                <th class="p-3 font-semibold">HSS/LMS <code>L=1</code> <code>W4</code></th>
+                <th class="p-3 font-semibold">HSS/LMS <code>L=1</code> <code>W8</code></th>
+                <th class="p-3 font-semibold"><em>HSS/LMS <code>L=2</code> <code>W8/W8</code></em></th>
+                <th class="p-3 font-semibold">Ent. MTC (Fixed <code>-48</code>)</th>
+                <th class="p-3 font-semibold">Ent. MTC (Level-Matched)</th>
+                <th class="p-3 font-semibold"><code>W4</code> Saving (Fixed / Matched)</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[var(--border)]">
               <tr>
                 <td class="p-3 font-semibold"><code>FN-DSA-512</code> (<code>-60</code>)</td><td class="p-3">I / <code>897 B</code></td><td class="p-3"><code>1,003 B</code></td>
-                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>4,051 B</code> (69 fr) &#9989;</td>
-                <td class="p-3 font-semibold"><code>2,995 B</code> (51 fr) &#9989;</td>
-                <td class="p-3"><code>5,318 B</code> (91 fr) &#9989;</td>
-                <td class="p-3"><code>3,149 B</code> (54 fr) &#9989;</td>
-                <td class="p-3"><code>-1,267 B</code> / <strong><code>+902 B</code></strong> (MTC smaller)</td>
+                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>4,011 B</code> (69 fr) &#9989;</td>
+                <td class="p-3 font-semibold"><code>2,955 B</code> (51 fr) &#9989;</td>
+                <td class="p-3"><em><code>4,143 B</code> (71 fr) &#9989;</em></td>
+                <td class="p-3"><code>5,308 B</code> (90 fr) &#9989;</td>
+                <td class="p-3"><code>3,139 B</code> (54 fr) &#9989;</td>
+                <td class="p-3"><code>-1,297 B</code> / <strong><code>+872 B</code></strong> (MTC smaller)</td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold"><code>ML-DSA-44</code> (<code>-48</code>)</td><td class="p-3">II / <code>1,312 B</code></td><td class="p-3"><code>1,418 B</code></td>
-                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>4,466 B</code> (76 fr) &#9989;</td>
-                <td class="p-3 font-semibold"><code>3,410 B</code> (58 fr) &#9989;</td>
-                <td class="p-3"><code>5,733 B</code> (98 fr) &#9989;</td>
-                <td class="p-3"><code>5,733 B</code> (98 fr) &#9989;</td>
-                <td class="p-3"><code>-1,267 B</code> / <code>-1,267 B</code></td>
+                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>4,426 B</code> (76 fr) &#9989;</td>
+                <td class="p-3 font-semibold"><code>3,370 B</code> (58 fr) &#9989;</td>
+                <td class="p-3"><em><code>4,558 B</code> (78 fr) &#9989;</em></td>
+                <td class="p-3"><code>5,723 B</code> (98 fr) &#9989;</td>
+                <td class="p-3"><code>5,723 B</code> (98 fr) &#9989;</td>
+                <td class="p-3"><code>-1,297 B</code> / <code>-1,297 B</code></td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold"><code>FN-DSA-1024</code> (<code>-61</code>)</td><td class="p-3">V / <code>1,793 B</code></td><td class="p-3"><code>1,899 B</code></td>
-                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>4,947 B</code> (84 fr) &#9989;</td>
-                <td class="p-3 font-semibold"><code>3,891 B</code> (66 fr) &#9989;</td>
-                <td class="p-3"><code>6,214 B</code> (106 fr) &#9989;</td>
-                <td class="p-3"><code>5,555 B</code> (95 fr) &#9989;</td>
-                <td class="p-3"><code>-1,267 B</code> / <code>-608 B</code></td>
+                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>4,907 B</code> (84 fr) &#9989;</td>
+                <td class="p-3 font-semibold"><code>3,851 B</code> (66 fr) &#9989;</td>
+                <td class="p-3"><em><code>5,039 B</code> (86 fr) &#9989;</em></td>
+                <td class="p-3"><code>6,204 B</code> (106 fr) &#9989;</td>
+                <td class="p-3"><code>5,545 B</code> (95 fr) &#9989;</td>
+                <td class="p-3"><code>-1,297 B</code> / <code>-638 B</code></td>
               </tr>
               <tr class="bg-emerald-500/5">
                 <td class="p-3 font-semibold"><code>ML-DSA-65</code> (<code>-49</code>)</td><td class="p-3">III / <code>1,952 B</code></td><td class="p-3"><code>2,058 B</code></td>
-                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>5,106 B</code> (87 fr) &#9989;</td>
-                <td class="p-3 font-semibold"><code>4,050 B</code> (69 fr) &#9989;</td>
-                <td class="p-3"><code>6,373 B</code> (109 fr) &#9989;</td>
-                <td class="p-3 text-amber-600 dark:text-amber-400 font-semibold"><code>7,902 B</code> (134 fr) &#9888;&#65039; OVER HID LIMIT (+293 B)</td>
-                <td class="p-3"><code>-1,267 B</code> / <code>-2,796 B</code></td>
+                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>5,066 B</code> (86 fr) &#9989;</td>
+                <td class="p-3 font-semibold"><code>4,010 B</code> (68 fr) &#9989;</td>
+                <td class="p-3"><em><code>5,198 B</code> (89 fr) &#9989;</em></td>
+                <td class="p-3"><code>6,363 B</code> (108 fr) &#9989;</td>
+                <td class="p-3 text-amber-600 dark:text-amber-400 font-semibold"><code>7,892 B</code> (134 fr) &#9888;&#65039; OVER HID LIMIT (+283 B)</td>
+                <td class="p-3"><code>-1,297 B</code> / <code>-2,826 B</code></td>
               </tr>
               <tr>
                 <td class="p-3 font-semibold"><code>ML-DSA-87</code> (<code>-50</code>)</td><td class="p-3">V / <code>2,592 B</code></td><td class="p-3"><code>2,698 B</code></td>
-                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>5,746 B</code> (98 fr) &#9989;</td>
-                <td class="p-3 font-semibold"><code>4,690 B</code> (80 fr) &#9989;</td>
-                <td class="p-3"><code>7,013 B</code> (119 fr) &#9989;</td>
-                <td class="p-3 text-amber-600 dark:text-amber-400 font-semibold"><code>10,500 B</code> (178 fr) &#9888;&#65039; OVER HID LIMIT (+2,891 B)</td>
-                <td class="p-3"><code>-1,267 B</code> / <code>-4,754 B</code></td>
+                <td class="p-3 text-emerald-700 dark:text-emerald-400 font-semibold"><code>5,706 B</code> (97 fr) &#9989;</td>
+                <td class="p-3 font-semibold"><code>4,650 B</code> (79 fr) &#9989;</td>
+                <td class="p-3"><em><code>5,838 B</code> (99 fr) &#9989;</em></td>
+                <td class="p-3"><code>7,003 B</code> (119 fr) &#9989;</td>
+                <td class="p-3 text-amber-600 dark:text-amber-400 font-semibold"><code>10,490 B</code> (178 fr) &#9888;&#65039; OVER HID LIMIT (+2,881 B)</td>
+                <td class="p-3"><code>-1,297 B</code> / <code>-4,784 B</code></td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
-          <strong>Normalization:</strong> MTC proposal §8.1.1 quotes <code>5,931 / 6,571 / 7,211 B</code> using its larger <code>authData</code> estimate (<code>~198 B</code> more). The figures here put both designs on the same §6.2 baseline. Sizing the MTC subtree to this section's <code>2<sup>15</sup></code> batch would shrink <code>mtcCert</code> to <code>509 B</code> (<code>-64 B</code>). <strong>Takeaways:</strong> the serial costs the same <code>36 B</code> in both designs. <code>LM-OTS</code> is <code>1,267 B</code> smaller (<code>w = 4</code>) or <code>2,323 B</code> smaller (<code>w = 8</code>) than the provisioned <code>ML-DSA-44</code> Enterprise MTC key. With level-matched keys, Enterprise MTC goes over the HID limit for <code>ML-DSA-65</code> and <code>ML-DSA-87</code>. The only case where MTC is smaller is a Level I <code>FN-DSA-512</code> Enterprise key versus <code>w = 4</code>.
+          <strong>Normalization:</strong> MTC proposal §8.1.1 quotes <code>5,931 / 6,571 / 7,211 B</code> using its larger <code>authData</code> estimate (<code>~198 B</code> more) and without the serial. The figures here put both designs on the same baseline. Sizing the MTC subtree to a <code>2<sup>15</sup></code> batch would make <code>mtcCert</code> <code>499 B</code>.
+        </p>
+        <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+          <strong>&#9888;&#65039; Standard-tree provisioning tradeoff:</strong> A single <code>H25</code> root (<code>L=1</code>) depends on all <code>2<sup>25</sup></code> leaf public keys. The whole batch must be keyed (HSM injection, or on-chip key generation plus a path write-back) before any device gets its 25-node path. Also, NIST SP 800-208 expects one LMS key to stay in one module, which splitting leaf ranges across devices does not do. The standard <strong><code>L=2</code> HSS</strong> alternative avoids both: the factory <code>H15</code> tree signs each device's own on-chip <code>H10</code> public key. The cost is a second LM-OTS signature (<code>3,140 B</code> <code>attStmt</code> with <code>W8/W8</code>), which is still <code>1,165 B</code> smaller than Enterprise MTC with <code>ML-DSA-44</code>.
         </p>
       </div>
     </section>
