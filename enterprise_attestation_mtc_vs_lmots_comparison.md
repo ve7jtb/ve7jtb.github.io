@@ -1,4 +1,11 @@
-# Post-Quantum Enterprise Attestation: MTC-MDS vs. Direct LM-OTS (RFC 8554)
+# Post-Quantum Enterprise Attestation: Compact MTC vs. Direct LM-OTS (RFC 8554)
+
+> [!NOTE]
+> **Specification Update (Authenticate 2026 CTAP2 TWG Consensus):**
+> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
+> - **`fmt: "mtc"`** (formerly `mtc`): The compact, preferred default format where public keys are omitted from the wire and resolved out-of-band via FIDO MDS3 or manufacturer manifests.
+> - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key.
+> - **`"fido-mtc-ent"`**: Retained as the signed enterprise device serial extension.
 ### Architectural Evaluation: Transport Wire Sizes, Manifest Distribution, and Relying Party Validation Complexity
 
 > [!IMPORTANT]
@@ -6,22 +13,22 @@
 > When transitioning FIDO2/WebAuthn authenticators to Post-Quantum Cryptography (PQC), **Enterprise Attestation (`0x0A`)** poses unique challenges. Because enterprise authenticators must authenticate their physical hardware identity (device serial number) alongside the user's credential, classical X.509 chains explode ($7.9\text{–}22.9\text{ KB}$), breaking the **$7,609\text{-byte}$ USB CTAPHID single-message limit**.
 >
 > This report evaluates the two leading post-quantum enterprise attestation candidates:
-> 1. **MDS/Manifest-Assisted Merkle Tree Certificates (`fmt: "mtc-mds"`)** based on `draft-ietf-plants-merkle-tree-certs`.
+> 1. **MDS/Manifest-Assisted Merkle Tree Certificates (`fmt: "mtc"`)** based on `draft-ietf-plants-merkle-tree-certs`.
 > 2. **Standard RFC 8554 / NIST SP 800-208 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS)** based on single-tree `LMS_SHA256_M32_H25` ($L=1$).
 
 ---
 
-## 1. Architectural Anatomy & Extraction of `mtc-mds`
+## 1. Architectural Anatomy & Extraction of `mtc`
 
-The `mtc-mds` format (`fmt: "mtc-mds"`) eliminates the multi-kilobyte post-quantum attestation public key from the authenticator's wire payload by referencing a pre-distributed public key table.
+The `mtc` format (`fmt: "mtc"`) eliminates the multi-kilobyte post-quantum attestation public key from the authenticator's wire payload by referencing a pre-distributed public key table.
 
 ```cddl
 $$attStmtType //= (
-    fmt: "mtc-mds",
-    attStmt: mtcMdsStmtFormat
+    fmt: "mtc",
+    attStmt: mtcStmtFormat
 )
 
-mtcMdsStmtFormat = {
+mtcStmtFormat = {
     alg: COSEAlgorithmIdentifier,
     sig: bytes,
     mtcCert: mtcEntryDesc / mtcKeyRef, ; Public key omitted; fetched by (caId, serial)
@@ -33,7 +40,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 }
 ```
 
-### 1.1 Non-Enterprise `mtc-mds` (Public FIDO Metadata Service)
+### 1.1 Non-Enterprise `mtc` (Public FIDO Metadata Service)
 
 In non-enterprise deployments (batch attestation):
 - **Key Discovery**: Public keys are published in the FIDO Alliance Metadata Service (MDS3) BLOB inside `MtcTrustAnchor.batchKeys`.
@@ -41,7 +48,7 @@ In non-enterprise deployments (batch attestation):
 - **Anonymity & Privacy**: $\ge 100,000$ authenticators share the exact same attestation keypair. No physical device serial number is emitted or stored.
 - **Merkle Proof (`mtcProof`)**: The authenticator transmits an inclusion proof (`mtcEntryDesc`) proving its leaf binds to an active landmark `rootHash` published in MDS.
 
-### 1.2 Enterprise `mtc-mds` (Manifest-Assisted Distribution)
+### 1.2 Enterprise `mtc` (Manifest-Assisted Distribution)
 
 In enterprise deployments (`enterpriseAttestation` `0x0A = 1` or `2`):
 - **Key Discovery**: Public keys are distributed **out of band** via a manufacturer manifest file delivered to key purchasers (e.g., enterprise IT administrators).
@@ -50,9 +57,9 @@ In enterprise deployments (`enterpriseAttestation` `0x0A = 1` or `2`):
 - **Proof-Less Optimization (`mtcKeyRef`)**: Because the purchaser's Relying Party (RP) already holds and cryptographically verifies the entire manifest, the $563\text{-byte}$ Merkle inclusion proof is redundant and can be omitted.
 - **Wire Serial Extension**: The `36 B` `"fido-mtc-ent"` extension in `authData.extensions` is optional on the wire because the manifest already binds the key to the hardware serial.
 
-### 1.3 Architectural Comparison: Non-Enterprise vs. Enterprise `mtc-mds`
+### 1.3 Architectural Comparison: Non-Enterprise vs. Enterprise `mtc`
 
-| Architectural Dimension | Non-Enterprise `mtc-mds` | Enterprise `mtc-mds` (Manifest-Assisted) |
+| Architectural Dimension | Non-Enterprise `mtc` | Enterprise `mtc` (Manifest-Assisted) |
 | :--- | :--- | :--- |
 | **Trust Source / Key Store** | **Public FIDO MDS3 BLOB** (`mtcTrustAnchors[].batchKeys`) | **Private Vendor Manifest** (`MtcTrustAnchor` JSON/CBOR schema) |
 | **Key Lookup Identifier** | `(caId, serial)` | **`(caId, serial)`** *(strictly identical for protocol uniformity)* |
@@ -64,7 +71,7 @@ In enterprise deployments (`enterpriseAttestation` `0x0A = 1` or `2`):
 
 ---
 
-## 2. Wire Size Analysis: Enterprise `mtc-mds` vs. Direct LM-OTS
+## 2. Wire Size Analysis: Enterprise `mtc` vs. Direct LM-OTS
 
 Under CTAP 2.0–2.3, USB HID frames enforce a maximum single-message payload of **$7,609\text{ bytes}$** (1 initialization packet of $57\text{ B}$ + 128 continuation packets of $59\text{ B}$).
 
@@ -73,7 +80,7 @@ Under CTAP 2.0–2.3, USB HID frames enforce a maximum single-message payload of
 For both schemes, the total `MakeCredential` response consists of:
 $$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$
 - **`authData` Baseline**: $70\text{ B}$ (RP ID hash, flags, counter, credential ID, and user public key) + $36\text{ B}$ if carrying the signed `"fido-mtc-ent"` serial number.
-- **Enterprise `mtc-mds` `attStmt`**:
+- **Enterprise `mtc` `attStmt`**:
   - *With Proof*: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $563\text{ B}$ `MTCProof`.
   - *Proof-Less*: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $\sim 30\text{ B}$ `mtcKeyRef`.
 - **Direct LM-OTS `attStmt` (Standard RFC 8554 Single Tree `H25`, $L=1$)**:
@@ -84,7 +91,7 @@ $$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$
 
 The table below contrasts the end-to-end `MakeCredential` payload sizes across NIST post-quantum credential algorithms, evaluated against the **$7,609\text{-byte}$ USB CTAPHID limit**:
 
-| Credential Algorithm | Inline `"mtcl"` (sig + `pubKey` + `563 B` proof + serial) | Enterprise `"mtc-mds"` (with `563 B` proof + serial) | **Enterprise `"mtc-mds"` Proof-Less** (serial in manifest only) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt` + serial) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt` + serial) |
+| Credential Algorithm | Inline `"mtcl"` (sig + `pubKey` + `563 B` proof + serial) | Enterprise `"mtc"` (with `563 B` proof + serial) | **Enterprise `"mtc"` Proof-Less** (serial in manifest only) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt` + serial) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt` + serial) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **`ML-DSA-44`** (`-48`) | $5,723\text{ B}$ ✅ | $4,401\text{ B}$ ✅ | **$3,832\text{ B}$** ✅ | $4,441\text{ B}$ ✅ | **$3,385\text{ B}$** ✅ |
 | **`ML-DSA-65`** (`-49`) | $7,892\text{ B}$ ⚠️ *(+283 B)* | $5,930\text{ B}$ ✅ | **$5,361\text{ B}$** ✅ | $5,081\text{ B}$ ✅ | **$4,025\text{ B}$** ✅ |
@@ -101,27 +108,27 @@ xychart-beta
     bar [3832, 5361, 7319, 2608, 3970]
     bar [3385, 4025, 4665, 2934, 3830]
 ```
-*(Legend: Bar 1 = Inline `"mtcl"`; Bar 2 = Proof-Less `"mtc-mds"`; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)*
+*(Legend: Bar 1 = Inline `"mtcl"`; Bar 2 = Proof-Less `"mtc"`; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)*
 
 ### 2.3 Key Wire Size Findings
 1. **The Category 5 `ML-DSA-87` Bottleneck**:
-   - In `mtc-mds`, if the proof is transmitted on the wire, `ML-DSA-87` **fails the USB HID limit ($7,888\text{ B} > 7,609\text{ B}$)**. Proof-less `mtc-mds` barely squeezes under with only **$290\text{ bytes}$ of margin**.
+   - In `mtc`, if the proof is transmitted on the wire, `ML-DSA-87` **fails the USB HID limit ($7,888\text{ B} > 7,609\text{ B}$)**. Proof-less `mtc` barely squeezes under with only **$290\text{ bytes}$ of margin**.
    - In contrast, **LM-OTS ($W=8$)** delivers `ML-DSA-87` in **$4,665\text{ B}$**, leaving **$2,944\text{ bytes}$ of safety margin** without requiring any out-of-band manifest infrastructure.
 2. **Fixed vs. Variable Attestation Overhead**:
-   - In `mtc-mds`, the attestation statement scales with the post-quantum signature size of the attestation key ($2,420\text{–}4,627\text{ B}$).
+   - In `mtc`, the attestation statement scales with the post-quantum signature size of the attestation key ($2,420\text{–}4,627\text{ B}$).
    - In LM-OTS, the attestation statement size is completely **independent of the credential algorithm** ($1,952\text{ B}$ constant for $W=8$).
 
 ---
 
 ## 3. Relying Party Validation Architecture & Complexity
 
-The primary operational difference between `mtc-mds` and LM-OTS lies in **verification state, database dependency, and validation branching**.
+The primary operational difference between `mtc` and LM-OTS lies in **verification state, database dependency, and validation branching**.
 
 ```mermaid
 flowchart TD
-    subgraph MTC["MTC-MDS: Multi-Path Stateful Verification"]
+    subgraph MTC["Compact MTC: Multi-Path Stateful Verification"]
         A[Receive MakeCredential] --> B{fmt?}
-        B -->|mtc-mds| C{Is mtcCert an mtcKeyRef or mtcEntryDesc?}
+        B -->|mtc| C{Is mtcCert an mtcKeyRef or mtcEntryDesc?}
         C -->|mtcKeyRef Proof-less| D[Branch 1: Local Manifest Lookup]
         C -->|mtcEntryDesc With-Proof| E[Branch 2: Landmark Subtree Proof]
         
@@ -146,9 +153,9 @@ flowchart TD
     end
 ```
 
-### 3.1 The 5 Branching Verification Paths in `mtc-mds`
+### 3.1 The 5 Branching Verification Paths in `mtc`
 
-To verify an `mtc-mds` attestation statement, an Enterprise Relying Party must implement five branching code paths and state management engines:
+To verify an `mtc` attestation statement, an Enterprise Relying Party must implement five branching code paths and state management engines:
 
 1. **Branch 1 (Proof-Less Manifest Key Reference — `mtcKeyRef`)**:
    - The RP must query an offline relational or key-value store holding individual public keys ($13.3\text{–}26.1\text{ MB}$ per $100\text{k}$ devices).
@@ -156,9 +163,9 @@ To verify an `mtc-mds` attestation statement, an Enterprise Relying Party must i
 2. **Branch 2 (Landmark Proof Inclusion — `mtcEntryDesc`)**:
    - If the authenticator belongs to a contractor or BYOD scenario where the RP does not hold the manifest, the RP parses `mtcProof`, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB.
 3. **Branch 3 (Serial Extension Discrepancy Resolution)**:
-   - In proof-less `mtc-mds`, the serial is bound in the manifest, making `"fido-mtc-ent"` on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).
+   - In proof-less `mtc`, the serial is bound in the manifest, making `"fido-mtc-ent"` on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).
 4. **Branch 4 (Manifest Drift & Reseller Fallback)**:
-   - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc-mds` fails. The RP/client must initiate a fallback to inline `fmt: "mtcl"` or `fmt: "packed"`, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.
+   - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc` fails. The RP/client must initiate a fallback to inline `fmt: "mtcl"` or `fmt: "packed"`, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.
 5. **Branch 5 (Revocation & Key Life-Cycle Management)**:
    - Revocation requires tracking delta arrays of `revokedSerials` inside every manifest update.
 
@@ -175,13 +182,13 @@ In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branc
 3. **No Revocation Lists / Key Lifecycle Ingestion**:
    - The monotonic leaf index $q$ ($0 \le q < 2^{25}$) guarantees one-time signature freshness. Monotonic counters on the authenticator prevent state reuse.
 4. **Blazing Fast Performance**:
-   - Entire RP validation completes in **$\sim 80\,\mu\text{s}$ ($0.08\text{ ms}$)** on commodity server hardware, compared to several milliseconds of database lookups, CBOR parsing, and lattice verification in `mtc-mds`.
+   - Entire RP validation completes in **$\sim 80\,\mu\text{s}$ ($0.08\text{ ms}$)** on commodity server hardware, compared to several milliseconds of database lookups, CBOR parsing, and lattice verification in `mtc`.
 
 ---
 
 ## 4. Comprehensive Evaluation & Decision Matrix
 
-| Evaluation Dimension | **Enterprise `mtc-mds` (Manifest-Assisted)** | **Enterprise LM-OTS (RFC 8554 Single Tree)** |
+| Evaluation Dimension | **Enterprise `mtc` (Manifest-Assisted)** | **Enterprise LM-OTS (RFC 8554 Single Tree)** |
 | :--- | :--- | :--- |
 | **Wire Footprint (`ML-DSA-87`)** | **$7,319\text{ B}$** *(dangerously tight, $290\text{ B}$ margin)* | **$4,665\text{ B}$ ($W=8$)** *(comfortable $2,944\text{ B}$ margin)* |
 | **RP Pre-Requisite Knowledge** | **Large Out-of-Band Manifest** ($13\text{–}260\text{ MB}$ database) | **Single 60-byte Root Public Key** |
@@ -194,8 +201,8 @@ In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branc
 
 ## 5. Conclusions & Strategic Recommendation
 
-1. **For General Non-Enterprise Attestation (`fmt: "none"` / `fmt: "mtc-mds"` / `fmt: "mtcl"`)**:
-   - **`mtc-mds` via FIDO MDS3 is the optimal path.** It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.
+1. **For General Non-Enterprise Attestation (`fmt: "none"` / `fmt: "mtc"` / `fmt: "mtcl"`)**:
+   - **`mtc` via FIDO MDS3 is the optimal path.** It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.
 
 2. **For High-Assurance Enterprise Direct Attestation (`0x0A`)**:
    - **RFC 8554 LM-OTS Direct Attestation is the superior architectural choice.** It is completely immune to out-of-band manifest desynchronization, provides comfortable wire safety margins for all NIST Level 5 algorithms (`ML-DSA-87`), and reduces RP verification to a deterministic, $80\text{-microsecond}$ stateless hash calculation.

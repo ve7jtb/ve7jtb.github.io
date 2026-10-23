@@ -282,10 +282,10 @@ def parse_blocks(lines):
 # ---------------------------------------------------------------- page specs -
 DOCUMENT_CONFIGS = {
     "pq_mtc_attestation_proposal": {
-        "title": "Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtcl and mtc-mds)",
+        "title": "Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc and mtcl)",
         "badges": [
             ("W3C WebAuthn & CTAP 2.3+", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("fmt: \"mtcl\" & \"mtc-mds\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("fmt: \"mtc\" & \"mtcl\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("IETF PLANTS Merkle Tree Certs", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("ML-DSA & OpenID Federation 1.1", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
@@ -339,7 +339,7 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else ("abstract" if "abstract" in title.lower() else slug(title)),
     },
     "fido_ctap23_conformance_report": {
-        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Post-Quantum mtcl / mtc-mds",
+        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Post-Quantum mtc / mtcl",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
             ("250 / 250 Passed (100%)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
@@ -358,14 +358,14 @@ DOCUMENT_CONFIGS = {
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {
-        "title": "Post-Quantum Enterprise Attestation: MTC-MDS vs. Direct LM-OTS (RFC 8554) Comparison Report",
+        "title": "Post-Quantum Enterprise Attestation: Compact MTC vs. Direct LM-OTS (RFC 8554) Comparison Report",
         "badges": [
             ("Enterprise Attestation (0x0A)", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("MTC-MDS vs. RFC 8554 LM-OTS", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("MTC vs. RFC 8554 LM-OTS", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("7,609 B USB HID Wire Analysis", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("RP Validation Complexity", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Comprehensive technical comparison between MDS/Manifest-Assisted Merkle Tree Certificates (fmt: 'mtc-mds') and Standard RFC 8554 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS) across wire payload budgets, manifest distribution logistics, and Relying Party verification complexity.",
+        "desc": "Comprehensive technical comparison between MDS/Manifest-Assisted Merkle Tree Certificates (fmt: 'mtc') and Standard RFC 8554 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS) across wire payload budgets, manifest distribution logistics, and Relying Party verification complexity.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }

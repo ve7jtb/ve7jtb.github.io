@@ -221,7 +221,9 @@ This section compares **only the two Enterprise Attestation designs** (`enterpri
 - **Direct Enterprise HSS/LMS:** the standard RFC 8554 tree described above.
 - **Enterprise MTC (`fmt: "mtcl"` + `"fido-mtc-ent"`):** from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses one stateless `ML-DSA`/`FN-DSA` key per device, sends `pubKey` inline, and carries a 17-hash `mtcCert`.
 
-Non-enterprise batch formats (`mtc-mds`, batch `mtcl`) are left out. They cannot carry a per-device serial.
+Non-enterprise batch formats (compact `mtc`, batch `mtcl`) are left out. They cannot carry a per-device serial.
+> [!NOTE]
+> **Authenticate 2026 CTAP2 TWG Naming Alignment:** Following consensus in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted format (formerly `mtc-mds`) is named **`fmt: "mtc"`**, while the inline large format is designated **`fmt: "mtcl"`**.
 
 #### 6.3.1 Carrying the Device Serial Number in Both Designs
 
