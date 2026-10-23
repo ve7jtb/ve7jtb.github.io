@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposal: Consolidated fmt: &quot;mtc&quot; &amp; mtc-debug Support in java-webauthn-server</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Yubico java-webauthn-server</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: &quot;mtc&quot; (No Inline pubKey)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">MDS3 &amp; Vendor Manifests</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">mtc-debug (mtcDebug) Extension</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./mtc_attestation_proposal.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      Proposal: Consolidated fmt: "mtc" &amp; mtc-debug Support in java-webauthn-server
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Architecture and implementation proposal for adding consolidated Merkle Tree Certificate attestation (fmt: "mtc") and the mtc-debug registration extension to Yubico java-webauthn-server, resolving batch keys from FIDO MDS3 and enterprise keys from vendor manifests or mtc-debug authenticated against the MDS subtree rootHash.
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Key &amp; Trust Resolution Architecture for <code>fmt: "mtc"</code></div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Proposed Changes: <code>webauthn-server-core</code></div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Proposed Changes: <code>webauthn-server-attestation</code> (MDS3 &amp; Manifests)</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Proposed Changes: <code>webauthn-server-demo</code> (Request &amp; Test on Localhost)</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Test Suite (<code>webauthn-server-core</code> &amp; <code>webauthn-server-attestation</code>)</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Key &amp; Trust Resolution Architecture for <code>fmt: "mtc"</code></a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#why-mtc-debug-mtcproof-is-cryptographically-trusted-in-enterprise-mode" class="hover:underline">&sect;Why <code>mtc-debug</code> + <code>mtcProof</code> is Cryptographically Trusted in Enterprise Mode</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Proposed Changes: <code>webauthn-server-core</code></a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-requesting-mtc-attestation-mtcdebug" class="hover:underline">&sect;2.1 Requesting MTC Attestation &amp; <code>mtcDebug</code></a></div>
+            <div><a href="#22-new-package-comyubicowebauthnattestationmtc" class="hover:underline">&sect;2.2 New Package <code>com.yubico.webauthn.attestation.mtc</code></a></div>
+            <div><a href="#23-wire-codecs-verifier-mtcattestationstatementverifier" class="hover:underline">&sect;2.3 Wire Codecs &amp; Verifier (<code>MtcAttestationStatementVerifier</code>)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Proposed Changes: <code>webauthn-server-attestation</code> (MDS3 &amp; Manifests)</a>
+
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Proposed Changes: <code>webauthn-server-demo</code> (Request &amp; Test on Localhost)</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Test Suite (<code>webauthn-server-core</code> &amp; <code>webauthn-server-attestation</code>)</a>
+
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Key &amp; Trust Resolution Architecture for <code>fmt: "mtc"</code></h2>
+      </div>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TD
+    Start["Receive fmt: 'mtc'&lt;br/&gt;attStmt: { alg, sig, mtcCert }"] --&gt; Mode{"Enterprise Attestation&lt;br/&gt;Active?"}
+
+    Mode -- "No (Batch Attestation)" --&gt; MDSLookup["Lookup (caId, serial) in&lt;br/&gt;FIDO MDS3 MtcTrustAnchor.batchKeys"]
+    MDSLookup -- "Found" --&gt; VerifySig["Verify attStmt.sig over&lt;br/&gt;authData || clientDataHash"]
+    MDSLookup -- "Not in batchKeys,&lt;br/&gt;mtc-debug present" --&gt; DebugBatch["Use extensions['mtc-debug'].pubKey&lt;br/&gt;(Requires valid mtcProof -&gt; MDS rootHash)"]
+    DebugBatch --&gt; VerifySig
+
+    Mode -- "Yes (Enterprise Attestation)" --&gt; EntSource{"Vendor Manifest&lt;br/&gt;has (caId, serial)?"}
+    EntSource -- "Yes (Manifest Path)" --&gt; ManifestKey["Resolve pubKey + deviceSerial&lt;br/&gt;from Vendor Manifest batchKeys[serial]"]
+    EntSource -- "No, mtc-debug present&lt;br/&gt;(Extension Path)" --&gt; ExtKey["Extract pubKey + deviceSerial from&lt;br/&gt;authData.extensions['mtc-debug']"]
+    ManifestKey --&gt; VerifySig
+    ExtKey --&gt; VerifySig
+
+    VerifySig --&gt; ProofCheck{"mtcCert has&lt;br/&gt;mtcProof?"}
+    ProofCheck -- "Yes (mtcEntryDesc)" --&gt; WalkMerkle["Reconstruct FidoMtcLogEntry&lt;br/&gt;(commits SHA-256(pubKey) + aaguid + deviceSerial)&lt;br/&gt;Verify RFC 9162 proof -&gt; subtrees[].rootHash"]
+    ProofCheck -- "No (mtcKeyRef)" --&gt; TableCheck["Require pubKey came from a&lt;br/&gt;rootHash-authenticated Manifest / MDS table"]
+
+    WalkMerkle --&gt; Trusted["attestationTrusted = true&lt;br/&gt;BASIC (Batch) or ATTESTATION_CA (Enterprise)"]
+    TableCheck --&gt; Trusted</pre></div>
+<h3 id="why-mtc-debug-mtcproof-is-cryptographically-trusted-in-enterprise-mode" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Why <code>mtc-debug</code> + <code>mtcProof</code> is Cryptographically Trusted in Enterprise Mode</h3>
+<p class="text-sm my-2">In public FIDO MDS3, the Enterprise <code>MtcTrustAnchor</code> (e.g., <code>caId: "g5k_AQI"</code>) publishes the Root-CA-signed <code>subtrees[].rootHash</code> with <code>"batchKeys": []</code> (since individual device keys are not published in public MDS).</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>When the RP has the <strong>vendor manifest</strong>, it resolves <code>(pubKey, deviceSerial)</code> by <code>(caId, serial)</code> from the manifest (supporting both <code>mtcEntryDesc</code> and proof-less <code>mtcKeyRef</code>).</li>
+<li>When the RP does <strong>not</strong> have the vendor manifest (or is running conformance tests) and requests <strong><code>mtcDebug: true</code></strong>, the authenticator returns <code>{ pubKey, deviceSerial }</code> in <code>authenticatorData.extensions["mtc-debug"]</code> and <code>mtcEntryDesc</code> (with <code>mtcProof</code>) in <code>attStmt.mtcCert</code>.</li>
+<li>The RP hashes <code>SHA-256(pubKey)</code> and <code>deviceSerial</code> into <code>FidoMtcLogEntry</code>, walks <code>mtcProof</code>, and verifies that the resulting root matches the Root-CA-signed <code>subtrees[].rootHash</code> from MDS. Neither <code>pubKey</code> nor <code>deviceSerial</code> can be forged because both are committed inside the Merkle leaf authenticated by the CA's <code>rootHash</code>.</li>
+</ul>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Proposed Changes: <code>webauthn-server-core</code></h2>
+      </div>
+<h3 id="21-requesting-mtc-attestation-mtcdebug" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Requesting MTC Attestation &amp; <code>mtcDebug</code></h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong><code>attestationFormats</code> preference list</strong> (WebAuthn L3/L4 §5.4, CTAP 2.3 <code>0x0B</code>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Add <code>Optional&lt;List&lt;String&gt;&gt; attestationFormats</code> to <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/PublicKeyCredentialCreationOptions.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>PublicKeyCredentialCreationOptions</code></a> (serialized as JSON <code>"attestationFormats"</code> when non-empty).</li>
+<li>Add <code>.attestationFormats(List&lt;String&gt;)</code> to <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/StartRegistrationOptions.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>StartRegistrationOptions</code></a> and a Relying Party default on <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/RelyingParty.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>RelyingParty</code></a> / <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/RelyingPartyV2.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>RelyingPartyV2</code></a> (e.g., <code>List.of("mtc", "packed")</code>).</li>
+<li>Omit <code>attestationFormats</code> when <code>attestation == NONE</code>.</li>
+</ul></li>
+<li><strong><code>mtcDebug</code> (<code>mtc-debug</code>) registration extension</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/RegistrationExtensionInputs.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>RegistrationExtensionInputs</code></a>: add <code>@JsonProperty("mtcDebug") Boolean mtcDebug</code>, builder method <code>.mtcDebug(boolean)</code> / <code>.mtcDebug()</code>, and include <code>"mtcDebug"</code> in <code>getExtensionIds()</code>.</li>
+<li><a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/Extensions.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>Extensions</code></a>: add <code>Extensions.MtcDebug</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Authenticator output (<code>authData.extensions["mtc-debug"]</code>):</strong><div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">java</div><pre class="text-xs leading-relaxed"><code>@Value
+public static class MtcDebugAuthenticatorOutput {
+  ByteArray pubKey;               // Canonical CBOR COSE_Key
+  Optional&lt;String&gt; deviceSerial;  // Decoded from tstr or uint; present iff EP active
+}</code></pre></div></li>
+<li><strong>Client output (<code>clientExtensionResults.mtcDebug</code>):</strong> matching structure with Base64URL <code>pubKey</code>, wired into <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/AuthenticatorRegistrationExtensionOutputs.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>AuthenticatorRegistrationExtensionOutputs</code></a> and <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/ClientRegistrationExtensionOutputs.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>ClientRegistrationExtensionOutputs</code></a>.</li>
+<li><strong>Privacy gate validation (<code>FinishRegistrationSteps.Step17</code>):</strong> if <code>authData.extensions["mtc-debug"]</code> contains <code>deviceSerial</code> when the RP did not request <code>AttestationConveyancePreference.ENTERPRISE</code>, fail validation.</li>
+</ul></li>
+</ul></li>
+</ol>
+<h3 id="22-new-package-comyubicowebauthnattestationmtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 New Package <code>com.yubico.webauthn.attestation.mtc</code></h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">java</div><pre class="text-xs leading-relaxed"><code>public interface MtcTrustSource {
+  /** Find the MtcTrustAnchor for (caId, aaguid). */
+  Optional&lt;MtcTrustAnchor&gt; findTrustAnchor(ByteArray caId, Optional&lt;ByteArray&gt; aaguid);
+}
+
+@Value @Builder
+public class MtcTrustAnchor {
+  ByteArray caId;
+  String hashAlg;                               // "sha-256"
+  long maxBatchWindow;
+  List&lt;MtcSubtree&gt; subtrees;                    // Checkpoint-verified subtrees
+  Set&lt;Long&gt; revokedSerials;
+  Map&lt;Long, MtcBatchKeyEntry&gt; batchKeys;        // Keyed by uint64 serial
+  boolean keyTableAuthenticated;                // True if batchKeys table was verified against rootHash
+}
+
+@Value @Builder
+public class MtcSubtree {
+  int logNumber;
+  long start;
+  long end;
+  ByteArray rootHash;                           // 32-byte SHA-256 root
+  Optional&lt;COSEAlgorithmIdentifier&gt; alg;
+  Optional&lt;ByteArray&gt; signature;
+}
+
+@Value @Builder
+public class MtcBatchKeyEntry {
+  long serial;
+  COSEAlgorithmIdentifier alg;
+  ByteArray coseKey;
+  Optional&lt;Long&gt; notBefore;
+  Optional&lt;Long&gt; notAfter;
+  Optional&lt;String&gt; deviceSerial;                // Present in vendor enterprise manifests
+}
+
+@Value @Builder
+public class MtcAttestationInfo {
+  ByteArray caId;
+  long serial;
+  int logNumber;
+  long leafIndex;
+  KeySource keySource;                          // MDS_BATCH_KEYS | VENDOR_MANIFEST | MTC_DEBUG_EXTENSION
+  ProofMode proofMode;                          // INCLUSION_PROOF | AUTHENTICATED_KEY_TABLE
+  COSEAlgorithmIdentifier alg;
+  ByteArray attestationPublicKeyCose;
+  Optional&lt;String&gt; deviceSerial;
+  Optional&lt;Instant&gt; notBefore;
+  Optional&lt;Instant&gt; notAfter;
+  Optional&lt;Long&gt; fwVersion;
+}</code></pre></div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Expose <code>Optional&lt;MtcAttestationInfo&gt; getMtcAttestation()</code> on <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/RegistrationResult.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>RegistrationResult</code></a>.</li>
+<li>Add <code>.mtcTrustSource(MtcTrustSource)</code> on <code>RelyingParty.RelyingPartyBuilder</code> and <code>RelyingPartyV2.RelyingPartyV2Builder</code>.</li>
+</ul>
+<h3 id="23-wire-codecs-verifier-mtcattestationstatementverifier" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.3 Wire Codecs &amp; Verifier (<code>MtcAttestationStatementVerifier</code>)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong><code>MtcStatementCodec</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Parses CBOR <code>attStmt</code> for <code>fmt: "mtc"</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>alg</code>: <code>COSEAlgorithmIdentifier</code> (<code>-48</code> <code>ML-DSA-44</code>, <code>-49</code> <code>ML-DSA-65</code>, <code>-50</code> <code>ML-DSA-87</code>, <code>-7</code> <code>ES256</code>, etc.)</li>
+<li><code>sig</code>: <code>ByteArray</code></li>
+<li><code>mtcCert</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>mtcEntryDesc</code>: <code>{ caId, serial, notBefore, notAfter, ?fwVersion, ?mtcProof }</code></li>
+<li><code>mtcKeyRef</code>: <code>{ caId, serial }</code> (proof-less)</li>
+</ul></li>
+</ul></li>
+<li>Rejects <code>attStmt</code> if an inline <code>pubKey</code> field is present (enforcing consolidated <code>fmt: "mtc"</code>).</li>
+</ul></li>
+<li><strong><code>MtcProof</code> &amp; <code>FidoMtcLogEntry</code> &amp; <code>MerkleInclusion</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>MtcProof</code>: parses TLS-serialized <code>extensions&lt;0..2^16-1&gt;</code>, <code>uint48 start</code>, <code>uint48 end</code>, <code>inclusion_proof&lt;0..2^16-1&gt;</code>, <code>signatures&lt;0..2^24-1&gt;</code>.</li>
+<li><code>FidoMtcLogEntry</code>: deterministic serializer binding <code>(ca_id, serial, not_before, not_after, aaguid[16], fw_version, SHA-256(pubKey)[32], extensions)</code>.</li>
+<li><code>MerkleInclusion</code>: RFC 9162 §2.1.3.2 inclusion proof evaluator (<code>H(0x00 || leaf)</code> and <code>H(0x01 || left || right)</code>) over <code>(leafIndex - start, end - start)</code> against <code>MtcSubtree.rootHash</code>.</li>
+<li><code>MtcCheckpoint</code>: constructs the 85-byte <code>FidoMtcSubtreeCheckpoint</code> (<code>"FIDO-MTC-SUBTREE-CHECKPOINT-V1\0\0" || u16 len(caId) || caId || u16 logNumber || u48 start || u48 end || rootHash[32]</code>) and verifies <code>subtrees[].signature</code> against <code>attestationRootCertificates</code> (supporting <code>ML-DSA</code>, <code>ES256</code>/<code>ES384</code>, and <code>HSS-LMS</code> <code>alg: -46</code> OID <code>1.2.840.113549.1.9.16.3.17</code> via BouncyCastle).</li>
+</ul></li>
+<li><strong><code>MtcAttestationStatementVerifier</code> Execution Steps</strong> (wired into <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/FinishRegistrationSteps.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>FinishRegistrationSteps</code></a> Steps 18–21):<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li>Parse <code>attStmt</code> via <code>MtcStatementCodec</code>.</li>
+<li>Look up <code>MtcTrustAnchor</code> from <code>mtcTrustSource</code> by <code>(mtcCert.caId, authData.aaguid)</code>.</li>
+<li><strong>Resolve <code>pubKey</code> (and optional <code>deviceSerial</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Check <code>anchor.batchKeys.get(mtcCert.serial)</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In Batch mode (<code>attestation != ENTERPRISE</code>), this yields the MDS batch <code>pubKey</code> (<code>KeySource.MDS_BATCH_KEYS</code>).</li>
+<li>In Enterprise mode (<code>attestation == ENTERPRISE</code>), if a vendor manifest is loaded, this yields the device <code>pubKey</code> and <code>deviceSerial</code> (<code>KeySource.VENDOR_MANIFEST</code>).</li>
+</ul></li>
+<li>Otherwise, inspect <code>authData.extensions["mtc-debug"]</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Extract <code>pubKey</code> (and <code>deviceSerial</code> if Enterprise) (<code>KeySource.MTC_DEBUG_EXTENSION</code>).</li>
+</ul></li>
+<li>Fail if no <code>pubKey</code> can be resolved.</li>
+</ul></li>
+<li>Parse <code>pubKey</code> via <code>WebAuthnCodecs.importCosePublicKey(pubKey)</code>, verify <code>coseKey.alg == attStmt.alg</code>, and verify <code>attStmt.sig</code> over <code>authenticatorData || clientDataJsonHash</code> using <code>Crypto.verifySignature</code>.</li>
+<li>Check validity window <code>[notBefore, notAfter]</code> against <code>clock.instant()</code>, verify <code>!anchor.revokedSerials.contains(serial)</code>, and verify <code>logNumber</code> matches.</li>
+<li><strong>Verify Merkle Commitment:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>If <code>mtcProof</code> is present (<code>mtcEntryDesc</code>):</strong> reconstruct <code>FidoMtcLogEntry</code> with <code>SHA-256(pubKey)</code>, <code>authData.aaguid</code>, and <code>mtcProof.extensions</code> (verifying that <code>mtcProof.extensions</code> matches <code>deviceSerial</code> when in Enterprise <code>mtc-debug</code> mode), compute the RFC 9162 root hash, and verify it equals <code>subtree.rootHash</code> (<code>ProofMode.INCLUSION_PROOF</code>).</li>
+<li><strong>If <code>mtcProof</code> is absent (<code>mtcKeyRef</code>):</strong> require <code>keySource != MTC_DEBUG_EXTENSION</code> and <code>anchor.isKeyTableAuthenticated() == true</code> (<code>ProofMode.AUTHENTICATED_KEY_TABLE</code>).</li>
+</ul></li>
+<li>Set <code>attestationTrusted = true</code>, <code>attestationType = (deviceSerial.isPresent() ? AttestationType.ATTESTATION_CA : AttestationType.BASIC)</code>, and attach <code>MtcAttestationInfo</code> to <code>RegistrationResult</code>.</li>
+</ol></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Proposed Changes: <code>webauthn-server-attestation</code> (MDS3 &amp; Manifests)</h2>
+      </div>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong><a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-attestation/src/main/java/com/yubico/fido/metadata/MetadataStatement.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>MetadataStatement.java</code></a></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Add <code>List&lt;MtcTrustAnchor&gt; mtcTrustAnchors</code> deserialized by Jackson from MDS3 JSON blobs or standalone metadata files (such as <code>fido-mds3.json</code>).</li>
+</ul></li>
+<li><strong><a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-attestation/src/main/java/com/yubico/fido/metadata/FidoMetadataService.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>FidoMetadataService.java</code></a></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Implement <code>MtcTrustSource</code>.</li>
+<li>When loading metadata statements with <code>mtcTrustAnchors</code>, verify each <code>MtcSubtree.signature</code> (if present) over <code>FidoMtcSubtreeCheckpoint</code> against the entry's <code>attestationRootCertificates</code> (including BouncyCastle <code>LMS</code> / <code>ML-DSA</code> / <code>ECDSA</code> root certs).</li>
+</ul></li>
+<li><strong><code>MtcManifestTrustSource</code> &amp; <code>CompositeMtcTrustSource</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Loads vendor enterprise manifests (JSON <code>MtcTrustAnchor</code> files with per-device <code>batchKeys</code> + <code>deviceSerial</code>), verifies the checkpoint signature and optionally verifies that the full <code>batchKeys</code> list hashes to <code>subtrees[].rootHash</code> (<code>keyTableAuthenticated = true</code>).</li>
+<li><code>CompositeMtcTrustSource</code> combines <code>FidoMetadataService</code> (for batch MDS keys and enterprise <code>rootHash</code> checkpoints) with any loaded vendor manifests.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Proposed Changes: <code>webauthn-server-demo</code> (Request &amp; Test on Localhost)</h2>
+      </div>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong><a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-demo/src/main/java/demo/webauthn/WebAuthnServer.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>WebAuthnServer.java</code></a> &amp; <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-demo/src/main/java/demo/webauthn/WebAuthnRestResource.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>WebAuthnRestResource.java</code></a></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Enable <code>ML_DSA_44</code>, <code>ML_DSA_65</code>, <code>ML_DSA_87</code> alongside <code>ES256</code>/<code>EdDSA</code>/<code>RS256</code> in <code>RelyingParty</code>.</li>
+<li>Add query/form parameters on <code>/api/v1/register</code> to control:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>attestation</code>: <code>direct</code> | <code>enterprise</code> | <code>none</code></li>
+<li><code>attestationFormats</code>: e.g., <code>["mtc", "packed"]</code> or <code>["mtc"]</code></li>
+<li><code>mtcDebug</code>: <code>true</code> | <code>false</code> (requests <code>"mtcDebug": true</code> in <code>extensions</code>)</li>
+</ul></li>
+<li>Load <code>YUBICO_WEBAUTHN_MTC_METADATA</code> (MDS3 JSON with <code>mtcTrustAnchors</code>, e.g., <code>g5k_AQE</code> batch + <code>g5k_AQI</code> enterprise) and optional <code>YUBICO_WEBAUTHN_MTC_MANIFEST</code> (vendor manifest JSON).</li>
+<li>Return <code>mtcAttestation</code> details (<code>caId</code>, <code>serial</code>, <code>logNumber</code>, <code>leafIndex</code>, <code>keySource</code>, <code>proofMode</code>, <code>alg</code>, <code>deviceSerial</code>) in the registration response JSON.</li>
+</ul></li>
+<li><strong>Demo UI (<a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-demo/src/main/webapp/index.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>index.html</code></a>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Add checkboxes/selectors in the registration panel:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Attestation Conveyance:</strong> <code>direct</code> / <code>enterprise</code> / <code>none</code></li>
+<li><strong>Attestation Formats:</strong> <code>mtc, packed</code> / <code>mtc only</code> / <code>packed only</code></li>
+<li><strong>Request <code>mtcDebug</code> extension</strong> checkbox</li>
+</ul></li>
+<li>Pass <code>attestationFormats</code> and <code>extensions: { mtcDebug: true }</code> through to <code>navigator.credentials.create()</code> and display the verified <code>MtcAttestationInfo</code> (including <code>keySource</code> and <code>deviceSerial</code>) in the UI.</li>
+<li>Include a built-in <strong>"Test Simulated MTC Registration"</strong> button in the demo UI (backed by a test endpoint or client-side generator) so you can immediately exercise Batch MDS, Enterprise Manifest, and Enterprise <code>mtc-debug</code> flows in the browser even without a physical token plugged in, as well as with a physical Fidont token over WebAuthn.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Test Suite (<code>webauthn-server-core</code> &amp; <code>webauthn-server-attestation</code>)</h2>
+      </div>
+<p class="text-sm my-2">Extend <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/test/scala/com/yubico/webauthn/TestAuthenticator.scala" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>TestAuthenticator.scala</code></a> with an <code>MtcTestLog</code> helper (building real RFC 9162 Merkle trees, <code>FidoMtcLogEntry</code> leaves, <code>MTCProof</code> blobs, and signed <code>FidoMtcSubtreeCheckpoint</code>s across <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>, and <code>ES256</code>) and add <code>MtcAttestationStatementVerifierSpec.scala</code>:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Batch <code>fmt: "mtc"</code> via MDS <code>batchKeys</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>With <code>mtcProof</code> (<code>mtcEntryDesc</code>): resolves key from MDS <code>batchKeys</code>, verifies signature + Merkle inclusion proof $\rightarrow$ <code>BASIC</code>, <code>trusted = true</code>, <code>keySource = MDS_BATCH_KEYS</code>, <code>proofMode = INCLUSION_PROOF</code>.</li>
+<li>Proof-less (<code>mtcKeyRef</code>) with authenticated MDS <code>batchKeys</code> table $\rightarrow$ <code>BASIC</code>, <code>trusted = true</code>, <code>proofMode = AUTHENTICATED_KEY_TABLE</code>.</li>
+</ul></li>
+<li><strong>Enterprise <code>fmt: "mtc"</code> via Vendor Manifest:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Proof-less <code>mtcKeyRef</code> and proof-carrying <code>mtcEntryDesc</code> resolved by <code>(caId, serial)</code> from the vendor manifest $\rightarrow$ <code>ATTESTATION_CA</code>, <code>trusted = true</code>, <code>keySource = VENDOR_MANIFEST</code>, <code>deviceSerial = Some("123456")</code>.</li>
+</ul></li>
+<li><strong>Enterprise <code>fmt: "mtc"</code> via <code>mtc-debug</code> Extension (No Vendor Manifest):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>MDS has <code>caId: "g5k_AQI"</code> with signed <code>subtrees[].rootHash</code> and <code>batchKeys: []</code>.</li>
+<li>Authenticator returns <code>pubKey</code> + <code>deviceSerial: "123456"</code> in <code>authData.extensions["mtc-debug"]</code> and <code>mtcProof</code> in <code>attStmt.mtcCert</code>.</li>
+<li>Verifier authenticates <code>pubKey</code> and <code>deviceSerial</code> via <code>mtcProof</code> against <code>subtrees[].rootHash</code> $\rightarrow$ <code>ATTESTATION_CA</code>, <code>trusted = true</code>, <code>keySource = MTC_DEBUG_EXTENSION</code>, <code>deviceSerial = Some("123456")</code>.</li>
+</ul></li>
+<li><strong>Negative &amp; Security Tests:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Tampered <code>pubKey</code> or <code>deviceSerial</code> in <code>mtc-debug</code> fails Merkle root verification against <code>subtrees[].rootHash</code>.</li>
+<li><code>mtc-debug</code> with proof-less <code>mtcKeyRef</code> (no <code>mtcProof</code> and key not in manifest/MDS) fails trust verification.</li>
+<li><code>mtc-debug</code> emitting <code>deviceSerial</code> when <code>attestation != ENTERPRISE</code> fails the privacy gate.</li>
+<li>Revoked <code>serial</code>, expired <code>notAfter</code>, wrong <code>aaguid</code>, or invalid Root CA checkpoint signature fails verification.</li>
+</ul></li>
+</ol>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./mtc_attestation_proposal.md" class="text-[var(--primary)] hover:underline">mtc_attestation_proposal.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>

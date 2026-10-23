@@ -391,6 +391,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "Official pull request submission for w3c/webauthn against the Level 4 Editor's Draft at HEAD (0c50bd0), adding the Merkle Tree Certificate attestation format in §8, the mtcDebug diagnostic extension in §10, and IANA registrations in §11.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "mtc_attestation_proposal": {
+        "title": "Proposal: Consolidated fmt: \"mtc\" & mtc-debug Support in java-webauthn-server",
+        "badges": [
+            ("Yubico java-webauthn-server", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("fmt: \"mtc\" (No Inline pubKey)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("MDS3 & Vendor Manifests", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("mtc-debug (mtcDebug) Extension", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Architecture and implementation proposal for adding consolidated Merkle Tree Certificate attestation (fmt: \"mtc\") and the mtc-debug registration extension to Yubico java-webauthn-server, resolving batch keys from FIDO MDS3 and enterprise keys from vendor manifests or mtc-debug authenticated against the MDS subtree rootHash.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 
