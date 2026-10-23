@@ -161,10 +161,10 @@
             18 Algorithms (incl. FN-DSA-512 &amp; FN-DSA-1024)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            HSS/LMS Hierarchy &amp; PQ MTC
+            W3C WebAuthn L4 PR: fmt: "mtc" &amp; "mtc-debug"
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            250 / 250 Passed (100%)
+            HSS/LMS Hierarchy &amp; PQ MTC (-1,331 B Wire)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             perCredMgmtRO &amp; Enterprise Attestation
@@ -176,11 +176,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtcl</code>
+            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. <code>"mtc-debug"</code>), <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–21, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, automated <code>scripts/generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, OID <code>1.2.840.113549.1.9.16.3.17</code>, <code>1,296 B</code> sig), compact <code>fmt: "mtc"</code> HSS/LMS-signed (<code>alg: -46</code>) Subtree Checkpoints, Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>1,468,647</code> cumulative RTT lines across <code>opensk_rtt.log</code> &amp; <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–22, covering the W3C WebAuthn Level 4 Pull Request consolidated <code>fmt: "mtc"</code> (omitting inline <code>pubKey</code> to save <code>1,331 B</code> per <code>MakeCredential</code> response: <code>4,736–5,397 B</code>) and the opt-in <code>"mtc-debug"</code> registration extension, all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, automated <code>scripts/generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, OID <code>1.2.840.113549.1.9.16.3.17</code>, <code>1,296 B</code> sig), Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>1,760,740</code> cumulative RTT lines across <code>opensk_rtt.log</code> &amp; <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -203,9 +203,20 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-0000"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000 (Latest — Run 22: W3C WebAuthn L4 PR Consolidated fmt: &quot;mtc&quot; Saving 1,331 B &amp; &quot;mtc-debug&quot; Extension)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              W3C WebAuthn Level 4 PR Verification: Consolidated <code>fmt: &quot;mtc&quot;</code> (Omitting Inline <code>pubKey</code>, <code>4,736–5,397 B</code>), <code>&quot;mtc-debug&quot;</code> Extension &amp; <code>opensk_rtt.log</code> Telemetry
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              <code>100%</code> pass on consolidated <code>fmt: &quot;mtc&quot;</code> (<code>Authr-MakeCred-Resp-1</code> <code>P-01..P-04</code>, <code>F-01</code> in <code>0.165s</code> across all 18 algorithms) and <code>Metadata-Stmt-1</code> (<code>25/25</code>), reducing every 2-step PQ/composite <code>MakeCredential</code> response by <code>1,331 B</code> (<code>21</code> fewer 64 B USB HID frames, cutting total run time by <code>5m 21s</code> to <code>20m 06.79s</code>) with <code>0</code> panics/errors across <code>292,093</code> <code>opensk_rtt.log</code> lines, plus root-cause &amp; fix of the 4 <code>getGetInfoCached()</code> test-harness checks.
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000 (Latest — Run 21: 250 / 250 Pass with Automated LMS PKI Provisioning &amp; Compact fmt: &quot;mtc&quot;)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000 (Run 21: 250 / 250 Pass with Automated LMS PKI Provisioning &amp; Compact fmt: &quot;mtc&quot;)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
               Automated <code>generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 Provisioning (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>), Compact <code>fmt: &quot;mtc&quot;</code> &amp; <code>opensk_rtt.log</code> Telemetry: <code>250 / 250</code> (<code>100.00%</code>) Pass
             </h3>

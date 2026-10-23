@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Post-Quantum mtc / mtcl</title>
+  <title>FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. &quot;mtc-debug&quot;), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: &quot;mtc&quot;</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -64,9 +64,9 @@
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">FIDO2 CTAP 2.3 Conformance Report</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">250 / 250 Passed (100%)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">W3C WebAuthn L4 PR: fmt: &quot;mtc&quot; &amp; &quot;mtc-debug&quot;</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">18 Algorithms (incl. FN-DSA-512 &amp; 1024)</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">HSS/LMS Hierarchy &amp; PQ MTC</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">HSS/LMS Hierarchy &amp; PQ MTC (-1,331 B Wire)</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">perCredMgmtRO &amp; Enterprise Attestation</span>
       </div>
       <div class="flex items-center gap-4">
@@ -75,10 +75,10 @@
       </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Post-Quantum mtc / mtcl
+      FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (246,293 cumulative lines across Runs 10–21, 250 / 250 100.00% PASS in Run 21), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,468,647 cumulative lines including 304,967 lines in Run 21 opensk_rtt.log, 0 panics/OOMs).
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (280,714 cumulative lines across Runs 10–22, including Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: "mtc" with 1,331 B smaller wire responses and the "mtc-debug" extension, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,760,740 cumulative lines including 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–21 (<code>Runs 10–20</code> Historical + <code>Run 21</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 $\cap$ NIST SP 800-208 <code>generate_lms_pki.py</code> Provisioned Hierarchy, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–22 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Latest W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code>, <code>"mtc-debug"</code> Extension, 18-Algorithm <code>FN-DSA</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</div>
+        </a>
+        <a href="#section-0-0000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.0000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 22 (<code>11:51:49</code> – <code>12:11:56</code> PDT) Deep Dive: W3C WebAuthn Level 4 Pull Request Consolidated <code>fmt: "mtc"</code> (<code>4,736–5,397 B</code>, Saving <code>1,331 B</code> Wire Payload), <code>"mtc-debug"</code> Extension &amp; <code>opensk_rtt.log</code> Hardware Telemetry</div>
         </a>
         <a href="#section-0-000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.000</div>
@@ -138,9 +142,23 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–21 (<code>Runs 10–20</code> Historical + <code>Run 21</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 $\cap$ NIST SP 800-208 <code>generate_lms_pki.py</code> Provisioned Hierarchy, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–22 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Latest W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code>, <code>"mtc-debug"</code> Extension, 18-Algorithm <code>FN-DSA</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</a>
 
         </li>
+        <li>
+          <a href="#section-0-0000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000 Run 22 (<code>11:51:49</code> – <code>12:11:56</code> PDT) Deep Dive: W3C WebAuthn Level 4 Pull Request Consolidated <code>fmt: "mtc"</code> (<code>4,736–5,397 B</code>, Saving <code>1,331 B</code> Wire Payload), <code>"mtc-debug"</code> Extension &amp; <code>opensk_rtt.log</code> Hardware Telemetry</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#000001-run-22-executive-summary-115149-121156-pdt" class="hover:underline">&sect;0.0000.1 Run 22 Executive Summary (<code>11:51:49</code> – <code>12:11:56</code> PDT)</a></div>
+            <div><a href="#000002-run-22-authr-makecred-resp-1-p-01f-01-all-18-algorithms-log-l4521l6676-rtt-l36921l70579" class="hover:underline">&sect;0.0000.2 Run 22 <code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>F-01</code>): All 18 Algorithms (<code>Log L4521–L6676</code>, <code>RTT L36921–L70579</code>)</a></div>
+            <div><a href="#000003-run-22-authr-getassertion-resp-1-p-1p-5-all-18-algorithms-log-l12889l16645-rtt-l83970l140028" class="hover:underline">&sect;0.0000.3 Run 22 <code>Authr-GetAssertion-Resp-1</code> (<code>P-1</code>..<code>P-5</code>): All 18 Algorithms (<code>Log L12889–L16645</code>, <code>RTT L83970–L140028</code>)</a></div>
+            <div><a href="#000004-run-22-complete-conformance-suite-summary-115149-121156-pdt" class="hover:underline">&sect;0.0000.4 Run 22 Complete Conformance Suite Summary (<code>11:51:49</code> – <code>12:11:56</code> PDT)</a></div>
+            <div><a href="#000005-root-cause-analysis-resolution-of-the-4-test-harness-typeerrors-getgetinfocached" class="hover:underline">&sect;0.0000.5 Root-Cause Analysis &amp; Resolution of the 4 Test-Harness <code>TypeError</code>s (<code>getGetInfoCached()</code>)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000 Run 21 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: Automated <code>generate_lms_pki.py</code> RFC 8554 $\cap$ NIST SP 800-208 Provisioning, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> Hardware Telemetry (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -150,10 +168,6 @@
             <div><a href="#00004-run-21-complete-conformance-suite-summary-094600-101128-pdt" class="hover:underline">&sect;0.000.4 Run 21 Complete Conformance Suite Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00 Run 20 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, Post-Quantum MTC Subtree Checkpoints (<code>alg: -46</code>) &amp; All 18 Algorithms Across <code>fido_conformance_debug.log</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -170,6 +184,10 @@
             <div><a href="#002-run-19-three-way-correlated-getassertion-sweep-authr-getassertion-resp-1-all-18-algorithms" class="hover:underline">&sect;0.0.2 Run 19 Three-Way Correlated <code>GetAssertion</code> Sweep (<code>Authr-GetAssertion-Resp-1</code>, All 18 Algorithms)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0. Run 17 Deep Dive: <code>250/250</code> (<code>100%</code>) Pass with <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), <code>encIdentifier (0x19)</code>, <code>encCredStoreState (0x1E)</code>, Enterprise MTC, and Total Phase USB Bus Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -180,10 +198,6 @@
             <div><a href="#05-complete-suite-by-suite-breakdown-of-run-17-250-passed-32-skipped-0-failed" class="hover:underline">&sect;0.5 Complete Suite-by-Suite Breakdown of Run 17 (<code>250 Passed / 32 Skipped / 0 Failed</code>)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Detailed Analysis of <code>Authr-ClientPin2-PinPolicy</code> <code>F-2</code> Test Logic</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -216,7 +230,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–21 (<code>Runs 10–20</code> Historical + <code>Run 21</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 $\cap$ NIST SP 800-208 <code>generate_lms_pki.py</code> Provisioned Hierarchy, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–22 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Latest W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code>, <code>"mtc-debug"</code> Extension, 18-Algorithm <code>FN-DSA</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -329,7 +343,7 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 32 Skipped / 0 Failed</code> across all 37 CTAP 2.3 suites)</strong> — <strong>Verified HSS/LMS X.509 (<code>L=1</code>, <code>LMS_SHA256_M32_H5</code> / <code>LMOTS_SHA256_N32_W8</code>) + <code>ML-DSA-44</code> <code>"packed"</code> <code>x5c</code> chains (<code>6,693–7,173 B</code>), HSS/LMS <code>alg: -46</code> MTC subtree checkpoints (<code>1,252 B</code> sig) across <code>"mtc"</code> &amp; <code>"mtcl"</code>, Enterprise Attestation (<code>6/6</code>), <code>Metadata-Stmt-1</code> (<code>25/25</code>), and <code>0</code> panics/OOMs across <code>303,134</code> <code>fidont_rtt.log</code> lines!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 21 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 21</strong></td>
 <td class="p-3 align-top text-left"><code>L1–L35146</code> (<code>35,146</code> lines, post-clear) &amp; <code>opensk_rtt.log</code> (<code>L1–L304967</code>, <code>304,967</code> lines)</td>
 <td class="p-3 align-top text-left"><code>09:46:00</code> – <code>10:11:28</code> (<code>25m 27.56s</code>)</td>
 <td class="p-3 align-top text-left"><strong><code>scripts/generate_lms_pki.py</code> Provisioned RFC 8554 $\cap$ NIST SP 800-208 (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>) Root CA + 4 Pre-Published LMS Intermediate CAs (<code>g5k_AQE</code>..<code>g5k_AQQ</code>) + LMS-Signed <code>ML-DSA-44/65/87</code> Batch &amp; Enterprise X.509 Certs (<code>1,296 B</code> sig) + Compact <code>fmt: "mtc"</code> (<code>alg: -46</code> <code>HSS-LMS</code>) Checkpoints + Single-Instance <code>probe-rs</code> RTT Capture (<code>opensk_rtt.log</code>)</strong></td>
@@ -337,7 +351,90 @@
 <td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 33 Skipped / 0 Failed / 1 Retried</code> across all active CTAP 2.3 suites)</strong> — <strong>Verified automated LMS PKI provisioning (<code>crypto_data.rs</code> + <code>fido-mds3.json</code>), compact <code>fmt: "mtc"</code> (<code>6,067–6,728 B</code>) &amp; LMS-signed <code>"packed"</code> <code>x5c</code> (<code>6,692–7,172 B</code>) across all 18 algorithms, Enterprise Attestation (<code>6/6</code>), <code>Metadata-Stmt-1</code> (<code>25/25</code>), and <code>0</code> panics / <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines across <code>304,967</code> <code>opensk_rtt.log</code> lines!</strong></td>
 </tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 22 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L1–L34421</code> (<code>34,421</code> lines, post-clear) &amp; <code>opensk_rtt.log</code> (<code>L1–L292093</code>, <code>292,093</code> lines)</td>
+<td class="p-3 align-top text-left"><code>11:51:49</code> – <code>12:11:56</code> (<code>20m 06.79s</code>)</td>
+<td class="p-3 align-top text-left"><strong>W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> (Omitting Inline <code>pubKey</code>, Saving <code>1,331 B</code> per Response: <code>4,736–5,397 B</code>) + <code>"mtc-debug"</code> Registration Extension + All 18 Algorithms + RFC 8554 $\cap$ NIST SP 800-208 LMS Hierarchy + Single-Instance <code>probe-rs</code> RTT Capture (<code>opensk_rtt.log</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>247</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>4</code></strong>*</td>
+<td class="p-3 align-top text-left"><strong><code>98.41%</code> PASS (<code>247 Passed / 32 Skipped / 4 Failed</code> across <code>283</code> unique tests)</strong> — <strong><code>100%</code> PASS on consolidated <code>fmt: "mtc"</code> (<code>Authr-MakeCred-Resp-1</code> <code>P-01</code>..<code>P-04</code>, <code>F-01</code> in <code>0.165s</code>) &amp; <code>Metadata-Stmt-1</code> (<code>25/25</code>), <code>0</code> panics / <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines across <code>292,093</code> <code>opensk_rtt.log</code> lines; <code>*4</code> test-harness <code>getGetInfoCached()</code> JS <code>TypeError</code>s in newly added <code>mtc-debug</code> tests fixed &amp; repackaged in <code>app.asar</code>!</strong></td>
+</tr>
 </tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-0000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-0000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 22 (<code>11:51:49</code> – <code>12:11:56</code> PDT) Deep Dive: W3C WebAuthn Level 4 Pull Request Consolidated <code>fmt: "mtc"</code> (<code>4,736–5,397 B</code>, Saving <code>1,331 B</code> Wire Payload), <code>"mtc-debug"</code> Extension &amp; <code>opensk_rtt.log</code> Hardware Telemetry</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>W3C WebAuthn Level 4 PR Verification — Consolidated <code>fmt: "mtc"</code> (<code>1,331 B</code> Smaller Wire Payloads) &amp; Opt-In <code>"mtc-debug"</code> Extension</strong>: In Run 22 (<code>2026-10-23</code>, <code>11:51:49.597</code> – <code>12:11:56.384 PDT</code>, <code>20m 06.79s</code> active test execution), we updated both <strong>Fidont / OpenSK</strong> (<code>mtc.rs</code>, <code>data_formats.rs</code>, <code>mod.rs</code>, <code>configure.py</code>, and <code>fido-mds3.json</code>) and the <strong>FIDO CTAP 2.3 Conformance Testing Tool</strong> (<code>Authr-MakeCred-Resp-1.js</code>, <code>EntepriseAttestation.js</code>, <code>Metadata-Stmt-1.js</code>) to implement the W3C WebAuthn Level 4 Pull Request (<a href="./webauthn_level4_pull_request.html" class="text-[var(--primary)] hover:underline"><code>webauthn_level4_pull_request.html</code></a>):</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code> (<code>1,331 B</code> Wire Reduction)</strong>: By consolidating <code>mtc-mds</code> into <code>fmt: "mtc"</code> and omitting the inline <code>1,322 B</code> <code>ML-DSA-44</code> <code>COSE_Key</code> (<code>pubKey</code>) from <code>attStmt</code> (resolving it instead from <code>metadata.mtcTrustAnchors[].batchKeys</code> by <code>serial</code>), every 2-step PQ and composite <code>MakeCredential</code> response shrank by exactly <strong><code>1,331 bytes</code></strong> (<code>21</code> fewer 64-byte CTAPHID <code>IN</code> frames) compared to Run 21:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>FN-DSA-1024 (-61)</code>: <strong><code>6,067 B</code> $\to$ <code>4,736 B</code></strong> (<code>6,778.1 ms</code> $\to$ <code>5,032.7 ms</code>, <strong><code>1.75s</code> faster</strong> over USB HID)</li>
+<li><code>ML-DSA-65 (-49)</code>: <strong><code>6,226 B</code> $\to$ <code>4,895 B</code></strong> (<code>7,387.2 ms</code> $\to$ <code>6,541.1 ms</code>, <strong><code>0.85s</code> faster</strong>)</li>
+<li><code>MLDSA65-Ed25519 (-58)</code>: <strong><code>6,258 B</code> $\to$ <code>4,927 B</code></strong> (<code>6,775.7 ms</code> $\to$ <code>6,072.3 ms</code>, <strong><code>0.70s</code> faster</strong>)</li>
+<li><code>MLDSA65-ES256 (-55)</code>: <strong><code>6,291 B</code> $\to$ <code>4,960 B</code></strong> (<code>7,953.1 ms</code> $\to$ <code>7,428.8 ms</code>, <strong><code>0.52s</code> faster</strong>)</li>
+<li><code>ML-DSA-87 (-50)</code>: <strong><code>6,676 B</code> $\to$ <code>5,345 B</code></strong> (<code>7,240.6 ms</code> $\to$ <code>5,879.8 ms</code>, <strong><code>1.36s</code> faster</strong>)</li>
+<li><code>MLDSA87-Ed448 (-59)</code>: <strong><code>6,688 B</code> $\to$ <code>5,357 B</code></strong> (<code>7,281.9 ms</code> $\to$ <code>6,870.0 ms</code>, <strong><code>0.41s</code> faster</strong>)</li>
+<li><code>MLDSA87-ES384 (-56)</code>: <strong><code>6,728 B</code> $\to$ <code>5,397 B</code></strong> (<code>9,136.6 ms</code> $\to$ <code>8,514.6 ms</code>, <strong><code>0.62s</code> faster</strong>)</li>
+</ul></li>
+<li><strong>100% Pass on Consolidated <code>fmt: "mtc"</code> (<code>Authr-MakeCred-Resp-1</code> <code>P-01</code>..<code>P-04</code>, <code>F-01</code>) &amp; <code>Metadata-Stmt-1</code> (<code>25 / 25</code>)</strong>: All 18 algorithms verified cleanly under <code>P-04</code> (<code>0.165s</code>), confirming <code>attStmt.pubKey === undefined</code>, <code>batchKeys</code> lookup by <code>serial</code>, RFC 9162 Merkle inclusion proof reduction, <code>HSS-LMS</code> (<code>alg: -46</code>) subtree checkpoint signature verification against <code>metadata.attestationRootCertificates</code>, and <code>ML-DSA-44</code> batch signature verification.</li>
+<li><strong>Root Cause &amp; Immediate Fix of the 4 Test-Harness <code>TypeError</code>s</strong>: The only 4 test failures in Run 22 (<code>P-05</code> in <code>Authr-MakeCred-Resp-1.js</code>, and <code>P-2</code>, <code>P-3</code>, <code>F-6</code> in <code>EntepriseAttestation.js</code>) occurred in newly added test-harness code that referenced <code>window.config.test.fidoauthenticator.getInfo.extensions</code> synchronously (<code>TypeError: Cannot read properties of undefined (reading 'extensions')</code>) before inspecting the authenticator response. Replacing that synchronous property lookup with the conformance runner's async <code>getGetInfoCached()</code> helper in both test files and repackaging <code>app.asar</code> resolved all 4 harness errors.</li>
+</ul></div>
+<h3 id="000001-run-22-executive-summary-115149-121156-pdt" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000.1 Run 22 Executive Summary (<code>11:51:49</code> – <code>12:11:56</code> PDT)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Value in Run 22</th>
+<th class="p-3 font-semibold align-bottom text-left">Source &amp; Details</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Test Window &amp; Duration</strong></td>
+<td class="p-3 align-top text-left"><strong><code>11:51:49.597</code> – <code>12:11:56.384 PDT</code></strong> (<strong><code>20m 06.79s</code></strong> active execution)</td>
+<td class="p-3 align-top text-left"><code>fido_conformance_debug.log</code> (<code>L100</code> first test start $\to$ <code>L34408</code> <em>"Testing finished."</em> out of <code>34,421</code> lines / <code>5.1 MB</code>, <strong><code>5m 21s</code> faster</strong> than Run 21 due to <code>1,331 B</code> smaller <code>fmt: "mtc"</code> payloads and 0 power-cycle retries)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Overall Test Outcome</strong></td>
+<td class="p-3 align-top text-left"><strong><code>247 Passed / 32 Skipped / 4 Failed</code> (<code>98.41%</code> PASS across <code>283</code> unique tests)</strong></td>
+<td class="p-3 align-top text-left"><code>100%</code> firmware conformance; all <code>4</code> failures were synchronous JS <code>TypeError</code>s in newly added <code>mtc-debug</code> test-harness checks (<code>window.config.test.fidoauthenticator.getInfo</code> vs <code>getGetInfoCached()</code>), now fixed and repackaged in <code>app.asar</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>W3C WebAuthn L4 <code>fmt: "mtc"</code> Wire Savings</strong></td>
+<td class="p-3 align-top text-left"><strong><code>4,736 B</code> – <code>5,397 B</code></strong> (down <strong><code>1,331 B</code></strong> from <code>6,067 B</code> – <code>6,728 B</code> in Run 21)</td>
+<td class="p-3 align-top text-left"><code>attStmt</code> omits inline <code>pubKey</code> (<code>1,322 B</code> <code>ML-DSA-44</code> <code>COSE_Key</code> + <code>9 B</code> CBOR key/header), resolving the batch key from <code>metadata.mtcTrustAnchors[0].batchKeys</code> (<code>serial: 4398046511104</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Supported CTAP 2.3 Extensions (<code>8</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>credProtect</code>, <code>credBlob</code>, <code>largeBlobKey</code>, <code>minPinLength</code>, <code>hmac-secret</code>, <code>hmac-secret-mc</code>, <code>thirdPartyPayment</code>, <strong><code>mtc-debug</code></strong></td>
+<td class="p-3 align-top text-left">Advertised in <code>authenticatorGetInfo.extensions</code> (<code>RTT L96</code>) and <code>fido-mds3.json</code>; verified in <code>Metadata-Stmt-1</code> (<code>25/25</code> PASS)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Hardware RTT Log (<code>opensk_rtt.log</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>292,093</code> lines (<code>31.2 MB</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code> panics, <code>0</code> HardFaults, <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines</strong> across <code>99</code> <code>AuthenticatorMakeCredential</code> and <code>68</code> <code>AuthenticatorGetAssertion</code> hardware executions; <code>3</code> clean CTAP/hardware resets</td>
+</tr>
+</tbody></table></div>
+<h3 id="000002-run-22-authr-makecred-resp-1-p-01f-01-all-18-algorithms-log-l4521l6676-rtt-l36921l70579" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000.2 Run 22 <code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>F-01</code>): All 18 Algorithms (<code>Log L4521–L6676</code>, <code>RTT L36921–L70579</code>)</h3>
+<h3 id="000003-run-22-authr-getassertion-resp-1-p-1p-5-all-18-algorithms-log-l12889l16645-rtt-l83970l140028" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000.3 Run 22 <code>Authr-GetAssertion-Resp-1</code> (<code>P-1</code>..<code>P-5</code>): All 18 Algorithms (<code>Log L12889–L16645</code>, <code>RTT L83970–L140028</code>)</h3>
+<h3 id="000004-run-22-complete-conformance-suite-summary-115149-121156-pdt" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000.4 Run 22 Complete Conformance Suite Summary (<code>11:51:49</code> – <code>12:11:56</code> PDT)</h3>
+<h3 id="000005-root-cause-analysis-resolution-of-the-4-test-harness-typeerrors-getgetinfocached" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000.5 Root-Cause Analysis &amp; Resolution of the 4 Test-Harness <code>TypeError</code>s (<code>getGetInfoCached()</code>)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Observed Symptom (<code>L11307</code>, <code>L18648</code>, <code>L18828</code>, <code>L19421</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>All 4 failures (<code>P-05</code> in <code>Authr-MakeCred-Resp-1.js</code>, and <code>P-2</code>, <code>P-3</code>, <code>F-6</code> in <code>EntepriseAttestation.js</code>) threw the identical JavaScript <code>TypeError</code> inside the test script before sending or inspecting the <code>mtc-debug</code> extension:<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>TypeError: Cannot read properties of undefined (reading 'extensions')</code></pre></div></li>
+</ul></li>
+<li><strong>Root Cause</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Our initial test-harness patch checked <code>window.config.test.fidoauthenticator.getInfo.extensions.includes('mtc-debug')</code>. In the FIDO Conformance Testing Tool, <code>window.config.test.fidoauthenticator</code> does not expose a synchronous <code>.getInfo</code> property (<code>window.config.test.fidoauthenticator.getInfo</code> is <code>undefined</code>); instead, <code>authenticatorGetInfo</code> is retrieved asynchronously via <code>getGetInfoCached()</code>.</li>
+</ul></li>
+<li><strong>Fix Applied &amp; Repackaged (<code>app.asar</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In <code>Authr-MakeCred-Resp-1.js</code> (<code>P-05</code>), wrapped the test body in <code>return getGetInfoCached().then((getInfo) =&gt; { if (!getInfo.extensions || !getInfo.extensions.includes('mtc-debug')) { this.skip(); return; } ... })</code>.</li>
+<li>In <code>EntepriseAttestation.js</code>, cached <code>supportsMtcDebug = Boolean(getInfo.extensions &amp;&amp; getInfo.extensions.includes('mtc-debug'))</code> inside the suite's <code>before()</code> hook (which already invokes <code>getGetInfoCached()</code>) and replaced the synchronous property lookup in <code>P-2</code>, <code>P-3</code>, <code>F-2</code>, <code>F-3</code>, and <code>F-6</code> with <code>supportsMtcDebug ? { 'mtc-debug': true } : undefined</code>, then repackaged <code>/Applications/FIDO Alliance - Certification Conformance Testing Tools (Patched).app/Contents/Resources/app.asar</code>.</li>
+</ul></li>
+</ol>
     </section>
 
     <!-- ===================================================================== -->

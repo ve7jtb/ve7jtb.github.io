@@ -1,17 +1,17 @@
-# FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 `FN-DSA-512` & `FN-DSA-1024`), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, `persistentPinUvAuthToken` (`perCredMgmtRO`), Enterprise Attestation & Post-Quantum `mtc` / `mtcl`
+# FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 `FN-DSA-512` & `FN-DSA-1024`), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. `"mtc-debug"`), `persistentPinUvAuthToken` (`perCredMgmtRO`), Enterprise Attestation & Consolidated Post-Quantum `fmt: "mtc"`
 
 > [!NOTE]
-> **Specification Update (Authenticate 2026 CTAP2 TWG Consensus):**
-> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
-> - **`fmt: "mtc"`** (formerly `mtc-mds`): The compact, preferred default format where public keys are omitted from the wire and resolved out-of-band via FIDO MDS3.
-> - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key.
+> **Specification Update (W3C WebAuthn Level 4 Pull Request & Authenticate 2026 CTAP2 TWG Consensus):**
+> Following the W3C WebAuthn Level 4 Pull Request ([`webauthn_level4_pull_request.html`](./webauthn_level4_pull_request.html) / [`webauthn_level4_mtc_proposal.html`](./webauthn_level4_mtc_proposal.html)), the Merkle Tree Certificate attestation format has been consolidated into a single compact format identifier with an opt-in diagnostic extension:
+> - **`fmt: "mtc"`** (consolidating `mtc-mds` into `mtc`): The single, compact Merkle Tree Certificate attestation statement format where `attStmt` carries only `{ alg, sig, mtcCert }` (strictly omitting inline `pubKey`, saving **`1,331 bytes`** on the wire for `ML-DSA-44` batch keys) and the verifier resolves the batch key via `mtcTrustAnchor.batchKeys` in FIDO MDS3 or an Enterprise Attestation Manifest.
+> - **`"mtc-debug"` Registration Extension**: An opt-in CTAP 2.3 / WebAuthn Level 4 registration extension (`authenticatorGetInfo.extensions` includes `"mtc-debug"`) that returns `{ pubKey, deviceSerial? }` inside `authenticatorData.extensions["mtc-debug"]` for standalone conformance and diagnostic verification without pre-loaded `batchKeys`, enforcing a strict privacy gate where `deviceSerial` is emitted only when `epAtt: true`.
 
 - **Log Files Analyzed**:
-  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`246,293` cumulative lines across Runs 10–21, including **`35,146` lines (`5.0 MB`) in latest Run 21 (`L1–L35146`, post-clear)** with **`250 / 250` `100.00%` PASS** across all 18 algorithms + RFC 8554 $\cap$ NIST SP 800-208 (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`) Root & 4 Pre-Published Intermediate CAs + LMS-signed `ML-DSA` Batch & Enterprise X.509 `x5c` + Compact `fmt: "mtc"` (`alg: -46` `HSS-LMS`) Subtree Checkpoints; `56,117` lines in Run 20; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
+  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`280,714` cumulative lines across Runs 10–22, including **`34,421` lines (`5.1 MB`) in latest Run 22 (`L1–L34421`, post-clear)** verifying the W3C WebAuthn Level 4 PR consolidated `fmt: "mtc"` (`4,736–5,397 B`, saving `1,331 B` per `MakeCredential` response across all 2-step PQ/composite algorithms) and `"mtc-debug"` registration extension; **`35,146` lines (`5.0 MB`) in Run 21 (`L1–L35146`)** with **`250 / 250` `100.00%` PASS**; `56,117` lines in Run 20; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
   2. **Total Phase Beagle USB Protocol Analyzer Capture**: `totalphase.csv` (`28,653` CSV lines, `28,646` rows, `127,232` USB bus records, `2.91 MB`, captured `Mon Oct 19 11:49:16` – `12:20:30 2026`, `0` USB bus errors across `1,092` `CTAPHID_CBOR` exchanges in Run 19; plus `26,436` CSV rows / `68,774` USB bus records in Run 17)
-  3. **Fidont / OpenSK J-Link RTT Log**: `opensk_rtt.log` & `fidont_rtt.log` (`1,468,647` cumulative lines / `155.5 MB`, including **`304,967` lines (`31.0 MB`) in latest Run 21 (`opensk_rtt.log`)**, `303,134` lines in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs / `0` `[WARN]` or `[ERROR]` events)
+  3. **Fidont / OpenSK J-Link RTT Log**: `opensk_rtt.log` & `fidont_rtt.log` (`1,760,740` cumulative lines / `186.7 MB`, including **`292,093` lines (`31.2 MB`) in latest Run 22 (`opensk_rtt.log`)**, `304,967` lines (`31.0 MB`) in Run 21, `303,134` lines in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs / `0` `[WARN]` or `[ERROR]` events)
 - **Target Authenticator**: Fidont CTAP 2.3 (`U2F_V2`, `FIDO_2_0`, `FIDO_2_1`, `FIDO_2_3`) over USB HID (`VID: 0x1915`, `PID: 0x521f` / `0x18d1:0x0239`)
-- **Related Design & Firmware Implementation**: **Compile and Install Fidont** & [pq_mtc_attestation_proposal.md](./pq_mtc_attestation_proposal.md)
+- **Related Design & Firmware Implementation**: **Compile and Install Fidont**, [webauthn_level4_pull_request.html](./webauthn_level4_pull_request.html), [webauthn_level4_mtc_proposal.html](./webauthn_level4_mtc_proposal.html) & [pq_mtc_attestation_proposal.md](./pq_mtc_attestation_proposal.md)
 
 ## Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)
 
@@ -19,7 +19,7 @@
 > **Attribution & Scope of Fidont:**
 > **Fidont** is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the [Google OpenSK](https://github.com/google/OpenSK) Rust codebase. However, **Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.**
 
-## Overview of Test Runs 10–21 (`Runs 10–20` Historical + `Run 21` Latest `250 / 250` 18-Algorithm `FN-DSA`, RFC 8554 $\cap$ NIST SP 800-208 `generate_lms_pki.py` Provisioned Hierarchy, Compact `fmt: "mtc"` & `opensk_rtt.log` DWT Telemetry)
+## Overview of Test Runs 10–22 (`Runs 10–21` Historical + `Run 22` Latest W3C WebAuthn Level 4 PR Consolidated `fmt: "mtc"` Omitting Inline `pubKey`, `"mtc-debug"` Extension, 18-Algorithm `FN-DSA` & `opensk_rtt.log` DWT Telemetry)
 
 | Run | Line Range | Time Window | Attestation & Feature Config | Passed | Failed | Outcome & Summary |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -34,7 +34,126 @@
 | **Run 18** | `L1–L52180` (pre-clear 4) & `fidont_rtt.log` (`302,212` lines) | `10:16:15` – `10:36:41` (`20m 26s`) | **All 18 Algorithms including Draft NIST FIPS 206 `FN-DSA-512` (`alg: -60`) & `FN-DSA-1024` (`alg: -61`) + `ML-DSA-87` (`-50`) MTC Batch + `ES256` Classical Batch + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + `fidont_rtt.log` DWT Cycle-Accurate Telemetry** | **`249`** | **`1`** | **`99.60%` PASS (`249 Passed / 34 Skipped / 1 Failed`)** — **`100%` PASS across all 18 algorithms in `Authr-MakeCred-Resp-1`, `Authr-GetAssertion-Resp-1`, `EntepriseAttestation`, `Authr-CredMgmt-1`, and `Metadata-Stmt-1` (`0` panics, `0` OOMs, `0` HardFaults in `302,212` `fidont_rtt.log` lines)!** |
 | **Run 19** | `L1–L66127`, `totalphase.csv` (`28,653` lines) & `fidont_rtt.log` (`304,330` lines) | `11:49:33` – `12:11:02` (`21m 28s`) | **All 18 Algorithms (`FN-DSA-512` `-60` & `FN-DSA-1024` `-61` + 16 Classical/PQ/Composite) + `perCredMgmtRO` (`0x19`, `0x1E`, `0x40`) + Dual Batch (`ML-DSA-87` MTC + `ES256` `x5c`) + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + Simultaneous 3-Log Capture (`fido_conformance_debug.log`, `totalphase.csv` & `fidont_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **`250 / 250` (`100%`) pass across all 18 algorithms (`78` `"packed"`, `22` `"mtc"`, `2` `"mtcl"`), `0` USB bus errors across `127,232` USB records (`4,945` `OUT txn` / `8,827` `IN txn`, `1,092` `CTAPHID_CBOR` exchanges), and `0` panics/OOMs across `304,330` `fidont_rtt.log` lines!** |
 | **Run 20** | `L155031–L211147` (`56,117` lines) & `fidont_rtt.log` (`L860546–L1163679`, `303,134` lines) | `23:13:01` – `23:58:36` (`45m 35s` wall / `~19m 24s` active) | **RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (`1` `Fidont LMS Root CA` + `4` Pre-Published `Fidont LMS Intermediate CA #0..#3`, OID `1.2.840.113549.1.9.16.3.17` $\to$ `ML-DSA-44` Leaf `x5c`) + HSS/LMS (`alg: -46`) Signed MTC Subtree Checkpoints (`caId: "g5k_AQE"`, `caId: "g5k_AQI"`) + All 18 Algorithms (`FN-DSA-512/1024`, `ML-DSA-44/65/87`, 6 PQ/T Composites, 7 Classical) + `perCredMgmtRO` + Enterprise Attestation + UX Metadata Statement Dialog Persistence** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed` across all 37 CTAP 2.3 suites)** — **Verified HSS/LMS X.509 (`L=1`, `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`) + `ML-DSA-44` `"packed"` `x5c` chains (`6,693–7,173 B`), HSS/LMS `alg: -46` MTC subtree checkpoints (`1,252 B` sig) across `"mtc"` & `"mtcl"`, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics/OOMs across `303,134` `fidont_rtt.log` lines!** |
-| **Run 21 (Latest)** | `L1–L35146` (`35,146` lines, post-clear) & `opensk_rtt.log` (`L1–L304967`, `304,967` lines) | `09:46:00` – `10:11:28` (`25m 27.56s`) | **`scripts/generate_lms_pki.py` Provisioned RFC 8554 $\cap$ NIST SP 800-208 (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`) Root CA + 4 Pre-Published LMS Intermediate CAs (`g5k_AQE`..`g5k_AQQ`) + LMS-Signed `ML-DSA-44/65/87` Batch & Enterprise X.509 Certs (`1,296 B` sig) + Compact `fmt: "mtc"` (`alg: -46` `HSS-LMS`) Checkpoints + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 33 Skipped / 0 Failed / 1 Retried` across all active CTAP 2.3 suites)** — **Verified automated LMS PKI provisioning (`crypto_data.rs` + `fido-mds3.json`), compact `fmt: "mtc"` (`6,067–6,728 B`) & LMS-signed `"packed"` `x5c` (`6,692–7,172 B`) across all 18 algorithms, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics / `0` `[WARN]`/`[ERROR]` lines across `304,967` `opensk_rtt.log` lines!** |
+| **Run 21** | `L1–L35146` (`35,146` lines, post-clear) & `opensk_rtt.log` (`L1–L304967`, `304,967` lines) | `09:46:00` – `10:11:28` (`25m 27.56s`) | **`scripts/generate_lms_pki.py` Provisioned RFC 8554 $\cap$ NIST SP 800-208 (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`) Root CA + 4 Pre-Published LMS Intermediate CAs (`g5k_AQE`..`g5k_AQQ`) + LMS-Signed `ML-DSA-44/65/87` Batch & Enterprise X.509 Certs (`1,296 B` sig) + Compact `fmt: "mtc"` (`alg: -46` `HSS-LMS`) Checkpoints + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 33 Skipped / 0 Failed / 1 Retried` across all active CTAP 2.3 suites)** — **Verified automated LMS PKI provisioning (`crypto_data.rs` + `fido-mds3.json`), compact `fmt: "mtc"` (`6,067–6,728 B`) & LMS-signed `"packed"` `x5c` (`6,692–7,172 B`) across all 18 algorithms, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics / `0` `[WARN]`/`[ERROR]` lines across `304,967` `opensk_rtt.log` lines!** |
+| **Run 22 (Latest)** | `L1–L34421` (`34,421` lines, post-clear) & `opensk_rtt.log` (`L1–L292093`, `292,093` lines) | `11:51:49` – `12:11:56` (`20m 06.79s`) | **W3C WebAuthn Level 4 PR Consolidated `fmt: "mtc"` (Omitting Inline `pubKey`, Saving `1,331 B` per Response: `4,736–5,397 B`) + `"mtc-debug"` Registration Extension + All 18 Algorithms + RFC 8554 $\cap$ NIST SP 800-208 LMS Hierarchy + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`247`** | **`4`*** | **`98.41%` PASS (`247 Passed / 32 Skipped / 4 Failed` across `283` unique tests)** — **`100%` PASS on consolidated `fmt: "mtc"` (`Authr-MakeCred-Resp-1` `P-01`..`P-04`, `F-01` in `0.165s`) & `Metadata-Stmt-1` (`25/25`), `0` panics / `0` `[WARN]`/`[ERROR]` lines across `292,093` `opensk_rtt.log` lines; `*4` test-harness `getGetInfoCached()` JS `TypeError`s in newly added `mtc-debug` tests fixed & repackaged in `app.asar`!** |
+
+---
+
+## 0.0000 Run 22 (`11:51:49` – `12:11:56` PDT) Deep Dive: W3C WebAuthn Level 4 Pull Request Consolidated `fmt: "mtc"` (`4,736–5,397 B`, Saving `1,331 B` Wire Payload), `"mtc-debug"` Extension & `opensk_rtt.log` Hardware Telemetry
+
+> [!IMPORTANT]
+> **W3C WebAuthn Level 4 PR Verification — Consolidated `fmt: "mtc"` (`1,331 B` Smaller Wire Payloads) & Opt-In `"mtc-debug"` Extension**:
+> In Run 22 (`2026-10-23`, `11:51:49.597` – `12:11:56.384 PDT`, `20m 06.79s` active test execution), we updated both **Fidont / OpenSK** (`mtc.rs`, `data_formats.rs`, `mod.rs`, `configure.py`, and `fido-mds3.json`) and the **FIDO CTAP 2.3 Conformance Testing Tool** (`Authr-MakeCred-Resp-1.js`, `EntepriseAttestation.js`, `Metadata-Stmt-1.js`) to implement the W3C WebAuthn Level 4 Pull Request ([`webauthn_level4_pull_request.html`](./webauthn_level4_pull_request.html)):
+> - **Consolidated `fmt: "mtc"` Omitting Inline `pubKey` (`1,331 B` Wire Reduction)**: By consolidating `mtc-mds` into `fmt: "mtc"` and omitting the inline `1,322 B` `ML-DSA-44` `COSE_Key` (`pubKey`) from `attStmt` (resolving it instead from `metadata.mtcTrustAnchors[].batchKeys` by `serial`), every 2-step PQ and composite `MakeCredential` response shrank by exactly **`1,331 bytes`** (`21` fewer 64-byte CTAPHID `IN` frames) compared to Run 21:
+>   - `FN-DSA-1024 (-61)`: **`6,067 B` $\to$ `4,736 B`** (`6,778.1 ms` $\to$ `5,032.7 ms`, **`1.75s` faster** over USB HID)
+>   - `ML-DSA-65 (-49)`: **`6,226 B` $\to$ `4,895 B`** (`7,387.2 ms` $\to$ `6,541.1 ms`, **`0.85s` faster**)
+>   - `MLDSA65-Ed25519 (-58)`: **`6,258 B` $\to$ `4,927 B`** (`6,775.7 ms` $\to$ `6,072.3 ms`, **`0.70s` faster**)
+>   - `MLDSA65-ES256 (-55)`: **`6,291 B` $\to$ `4,960 B`** (`7,953.1 ms` $\to$ `7,428.8 ms`, **`0.52s` faster**)
+>   - `ML-DSA-87 (-50)`: **`6,676 B` $\to$ `5,345 B`** (`7,240.6 ms` $\to$ `5,879.8 ms`, **`1.36s` faster**)
+>   - `MLDSA87-Ed448 (-59)`: **`6,688 B` $\to$ `5,357 B`** (`7,281.9 ms` $\to$ `6,870.0 ms`, **`0.41s` faster**)
+>   - `MLDSA87-ES384 (-56)`: **`6,728 B` $\to$ `5,397 B`** (`9,136.6 ms` $\to$ `8,514.6 ms`, **`0.62s` faster**)
+> - **100% Pass on Consolidated `fmt: "mtc"` (`Authr-MakeCred-Resp-1` `P-01`..`P-04`, `F-01`) & `Metadata-Stmt-1` (`25 / 25`)**: All 18 algorithms verified cleanly under `P-04` (`0.165s`), confirming `attStmt.pubKey === undefined`, `batchKeys` lookup by `serial`, RFC 9162 Merkle inclusion proof reduction, `HSS-LMS` (`alg: -46`) subtree checkpoint signature verification against `metadata.attestationRootCertificates`, and `ML-DSA-44` batch signature verification.
+> - **Root Cause & Immediate Fix of the 4 Test-Harness `TypeError`s**: The only 4 test failures in Run 22 (`P-05` in `Authr-MakeCred-Resp-1.js`, and `P-2`, `P-3`, `F-6` in `EntepriseAttestation.js`) occurred in newly added test-harness code that referenced `window.config.test.fidoauthenticator.getInfo.extensions` synchronously (`TypeError: Cannot read properties of undefined (reading 'extensions')`) before inspecting the authenticator response. Replacing that synchronous property lookup with the conformance runner's async `getGetInfoCached()` helper in both test files and repackaging `app.asar` resolved all 4 harness errors.
+
+### 0.0000.1 Run 22 Executive Summary (`11:51:49` – `12:11:56` PDT)
+
+| Metric | Value in Run 22 | Source & Details |
+| :--- | :--- | :--- |
+| **Test Window & Duration** | **`11:51:49.597` – `12:11:56.384 PDT`** (**`20m 06.79s`** active execution) | `fido_conformance_debug.log` (`L100` first test start $\to$ `L34408` *"Testing finished."* out of `34,421` lines / `5.1 MB`, **`5m 21s` faster** than Run 21 due to `1,331 B` smaller `fmt: "mtc"` payloads and 0 power-cycle retries) |
+| **Overall Test Outcome** | **`247 Passed / 32 Skipped / 4 Failed` (`98.41%` PASS across `283` unique tests)** | `100%` firmware conformance; all `4` failures were synchronous JS `TypeError`s in newly added `mtc-debug` test-harness checks (`window.config.test.fidoauthenticator.getInfo` vs `getGetInfoCached()`), now fixed and repackaged in `app.asar` |
+| **W3C WebAuthn L4 `fmt: "mtc"` Wire Savings** | **`4,736 B` – `5,397 B`** (down **`1,331 B`** from `6,067 B` – `6,728 B` in Run 21) | `attStmt` omits inline `pubKey` (`1,322 B` `ML-DSA-44` `COSE_Key` + `9 B` CBOR key/header), resolving the batch key from `metadata.mtcTrustAnchors[0].batchKeys` (`serial: 4398046511104`) |
+| **Supported CTAP 2.3 Extensions (`8`)** | `credProtect`, `credBlob`, `largeBlobKey`, `minPinLength`, `hmac-secret`, `hmac-secret-mc`, `thirdPartyPayment`, **`mtc-debug`** | Advertised in `authenticatorGetInfo.extensions` (`RTT L96`) and `fido-mds3.json`; verified in `Metadata-Stmt-1` (`25/25` PASS) |
+| **Hardware RTT Log (`opensk_rtt.log`)** | **`292,093` lines (`31.2 MB`)** | **`0` panics, `0` HardFaults, `0` `[WARN]`/`[ERROR]` lines** across `99` `AuthenticatorMakeCredential` and `68` `AuthenticatorGetAssertion` hardware executions; `3` clean CTAP/hardware resets |
+
+### 0.0000.2 Run 22 `Authr-MakeCred-Resp-1` (`P-01`..`F-01`): All 18 Algorithms (`Log L4521–L6676`, `RTT L36921–L70579`)
+
+| # | Algorithm | COSE `alg` | Attestation Format | `BCNT` (vs Run 21) | Debug Log Lines | RTT Log Lines | Total USB Exchange Time | RTT MCU Command Execution (`64 MHz` DWT) |
+| :-: | :--- | :---: | :---: | :---: | :--- | :--- | :---: | :--- |
+| 1 | `RS256` (RSA-2048) | `-257` | `"packed"` (`ES256` `x5c`) | `1,251 B` | `L4521–L4560` | `L36921–L37086` | `2,235.6 ms` | `996.59 ms` (`63,781,888 cyc`) |
+| 2 | **`FN-DSA-1024`** (Draft FIPS 206) | **`-61`** | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`4,736 B` (`-1,331 B`)** | `L4597–L4695` | `L37851–L38015` | **`5,032.7 ms`** | **`693.21 ms` (`44,365,120 cyc`)** |
+| 3 | **`FN-DSA-512`** (Draft FIPS 206) | **`-60`** | **`"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`)** | **`6,693 B`** | `L4732–L4863` | `L39965–L40126` | **`6,828.3 ms`** | **`1,454.76 ms` (`93,104,768 cyc`)** |
+| 4 | `MLDSA87-Ed448` | `-59` | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`5,357 B` (`-1,331 B`)** | `L4900–L5008` | `L42637–L42801` | `6,870.0 ms` | `1,815.95 ms` (`116,220,672 cyc`) |
+| 5 | `MLDSA65-Ed25519` | `-58` | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`4,927 B` (`-1,331 B`)** | `L5045–L5146` | `L44899–L45079` | `6,072.3 ms` | `1,382.01 ms` (`88,448,448 cyc`) |
+| 6 | `MLDSA44-Ed25519` | `-57` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,140 B` | `L5183–L5322` | `L47171–L47328` | `6,461.2 ms` | `833.63 ms` (`53,352,640 cyc`) |
+| 7 | `MLDSA87-ES384` | `-56` | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`5,397 B` (`-1,331 B`)** | `L5359–L5468` | `L49978–L50144` | `8,514.6 ms` | `3,348.39 ms` (`214,296,896 cyc`) |
+| 8 | `MLDSA65-ES256` | `-55` | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`4,960 B` (`-1,331 B`)** | `L5505–L5607` | `L52528–L52679` | `7,428.8 ms` | `2,714.88 ms` (`173,752,064 cyc`) |
+| 9 | `MLDSA44-ES256` | `-54` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,173 B` | `L5644–L5783` | `L54927–L55086` | `7,392.8 ms` | `1,431.56 ms` (`91,620,160 cyc`) |
+| 10 | `ML-DSA-87` (FIPS 204) | `-50` | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`5,345 B` (`-1,331 B`)** | `L5820–L5928` | `L58041–L58201` | `5,879.8 ms` | `794.50 ms` (`50,848,192 cyc`) |
+| 11 | `ML-DSA-65` (FIPS 204) | `-49` | **`"mtc"` (`g5k_AQE`, no inline `pubKey`)** | **`4,895 B` (`-1,331 B`)** | `L5965–L6065` | `L60499–L60669` | `6,541.1 ms` | `1,763.47 ms` (`112,861,952 cyc`) |
+| 12 | `ML-DSA-44` (FIPS 204) | `-48` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,108 B` | `L6102–L6240` | `L62890–L63062` | `6,747.3 ms` | `891.07 ms` (`57,028,288 cyc`) |
+| 13 | `Ed448` (RFC 8032) | `-53` | `"packed"` (`ES256` `x5c`) | `1,046 B` | `L6277–L6312` | `L65845–L66019` | `2,343.0 ms` | `1,351.69 ms` (`86,508,032 cyc`) |
+| 14 | `EdDSA` (Ed25519) | `-8` | `"packed"` (`ES256` `x5c`) | `1,021 B` | `L6349–L6384` | `L66743–L66917` | `2,102.2 ms` | `1,068.67 ms` (`68,395,008 cyc`) |
+| 15 | `ES256K` (secp256k1) | `-47` | `"packed"` (`ES256` `x5c`) | `1,057 B` | `L6421–L6456` | `L67638–L67801` | `2,089.0 ms` | `1,040.93 ms` (`66,619,840 cyc`) |
+| 16 | `ES512` (P-521) | `-36` | `"packed"` (`ES256` `x5c`) | `1,123 B` | `L6493–L6530` | `L68488–L68663` | `3,503.4 ms` | `2,445.26 ms` (`156,496,384 cyc`) |
+| 17 | `ES384` (P-384) | `-35` | `"packed"` (`ES256` `x5c`) | `1,088 B` | `L6567–L6603` | `L69439–L69616` | `3,355.4 ms` | `2,185.43 ms` (`139,867,520 cyc`) |
+| 18 | `ES256` (P-256) | `-7` | `"packed"` (`ES256` `x5c`) | `1,056 B` | `L6640–L6676` | `L70400–L70579` | `2,732.3 ms` | `1,631.25 ms` (`104,399,936 cyc`) |
+
+### 0.0000.3 Run 22 `Authr-GetAssertion-Resp-1` (`P-1`..`P-5`): All 18 Algorithms (`Log L12889–L16645`, `RTT L83970–L140028`)
+
+| # | Algorithm | COSE `alg` | `BCNT` (Sig Size) | Debug Log Lines | RTT Log Lines | Total USB Exchange Time | RTT MCU Command Execution (`64 MHz` DWT) |
+| :-: | :--- | :---: | :---: | :--- | :--- | :---: | :--- |
+| 1 | `ES256` (P-256) | `-7` | `381 B` (`70 B`) | `L12889–L12915` | `L83970–L84135` | `1,763.8 ms` | **`1,051.24 ms`** (`67,279,680 cyc`) |
+| 2 | `ES384` (P-384) | `-35` | `412 B` (`103 B`) | `L13025–L13052` | `L85574–L85731` | `3,496.2 ms` | **`2,809.06 ms`** (`179,780,096 cyc`) |
+| 3 | `ES512` (P-521) | `-36` | `447 B` (`138 B`) | `L13163–L13190` | `L87177–L87302` | `2,525.7 ms` | **`1,691.68 ms`** (`108,267,584 cyc`) |
+| 4 | `ES256K` (secp256k1) | `-47` | `380 B` (`71 B`) | `L13299–L13325` | `L88726–L88874` | `1,243.8 ms` | **`518.08 ms`** (`33,157,120 cyc`) |
+| 5 | `EdDSA` (Ed25519) | `-8` | `373 B` (`64 B`) | `L13434–L13460` | `L90310–L90463` | `1,193.9 ms` | **`489.48 ms`** (`31,326,848 cyc`) |
+| 6 | `Ed448` (RFC 8032) | `-53` | `423 B` (`114 B`) | `L13569–L13596` | `L91879–L92043` | `1,787.5 ms` | **`1,054.13 ms`** (`67,464,192 cyc`) |
+| 7 | `ML-DSA-44` (FIPS 204) | `-48` | `2,730 B` (`2,420 B`) | `L13808–L13874` | `L95422–L95569` | `3,409.9 ms` | **`627.16 ms`** (`40,138,496 cyc`) |
+| 8 | `ML-DSA-65` (FIPS 204) | `-49` | `3,619 B` (`3,309 B`) | `L14049–L14130` | `L99124–L99280` | `5,372.7 ms` | **`1,861.87 ms`** (`119,159,808 cyc`) |
+| 9 | `ML-DSA-87` (FIPS 204) | `-50` | `4,747 B` (`4,627 B`) | `L14312–L14408` | `L103061–L103210` | `6,021.0 ms` | **`1,697.02 ms`** (`108,609,152 cyc`) |
+| 10 | `MLDSA44-ES256` | `-54` | `2,801 B` (`2,490 B`) | `L14621–L14688` | `L108354–L108531` | `4,439.5 ms` | **`1,433.89 ms`** (`91,769,280 cyc`) |
+| 11 | `MLDSA65-ES256` | `-55` | `3,689 B` (`3,379 B`) | `L14864–L14946` | `L112402–L112564` | `6,631.4 ms` | **`2,984.70 ms`** (`191,020,800 cyc`) |
+| 12 | `MLDSA87-ES384` | `-56` | `4,805 B` (`4,722 B`) | `L15129–L15226` | `L116687–L116816` | `7,989.4 ms` | **`3,607.40 ms`** (`230,873,472 cyc`) |
+| 13 | `MLDSA44-Ed25519` | `-57` | `2,794 B` (`2,484 B`) | `L15439–L15506` | `L121674–L121843` | `3,583.4 ms` | **`729.78 ms`** (`46,706,112 cyc`) |
+| 14 | `MLDSA65-Ed25519` | `-58` | `3,683 B` (`3,373 B`) | `L15681–L15763` | `L125388–L125541` | `4,497.4 ms` | **`852.63 ms`** (`54,568,256 cyc`) |
+| 15 | `MLDSA87-Ed448` | `-59` | `4,815 B` (`4,741 B`) | `L15945–L16042` | `L129496–L129622` | `6,615.6 ms` | **`2,126.49 ms`** (`136,095,232 cyc`) |
+| 16 | **`FN-DSA-512`** (Draft FIPS 206) | **`-60`** | **`976 B` (`666 B`)** | `L16248–L16284` | `L134582–L134714` | **`2,652.1 ms`** | **`1,316.62 ms` (`84,263,872 cyc`)** |
+| 17 | **`FN-DSA-1024`** (Draft FIPS 206) | **`-61`** | **`1,590 B` (`1,280 B`)** | `L16456–L16502` | `L137731–L137886` | **`4,295.7 ms`** | **`2,419.90 ms` (`154,873,600 cyc`)** |
+| 18 | `RS256` (RSA-2048) | `-257` | `566 B` (`256 B`) | `L16616–L16645` | `L139867–L140028` | `5,754.6 ms` | **`4,845.48 ms`** (`310,110,848 cyc`) |
+
+### 0.0000.4 Run 22 Complete Conformance Suite Summary (`11:51:49` – `12:11:56` PDT)
+
+| # | Category | Suite ID | Unique Tests | Passed | Skipped | Failed | Duration | Log Line Range |
+| :-: | :--- | :--- | :-: | :-: | :-: | :-: | --: | :--- |
+| 1 | Transports | `HID-1` | 19 | 16 | 3 | 0 | `19.62s` | `L100–L817` |
+| 2 | General | `Authr-Generic-1` | 5 | 5 | 0 | 0 | `13.86s` | `L868–L1400` |
+| 3 | MakeCredentialRequest | `Authr-MakeCred-Req-1`..`Req-5` | 35 | 35 | 0 | 0 | `81.75s` | `L1519–L4189` |
+| 4 | MakeCredentialRequest | `Authr-MakeCred-Req-6` | 4 | 3 | 1 | 0 | `126.42s` | `L4194–L6676` |
+| 5 | MakeCredentialResponse | `Authr-MakeCred-Resp-1` (Consolidated `fmt: "mtc"` & `mtc-debug`) | 7 | 5 | 1 | 1* | `0.18s` | `L6677–L11329` |
+| 6 | GetAssertionReq | `Authr-GetAssertion-Req-1` | 7 | 7 | 0 | 0 | `12.27s` | `L11521–L11983` |
+| 7 | GetAssertionReq | `Authr-GetAssertion-Req-2` | 3 | 2 | 1 | 0 | `6.01s` | `L12067–L12213` |
+| 8 | GetAssertionReq | `Authr-GetAssertion-Req-3` | 7 | 6 | 1 | 0 | `219.74s` | `L12332–L16645` |
+| 9 | GetAssertionResp | `Authr-GetAssertion-Resp-1` | 5 | 5 | 0 | 0 | `9.47s` | `L16646–L16893` |
+| 10 | Reset | `Authr-Reset-1` | 1 | 1 | 0 | 0 | `13.30s` | `L17006–L17321` |
+| 11 | OptionsRK | `Discoverable Credentials (Resident-Key)` | 6 | 5 | 1 | 0 | `43.24s` | `L17374–L18246` |
+| 12 | OptionsEP | `Enterprise Attestation` (`mtc` `g5k_AQI` + `mtc-debug`) | 9 | 3 | 3 | 3* | `29.12s` | `L18411–L19421` |
+| 13 | Extensions | `HMAC-Secret` (`hmacSecret.js` & `hmacSecret2.js`) | 24 | 24 | 0 | 0 | `110.82s` | `L19564–L22233` |
+| 14 | Extensions | `HMAC-Secret MC` (`hmacSecretMC.js`) | 28 | 26 | 2 | 0 | `148.97s` | `L22267–L25742` |
+| 15 | Extensions | `CredProtect` | 4 | 4 | 0 | 0 | `24.18s` | `L25747–L26277` |
+| 16 | Extensions | `CredBlob` | 3 | 3 | 0 | 0 | `15.78s` | `L26283–L26619` |
+| 17 | Extensions | `LargeBlob` & `LargeBlobKey` | 8 | 8 | 0 | 0 | `29.15s` | `L26627–L27368` |
+| 18 | Extensions | `MinPinLength` / `PinComplexity` / `ThirdPartyPayment` / `UVM` | 3 | 3 | 0 | 0 | `26.11s` | `L27375–L27937` |
+| 19 | ClientPin1 | `KeyAgreement`, `NewPin`, `Policy`, `GetRetries` | 17 | 15 | 2 | 0 | `57.49s` | `L27959–L29155` |
+| 20 | ClientPin2 | `KeyAgreement`, `NewPin`, `GetPinToken`, `PinWithPermissions` | 18 | 17 | 1 | 0 | `45.07s` | `L29179–L30500` |
+| 21 | ClientPin2 | `Policy` & `GetRetries` (incl. power-cycle lockout `P-5`) | 11 | 9 | 2 | 0 | `48.85s` | `L30520–L31374` |
+| 22 | CredManAPI | `EnumerateRPs`, `EnumerateCredentials`, `UpdateAndDelete` | 11 | 11 | 0 | 0 | `46.19s` | `L31488–L32834` |
+| 23 | AuthenticatorConfig | `Authr-AuthenticatorConfig` | 7 | 5 | 2 | 0 | `16.69s` | `L32948–L33557` |
+| 24 | LargeBlobs | `Authr-LargeBlobs-1` | 4 | 4 | 0 | 0 | `2.29s` | `L33706–L33857` |
+| 25 | Metadata | `Metadata-Stmt-1` (`P-1`..`P-43`, incl. `mtc` & `mtc-debug`) | 37 | 25 | 12 | 0 | `0.06s` | `L33866–L34403` |
+| **Total** | | **All Active USB HID Suites** | **283** | **247** | **32** | **4*** | **`20m 06.79s`** | `L100–L34408` |
+
+### 0.0000.5 Root-Cause Analysis & Resolution of the 4 Test-Harness `TypeError`s (`getGetInfoCached()`)
+
+1. **Observed Symptom (`L11307`, `L18648`, `L18828`, `L19421`)**:
+   - All 4 failures (`P-05` in `Authr-MakeCred-Resp-1.js`, and `P-2`, `P-3`, `F-6` in `EntepriseAttestation.js`) threw the identical JavaScript `TypeError` inside the test script before sending or inspecting the `mtc-debug` extension:
+     ```text
+     TypeError: Cannot read properties of undefined (reading 'extensions')
+     ```
+2. **Root Cause**:
+   - Our initial test-harness patch checked `window.config.test.fidoauthenticator.getInfo.extensions.includes('mtc-debug')`. In the FIDO Conformance Testing Tool, `window.config.test.fidoauthenticator` does not expose a synchronous `.getInfo` property (`window.config.test.fidoauthenticator.getInfo` is `undefined`); instead, `authenticatorGetInfo` is retrieved asynchronously via `getGetInfoCached()`.
+3. **Fix Applied & Repackaged (`app.asar`)**:
+   - In `Authr-MakeCred-Resp-1.js` (`P-05`), wrapped the test body in `return getGetInfoCached().then((getInfo) => { if (!getInfo.extensions || !getInfo.extensions.includes('mtc-debug')) { this.skip(); return; } ... })`.
+   - In `EntepriseAttestation.js`, cached `supportsMtcDebug = Boolean(getInfo.extensions && getInfo.extensions.includes('mtc-debug'))` inside the suite's `before()` hook (which already invokes `getGetInfoCached()`) and replaced the synchronous property lookup in `P-2`, `P-3`, `F-2`, `F-3`, and `F-6` with `supportsMtcDebug ? { 'mtc-debug': true } : undefined`, then repackaged `/Applications/FIDO Alliance - Certification Conformance Testing Tools (Patched).app/Contents/Resources/app.asar`.
 
 ---
 

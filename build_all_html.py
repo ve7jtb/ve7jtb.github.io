@@ -339,23 +339,24 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else ("abstract" if "abstract" in title.lower() else slug(title)),
     },
     "fido_ctap23_conformance_report": {
-        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Post-Quantum mtc / mtcl",
+        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. \"mtc-debug\"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Consolidated Post-Quantum fmt: \"mtc\"",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("250 / 250 Passed (100%)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("W3C WebAuthn L4 PR: fmt: \"mtc\" & \"mtc-debug\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("18 Algorithms (incl. FN-DSA-512 & 1024)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("HSS/LMS Hierarchy & PQ MTC", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("HSS/LMS Hierarchy & PQ MTC (-1,331 B Wire)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("perCredMgmtRO & Enterprise Attestation", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (246,293 cumulative lines across Runs 10–21, 250 / 250 100.00% PASS in Run 21), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,468,647 cumulative lines including 304,967 lines in Run 21 opensk_rtt.log, 0 panics/OOMs).",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (280,714 cumulative lines across Runs 10–22, including Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: \"mtc\" with 1,331 B smaller wire responses and the \"mtc-debug\" extension, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,760,740 cumulative lines including 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-0-000" if "0.000" in title else
+            "section-0-0000" if "0.0000" in title else
+            ("section-0-000" if "0.000" in title else
             ("section-0-00" if "0.00" in title else
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title))))))
+            (f"section-{num}" if num else slug(title)))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {
