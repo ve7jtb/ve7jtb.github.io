@@ -1,4 +1,4 @@
-# Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (`mtc` / `mtcl`) and the `mtcDebug` Extension
+# Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Format (`mtc`) and the `mtcDebug` Extension
 
 Targeting the **[W3C WebAuthentication Working Group (WebAuthn Level 4 Editor's Draft)](https://github.com/w3c/webauthn/)**, aligned with [FIDO CTAP 2.3 Proposed Standard](https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html), [IETF PLANTS Merkle Tree Certificates](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/), and the **Authenticate 2026 CTAP2 Technical Working Group consensus**.
 
@@ -6,10 +6,9 @@ Targeting the **[W3C WebAuthentication Working Group (WebAuthn Level 4 Editor's 
 > **Authenticate 2026 CTAP2 TWG Consensus & Specification Evolution:**  
 > In October 2026, the CTAP2 Technical Working Group at Authenticate 2026 reviewed the post-quantum attestation landscape. The working group established that the compact MDS/manifest-assisted Merkle Tree Certificate profile is the preferred, primary operational format for post-quantum authenticator attestation over constrained physical transports (such as USB HID single-frame messaging).
 > 
-> To optimize wire overhead and simplify client/RP processing, this proposal standardizes two complementary WebAuthn Level 4 attestation formats and one diagnostic extension:
+> To optimize wire overhead and simplify client and Relying Party processing, this proposal standardizes one post-quantum attestation statement format and one diagnostic extension for WebAuthn Level 4:
 > 1. **`fmt: "mtc"`** *(formerly `mtc-mds`)*: Compact Merkle Tree Certificate format (public key omitted from the wire; resolved out-of-band via FIDO MDS3 or manufacturer manifests).
-> 2. **`fmt: "mtcl"`** *(formerly `mtc`)*: Merkle Tree Certificate Large (carrying the inline public key and inclusion proof).
-> 3. **`mtcDebug` (`mtc-debug`)**: WebAuthn Level 4 registration extension providing in-band diagnostic access to the active attestation public key and hardware serial number for automated test fixtures and conformance tools.
+> 2. **`mtcDebug` (`mtc-debug`)**: WebAuthn Level 4 registration extension providing in-band diagnostic access to the active attestation public key and hardware serial number for automated test fixtures and conformance tools.
 
 ---
 
@@ -31,37 +30,32 @@ In the standard WebAuthn `packed` attestation statement format (§8.2), the auth
 - A single `ML-DSA-44` intermediate certificate adds $\sim 3,850\text{ B}$.
 - A 2-certificate `ML-DSA-87` chain reaches **$15,065\text{–}22,693\text{ B}$**.
 
-Even with a minimal single-certificate chain, classical X.509 `packed` attestation **exceeds the 7,609-byte USB HID limit for all ML-DSA parameter sets** ($7,924\text{ B}$ for `ML-DSA-44`, $10,982\text{ B}$ for `ML-DSA-65`, and $14,898\text{ B}$ for `ML-DSA-87`), causing catastrophic packet drops on standard desktop USB stacks.
+Even with a minimal single-certificate chain, classical X.509 `packed` attestation **exceeds the 7,609-byte USB HID limit for all ML-DSA parameter sets** ($7,924\text{ B}$ for `ML-DSA-44`, $10,982\text{ B}$ for `ML-DSA-65`, and $14,898\text{ B}$ for `ML-DSA-87`), causing packet drops and failure on standard desktop USB stacks.
 
 ### 1.3 How Merkle Tree Certificates (`MTC`) Solve Post-Quantum Scaling
 
 Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/), Merkle Tree Certificates replace heavy ASN.1 X.509 signature chains with compact, hash-based Merkle inclusion proofs over a transparency log tree. 
 
-By defining **`fmt: "mtc"`** (compact) and **`fmt: "mtcl"`** (large inline), WebAuthn Level 4 enables:
+By defining **`fmt: "mtc"`**, WebAuthn Level 4 enables:
 1. **$100\%$ USB HID Compatibility**: All 5 NIST post-quantum algorithms fit within single-message budgets ($3,832\text{–}7,470\text{ B}$ for `fmt: "mtc"`).
-2. **Stateless Authenticator Flash**: Authenticators derive the public key on-the-fly from a 32-byte TRNG seed, avoiding flash wear.
+2. **Stateless Authenticator Flash**: Authenticators derive the public key on-the-fly from a 32-byte TRNG seed, avoiding flash storage exhaustion.
 3. **Clean Enterprise Attestation**: Binds physical device serial numbers natively via the CA Merkle leaf commitment and manufacturer manifests without wire extension overhead.
 
 ---
 
 ## 2. Proposed Changes to §8: Defined Attestation Statement Formats
 
-We propose adding two new normative attestation statement format identifiers to the WebAuthn Level 4 §8 registry:
-1. **`fmt: "mtc"`**: Compact Merkle Tree Certificate Attestation Statement Format (Preferred Default).
-2. **`fmt: "mtcl"`**: Merkle Tree Certificate Large Statement Format (Inline Public Key).
+We propose adding the normative attestation statement format identifier **`mtc`** to the WebAuthn Level 4 §8 registry:
 
 ```cddl
 ; Proposed addition to WebAuthn Level 4 §8: Attestation Statement Formats
 $$attStmtType //= (
     fmt: "mtc",
     attStmt: mtcStmtFormat
-) // (
-    fmt: "mtcl",
-    attStmt: mtclStmtFormat
 )
 ```
 
-### 2.1 Format 1: Compact Merkle Tree Certificate Format (`fmt: "mtc"`)
+### 2.1 Merkle Tree Certificate Statement Format (`fmt: "mtc"`)
 
 - **Attestation Statement Format Identifier:** `"mtc"`
 - **Attestation Types Supported:** `Basic`, `AttCA`, `Enterprise`.
@@ -108,42 +102,6 @@ Given `(attStmt, authenticatorData, clientDataHash)`:
 
 ---
 
-### 2.2 Format 2: Merkle Tree Certificate Large Format (`fmt: "mtcl"`)
-
-- **Attestation Statement Format Identifier:** `"mtcl"`
-- **Attestation Types Supported:** `Basic`, `AttCA`, `Enterprise`, `Self`.
-- **Public Key Handling:** The attestation public key is transmitted **inline** within the attestation statement.
-
-#### Syntax (CDDL)
-```cddl
-mtclStmtFormat = {
-    alg: COSEAlgorithmIdentifier,
-    sig: bytes,
-    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key
-    mtcCert: mtcEntryDesc             ; REQUIRED: Merkle inclusion proof authenticating pubKey
-} // {
-    alg: COSEAlgorithmIdentifier,
-    sig: bytes                        ; Self attestation (when pubKey and mtcCert are omitted)
-}
-```
-
-#### Relying Party Verification Procedure for `fmt: "mtcl"`
-Given `(attStmt, authenticatorData, clientDataHash)`:
-1. Verify `attStmt` conforms to `mtclStmtFormat`.
-2. If `pubKey` and `mtcCert` are omitted, handle `Self` attestation using `credentialPublicKey`.
-3. Extract `pubKey = attStmt.pubKey` directly from the statement and decode as a `COSE_Key`.
-4. Verify `attStmt.sig` over $\text{authenticatorData} \parallel \text{clientDataHash}$ using `pubKey` and `attStmt.alg`.
-5. Reconstruct the leaf `FidoMtcLogEntry`:
-   - `pubKeyHash = SHA-256(pubKey)`
-   - `aaguid = authenticatorData.attestedCredentialData.aaguid`
-   - `notBefore = attStmt.mtcCert.notBefore`, `notAfter = attStmt.mtcCert.notAfter`
-   - `extensions = deviceSerial` (if enterprise attestation was requested)
-6. Walk the Merkle inclusion proof in `attStmt.mtcCert.mtcProof` to calculate $\text{computedRoot}$.
-7. Assert $\text{computedRoot} == \text{MtcTrustAnchor.subtrees[j].rootHash}$.
-8. Verify `subtrees[j].signature` against the Root CA in `attestationRootCertificates`.
-
----
-
 ## 3. Proposed Changes to §10: Defined Extensions (`mtcDebug` / `mtc-debug`)
 
 We propose registering the **`mtcDebug`** extension in the W3C WebAuthn Level 4 Defined Extensions Registry (§10).
@@ -187,7 +145,7 @@ $$extension-output //= (
 )
 
 MtcDebugExtensionOutput = {
-    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key
+    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
     ? deviceSerial: tstr / uint       ; OPTIONAL: Device serial number.
                                       ; MUST be present IF AND ONLY IF Enterprise
                                       ; Attestation (0x0A = 1 or 2) is active.
@@ -223,12 +181,11 @@ partial dictionary PublicKeyCredentialCreationOptions {
 };
 ```
 
-### 4.1 3-Tier Size-Aware Default Attestation Cascade
+### 4.1 Size-Aware Default Attestation Selection (`"packed"` vs. `"mtc"`)
 
-When the Relying Party does not specify an explicit format preference, authenticators implement a 3-tier size-aware default cascade:
-1. **Tier 1 — `"packed"` (`x5c`)**: Returned if the X.509 certificate chain fits within the $7,609\text{-byte}$ limit (standard for classical algorithms like `ES256`).
-2. **Tier 2 — `"mtcl"` (Large Inline)**: Returned if the inline `pubKey` plus `mtcCert` fits within $7,609\text{ B}$.
-3. **Tier 3 — `"mtc"` (Compact Preferred)**: Returned when `pubKey` must be omitted to prevent packet fragmentation on constrained transports (guaranteeing that Category 5 `ML-DSA-87` always fits under $7,609\text{ B}$).
+When the Relying Party does not specify an explicit format preference, authenticators implement a size-aware default selection:
+1. **Classical Algorithms (`ES256`, `Ed25519`)**: The authenticator returns standard **`"packed"` (`x5c`)**, which fits comfortably within the $7,609\text{-byte}$ limit ($500\text{–}1,250\text{ B}$).
+2. **Post-Quantum Algorithms (`ML-DSA`, `FN-DSA`)**: The authenticator returns compact **`"mtc"`**, omitting the multi-kilobyte public key to guarantee that all parameter sets (including Category 5 `ML-DSA-87`) fit within the $7,609\text{-byte}$ USB HID ceiling without fragmentation ($3,832\text{–}7,470\text{ B}$).
 
 ---
 

@@ -369,14 +369,14 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     },
     "webauthn_level4_mtc_proposal": {
-        "title": "Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (mtc / mtcl) and the mtcDebug Extension",
+        "title": "Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Format (mtc) and the mtcDebug Extension",
         "badges": [
             ("W3C WebAuthn Level 4 Proposal", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("fmt: \"mtc\" & \"mtcl\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("fmt: \"mtc\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("mtcDebug Extension (§10.x)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("IETF PLANTS & FIDO CTAP 2.3", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Formal specification changes targeting the W3C WebAuthentication Working Group to define the compact mtc and inline mtcl statement formats in §8, the mtcDebug registration extension in §10, and size-aware 3-tier attestation cascading.",
+        "desc": "Formal specification changes targeting the W3C WebAuthentication Working Group to define the compact mtc statement format in §8, the mtcDebug registration extension in §10, and size-aware attestation selection.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }

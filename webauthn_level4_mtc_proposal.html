@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (mtc / mtcl) and the mtcDebug Extension</title>
+  <title>Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Format (mtc) and the mtcDebug Extension</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -64,7 +64,7 @@
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">W3C WebAuthn Level 4 Proposal</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: &quot;mtc&quot; &amp; &quot;mtcl&quot;</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: &quot;mtc&quot;</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">mtcDebug Extension (§10.x)</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">IETF PLANTS &amp; FIDO CTAP 2.3</span>
       </div>
@@ -74,10 +74,10 @@
       </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (mtc / mtcl) and the mtcDebug Extension
+      Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Format (mtc) and the mtcDebug Extension
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Formal specification changes targeting the W3C WebAuthentication Working Group to define the compact mtc and inline mtcl statement formats in §8, the mtcDebug registration extension in §10, and size-aware 3-tier attestation cascading.
+      Formal specification changes targeting the W3C WebAuthentication Working Group to define the compact mtc statement format in §8, the mtcDebug registration extension in §10, and size-aware attestation selection.
     </p>
 
 
@@ -136,8 +136,7 @@
         <li>
           <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Proposed Changes to §8: Defined Attestation Statement Formats</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
-            <div><a href="#21-format-1-compact-merkle-tree-certificate-format-fmt-mtc" class="hover:underline">&sect;2.1 Format 1: Compact Merkle Tree Certificate Format (<code>fmt: "mtc"</code>)</a></div>
-            <div><a href="#22-format-2-merkle-tree-certificate-large-format-fmt-mtcl" class="hover:underline">&sect;2.2 Format 2: Merkle Tree Certificate Large Format (<code>fmt: "mtcl"</code>)</a></div>
+            <div><a href="#21-merkle-tree-certificate-statement-format-fmt-mtc" class="hover:underline">&sect;2.1 Merkle Tree Certificate Statement Format (<code>fmt: "mtc"</code>)</a></div>
           </div>
         </li>
           </ul>
@@ -155,7 +154,7 @@
         <li>
           <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Proposed Changes to §5: Data Types &amp; Capability Signaling</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
-            <div><a href="#41-3-tier-size-aware-default-attestation-cascade" class="hover:underline">&sect;4.1 3-Tier Size-Aware Default Attestation Cascade</a></div>
+            <div><a href="#41-size-aware-default-attestation-selection-packed-vs-mtc" class="hover:underline">&sect;4.1 Size-Aware Default Attestation Selection (<code>"packed"</code> vs. <code>"mtc"</code>)</a></div>
           </div>
         </li>
           </ul>
@@ -204,13 +203,13 @@
 <li>A single <code>ML-DSA-44</code> intermediate certificate adds $\sim 3,850\text{ B}$.</li>
 <li>A 2-certificate <code>ML-DSA-87</code> chain reaches <strong>$15,065\text{–}22,693\text{ B}$</strong>.</li>
 </ul>
-<p class="text-sm my-2">Even with a minimal single-certificate chain, classical X.509 <code>packed</code> attestation <strong>exceeds the 7,609-byte USB HID limit for all ML-DSA parameter sets</strong> ($7,924\text{ B}$ for <code>ML-DSA-44</code>, $10,982\text{ B}$ for <code>ML-DSA-65</code>, and $14,898\text{ B}$ for <code>ML-DSA-87</code>), causing catastrophic packet drops on standard desktop USB stacks.</p>
+<p class="text-sm my-2">Even with a minimal single-certificate chain, classical X.509 <code>packed</code> attestation <strong>exceeds the 7,609-byte USB HID limit for all ML-DSA parameter sets</strong> ($7,924\text{ B}$ for <code>ML-DSA-44</code>, $10,982\text{ B}$ for <code>ML-DSA-65</code>, and $14,898\text{ B}$ for <code>ML-DSA-87</code>), causing packet drops and failure on standard desktop USB stacks.</p>
 <h3 id="13-how-merkle-tree-certificates-mtc-solve-post-quantum-scaling" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.3 How Merkle Tree Certificates (<code>MTC</code>) Solve Post-Quantum Scaling</h3>
 <p class="text-sm my-2">Based on <a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>draft-ietf-plants-merkle-tree-certs</code></a>, Merkle Tree Certificates replace heavy ASN.1 X.509 signature chains with compact, hash-based Merkle inclusion proofs over a transparency log tree.</p>
-<p class="text-sm my-2">By defining <strong><code>fmt: "mtc"</code></strong> (compact) and <strong><code>fmt: "mtcl"</code></strong> (large inline), WebAuthn Level 4 enables:</p>
+<p class="text-sm my-2">By defining <strong><code>fmt: "mtc"</code></strong>, WebAuthn Level 4 enables:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>$100\%$ USB HID Compatibility</strong>: All 5 NIST post-quantum algorithms fit within single-message budgets ($3,832\text{–}7,470\text{ B}$ for <code>fmt: "mtc"</code>).</li>
-<li><strong>Stateless Authenticator Flash</strong>: Authenticators derive the public key on-the-fly from a 32-byte TRNG seed, avoiding flash wear.</li>
+<li><strong>Stateless Authenticator Flash</strong>: Authenticators derive the public key on-the-fly from a 32-byte TRNG seed, avoiding flash storage exhaustion.</li>
 <li><strong>Clean Enterprise Attestation</strong>: Binds physical device serial numbers natively via the CA Merkle leaf commitment and manufacturer manifests without wire extension overhead.</li>
 </ol>
     </section>
@@ -223,20 +222,13 @@
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Proposed Changes to §8: Defined Attestation Statement Formats</h2>
       </div>
-<p class="text-sm my-2">We propose adding two new normative attestation statement format identifiers to the WebAuthn Level 4 §8 registry:</p>
-<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li><strong><code>fmt: "mtc"</code></strong>: Compact Merkle Tree Certificate Attestation Statement Format (Preferred Default).</li>
-<li><strong><code>fmt: "mtcl"</code></strong>: Merkle Tree Certificate Large Statement Format (Inline Public Key).</li>
-</ol>
+<p class="text-sm my-2">We propose adding the normative attestation statement format identifier <strong><code>mtc</code></strong> to the WebAuthn Level 4 §8 registry:</p>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; Proposed addition to WebAuthn Level 4 §8: Attestation Statement Formats
 $$attStmtType //= (
     fmt: "mtc",
     attStmt: mtcStmtFormat
-) // (
-    fmt: "mtcl",
-    attStmt: mtclStmtFormat
 )</code></pre></div>
-<h3 id="21-format-1-compact-merkle-tree-certificate-format-fmt-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Format 1: Compact Merkle Tree Certificate Format (<code>fmt: "mtc"</code>)</h3>
+<h3 id="21-merkle-tree-certificate-statement-format-fmt-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Merkle Tree Certificate Statement Format (<code>fmt: "mtc"</code>)</h3>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Attestation Statement Format Identifier:</strong> <code>"mtc"</code></li>
 <li><strong>Attestation Types Supported:</strong> <code>Basic</code>, <code>AttCA</code>, <code>Enterprise</code>.</li>
@@ -281,39 +273,6 @@ mtcKeyRef = {
 <li>Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$.</li>
 <li>Verify revocation: verify <code>serial</code> is not in <code>revokedSerials</code>.</li>
 </ol>
-<h3 id="22-format-2-merkle-tree-certificate-large-format-fmt-mtcl" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 Format 2: Merkle Tree Certificate Large Format (<code>fmt: "mtcl"</code>)</h3>
-<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><strong>Attestation Statement Format Identifier:</strong> <code>"mtcl"</code></li>
-<li><strong>Attestation Types Supported:</strong> <code>Basic</code>, <code>AttCA</code>, <code>Enterprise</code>, <code>Self</code>.</li>
-<li><strong>Public Key Handling:</strong> The attestation public key is transmitted <strong>inline</strong> within the attestation statement.</li>
-</ul>
-<h4 id="syntax-cddl" class="text-base font-semibold text-[var(--foreground)]">Syntax (CDDL)</h4>
-<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>mtclStmtFormat = {
-    alg: COSEAlgorithmIdentifier,
-    sig: bytes,
-    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key
-    mtcCert: mtcEntryDesc             ; REQUIRED: Merkle inclusion proof authenticating pubKey
-} // {
-    alg: COSEAlgorithmIdentifier,
-    sig: bytes                        ; Self attestation (when pubKey and mtcCert are omitted)
-}</code></pre></div>
-<h4 id="relying-party-verification-procedure-for-fmt-mtcl" class="text-base font-semibold text-[var(--foreground)]">Relying Party Verification Procedure for <code>fmt: "mtcl"</code></h4>
-<p class="text-sm my-2">Given <code>(attStmt, authenticatorData, clientDataHash)</code>:</p>
-<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li>Verify <code>attStmt</code> conforms to <code>mtclStmtFormat</code>.</li>
-<li>If <code>pubKey</code> and <code>mtcCert</code> are omitted, handle <code>Self</code> attestation using <code>credentialPublicKey</code>.</li>
-<li>Extract <code>pubKey = attStmt.pubKey</code> directly from the statement and decode as a <code>COSE_Key</code>.</li>
-<li>Verify <code>attStmt.sig</code> over $\text{authenticatorData} \parallel \text{clientDataHash}$ using <code>pubKey</code> and <code>attStmt.alg</code>.</li>
-<li>Reconstruct the leaf <code>FidoMtcLogEntry</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><code>pubKeyHash = SHA-256(pubKey)</code></li>
-<li><code>aaguid = authenticatorData.attestedCredentialData.aaguid</code></li>
-<li><code>notBefore = attStmt.mtcCert.notBefore</code>, <code>notAfter = attStmt.mtcCert.notAfter</code></li>
-<li><code>extensions = deviceSerial</code> (if enterprise attestation was requested)</li>
-</ul></li>
-<li>Walk the Merkle inclusion proof in <code>attStmt.mtcCert.mtcProof</code> to calculate $\text{computedRoot}$.</li>
-<li>Assert $\text{computedRoot} == \text{MtcTrustAnchor.subtrees[j].rootHash}$.</li>
-<li>Verify <code>subtrees[j].signature</code> against the Root CA in <code>attestationRootCertificates</code>.</li>
-</ol>
     </section>
 
     <!-- ===================================================================== -->
@@ -355,7 +314,7 @@ $$extension-output //= (
 )
 
 MtcDebugExtensionOutput = {
-    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key
+    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
     ? deviceSerial: tstr / uint       ; OPTIONAL: Device serial number.
                                       ; MUST be present IF AND ONLY IF Enterprise
                                       ; Attestation (0x0A = 1 or 2) is active.
@@ -394,12 +353,11 @@ MtcDebugExtensionOutput = {
 partial dictionary PublicKeyCredentialCreationOptions {
     sequence&lt;DOMString&gt; attestationFormats;
 };</code></pre></div>
-<h3 id="41-3-tier-size-aware-default-attestation-cascade" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 3-Tier Size-Aware Default Attestation Cascade</h3>
-<p class="text-sm my-2">When the Relying Party does not specify an explicit format preference, authenticators implement a 3-tier size-aware default cascade:</p>
+<h3 id="41-size-aware-default-attestation-selection-packed-vs-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 Size-Aware Default Attestation Selection (<code>"packed"</code> vs. <code>"mtc"</code>)</h3>
+<p class="text-sm my-2">When the Relying Party does not specify an explicit format preference, authenticators implement a size-aware default selection:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li><strong>Tier 1 — <code>"packed"</code> (<code>x5c</code>)</strong>: Returned if the X.509 certificate chain fits within the $7,609\text{-byte}$ limit (standard for classical algorithms like <code>ES256</code>).</li>
-<li><strong>Tier 2 — <code>"mtcl"</code> (Large Inline)</strong>: Returned if the inline <code>pubKey</code> plus <code>mtcCert</code> fits within $7,609\text{ B}$.</li>
-<li><strong>Tier 3 — <code>"mtc"</code> (Compact Preferred)</strong>: Returned when <code>pubKey</code> must be omitted to prevent packet fragmentation on constrained transports (guaranteeing that Category 5 <code>ML-DSA-87</code> always fits under $7,609\text{ B}$).</li>
+<li><strong>Classical Algorithms (<code>ES256</code>, <code>Ed25519</code>)</strong>: The authenticator returns standard <strong><code>"packed"</code> (<code>x5c</code>)</strong>, which fits comfortably within the $7,609\text{-byte}$ limit ($500\text{–}1,250\text{ B}$).</li>
+<li><strong>Post-Quantum Algorithms (<code>ML-DSA</code>, <code>FN-DSA</code>)</strong>: The authenticator returns compact <strong><code>"mtc"</code></strong>, omitting the multi-kilobyte public key to guarantee that all parameter sets (including Category 5 <code>ML-DSA-87</code>) fit within the $7,609\text{-byte}$ USB HID ceiling without fragmentation ($3,832\text{–}7,470\text{ B}$).</li>
 </ol>
     </section>
 

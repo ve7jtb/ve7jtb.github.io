@@ -466,7 +466,7 @@
             W3C WebAuthn Level 4 Proposal
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            fmt: "mtc" &amp; "mtcl"
+            fmt: "mtc"
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             mtcDebug Extension (§10.x)
@@ -481,11 +481,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./webauthn_level4_mtc_proposal.html" class="hover:underline">
-            Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (<code>mtc</code> / <code>mtcl</code>) and the <code>mtcDebug</code> Extension
+            Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Format (<code>mtc</code>) and the <code>mtcDebug</code> Extension
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> and large inline <strong><code>mtcl</code></strong> statement formats to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>.
+          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> statement format to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>.
         </p>
       </div>
 
@@ -528,10 +528,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              §8 Defined Formats: <code>mtc</code> &amp; <code>mtcl</code>
+              §8 Defined Format: <code>mtc</code>
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              CDDL definitions and Relying Party verification procedures for compact <code>fmt: "mtc"</code> (preferred default) and inline <code>fmt: "mtcl"</code> (MTC Large).
+              CDDL definitions and Relying Party verification procedures for compact <code>fmt: "mtc"</code> (preferred default based on Authenticate 2026 TWG consensus).
             </p>
           </a>
 
