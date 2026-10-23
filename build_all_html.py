@@ -378,6 +378,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "Formal specification changes targeting the W3C WebAuthentication Working Group to define the compact mtc statement format in §8, the mtcDebug registration extension in §10, and size-aware attestation selection.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "webauthn_level4_pull_request": {
+        "title": "Pull Request: Add Merkle Tree Certificate Attestation Format (mtc) and mtcDebug Extension to W3C WebAuthn Level 4",
+        "badges": [
+            ("W3C WebAuthn Level 4 PR", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("Base: main (0c50bd0)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("fmt: \"mtc\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("mtcDebug Extension (§10.x)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Official pull request submission for w3c/webauthn against the Level 4 Editor's Draft at HEAD (0c50bd0), adding the Merkle Tree Certificate attestation format in §8, the mtcDebug diagnostic extension in §10, and IANA registrations in §11.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 
