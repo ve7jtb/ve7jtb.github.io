@@ -282,10 +282,10 @@ def parse_blocks(lines):
 # ---------------------------------------------------------------- page specs -
 DOCUMENT_CONFIGS = {
     "pq_mtc_attestation_proposal": {
-        "title": "Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc and mtc-mds)",
+        "title": "Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtcl and mtc-mds)",
         "badges": [
             ("W3C WebAuthn & CTAP 2.3+", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("fmt: \"mtc\" & \"mtc-mds\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("fmt: \"mtcl\" & \"mtc-mds\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("IETF PLANTS Merkle Tree Certs", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("ML-DSA & OpenID Federation 1.1", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
@@ -339,7 +339,7 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else ("abstract" if "abstract" in title.lower() else slug(title)),
     },
     "fido_ctap23_conformance_report": {
-        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Post-Quantum mtc / mtc-mds",
+        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Post-Quantum mtcl / mtc-mds",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
             ("250 / 250 Passed (100%)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),

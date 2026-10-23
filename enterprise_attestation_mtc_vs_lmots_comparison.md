@@ -84,7 +84,7 @@ $$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$
 
 The table below contrasts the end-to-end `MakeCredential` payload sizes across NIST post-quantum credential algorithms, evaluated against the **$7,609\text{-byte}$ USB CTAPHID limit**:
 
-| Credential Algorithm | Inline `"mtc"` (sig + `pubKey` + `563 B` proof + serial) | Enterprise `"mtc-mds"` (with `563 B` proof + serial) | **Enterprise `"mtc-mds"` Proof-Less** (serial in manifest only) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt` + serial) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt` + serial) |
+| Credential Algorithm | Inline `"mtcl"` (sig + `pubKey` + `563 B` proof + serial) | Enterprise `"mtc-mds"` (with `563 B` proof + serial) | **Enterprise `"mtc-mds"` Proof-Less** (serial in manifest only) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt` + serial) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt` + serial) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **`ML-DSA-44`** (`-48`) | $5,723\text{ B}$ ✅ | $4,401\text{ B}$ ✅ | **$3,832\text{ B}$** ✅ | $4,441\text{ B}$ ✅ | **$3,385\text{ B}$** ✅ |
 | **`ML-DSA-65`** (`-49`) | $7,892\text{ B}$ ⚠️ *(+283 B)* | $5,930\text{ B}$ ✅ | **$5,361\text{ B}$** ✅ | $5,081\text{ B}$ ✅ | **$4,025\text{ B}$** ✅ |
@@ -101,7 +101,7 @@ xychart-beta
     bar [3832, 5361, 7319, 2608, 3970]
     bar [3385, 4025, 4665, 2934, 3830]
 ```
-*(Legend: Bar 1 = Inline `"mtc"`; Bar 2 = Proof-Less `"mtc-mds"`; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)*
+*(Legend: Bar 1 = Inline `"mtcl"`; Bar 2 = Proof-Less `"mtc-mds"`; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)*
 
 ### 2.3 Key Wire Size Findings
 1. **The Category 5 `ML-DSA-87` Bottleneck**:
@@ -126,7 +126,7 @@ flowchart TD
         C -->|mtcEntryDesc With-Proof| E[Branch 2: Landmark Subtree Proof]
         
         D --> D1{Held manifest for caId?}
-        D1 -->|No| D2[Fail or Request Client Retry with fmt: mtc]
+        D1 -->|No| D2[Fail or Request Client Retry with fmt: mtcl]
         D1 -->|Yes| D3[Lookup batchKeys by caId, serial]
         D3 --> D4[Check deviceSerial matches authData ext if present]
         D4 --> D5[Verify ML-DSA Signature over authData]
@@ -158,7 +158,7 @@ To verify an `mtc-mds` attestation statement, an Enterprise Relying Party must i
 3. **Branch 3 (Serial Extension Discrepancy Resolution)**:
    - In proof-less `mtc-mds`, the serial is bound in the manifest, making `"fido-mtc-ent"` on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).
 4. **Branch 4 (Manifest Drift & Reseller Fallback)**:
-   - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc-mds` fails. The RP/client must initiate a fallback to inline `fmt: "mtc"` or `fmt: "packed"`, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.
+   - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc-mds` fails. The RP/client must initiate a fallback to inline `fmt: "mtcl"` or `fmt: "packed"`, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.
 5. **Branch 5 (Revocation & Key Life-Cycle Management)**:
    - Revocation requires tracking delta arrays of `revokedSerials` inside every manifest update.
 
@@ -194,7 +194,7 @@ In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branc
 
 ## 5. Conclusions & Strategic Recommendation
 
-1. **For General Non-Enterprise Attestation (`fmt: "none"` / `fmt: "mtc-mds"` / `fmt: "mtc"`)**:
+1. **For General Non-Enterprise Attestation (`fmt: "none"` / `fmt: "mtc-mds"` / `fmt: "mtcl"`)**:
    - **`mtc-mds` via FIDO MDS3 is the optimal path.** It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.
 
 2. **For High-Assurance Enterprise Direct Attestation (`0x0A`)**:

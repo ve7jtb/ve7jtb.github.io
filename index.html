@@ -143,7 +143,7 @@
               Standard RFC 8554 HSS/LMS Enterprise Direct Profile &amp; Wire Comparison vs. Enterprise MTC
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Fully compliant RFC 8554 single-tree profile (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, standard 16 B tree ID <code>I</code>, 60 B public key, standard leaf/internal prefix hashing) supporting <code>33.5M</code> signatures per batch with <code>3,008 B</code> (<code>W=4</code>) or <code>1,952 B</code> (<code>W=8</code>) <code>attStmt</code> and <code>80 &mu;s</code> RP verification. Section 6.3 evaluates wire payloads with individual device serial numbers against Enterprise MTC (<code>fmt: "mtc"</code> + <code>"fido-mtc-ent"</code>) across all 3 ML-DSA parameter sets (<code>ML-DSA-44/65/87</code>: <code>6,857–10,344 B</code>) and 2 FN-DSA parameter sets (<code>FN-DSA-512/1024</code>: <code>4,499–5,861 B</code>).
+              Fully compliant RFC 8554 single-tree profile (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, standard 16 B tree ID <code>I</code>, 60 B public key, standard leaf/internal prefix hashing) supporting <code>33.5M</code> signatures per batch with <code>3,008 B</code> (<code>W=4</code>) or <code>1,952 B</code> (<code>W=8</code>) <code>attStmt</code> and <code>80 &mu;s</code> RP verification. Section 6.3 evaluates wire payloads with individual device serial numbers against Enterprise MTC (<code>fmt: "mtcl"</code> + <code>"fido-mtc-ent"</code>) across all 3 ML-DSA parameter sets (<code>ML-DSA-44/65/87</code>: <code>6,857–10,344 B</code>) and 2 FN-DSA parameter sets (<code>FN-DSA-512/1024</code>: <code>4,499–5,861 B</code>).
             </p>
           </a>
         </div>
@@ -176,7 +176,7 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtc</code> / <code>mtc-mds</code>
+            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Post-Quantum <code>mtcl</code> / <code>mtc-mds</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
@@ -210,7 +210,7 @@
               RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (<code>1.2.840.113549.1.9.16.3.17</code>), HSS/LMS (<code>alg: -46</code>) MTC Subtree Checkpoints &amp; All 18 Algorithms: <code>250 / 250</code> (<code>100.00%</code>) Pass
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              <code>250 / 250</code> (<code>100.00%</code>) pass across all 37 CTAP 2.3 suites verifying pre-published HSS/LMS Root &amp; Intermediate CAs chaining to <code>ML-DSA-44</code> leaf <code>x5c</code> (<code>6,693–7,173 B</code>), HSS/LMS-signed (<code>alg: -46</code>) Merkle Tree Certificate subtree checkpoints across <code>&quot;mtc&quot;</code> and <code>&quot;mtc-mds&quot;</code>, Enterprise Attestation (<code>6/6</code>), and all 18 algorithms with <code>64 MHz</code> DWT cycle telemetry.
+              <code>250 / 250</code> (<code>100.00%</code>) pass across all 37 CTAP 2.3 suites verifying pre-published HSS/LMS Root &amp; Intermediate CAs chaining to <code>ML-DSA-44</code> leaf <code>x5c</code> (<code>6,693–7,173 B</code>), HSS/LMS-signed (<code>alg: -46</code>) Merkle Tree Certificate subtree checkpoints across <code>&quot;mtcl&quot;</code> and <code>&quot;mtc-mds&quot;</code>, Enterprise Attestation (<code>6/6</code>), and all 18 algorithms with <code>64 MHz</code> DWT cycle telemetry.
             </p>
           </a>
 
@@ -283,7 +283,7 @@
             W3C WebAuthn &amp; FIDO2 CTAP 2.3+
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            fmt: "mtc" &amp; "mtc-mds"
+            fmt: "mtcl" &amp; "mtc-mds"
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             Merkle Tree Certificates &amp; ML-DSA
@@ -295,11 +295,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./pq_mtc_attestation_proposal.html" class="hover:underline">
-            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code> and <code>mtc-mds</code>)
+            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtcl</code> and <code>mtc-mds</code>)
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Defines two complementary Post-Quantum WebAuthn attestation statement formats—<strong><code>mtc</code></strong> (inline <code>COSE_Key</code> + <code>MTCProof</code>) and <strong><code>mtc-mds</code></strong> (MDS/Log-assisted public key lookup)—based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client (CTAP 2.1 / Windows 10 PIN protocol 1) detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup (bringing <code>ML-DSA-87</code> to <code>7,319 B</code>), C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
+          Defines two complementary Post-Quantum WebAuthn attestation statement formats—<strong><code>mtcl</code></strong> (inline <code>COSE_Key</code> + <code>MTCProof</code>) and <strong><code>mtc-mds</code></strong> (MDS/Log-assisted public key lookup)—based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client (CTAP 2.1 / Windows 10 PIN protocol 1) detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup (bringing <code>ML-DSA-87</code> to <code>7,319 B</code>), C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
         </p>
       </div>
 
@@ -326,10 +326,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–5</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Normative <code>mtc</code> &amp; <code>mtc-mds</code> Formats, Leaf Structure &amp; RP Verification
+              Normative <code>mtcl</code> &amp; <code>mtc-mds</code> Formats, Leaf Structure &amp; RP Verification
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> (7.9–22.9 KB) exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> and <code>mtcMdsStmtFormat</code>, deterministic <code>FidoMtcLogEntry</code> serialization, WebAuthn Level 3 §7.1 AAGUID preservation (AAGUID is retained on <code>attestation: "none"</code>), and unified RP verification.
+              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> (7.9–22.9 KB) exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtclStmtFormat</code> and <code>mtcMdsStmtFormat</code>, deterministic <code>FidoMtcLogEntry</code> serialization, WebAuthn Level 3 §7.1 AAGUID preservation (AAGUID is retained on <code>attestation: "none"</code>), and unified RP verification.
             </p>
           </a>
 
@@ -340,7 +340,7 @@
               FIDO MDS3 <code>mtcTrustAnchors</code>, 3-Tier Cascade &amp; Legacy Client Detection
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              WebIDL extensions for FIDO Metadata Statements (<code>MtcTrustAnchor</code>, <code>MtcSubtree</code>, <code>MtcBatchKeyEntry</code>), shared vs. separate <code>caId</code> models, <code>authenticatorGetInfo</code> <code>attestationFormats</code> (<code>0x16</code>), the 3-tier <code>"packed" &rarr; "mtc" &rarr; "mtc-mds"</code> cascade, and Section 7.5 legacy client detection (CTAP 2.1 / Windows 10 PIN protocol 1) with backwards-compatible attestation defaults (<code>"none"</code> or P-256 batch).
+              WebIDL extensions for FIDO Metadata Statements (<code>MtcTrustAnchor</code>, <code>MtcSubtree</code>, <code>MtcBatchKeyEntry</code>), shared vs. separate <code>caId</code> models, <code>authenticatorGetInfo</code> <code>attestationFormats</code> (<code>0x16</code>), the 3-tier <code>"packed" &rarr; "mtcl" &rarr; "mtc-mds"</code> cascade, and Section 7.5 legacy client detection (CTAP 2.1 / Windows 10 PIN protocol 1) with backwards-compatible attestation defaults (<code>"none"</code> or P-256 batch).
             </p>
           </a>
 

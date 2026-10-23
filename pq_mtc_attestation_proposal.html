@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc and mtc-mds)</title>
+  <title>Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtcl and mtc-mds)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -64,7 +64,7 @@
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">W3C WebAuthn &amp; CTAP 2.3+</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: &quot;mtc&quot; &amp; &quot;mtc-mds&quot;</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">fmt: &quot;mtcl&quot; &amp; &quot;mtc-mds&quot;</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">IETF PLANTS Merkle Tree Certs</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">ML-DSA &amp; OpenID Federation 1.1</span>
       </div>
@@ -74,7 +74,7 @@
       </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc and mtc-mds)
+      Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtcl and mtc-mds)
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
       Based on draft-ietf-plants-merkle-tree-certs, W3C WebAuthn Level 3/4 §8, FIDO CTAP 2.3, and FIDO Metadata Statement (MDS3).
@@ -97,11 +97,11 @@
         </a>
         <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 2</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Two New WebAuthn Attestation Formats: <code>mtc</code> and <code>mtc-mds</code></div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Two New WebAuthn Attestation Formats: <code>mtcl</code> and <code>mtc-mds</code></div>
         </a>
         <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 3</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Normative Specification: <code>mtc</code> and <code>mtc-mds</code> Attestation Statement Formats</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Normative Specification: <code>mtcl</code> and <code>mtc-mds</code> Attestation Statement Formats</div>
         </a>
         <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 4</div>
@@ -109,7 +109,7 @@
         </a>
         <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 5</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Relying Party Verification Procedure (Unified for <code>mtc</code> and <code>mtc-mds</code>)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Relying Party Verification Procedure (Unified for <code>mtcl</code> and <code>mtc-mds</code>)</div>
         </a>
         <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 6</div>
@@ -133,7 +133,7 @@
         </a>
         <a href="#section-11" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 11</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Evaluation of Multi-Level HSS/LMS Certificate Trees (<code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtc</code> and <code>mtc-mds</code></div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Evaluation of Multi-Level HSS/LMS Certificate Trees (<code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtcl</code> and <code>mtc-mds</code></div>
         </a>
       </nav>
     </div>
@@ -153,15 +153,15 @@
 
         </li>
         <li>
-          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Two New WebAuthn Attestation Formats: <code>mtc</code> and <code>mtc-mds</code></a>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Two New WebAuthn Attestation Formats: <code>mtcl</code> and <code>mtc-mds</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#wire-size-comparison-across-formats-28-256-batch-log-entries-landmark-proof-256-b" class="hover:underline">&sect;Wire-Size Comparison Across Formats (<code>2^8 = 256</code> Batch Log Entries, Landmark Proof = 256 B)</a></div>
           </div>
         </li>
         <li>
-          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Normative Specification: <code>mtc</code> and <code>mtc-mds</code> Attestation Statement Formats</a>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Normative Specification: <code>mtcl</code> and <code>mtc-mds</code> Attestation Statement Formats</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
-            <div><a href="#31-format-1-mtc-attestation-statement-format-fmt-mtc" class="hover:underline">&sect;3.1 Format 1: MTC Attestation Statement Format (<code>fmt: "mtc"</code>)</a></div>
+            <div><a href="#31-format-1-mtc-large-attestation-statement-format-fmt-mtcl" class="hover:underline">&sect;3.1 Format 1: MTC Large Attestation Statement Format (<code>fmt: "mtcl"</code>)</a></div>
             <div><a href="#32-format-2-mds-assisted-mtc-attestation-statement-format-fmt-mtc-mds" class="hover:underline">&sect;3.2 Format 2: MDS-Assisted MTC Attestation Statement Format (<code>fmt: "mtc-mds"</code>)</a></div>
           </div>
         </li>
@@ -177,7 +177,7 @@
         <div class="space-y-3">
           <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
-          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Relying Party Verification Procedure (Unified for <code>mtc</code> and <code>mtc-mds</code>)</a>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Relying Party Verification Procedure (Unified for <code>mtcl</code> and <code>mtc-mds</code>)</a>
 
         </li>
         <li>
@@ -191,7 +191,7 @@
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#71-why-attestationformats-0x16-and-none-are-critical-for-post-quantum-ctap2" class="hover:underline">&sect;7.1 Why <code>attestationFormats</code> (<code>0x16</code>) and <code>"none"</code> are Critical for Post-Quantum CTAP2</a></div>
             <div><a href="#72-end-to-end-negotiation-flow" class="hover:underline">&sect;7.2 End-to-End Negotiation Flow</a></div>
-            <div><a href="#73-3-tier-size-aware-default-attestation-cascade-packed-to-mtc-to-mtc-mds" class="hover:underline">&sect;7.3 3-Tier Size-Aware Default Attestation Cascade (<code>"packed"</code> $\to$ <code>"mtc"</code> $\to$ <code>"mtc-mds"</code>)</a></div>
+            <div><a href="#73-3-tier-size-aware-default-attestation-cascade-packed-to-mtcl-to-mtc-mds" class="hover:underline">&sect;7.3 3-Tier Size-Aware Default Attestation Cascade (<code>"packed"</code> $\to$ <code>"mtcl"</code> $\to$ <code>"mtc-mds"</code>)</a></div>
             <div><a href="#74-fidont-implementation-details" class="hover:underline">&sect;7.4 Fidont Implementation Details</a></div>
             <div><a href="#75-legacy-client-detection-pinuvauthprotocol-1-and-backward-compatible-attestation-defaults" class="hover:underline">&sect;7.5 Legacy Client Detection (<code>pinUvAuthProtocol</code> 1) and Backward-Compatible Attestation Defaults</a></div>
           </div>
@@ -201,7 +201,7 @@
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#81-dual-key-provisioning-model-per-authenticator-attestationidbatch-vs-attestationidenterprise" class="hover:underline">&sect;8.1 Dual-Key Provisioning Model per Authenticator (<code>AttestationId::Batch</code> vs. <code>AttestationId::Enterprise</code>)</a></div>
             <div><a href="#82-enterprise-mtctrustanchor-configuration-zero-batchkeys-overhead-root-ca-subtree-signature" class="hover:underline">&sect;8.2 Enterprise <code>MtcTrustAnchor</code> Configuration (Zero <code>batchKeys</code> Overhead &amp; Root CA Subtree Signature)</a></div>
-            <div><a href="#83-including-the-device-serial-number-in-the-signed-data-fido-mtc-ent" class="hover:underline">&sect;8.3 Including the Device Serial Number in the Signed Data (<code>"fido-mtc-ent"</code>)</a></div>
+            <div><a href="#83-including-the-device-serial-number-in-the-signed-data-fido-mtc-ent" class="hover:underline">&sect;8.3 Including the Device Serial Number in the Signed Data (<code>fido-mtc-ent</code>)</a></div>
             <div><a href="#84-scaling-fleet-size-100k-to-5m-keys-growing-over-time-and-factory-provisioning" class="hover:underline">&sect;8.4 Scaling Fleet Size (<code>100k</code> to <code>5M+</code> Keys), Growing Over Time, and Factory Provisioning</a></div>
             <div><a href="#85-dual-root-cas-ml-dsa-87-es384-subtree-checkpoint-signing-and-second-non-enterprise-classical-batch-x509-certificate" class="hover:underline">&sect;8.5 Dual Root CAs (<code>ML-DSA-87</code> + <code>ES384</code>), Subtree Checkpoint Signing, and Second Non-Enterprise Classical Batch X.509 Certificate</a></div>
             <div><a href="#86-unified-caid-serial-key-lookup-enterprise-manifest-and-non-enterprise-mds-proof-optional-mtc-mds" class="hover:underline">&sect;8.6 Unified <code>(caId, serial)</code> Key Lookup: Enterprise Manifest and Non-Enterprise MDS (Proof-Optional <code>"mtc-mds"</code>)</a></div>
@@ -227,13 +227,13 @@
           </div>
         </li>
         <li>
-          <a href="#section-11" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">11. Evaluation of Multi-Level HSS/LMS Certificate Trees (<code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtc</code> and <code>mtc-mds</code></a>
+          <a href="#section-11" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">11. Evaluation of Multi-Level HSS/LMS Certificate Trees (<code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtcl</code> and <code>mtc-mds</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#111-division-of-labor-rfc-8554-cap-nist-sp-800-208-parameter-sets-sha256_m32-n32" class="hover:underline">&sect;11.1 Division of Labor &amp; <code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code> Parameter Sets (<code>SHA256_M32</code> / <code>N32</code>)</a></div>
             <div><a href="#112-non-enterprise-multi-level-chain-pre-published-lms_sha256_m32_h5-intermediates-in-mds-signing-32-on-demand-batch-keys-each" class="hover:underline">&sect;11.2 Non-Enterprise Multi-Level Chain: Pre-Published <code>LMS_SHA256_M32_H5</code> Intermediates in MDS Signing 32 On-Demand Batch Keys Each</a></div>
             <div><a href="#113-enterprise-attestation-1-keydevice-scaling-to-10m100m-devices-per-aaguid" class="hover:underline">&sect;11.3 Enterprise Attestation (1 Key/Device) Scaling to 10M–100M Devices per AAGUID</a></div>
             <div><a href="#114-impact-of-ml-dsa-44--48-ml-dsa-65--49-and-ml-dsa-87--50-batch-enterprise-leaf-keys" class="hover:underline">&sect;11.4 Impact of <code>ML-DSA-44</code> (<code>-48</code>), <code>ML-DSA-65</code> (<code>-49</code>), and <code>ML-DSA-87</code> (<code>-50</code>) Batch &amp; Enterprise Leaf Keys</a></div>
-            <div><a href="#115-end-to-end-makecredential-latency-comparison-packed-ml-dsa-ca-vs-pre-published-lms_m32_h5-vs-mtc-vs-mtc-mds" class="hover:underline">&sect;11.5 End-to-End <code>MakeCredential</code> Latency Comparison (<code>"packed"</code> <code>ML-DSA</code> CA vs. Pre-Published <code>LMS_M32_H5</code> vs. <code>"mtc"</code> vs. <code>"mtc-mds"</code>)</a></div>
+            <div><a href="#115-end-to-end-makecredential-latency-comparison-packed-ml-dsa-ca-vs-pre-published-lms_m32_h5-vs-mtcl-vs-mtc-mds" class="hover:underline">&sect;11.5 End-to-End <code>MakeCredential</code> Latency Comparison (<code>"packed"</code> <code>ML-DSA</code> CA vs. Pre-Published <code>LMS_M32_H5</code> vs. <code>"mtcl"</code> vs. <code>"mtc-mds"</code>)</a></div>
             <div><a href="#116-signature-security-comparison-lms_sha256_m32-x5c-vs-pure-level-matched-ml-dsa-chains-vs-mtc" class="hover:underline">&sect;11.6 Signature Security Comparison: <code>LMS_SHA256_M32</code> <code>x5c</code> vs. Pure Level-Matched <code>ML-DSA</code> Chains vs. <code>MTC</code></a></div>
           </div>
         </li>
@@ -344,11 +344,11 @@
     <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Two New WebAuthn Attestation Formats: <code>mtc</code> and <code>mtc-mds</code></h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Two New WebAuthn Attestation Formats: <code>mtcl</code> and <code>mtc-mds</code></h2>
       </div>
 <p class="text-sm my-2">Based on <a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>draft-ietf-plants-merkle-tree-certs</code></a>, we define <strong>two complementary WebAuthn Attestation Statement Formats</strong>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li><strong><code>mtc</code> (<code>fmt: "mtc"</code>) — MTC Attestation with Inline Public Key:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>mtcl</code> (<code>fmt: "mtcl"</code>) — MTC Large Attestation with Inline Public Key:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Carries the attestation public key (<code>pubKey</code> as a CBOR-encoded <code>COSE_Key</code>) inline alongside <code>alg</code>, <code>sig</code>, and <code>mtcCert</code>.</li>
 <li><strong>Use Case:</strong> Enterprise Attestation (<code>AttCA</code>), standalone MTCs, or large vendor batch logs where the Relying Party only caches the <strong>32-byte Landmark <code>SubtreeHash</code> <code>[start, end)</code></strong> (or cosigner public keys) from MDS and does not store every individual batch public key.</li>
 <li><strong>Flash Savings on Authenticator:</strong> Because Fidont derives <code>pubKey</code> on the fly from the 32-byte attestation private key seed (<code>attestation_key.get_pub_key()</code>), the authenticator <strong>never needs to store the 1.3–2.6 KB public key in flash</strong>—only the 32-byte seed and the ~150–280 B <code>mtcCert</code>!</li>
@@ -378,7 +378,7 @@
 <td class="p-3 align-top text-center">❌ None fit</td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong><code>fmt: "mtc"</code></strong> (Inline <code>pubKey</code> + Landmark <code>MTCProof</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>fmt: "mtcl"</code></strong> (Inline <code>pubKey</code> + Landmark <code>MTCProof</code>)</td>
 <td class="p-3 align-top text-right"><strong>~5,490 B</strong></td>
 <td class="p-3 align-top text-right"><strong>~7,600 B</strong></td>
 <td class="p-3 align-top text-right"><strong>~10,200 B</strong></td>
@@ -407,12 +407,12 @@
     end
 
     subgraph Formats["Two CTAP2 / WebAuthn Formats"]
-        MTC["fmt: 'mtc' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}"]
+        MTC["fmt: 'mtcl' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}"]
         MTCMDS["fmt: 'mtc-mds' (MDS Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}\n(Saves 1.3–2.7 KB on wire!)"]
     end
 
     subgraph RP["WebAuthn Relying Party Verification"]
-        V1["1. Obtain pubKey:\n   • 'mtc': from attStmt.pubKey\n   • 'mtc-mds': lookup (caId, serial) in MDS/Log"]
+        V1["1. Obtain pubKey:\n   • 'mtcl': from attStmt.pubKey\n   • 'mtc-mds': lookup (caId, serial) in MDS/Log"]
         V2["2. Verify sig over (authData || clientDataHash)\n3. Check validity &amp; revokedSerialRanges\n4. Reconstruct MTCLogEntry w/ SHA-256(pubKey) &amp; authData.aaguid\n5. Verify mtcProof against MDS Landmark SubtreeHash"]
         V1 --&gt; V2
     end
@@ -430,20 +430,20 @@
     <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Normative Specification: <code>mtc</code> and <code>mtc-mds</code> Attestation Statement Formats</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Normative Specification: <code>mtcl</code> and <code>mtc-mds</code> Attestation Statement Formats</h2>
       </div>
-<h3 id="31-format-1-mtc-attestation-statement-format-fmt-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.1 Format 1: MTC Attestation Statement Format (<code>fmt: "mtc"</code>)</h3>
+<h3 id="31-format-1-mtc-large-attestation-statement-format-fmt-mtcl" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.1 Format 1: MTC Large Attestation Statement Format (<code>fmt: "mtcl"</code>)</h3>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><strong>Attestation statement format identifier:</strong> <code>"mtc"</code></li>
+<li><strong>Attestation statement format identifier:</strong> <code>"mtcl"</code></li>
 <li><strong>Attestation types supported:</strong> <code>[=Basic=]</code>, <code>[=AttCA=]</code>, <code>[=Self=]</code></li>
 <li><strong>Syntax (CDDL):</strong></li>
 </ul>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>$$attStmtType //= (
-    fmt: "mtc",
-    attStmt: mtcStmtFormat
+    fmt: "mtcl",
+    attStmt: mtclStmtFormat
 )
 
-mtcStmtFormat = {
+mtclStmtFormat = {
     alg: COSEAlgorithmIdentifier,
     sig: bytes,
     pubKey: bytes,            ; Canonical CBOR-encoded COSE_Key of the attestation public key
@@ -460,7 +460,7 @@ mtcEntryDesc = {
     notAfter: uint,           ; uint64 Unix epoch seconds
     ? fwVersion: uint,        ; Optional firmware version (replaces id-fido-gen-ce-fw-version)
     mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
-}                             ; REQUIRED in fmt "mtc": the inline pubKey is authenticated only by this proof</code></pre></div>
+}                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof</code></pre></div>
 <h3 id="32-format-2-mds-assisted-mtc-attestation-statement-format-fmt-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Format 2: MDS-Assisted MTC Attestation Statement Format (<code>fmt: "mtc-mds"</code>)</h3>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Attestation statement format identifier:</strong> <code>"mtc-mds"</code></li>
@@ -497,7 +497,7 @@ mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid whe
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Deterministic <code>MTCLogEntry</code> Leaf Structure &amp; <code>MTCProof</code> Encoding</h2>
       </div>
-<p class="text-sm my-2">Both <code>mtc</code> and <code>mtc-mds</code> share the exact same Merkle Tree issuance log structure and <code>MTCProof</code> binary format from <a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>draft-ietf-plants-merkle-tree-certs</code></a>:</p>
+<p class="text-sm my-2">Both <code>mtcl</code> and <code>mtc-mds</code> share the exact same Merkle Tree issuance log structure and <code>MTCProof</code> binary format from <a href="https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>draft-ietf-plants-merkle-tree-certs</code></a>:</p>
 <h3 id="41-leaf-entry-serialization-fidomtclogentry" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 Leaf Entry Serialization (<code>FidoMtcLogEntry</code>)</h3>
 <p class="text-sm my-2">For each batch or enterprise attestation key at index <code>index</code> in log <code>log_number</code>, the serial number is:</p>
 <div class="overflow-x-auto py-1 text-sm my-2">$$\text{serial} = (\text{log\_number} \ll 48) \mid \text{index}$$</div>
@@ -538,21 +538,21 @@ mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid whe
     <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Relying Party Verification Procedure (Unified for <code>mtc</code> and <code>mtc-mds</code>)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Relying Party Verification Procedure (Unified for <code>mtcl</code> and <code>mtc-mds</code>)</h2>
       </div>
 <p class="text-sm my-2">Given <code>(fmt, attStmt, authenticatorData, clientDataHash)</code>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Decode CBOR:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>Parse <code>attStmt</code> according to <code>mtcStmtFormat</code> (if <code>fmt == "mtc"</code>) or <code>mtcMdsStmtFormat</code> (if <code>fmt == "mtc-mds"</code>).</li>
+<li>Parse <code>attStmt</code> according to <code>mtclStmtFormat</code> (if <code>fmt == "mtcl"</code>) or <code>mtcMdsStmtFormat</code> (if <code>fmt == "mtc-mds"</code>).</li>
 </ul></li>
-<li><strong>Handle <code>Self</code> Attestation (only applicable when <code>fmt == "mtc"</code> and <code>mtcCert</code> is absent):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Handle <code>Self</code> Attestation (only applicable when <code>fmt == "mtcl"</code> and <code>mtcCert</code> is absent):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Validate <code>alg == authenticatorData.attestedCredentialData.credentialPublicKey.alg</code>.</li>
 <li>Verify <code>sig</code> over <code>authenticatorData || clientDataHash</code> using <code>credentialPublicKey</code>.</li>
 <li>Return Attestation Type <code>Self</code>.</li>
 </ul></li>
 <li><strong>Resolve Trust Anchor &amp; Attestation Public Key (<code>pubKey</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Lookup the <code>MtcTrustAnchor</code> matching <code>mtcCert.caId</code> for <code>authenticatorData.attestedCredentialData.aaguid</code> in FIDO MDS (or Enterprise AttCA configuration).</li>
-<li><strong>If <code>fmt == "mtc"</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>If <code>fmt == "mtcl"</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Extract <code>pubKey = attStmt.pubKey</code> and decode it as a <code>COSE_Key</code>.</li>
 </ul></li>
 <li><strong>If <code>fmt == "mtc-mds"</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
@@ -574,7 +574,7 @@ mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid whe
 <li>Compute <code>expectedSubtreeHash</code> using RFC 9162 §2.1.3.2 over <code>(index = mtcCert.serial &amp; 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)</code>.</li>
 <li>Verify that <code>(mtcProof.start, mtcProof.end, expectedSubtreeHash)</code> matches an active landmark entry in <code>mtcTrustAnchor.trustedSubtrees</code> (or, if <code>mtcProof.signatures</code> is non-empty, satisfies <code>mtcTrustAnchor.quorum</code> over <code>mtcTrustAnchor.cosigners</code>).</li>
 <li><strong>Proof-less <code>mtcKeyRef</code> (<code>"mtc-mds"</code> only, §8.6):</strong> if <code>mtcCert</code> has no <code>mtcProof</code>, skip this step. In step 5, use the matched <code>MtcBatchKeyEntry</code>'s <code>notBefore</code> / <code>notAfter</code> in place of <code>mtcCert</code>'s. This is permitted only if the RP verified the signature (or <code>rootHash</code>) over the whole <code>mtcTrustAnchor.batchKeys</code> table when it loaded the table. Otherwise fail verification.</li>
-<li><strong>Enterprise device serial (§8.3, §8.6):</strong> if the matched entry contains <code>deviceSerial</code>, return it as the device serial. If <code>authenticatorData.extensions["fido-mtc-ent"]</code> is also present, verify that the two are equal. The extension is optional for proof-less <code>"mtc-mds"</code>, but required for <code>"mtc"</code>, where it is the only source of the serial.</li>
+<li><strong>Enterprise device serial (§8.3, §8.6):</strong> if the matched entry contains <code>deviceSerial</code>, return it as the device serial. If <code>authenticatorData.extensions[fido-mtc-ent]</code> is also present, verify that the two are equal. The extension is optional for proof-less <code>"mtc-mds"</code>, but required for <code>"mtcl"</code>, where it is the only source of the serial.</li>
 </ul></li>
 <li><strong>Return Result:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Return Attestation Type <code>Basic</code> (or <code>AttCA</code>) and the matched <code>mtcTrustAnchor</code>.</li>
@@ -590,7 +590,7 @@ mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid whe
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">FIDO Metadata Statement (<code>fido-metadata-statement.bs</code>) Extensions</h2>
       </div>
-<p class="text-sm my-2">To support both <code>mtc</code> and <code>mtc-mds</code>, we extend <code>MetadataStatement</code> with <code>mtcTrustAnchors</code>:</p>
+<p class="text-sm my-2">To support both <code>mtcl</code> and <code>mtc-mds</code>, we extend <code>MetadataStatement</code> with <code>mtcTrustAnchors</code>:</p>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">idl</div><pre class="text-xs leading-relaxed"><code>dictionary MtcSubtree {
     required unsigned short     logNumber; // uint16
     required unsigned long long start;
@@ -789,8 +789,8 @@ partial dictionary MetadataStatement {
 <p class="text-sm my-2">The rule is the same for roaming and platform authenticators, so the RP receives the real AAGUID. It can be used for display, such as the authenticator name or icon from MDS. It is <strong>not provably authentic without attestation</strong> (§6), so it must not be used for policy decisions. Only <code>"indirect"</code> lets the client replace the <code>aaguid</code> (for example via an Anonymization CA). <code>"direct"</code> and <code>"enterprise"</code> convey it unaltered.</p></div></li>
 <li><strong>Dynamic Capability Advertising from Persisted Material</strong>: Because <code>"none"</code> attestation support is implied in CTAP / WebAuthn, <code>process_get_info</code> omits <code>"none"</code> from <code>0x16</code> (<code>attestationFormats</code>) while still supporting <code>"none"</code> when requested via <code>0x0B</code> (<code>attestationFormatsPreference</code>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>When an MTC descriptor is provisioned (<code>ProvisionedMtcAttestation::from_bytes</code> succeeds)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>If provisioned default format is <code>MtcMds</code>: <code>["mtc-mds", "mtc", "packed"]</code></li>
-<li>If provisioned default format is <code>Mtc</code>: <code>["mtc", "mtc-mds", "packed"]</code></li>
+<li>If provisioned default format is <code>MtcMds</code>: <code>["mtc-mds", "mtcl", "packed"]</code></li>
+<li>If provisioned default format is <code>Mtcl</code>: <code>["mtcl", "mtc-mds", "packed"]</code></li>
 </ul></li>
 <li><strong>When a traditional X.509 DER certificate is provisioned or no batch certificate is present</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><code>["packed"]</code></li>
@@ -804,7 +804,7 @@ partial dictionary MetadataStatement {
     participant Authnr as Fidont Authenticator
 
     Client-&gt;&gt;Authnr: authenticatorGetInfo (0x04)
-    Authnr--&gt;&gt;Client: 0x16 (attestationFormats): ["mtc", "mtc-mds", "packed"]
+    Authnr--&gt;&gt;Client: 0x16 (attestationFormats): ["mtcl", "mtc-mds", "packed"]
     alt RP requests attestation ("mtc-mds" preferred)
         RP-&gt;&gt;Client: navigator.credentials.create({ attestation: "direct", attestationFormats: ["mtc-mds", "packed"] })
         Client-&gt;&gt;Authnr: authenticatorMakeCredential (0x01) { 0x0B: ["mtc-mds", "packed"] }
@@ -815,12 +815,12 @@ partial dictionary MetadataStatement {
         Note over Authnr: Skips PQ attestation signature!&lt;br/&gt;Keeps real AAGUID (WebAuthn L3), sets attStmt = {}
         Authnr--&gt;&gt;Client: { 0x01: "none", 0x02: authData (real aaguid), 0x03: {} }
     end</pre></div>
-<h3 id="73-3-tier-size-aware-default-attestation-cascade-packed-to-mtc-to-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">7.3 3-Tier Size-Aware Default Attestation Cascade (<code>"packed"</code> $\to$ <code>"mtc"</code> $\to$ <code>"mtc-mds"</code>)</h3>
+<h3 id="73-3-tier-size-aware-default-attestation-cascade-packed-to-mtcl-to-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">7.3 3-Tier Size-Aware Default Attestation Cascade (<code>"packed"</code> $\to$ <code>"mtcl"</code> $\to$ <code>"mtc-mds"</code>)</h3>
 <p class="text-sm my-2">When provisioned via <code>tools/configure.py --mtc</code>, <code>ProvisionedMtcAttestation</code> (<code>libraries/opensk/src/ctap/mtc.rs</code>) stores <strong>both</strong> the batch X.509 DER certificate (<code>x5c</code>) and the compact <code>MtcCertDescriptor</code> (<code>mtcCert</code>) in Fidont's persistent certificate store (<code>11,253 B</code> capacity across <code>ATTESTATION_CERTIFICATE</code> and <code>ATTESTATION_CERTIFICATE_EXTRA_SHARDS</code>).</p>
 <p class="text-sm my-2">When the client omits <code>attestationFormatsPreference</code> (<code>0x0B</code>), <code>process_make_credential</code> (<code>libraries/opensk/src/ctap/mod.rs</code>) evaluates a <strong>3-tier size-aware cascade</strong> so every registration returns the richest self-contained attestation format that fits inside a single <code>7,609 B</code> USB HID CTAP2 message (<code>&lt;= 7,550 B</code> threshold):</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Tier 1 — <code>"packed"</code> (with batch <code>x5c</code>)</strong>: If <code>auth_data.len() + sig.len() + x5c.len() + 60 &lt;= 7550</code>, Fidont returns standard WebAuthn <strong><code>fmt: "packed"</code></strong> with <code>x5c: [batch_cert_der]</code> signed by the batch key.</li>
-<li><strong>Tier 2 — <code>"mtc"</code> (with inline <code>pubKey</code> + <code>mtcCert</code>)</strong>: Otherwise, if <code>auth_data.len() + sig.len() + pk_bytes.len() + 260 &lt;= 7550</code>, Fidont returns <strong><code>fmt: "mtc"</code></strong> with inline <code>pubKey</code> and <code>mtcCert</code>.</li>
+<li><strong>Tier 2 — <code>"mtcl"</code> (with inline <code>pubKey</code> + <code>mtcCert</code>)</strong>: Otherwise, if <code>auth_data.len() + sig.len() + pk_bytes.len() + 260 &lt;= 7550</code>, Fidont returns <strong><code>fmt: "mtcl"</code></strong> with inline <code>pubKey</code> and <code>mtcCert</code>.</li>
 <li><strong>Tier 3 — <code>"mtc-mds"</code> (<code>mtcCert</code> only, <code>pubKey</code> omitted)</strong>: Otherwise, Fidont returns <strong><code>fmt: "mtc-mds"</code></strong>, omitting <code>pubKey</code> so the response always fits under <code>7,609 B</code>.</li>
 </ol>
 <div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2">This cascade applies only to <strong>modern clients</strong> (CTAP 2.2 / 2.3). When the authenticator detects a <strong>legacy client</strong> that negotiates only <code>pinUvAuthProtocol</code> 1, such as Windows 10, it skips the cascade and uses the backward-compatible default in <a href="#75-legacy-client-detection-pinuvauthprotocol-1-and-backward-compatible-attestation-defaults" class="text-[var(--primary)] hover:underline">§7.5</a>.</p></div>
@@ -835,24 +835,24 @@ partial dictionary MetadataStatement {
 <tr>
 <td class="p-3 align-top text-left"><strong>Classical (<code>-7</code>, <code>-8</code>, <code>-19</code>, <code>-35</code>, <code>-36</code>, <code>-47</code>, <code>-257</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>"packed"</code> (<code>x5c</code>)</strong> (<code>6,704–7,008 B</code>)</td>
-<td class="p-3 align-top text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>5,632–5,936 B</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>"mtcl"</code> (<code>pubKey</code>)</strong> (<code>5,632–5,936 B</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>"mtc-mds"</code></strong> (<code>4,898–5,202 B</code>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-44</code> (<code>-48</code>, <code>-54</code>, <code>-57</code>)</strong></td>
-<td class="p-3 align-top text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>5,395–5,673 B</code>)</td>
-<td class="p-3 align-top text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>6,924–7,202 B</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>"mtcl"</code> (<code>pubKey</code>)</strong> (<code>5,395–5,673 B</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>"mtcl"</code> (<code>pubKey</code>)</strong> (<code>6,924–7,202 B</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>"mtc-mds"</code></strong> (<code>6,190–6,468 B</code>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-65</code> (<code>-49</code>, <code>-55</code>, <code>-58</code>)</strong></td>
-<td class="p-3 align-top text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>6,035–6,313 B</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>"mtcl"</code> (<code>pubKey</code>)</strong> (<code>6,035–6,313 B</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>"mtc-mds"</code></strong> (<code>5,586–5,864 B</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>"mtc-mds"</code></strong> (<code>6,830–7,108 B</code>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-87</code> (<code>-50</code>, <code>-56</code>, <code>-59</code>)</strong></td>
-<td class="p-3 align-top text-center"><strong><code>"mtc"</code> (<code>pubKey</code>)</strong> (<code>6,675–6,989 B</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>"mtcl"</code> (<code>pubKey</code>)</strong> (<code>6,675–6,989 B</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>"mtc-mds"</code></strong> (<code>6,226–6,540 B</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>"mtc-mds"</code></strong> (<code>7,470–7,535 B</code>)</td>
 </tr>
@@ -867,7 +867,7 @@ partial dictionary MetadataStatement {
 </ul></li>
 <li><strong><code>libraries/opensk/src/ctap/mod.rs</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Populate <code>attestation_formats</code> (<code>0x16</code>) in <code>process_get_info</code>.</li>
-<li>Implement the 3-tier <code>"packed"</code> (<code>x5c</code>) $\to$ <code>"mtc"</code> (<code>pubKey</code>) $\to$ <code>"mtc-mds"</code> cascade and <code>"none"</code> support in <code>process_make_credential</code>.</li>
+<li>Implement the 3-tier <code>"packed"</code> (<code>x5c</code>) $\to$ <code>"mtcl"</code> (<code>pubKey</code>) $\to$ <code>"mtc-mds"</code> cascade and <code>"none"</code> support in <code>process_make_credential</code>.</li>
 </ul></li>
 <li><strong><code>tools/configure.py</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Bundle <code>"x5c": cert_der</code> inside <code>provisioned_mtc</code> and automatically split <code>cert_or_mtc_bytes</code> into a <code>6,000 B</code> initial chunk (<code>0x02</code>) + continuation chunk (<code>0x03</code>) when needed.</li>
@@ -877,7 +877,7 @@ partial dictionary MetadataStatement {
 <p class="text-sm my-2">Older CTAP 2.0 / 2.1 platform clients, such as <strong>Windows 10's built-in WebAuthn stack (<code>webauthn.dll</code>)</strong>, negotiate <strong>only PIN/UV Auth Protocol 1</strong>. Browsers on Windows 10 delegate to that stack. These clients:</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>never send <code>pinUvAuthProtocol = 2</code>, even when the authenticator lists <code>[2, 1]</code> in <code>authenticatorGetInfo.pinUvAuthProtocols</code> (<code>0x06</code>);</li>
-<li>never send <code>attestationFormatsPreference</code> (<code>0x0B</code>, added in CTAP 2.2), so they cannot request <code>"mtc"</code>, <code>"mtc-mds"</code>, or <code>"none"</code>;</li>
+<li>never send <code>attestationFormatsPreference</code> (<code>0x0B</code>, added in CTAP 2.2), so they cannot request <code>"mtcl"</code>, <code>"mtc-mds"</code>, or <code>"none"</code>;</li>
 <li>are hard-limited to the <code>7,609 B</code> CTAPHID single-message ceiling, and pass the attestation object through to RPs that predate PQ and MTC attestation formats.</li>
 </ul>
 <div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2">PIN/UV Auth Protocol 2 was <strong>defined in CTAP 2.1</strong>, so the precise signal is "the client only uses protocol 1", not "the client is CTAP 2.1". In practice, clients limited to protocol 1 are the older Windows 10-era (CTAP 2.0 / early 2.1) stacks. Modern CTAP 2.2 / 2.3 clients pick protocol 2 when the authenticator lists it first.</p></div>
@@ -975,7 +975,7 @@ partial dictionary MetadataStatement {
 <td class="p-3 align-top text-right"><code>~9,357 B</code> ❌</td>
 </tr>
 </tbody></table></div>
-<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Security tradeoff of Legacy Option B:</strong> a classical <code>ES256</code> attestation is <strong>not post-quantum secure</strong>. It proves the authenticator model to today's RPs, but a future quantum adversary could forge it. This is acceptable as a compatibility default because a legacy client cannot deliver a PQ attestation anyway. RPs that need PQ attestation must use a modern client that sends <code>0x0B</code> (e.g. <code>["mtc", "packed"]</code>). <strong>Enterprise Attestation (<code>0x0A</code>)</strong> is unaffected: it is only reachable through clients that implement CTAP 2.1 enterprise attestation, and follows §8.1.1.</p></div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Security tradeoff of Legacy Option B:</strong> a classical <code>ES256</code> attestation is <strong>not post-quantum secure</strong>. It proves the authenticator model to today's RPs, but a future quantum adversary could forge it. This is acceptable as a compatibility default because a legacy client cannot deliver a PQ attestation anyway. RPs that need PQ attestation must use a modern client that sends <code>0x0B</code> (e.g. <code>["mtcl", "packed"]</code>). <strong>Enterprise Attestation (<code>0x0A</code>)</strong> is unaffected: it is only reachable through clients that implement CTAP 2.1 enterprise attestation, and follows §8.1.1.</p></div>
 <h4 id="753-fidont-implementation-notes" class="text-base font-semibold text-[var(--foreground)]">7.5.3 Fidont Implementation Notes</h4>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong><code>libraries/opensk/src/ctap/mod.rs</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
@@ -1004,7 +1004,7 @@ partial dictionary MetadataStatement {
 </ol>
 <h3 id="81-dual-key-provisioning-model-per-authenticator-attestationidbatch-vs-attestationidenterprise" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">8.1 Dual-Key Provisioning Model per Authenticator (<code>AttestationId::Batch</code> vs. <code>AttestationId::Enterprise</code>)</h3>
 <p class="text-sm my-2">To cleanly satisfy both requirements without sacrificing privacy on standard registrations or breaking compatibility with legacy X.509 Enterprise Relying Parties, <strong>each physical authenticator is provisioned at manufacturing time with TWO distinct attestation keys</strong> (mapping directly to Fidont's <code>AttestationId::Batch</code> and <code>AttestationId::Enterprise</code> in <code>libraries/opensk/src/api/persist.rs</code>).</p>
-<p class="text-sm my-2">When <strong>Enterprise Attestation is enabled</strong> on the authenticator (<code>AttestationId::Enterprise</code>), <strong>both</strong> the single-device Enterprise <code>mtcCert</code> and the per-enterprise-batch-key <strong>X.509 DER certificate (<code>x5c</code>)</strong> are loaded into the Enterprise <code>ProvisionedMtcAttestation</code> bundle (<code>{ "fmt": "mtc", "x5c": enterprise_x509_der, "mtcCert": enterprise_mtc_cert }</code>):</p>
+<p class="text-sm my-2">When <strong>Enterprise Attestation is enabled</strong> on the authenticator (<code>AttestationId::Enterprise</code>), <strong>both</strong> the single-device Enterprise <code>mtcCert</code> and the per-enterprise-batch-key <strong>X.509 DER certificate (<code>x5c</code>)</strong> are loaded into the Enterprise <code>ProvisionedMtcAttestation</code> bundle (<code>{ "fmt": "mtcl", "x5c": enterprise_x509_der, "mtcCert": enterprise_mtc_cert }</code>):</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
@@ -1035,12 +1035,12 @@ partial dictionary MetadataStatement {
 <tr>
 <td class="p-3 align-top text-left"><strong>Public Key Distribution</strong></td>
 <td class="p-3 align-top text-left">Pre-distributed in FIDO MDS3 <code>MtcTrustAnchor.batchKeys</code> (only 1 entry per 100,000 devices)</td>
-<td class="p-3 align-top text-left">Sent <strong>inline on the wire</strong> inside <strong><code>x5c</code></strong> (<code>fmt: "packed"</code>) or via <strong><code>fmt: "mtc"</code></strong> (<code>pubKey</code> + <code>mtcCert</code>); <strong>not</strong> listed in MDS (<code>batchKeys: []</code>)</td>
+<td class="p-3 align-top text-left">Sent <strong>inline on the wire</strong> inside <strong><code>x5c</code></strong> (<code>fmt: "packed"</code>) or via <strong><code>fmt: "mtcl"</code></strong> (<code>pubKey</code> + <code>mtcCert</code>); <strong>not</strong> listed in MDS (<code>batchKeys: []</code>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Format Selection Rule</strong></td>
-<td class="p-3 align-top text-left">Respects <code>0x0B</code>; defaults to 3-tier size cascade (<code>"packed"</code> $\to$ <code>"mtc"</code> $\to$ <code>"mtc-mds"</code>) when <code>0x0B</code> is empty/omitted</td>
-<td class="p-3 align-top text-left">- <strong><code>fmt: "packed"</code> (with Enterprise <code>x5c</code>)</strong> if <code>"packed"</code> is the <strong>first</strong> format in <code>0x0B</code>, <strong>or</strong> if <code>0x0B</code> is empty/omitted and <code>x5c</code> fits within the <code>7,609 B</code> response budget (same Tier 1 size logic as Non-Enterprise)<br/>- <strong><code>fmt: "mtc"</code> (with inline <code>pubKey</code> + <code>mtcCert</code>)</strong> if <code>"mtc"</code> is first in <code>0x0B</code>, <strong>or</strong> if <code>0x0B</code> is empty/omitted and <code>x5c</code> exceeds the <code>7,609 B</code> response budget</td>
+<td class="p-3 align-top text-left">Respects <code>0x0B</code>; defaults to 3-tier size cascade (<code>"packed"</code> $\to$ <code>"mtcl"</code> $\to$ <code>"mtc-mds"</code>) when <code>0x0B</code> is empty/omitted</td>
+<td class="p-3 align-top text-left">- <strong><code>fmt: "packed"</code> (with Enterprise <code>x5c</code>)</strong> if <code>"packed"</code> is the <strong>first</strong> format in <code>0x0B</code>, <strong>or</strong> if <code>0x0B</code> is empty/omitted and <code>x5c</code> fits within the <code>7,609 B</code> response budget (same Tier 1 size logic as Non-Enterprise)<br/>- <strong><code>fmt: "mtcl"</code> (with inline <code>pubKey</code> + <code>mtcCert</code>)</strong> if <code>"mtcl"</code> is first in <code>0x0B</code>, <strong>or</strong> if <code>0x0B</code> is empty/omitted and <code>x5c</code> exceeds the <code>7,609 B</code> response budget</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>On-Device Flash Cost</strong></td>
@@ -1053,7 +1053,7 @@ partial dictionary MetadataStatement {
 <td class="p-3 align-top text-left">Single <strong><code>32 B</code> <code>rootHash</code></strong> in Enterprise IdP trust store (plus standard Enterprise X.509 Root CA for <code>"packed"</code> RPs)</td>
 </tr>
 </tbody></table></div>
-<h4 id="811-enterprise-attestation-format-selection-packed-first-size-aware-default-vs-mtc" class="text-base font-semibold text-[var(--foreground)]">8.1.1 Enterprise Attestation Format Selection (<code>"packed"</code> First / Size-Aware Default vs. <code>"mtc"</code>)</h4>
+<h4 id="811-enterprise-attestation-format-selection-packed-first-size-aware-default-vs-mtcl" class="text-base font-semibold text-[var(--foreground)]">8.1.1 Enterprise Attestation Format Selection (<code>"packed"</code> First / Size-Aware Default vs. <code>"mtcl"</code>)</h4>
 <p class="text-sm my-2">Loading <strong>both</strong> the Enterprise <code>mtcCert</code> and the per-enterprise-batch-key X.509 <code>x5c</code> certificate onto the authenticator enables seamless interoperability across both legacy X.509-only Enterprise Relying Parties and modern MTC-aware Enterprise IdPs using the <strong>exact same Tier 1 $\to$ Tier 2 size-aware logic as Non-Enterprise</strong>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Case A — <code>"packed"</code> First in <code>0x0B</code>, OR <code>0x0B</code> Empty/Omitted and Certificate Fits (<code>&lt;= 7,609 B</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
@@ -1061,24 +1061,24 @@ partial dictionary MetadataStatement {
 <li><code>attestationFormatsPreference[0] == "packed"</code>, <strong>or</strong></li>
 <li><code>attestationFormatsPreference</code> (<code>0x0B</code>) is <strong>empty or omitted</strong> and the total response with <code>enterprise_x509_der</code> fits within the single-frame <code>7,609 B</code> USB HID budget (<code>authData.len() + sig.len() + x5c.len() + 60 &lt;= 7,550 B</code>),</li>
 </ul></li>
-<li>The authenticator selects <strong><code>fmt: "packed"</code></strong> and returns the provisioned per-enterprise-batch-key X.509 certificate in <strong><code>attStmt.x5c = [enterprise_x509_der]</code></strong>, signed by <code>AttestationId::Enterprise</code> (with <code>"fido-mtc-ent"</code> also signed inside <code>authenticatorData.extensions</code>).</li>
+<li>The authenticator selects <strong><code>fmt: "packed"</code></strong> and returns the provisioned per-enterprise-batch-key X.509 certificate in <strong><code>attStmt.x5c = [enterprise_x509_der]</code></strong>, signed by <code>AttestationId::Enterprise</code> (with <code>fido-mtc-ent</code> also signed inside <code>authenticatorData.extensions</code>).</li>
 <li>This gives existing Enterprise Relying Parties (which often omit <code>0x0B</code> or pass <code>0x0B: ["packed"]</code>) a standard per-device X.509 certificate chain (<code>x5c</code>) automatically whenever certificate and credential sizes allow (e.g., classical ES256/EdDSA credentials, or <code>ML-DSA</code> credentials with compact/classical Enterprise X.509 certificates).</li>
 </ul></li>
-<li><strong>Case B — <code>"mtc"</code> First in <code>0x0B</code>, OR <code>0x0B</code> Empty/Omitted and <code>x5c</code> Exceeds <code>7,609 B</code> Budget</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>When <code>"mtc"</code> precedes <code>"packed"</code> in <code>0x0B</code> (<code>0x0B: ["mtc", ...]</code>), <strong>or</strong> when <code>0x0B</code> is empty/omitted and including the post-quantum <code>x5c</code> certificate would exceed the <code>7,609 B</code> USB HID frame limit, the authenticator returns <strong><code>fmt: "mtc"</code></strong> with its unique inline <code>pubKey</code> (<code>1,322 B</code> for <code>ML-DSA-44</code>), its 17-hash <code>mtcCert</code> (<code>563 B</code>), and the signed <code>"fido-mtc-ent"</code> extension in <code>authenticatorData</code>.</li>
-<li>Unlike Non-Enterprise attestation (which has a Tier 3 <code>"mtc-mds"</code> fallback using MDS <code>batchKeys</code>), single-device Enterprise public keys are never published in <strong>public</strong> FIDO MDS (<code>batchKeys: []</code>). For RPs that do not hold the manufacturer's manifest, Enterprise attestation therefore stops at Tier 2 (<code>"mtc"</code>). With an <code>ML-DSA-44</code> Enterprise key, <code>"mtc"</code> fits inside <code>7,609 B</code> for all credential algorithms (<code>5,931 B</code> for <code>ML-DSA-44</code>, <code>6,571 B</code> for <code>ML-DSA-65</code>, and <code>7,211 B</code> for <code>ML-DSA-87</code>).</li>
+<li><strong>Case B — <code>"mtcl"</code> First in <code>0x0B</code>, OR <code>0x0B</code> Empty/Omitted and <code>x5c</code> Exceeds <code>7,609 B</code> Budget</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>When <code>"mtcl"</code> precedes <code>"packed"</code> in <code>0x0B</code> (<code>0x0B: ["mtcl", ...]</code>)), <strong>or</strong> when <code>0x0B</code> is empty/omitted and including the post-quantum <code>x5c</code> certificate would exceed the <code>7,609 B</code> USB HID frame limit, the authenticator returns <strong><code>fmt: "mtcl"</code></strong> with its unique inline <code>pubKey</code> (<code>1,322 B</code> for <code>ML-DSA-44</code>), its 17-hash <code>mtcCert</code> (<code>563 B</code>), and the signed <code>fido-mtc-ent</code> extension in <code>authenticatorData</code>.</li>
+<li>Unlike Non-Enterprise attestation (which has a Tier 3 <code>"mtc-mds"</code> fallback using MDS <code>batchKeys</code>), single-device Enterprise public keys are never published in <strong>public</strong> FIDO MDS (<code>batchKeys: []</code>). For RPs that do not hold the manufacturer's manifest, Enterprise attestation therefore stops at Tier 2 (<code>"mtcl"</code>). With an <code>ML-DSA-44</code> Enterprise key, <code>"mtcl"</code> fits inside <code>7,609 B</code> for all credential algorithms (<code>5,931 B</code> for <code>ML-DSA-44</code>, <code>6,571 B</code> for <code>ML-DSA-65</code>, and <code>7,211 B</code> for <code>ML-DSA-87</code>).</li>
 </ul></li>
 <li><strong>Case C — <code>"mtc-mds"</code> via the Enterprise Manifest (§8.6)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Applies when <code>"mtc-mds"</code> is first in <code>0x0B</code>, <strong>or</strong> when <code>0x0B</code> is empty/omitted and Enterprise Attestation is requested, in <strong>either</strong> mode: vendor-facilitated (<code>0x0A = 1</code>) or platform-managed (<code>0x0A = 2</code>). Manufacturers provide the signed manifest to every key purchaser, and the RP receiving Enterprise Attestation is normally that purchaser.</li>
-<li>The authenticator returns <code>fmt: "mtc-mds"</code> with a proof-less <code>mtcKeyRef</code> (<code>{caId, serial}</code>, <code>~20–30 B</code>). The RP resolves the device <code>pubKey</code> and <code>deviceSerial</code> by <code>(caId, serial)</code> from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. The signed <code>"fido-mtc-ent"</code> serial extension is <strong>OPTIONAL</strong> here (§8.6.1).</li>
-<li>An RP without the manifest (e.g. keys bought through a reseller, or BYOD into another organization) requests <code>0x0B: ["mtc"]</code> or <code>["packed"]</code>. It then receives Case B or Case A, <strong>with</strong> <code>"fido-mtc-ent"</code>.</li>
+<li>The authenticator returns <code>fmt: "mtc-mds"</code> with a proof-less <code>mtcKeyRef</code> (<code>{caId, serial}</code>, <code>~20–30 B</code>). The RP resolves the device <code>pubKey</code> and <code>deviceSerial</code> by <code>(caId, serial)</code> from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. The signed <code>fido-mtc-ent</code> serial extension is <strong>OPTIONAL</strong> here (§8.6.1).</li>
+<li>An RP without the manifest (e.g. keys bought through a reseller, or BYOD into another organization) requests <code>0x0B: ["mtcl"]</code> or <code>["packed"]</code>. It then receives Case B or Case A, <strong>with</strong> <code>fido-mtc-ent</code>.</li>
 </ul></li>
 </ol>
 <div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TD
     subgraph NonEnt["1. Non-Enterprise Attestation (0x0A omitted)"]
         direction TB
         BatchKey["AttestationId::Batch (Shared by &gt;= 100,000 devices)&lt;br/&gt;Loaded with: Batch mtcCert (83 B) + Batch x5c (4,127 B)"]
-        BatchCascade["Format Selection:&lt;br/&gt;Respects 0x0B; when 0x0B is empty/omitted,&lt;br/&gt;uses 3-tier size cascade ('packed' -&gt; 'mtc' -&gt; 'mtc-mds')"]
+        BatchCascade["Format Selection:&lt;br/&gt;Respects 0x0B; when 0x0B is empty/omitted,&lt;br/&gt;uses 3-tier size cascade ('packed' -&gt; 'mtcl' -&gt; 'mtc-mds')"]
         BatchKey --&gt; BatchCascade
     end
 
@@ -1088,16 +1088,16 @@ partial dictionary MetadataStatement {
         EntPref{"Check 0x0B&lt;br/&gt;(attestationFormatsPreference)"}
         EntSize{"Does 'packed' with x5c fit&lt;br/&gt;in 7,609 B USB HID budget?"}
         EntPacked["Tier 1: Return fmt = 'packed'&lt;br/&gt;attStmt: { alg, sig, x5c: [enterprise_x509_der] }&lt;br/&gt;+ Signed 'fido-mtc-ent' serial in authData"]
-        EntMtc["Tier 2: Return fmt = 'mtc'&lt;br/&gt;attStmt: { alg, sig, pubKey, mtcCert (17-hash proof) }&lt;br/&gt;+ Signed 'fido-mtc-ent' serial in authData"]
+        EntMtc["Tier 2: Return fmt = 'mtcl'&lt;br/&gt;attStmt: { alg, sig, pubKey, mtcCert (17-hash proof) }&lt;br/&gt;+ Signed 'fido-mtc-ent' serial in authData"]
         EntKey --&gt; EntPref
         EntPref -- "0x0B[0] == 'packed'" --&gt; EntPacked
-        EntPref -- "0x0B[0] == 'mtc'" --&gt; EntMtc
+        EntPref -- "0x0B[0] == 'mtcl'" --&gt; EntMtc
         EntPref -- "0x0B empty or omitted" --&gt; EntSize
         EntSize -- "Yes (authData + sig + x5c + 60 &lt;= 7,550 B)" --&gt; EntPacked
         EntSize -- "No (x5c too large for 7,609 B)" --&gt; EntMtc
     end</pre></div>
 <h3 id="82-enterprise-mtctrustanchor-configuration-zero-batchkeys-overhead-root-ca-subtree-signature" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">8.2 Enterprise <code>MtcTrustAnchor</code> Configuration (Zero <code>batchKeys</code> Overhead &amp; Root CA Subtree Signature)</h3>
-<p class="text-sm my-2">Because the Enterprise single-device key uses <strong><code>fmt: "mtc"</code></strong> (sending <code>subjectKey</code> inline in <code>attStmt.mtcCert</code>), the Enterprise <code>MtcTrustAnchor</code> in the enterprise IdP or MDS entry requires <strong>zero <code>batchKeys</code> entries</strong> (<code>"batchKeys": []</code>)—only the 32-byte <code>rootHash</code> of the Enterprise Merkle tree.</p>
+<p class="text-sm my-2">Because the Enterprise single-device key uses <strong><code>fmt: "mtcl"</code></strong> (sending <code>subjectKey</code> inline in <code>attStmt.mtcCert</code>), the Enterprise <code>MtcTrustAnchor</code> in the enterprise IdP or MDS entry requires <strong>zero <code>batchKeys</code> entries</strong> (<code>"batchKeys": []</code>)—only the 32-byte <code>rootHash</code> of the Enterprise Merkle tree.</p>
 <p class="text-sm my-2">Furthermore, to cryptographically bind <code>"caId": "g5k_AQI"</code> and its <code>subtrees</code> to the <strong>Enterprise Root CA certificate</strong> in <code>attestationRootCertificates</code> (e.g., an <strong>ML-DSA-87</strong> Enterprise Root CA that also signs the per-device <code>x5c</code> certificate), each subtree entry in <code>mtcTrustAnchors</code> carries <code>"alg"</code> (e.g., <code>-50</code> for <code>ML-DSA-87</code>) and <code>"signature"</code> over the canonical 85-byte <code>FidoMtcSubtreeCheckpoint</code>:</p>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">c</div><pre class="text-xs leading-relaxed"><code>struct {
     opaque context[32];        // "FIDO-MTC-SUBTREE-CHECKPOINT-V1\0\0" (32-byte domain separator)
@@ -1131,22 +1131,22 @@ partial dictionary MetadataStatement {
 <li>The Relying Party verifies <code>subtrees[0].signature</code> against the Enterprise Root CA in <code>attestationRootCertificates</code>, extracts <code>leafIndex = serial &amp; 0xFFFFFFFFFFFF</code>, hashes <code>FidoMtcLogEntry</code> (including <code>extensions = deviceSerial</code>), walks the sibling hashes in <code>mtcProof</code>, and verifies it equals <code>rootHash</code>.</li>
 </ul></li>
 </ul>
-<h3 id="83-including-the-device-serial-number-in-the-signed-data-fido-mtc-ent" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">8.3 Including the Device Serial Number in the Signed Data (<code>"fido-mtc-ent"</code>)</h3>
+<h3 id="83-including-the-device-serial-number-in-the-signed-data-fido-mtc-ent" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">8.3 Including the Device Serial Number in the Signed Data (<code>fido-mtc-ent</code>)</h3>
 <p class="text-sm my-2">In standard X.509 Enterprise Attestation (<code>fmt: "packed"</code>), the authenticator's hardware serial number (e.g., <code>"123456"</code>) is carried in the FIDO Enterprise Serial Number X.509 extension (<strong><code>OID 1.3.6.1.4.1.45724.1.1.2</code></strong>, <code>id-fido-gen-ce-sernum</code>, encoded as an ASN.1 <code>OCTET STRING</code>).</p>
-<p class="text-sm my-2">For Enterprise MTC Attestation (<code>fmt: "mtc"</code>), because each authenticator has its own <strong>single-device Enterprise batch key (<code>AttestationId::Enterprise</code>)</strong>, the device serial number is committed in two ways:</p>
+<p class="text-sm my-2">For Enterprise MTC Attestation (<code>fmt: "mtcl"</code>), because each authenticator has its own <strong>single-device Enterprise batch key (<code>AttestationId::Enterprise</code>)</strong>, the device serial number is committed in two ways:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li>Inside <code>MtcProof.extensions</code> (<code>FidoMtcLogEntry.extensions</code>, committed into the Enterprise Merkle tree leaf hash), and</li>
-<li>Inside the signed <code>authenticatorData.extensions</code> map under <strong><code>"fido-mtc-ent"</code></strong>, containing <strong>only the device serial number</strong> (<code>"deviceSerial"</code>), since <code>signCount</code> and <code>attestedCredentialData.credentialId</code> are already natively present and signed in <code>authenticatorData</code>.</li>
+<li>Inside the signed <code>authenticatorData.extensions</code> map under <strong><code>fido-mtc-ent</code></strong>, containing <strong>only the device serial number</strong> (<code>"deviceSerial"</code>), since <code>signCount</code> and <code>attestedCredentialData.credentialId</code> are already natively present and signed in <code>authenticatorData</code>.</li>
 </ol>
-<h4 id="signed-extension-in-authenticatordataextensions-fido-mtc-ent" class="text-base font-semibold text-[var(--foreground)]">Signed Extension in <code>authenticatorData.extensions</code>: <code>"fido-mtc-ent"</code></h4>
-<p class="text-sm my-2">When <code>enterpriseAttestation</code> (<code>0x0A</code>) is requested and accepted by the authenticator, it adds the signed serial extension. This is <strong>REQUIRED</strong> for <code>"mtc"</code> and <code>"packed"</code> (<code>x5c</code>), and <strong>OPTIONAL</strong> for proof-less <code>"mtc-mds"</code>, where the RP obtains the serial from the manufacturer's manifest (§8.6.1):</p>
+<h4 id="signed-extension-in-authenticatordataextensions-fido-mtc-ent" class="text-base font-semibold text-[var(--foreground)]">Signed Extension in <code>authenticatorData.extensions</code>: <code>fido-mtc-ent</code></h4>
+<p class="text-sm my-2">When <code>enterpriseAttestation</code> (<code>0x0A</code>) is requested and accepted by the authenticator, it adds the signed serial extension. This is <strong>REQUIRED</strong> for <code>"mtcl"</code> and <code>"packed"</code> (<code>x5c</code>), and <strong>OPTIONAL</strong> for proof-less <code>"mtc-mds"</code>, where the RP obtains the serial from the manufacturer's manifest (§8.6.1):</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li>The authenticator sets the <strong><code>ED</code> (Extension Data included, bit 7 = <code>0x80</code>)</strong> flag in <code>authenticatorData.flags</code>.</li>
-<li>It constructs the <code>"fido-mtc-ent"</code> CBOR map inside <code>authenticatorData.extensions</code> containing only <code>"deviceSerial"</code>:</li>
+<li>It constructs the <code>fido-mtc-ent</code> CBOR map inside <code>authenticatorData.extensions</code> containing only <code>"deviceSerial"</code>:</li>
 </ol>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; Included in authenticatorData.extensions ONLY during Enterprise Attestation (0x0A = 1 or 2)
 $$extension-output //= (
-    "fido-mtc-ent": MtcEnterpriseExtension
+    fido-mtc-ent: MtcEnterpriseExtension
 )
 
 MtcEnterpriseExtension = {
@@ -1157,7 +1157,7 @@ MtcEnterpriseExtension = {
 |                                   authenticatorData (Signed!)                                     |
 +-------------------+---------+----------+--------------------------+-------------------------------+
 | rpIdHash (32 B)   | flags   | signCnt  | attestedCredentialData   | extensions (CBOR Map, ~36 B)  |
-| SHA-256(rp.id)    | 0xC1    | (4 B)    | aaguid + credId + pubKey | { "fido-mtc-ent": {           |
+| SHA-256(rp.id)    | 0xC1    | (4 B)    | aaguid + credId + pubKey | { fido-mtc-ent: {           |
 |                   | (UP|AT  |          |                          |     "deviceSerial": "123456"  |
 |                   |  |ED)   |          |                          | } }                           |
 +-------------------+---------+----------+--------------------------+-------------------------------+
@@ -1170,13 +1170,13 @@ MtcEnterpriseExtension = {
 <h4 id="why-this-design-satisfies-every-fido2-enterprise-requirement" class="text-base font-semibold text-[var(--foreground)]">Why This Design Satisfies Every FIDO2 &amp; Enterprise Requirement</h4>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Direct Parity with X.509 <code>id-fido-gen-ce-sernum</code> (<code>1.3.6.1.4.1.45724.1.1.2</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>Whether the authenticator returns <code>fmt: "packed"</code> (X.509 <code>x5c</code> with <code>OID 1.3.6.1.4.1.45724.1.1.2 = "123456"</code>) or <code>fmt: "mtc"</code> (<code>mtcCert</code> with <code>MtcProof.extensions = "123456"</code> and <code>"fido-mtc-ent": { "deviceSerial": "123456" }</code>), the Relying Party receives the exact same device serial number (<code>"123456"</code>).</li>
+<li>Whether the authenticator returns <code>fmt: "packed"</code> (X.509 <code>x5c</code> with <code>OID 1.3.6.1.4.1.45724.1.1.2 = "123456"</code>) or <code>fmt: "mtcl"</code> (<code>mtcCert</code> with <code>MtcProof.extensions = "123456"</code> and <code>fido-mtc-ent: { "deviceSerial": "123456" }</code>), the Relying Party receives the exact same device serial number (<code>"123456"</code>).</li>
 </ul></li>
 <li><strong>No Redundant Fields</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>Per-credential uniqueness (<code>attestedCredentialData.credentialId</code>) and monotonic signature counting (<code>signCount</code>) are already native fields of <code>authenticatorData</code> covered by <code>attStmt.sig</code>, so <code>"fido-mtc-ent"</code> carries only <code>"deviceSerial"</code>.</li>
+<li>Per-credential uniqueness (<code>attestedCredentialData.credentialId</code>) and monotonic signature counting (<code>signCount</code>) are already native fields of <code>authenticatorData</code> covered by <code>attStmt.sig</code>, so <code>fido-mtc-ent</code> carries only <code>"deviceSerial"</code>.</li>
 </ul></li>
 <li><strong>Zero Privacy Leakage on Non-Enterprise Registrations</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>When <code>enterpriseAttestation</code> (<code>0x0A</code>) is omitted, the authenticator uses <strong><code>AttestationId::Batch</code></strong> (shared across $\ge 100,000$ devices) and <strong>omits <code>"fido-mtc-ent"</code></strong>, preserving a full $100,000$-device anonymity set.</li>
+<li>When <code>enterpriseAttestation</code> (<code>0x0A</code>) is omitted, the authenticator uses <strong><code>AttestationId::Batch</code></strong> (shared across $\ge 100,000$ devices) and <strong>omits <code>fido-mtc-ent</code></strong>, preserving a full $100,000$-device anonymity set.</li>
 </ul></li>
 </ol>
 <h3 id="84-scaling-fleet-size-100k-to-5m-keys-growing-over-time-and-factory-provisioning" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">8.4 Scaling Fleet Size (<code>100k</code> to <code>5M+</code> Keys), Growing Over Time, and Factory Provisioning</h3>
@@ -1339,7 +1339,7 @@ MtcEnterpriseExtension = {
 <td class="p-3 align-top text-center"><code>ML-DSA-44</code> (<code>-48</code>), <code>ML-DSA-65</code> (<code>-49</code>), or <code>ML-DSA-87</code> (<code>-50</code>)</td>
 <td class="p-3 align-top text-left"><code>crypto_data_mldsa44/fidont.key</code><br/><code>crypto_data_mldsa44/fidont_cert.pem</code></td>
 <td class="p-3 align-top text-left"><code>ML-DSA-87</code> Root CA (<code>enterprise_root_ca.pem</code>) + MTC tree <code>"g5k_AQE"</code></td>
-<td class="p-3 align-top text-left">Used on <strong>ML-DSA / PQ composite <code>MakeCredential</code> operations</strong> (<code>!ep_att</code>), or when <code>"mtc"</code> / <code>"mtc-mds"</code> is explicitly requested in <code>0x0B</code>.</td>
+<td class="p-3 align-top text-left">Used on <strong>ML-DSA / PQ composite <code>MakeCredential</code> operations</strong> (<code>!ep_att</code>), or when <code>"mtcl"</code> / <code>"mtc-mds"</code> is explicitly requested in <code>0x0B</code>.</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Second Non-Enterprise Classical Batch Key (<code>cKey</code> + <code>cX5c</code>)</strong></td>
@@ -1357,7 +1357,7 @@ MtcEnterpriseExtension = {
 </tr>
 </tbody></table></div>
 <h3 id="86-unified-caid-serial-key-lookup-enterprise-manifest-and-non-enterprise-mds-proof-optional-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">8.6 Unified <code>(caId, serial)</code> Key Lookup: Enterprise Manifest and Non-Enterprise MDS (Proof-Optional <code>"mtc-mds"</code>)</h3>
-<p class="text-sm my-2">For Enterprise Attestation, the manufacturer delivers a file out of band to the purchasing enterprise. It lists the <strong>device serial number and attestation public key for every authenticator</strong> sold to that enterprise. An RP holding that file already has every key the authenticator could send inline, and it can check the whole file once against the manufacturer's signature. On the wire, both the inline <code>pubKey</code> (<code>"mtc"</code>) and the Merkle <code>mtcProof</code> are then redundant.</p>
+<p class="text-sm my-2">For Enterprise Attestation, the manufacturer delivers a file out of band to the purchasing enterprise. It lists the <strong>device serial number and attestation public key for every authenticator</strong> sold to that enterprise. An RP holding that file already has every key the authenticator could send inline, and it can check the whole file once against the manufacturer's signature. On the wire, both the inline <code>pubKey</code> (<code>"mtcl"</code>) and the Merkle <code>mtcProof</code> are then redundant.</p>
 <h4 id="861-lookup-key-send-caid-serial-not-the-device-serial" class="text-base font-semibold text-[var(--foreground)]">8.6.1 Lookup Key: Send <code>(caId, serial)</code>, Not the Device Serial</h4>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -1400,10 +1400,10 @@ MtcEnterpriseExtension = {
 <p class="text-sm my-2"><strong>Rule:</strong> <code>"mtc-mds"</code> always identifies the attestation key by <code>(caId, serial)</code>. The <strong>device serial</strong> is never a lookup key. In Enterprise mode:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li>The device serial is <strong>delivered by the manifest entry</strong> (<code>MtcBatchKeyEntry.deviceSerial</code>). This is the authoritative source. The device signature verified with that entry's key proves the response came from the device holding that <code>(caId, serial)</code> key, and therefore from that serial.</li>
-<li>The signed <code>authenticatorData.extensions["fido-mtc-ent"]</code> copy (§8.3) is <strong>OPTIONAL with proof-less <code>"mtc-mds"</code></strong>. The authenticator MAY omit it, saving <code>36 B</code> and leaving the <code>ED</code> flag clear if there are no other extensions.</li>
+<li>The signed <code>authenticatorData.extensions[fido-mtc-ent]</code> copy (§8.3) is <strong>OPTIONAL with proof-less <code>"mtc-mds"</code></strong>. The authenticator MAY omit it, saving <code>36 B</code> and leaving the <code>ED</code> flag clear if there are no other extensions.</li>
 <li>If both are present, the RP MUST check that they are equal (§5, step 6). A mismatch means a mixed-up or tampered manifest entry.</li>
 </ol>
-<p class="text-sm my-2"><code>"fido-mtc-ent"</code> <strong>remains REQUIRED</strong> in <code>"mtc"</code> and <code>"packed"</code> (<code>x5c</code>) Enterprise responses. Those responses do not involve a manifest lookup, so the signed extension is how the serial reaches the RP.</p>
+<p class="text-sm my-2"><code>fido-mtc-ent</code> <strong>remains REQUIRED</strong> in <code>"mtcl"</code> and <code>"packed"</code> (<code>x5c</code>) Enterprise responses. Those responses do not involve a manifest lookup, so the signed extension is how the serial reaches the RP.</p>
 <h4 id="862-one-schema-two-trust-sources" class="text-base font-semibold text-[var(--foreground)]">8.6.2 One Schema, Two Trust Sources</h4>
 <p class="text-sm my-2">The Enterprise manifest <strong>is</strong> an <code>MtcTrustAnchor</code> (§6), with the same JSON layout as the public MDS entry. Its <code>batchKeys</code> are populated per device and include the optional <code>deviceSerial</code>, <code>notBefore</code>, and <code>notAfter</code> fields:</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
@@ -1450,13 +1450,13 @@ MtcEnterpriseExtension = {
   ]
 }</code></pre></div>
 <p class="text-sm my-2"><strong>Authenticating the manifest without a new signature:</strong> each <code>batchKeys</code> entry carries every field of <code>FidoMtcLogEntry</code> (§4.1). The <code>aaguid</code> is taken from the metadata entry, and <code>deviceSerial</code> is committed as the entry's <code>extensions</code>. When the RP loads the manifest, it can rebuild the Merkle tree from all entries and compare the result with the signed <code>subtrees[].rootHash</code>. This is a <strong>one-time check</strong>. After it passes, every per-registration proof is redundant.</p>
-<h4 id="863-wire-size-proof-less-mtc-mds-vs-mtc" class="text-base font-semibold text-[var(--foreground)]">8.6.3 Wire Size: Proof-Less <code>"mtc-mds"</code> vs. <code>"mtc"</code></h4>
-<p class="text-sm my-2">These figures use the same <code>authData</code> baseline as <code>lmots_longfellow_attestation_proposal.md</code> §6.3: <code>PK_len + 106 B</code> with the <code>36 B</code> <code>"fido-mtc-ent"</code> serial, or <code>PK_len + 70 B</code> without it. The Enterprise key is level-matched to the credential algorithm.</p>
+<h4 id="863-wire-size-proof-less-mtc-mds-vs-mtcl" class="text-base font-semibold text-[var(--foreground)]">8.6.3 Wire Size: Proof-Less <code>"mtc-mds"</code> vs. <code>"mtcl"</code></h4>
+<p class="text-sm my-2">These figures use the same <code>authData</code> baseline as <code>lmots_longfellow_attestation_proposal.md</code> §6.3: <code>PK_len + 106 B</code> with the <code>36 B</code> <code>fido-mtc-ent</code> serial, or <code>PK_len + 70 B</code> without it. The Enterprise key is level-matched to the credential algorithm.</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Credential = Enterprise Key</th>
-<th class="p-3 font-semibold align-bottom text-right"><code>"mtc"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof, serial ext required)</th>
+<th class="p-3 font-semibold align-bottom text-right"><code>"mtcl"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof, serial ext required)</th>
 <th class="p-3 font-semibold align-bottom text-right"><code>"mtc-mds"</code> with proof (sig + <code>563 B</code>, serial ext)</th>
 <th class="p-3 font-semibold align-bottom text-right"><code>"mtc-mds"</code> proof-less, with optional serial ext</th>
 <th class="p-3 font-semibold align-bottom text-right"><strong><code>"mtc-mds"</code> proof-less, serial from manifest only</strong></th>
@@ -1496,17 +1496,17 @@ MtcEnterpriseExtension = {
 <tr>
 <td class="p-3 align-top text-left"><strong>Vendor-facilitated EA</strong> (<code>0x0A = 1</code>): RP ID on the authenticator's preconfigured list</td>
 <td class="p-3 align-top text-center">✅ (purchaser)</td>
-<td class="p-3 align-top text-left"><strong><code>"mtc-mds"</code> proof-less</strong> (<code>mtcKeyRef</code>), <code>"fido-mtc-ent"</code> optional. §8.1.1 Case C</td>
+<td class="p-3 align-top text-left"><strong><code>"mtc-mds"</code> proof-less</strong> (<code>mtcKeyRef</code>), <code>fido-mtc-ent</code> optional. §8.1.1 Case C</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Platform-managed EA</strong> (<code>0x0A = 2</code>): enterprise policy on the browser/platform permits EA for the RP</td>
 <td class="p-3 align-top text-center">✅ (purchaser)</td>
-<td class="p-3 align-top text-left"><strong><code>"mtc-mds"</code> proof-less</strong> (<code>mtcKeyRef</code>), <code>"fido-mtc-ent"</code> optional. §8.1.1 Case C</td>
+<td class="p-3 align-top text-left"><strong><code>"mtc-mds"</code> proof-less</strong> (<code>mtcKeyRef</code>), <code>fido-mtc-ent</code> optional. §8.1.1 Case C</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left">Exception: an RP that did not purchase the keys (reseller or retail purchase, BYOD into another organization)</td>
 <td class="p-3 align-top text-center">❌</td>
-<td class="p-3 align-top text-left">The RP or client requests <code>0x0B: ["mtc"]</code> or <code>["packed"]</code>. The authenticator then returns <code>"mtc"</code> / <code>"packed"</code> <code>x5c</code> <strong>with</strong> <code>"fido-mtc-ent"</code></td>
+<td class="p-3 align-top text-left">The RP or client requests <code>0x0B: ["mtcl"]</code> or <code>["packed"]</code>. The authenticator then returns <code>"mtcl"</code> / <code>"packed"</code> <code>x5c</code> <strong>with</strong> <code>fido-mtc-ent</code></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Non-Enterprise</strong></td>
@@ -1518,7 +1518,7 @@ MtcEnterpriseExtension = {
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Size:</strong> one public key per device, about <code>133 MB</code> / <code>197 MB</code> / <code>261 MB</code> per 100,000 devices for <code>ML-DSA-44</code> / <code>-65</code> / <code>-87</code>. A 10,000-device enterprise needs <code>13–26 MB</code>.</li>
 <li><strong>Distribution:</strong> every verifying RP needs the manifest, or a central enterprise IdP does all verification. Each new purchase requires a manifest update, and revocations are delivered as <code>revokedSerials</code> updates.</li>
-<li><strong>Fallback:</strong> if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with <code>0x0B: ["mtc"]</code>, which carries the inline <code>pubKey</code>, the proof, and the required <code>"fido-mtc-ent"</code> serial.</li>
+<li><strong>Fallback:</strong> if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with <code>0x0B: ["mtcl"]</code>, which carries the inline <code>pubKey</code>, the proof, and the required <code>fido-mtc-ent</code> serial.</li>
 </ul></div>
     </section>
 
@@ -1586,7 +1586,7 @@ MtcEnterpriseExtension = {
 <td class="p-3 align-top text-center"><strong><code>~7,335 B</code></strong> (<code>-3.8%</code>)</td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>3. MTC (<code>fmt: "mtc"</code>, inline <code>pubKey</code> + <code>mtcCert</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>3. MTC Large (<code>fmt: "mtcl"</code>, inline <code>pubKey</code> + <code>mtcCert</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>158 B</code></strong> (<code>-69%</code>)</td>
 <td class="p-3 align-top text-center"><strong><code>1,405 B</code></strong> (<code>-77.9%</code>) <em>(or <code>1,885 B</code> Enterprise 17-hash)</em></td>
 <td class="p-3 align-top text-center"><strong><code>2,045 B</code></strong> (<code>-70.7%</code>)</td>
@@ -1608,7 +1608,7 @@ MtcEnterpriseExtension = {
 <th class="p-3 font-semibold align-bottom text-left">Credential Algorithm + Batch Key</th>
 <th class="p-3 font-semibold align-bottom text-center"><code>"packed"</code> with DER <code>x5c</code></th>
 <th class="p-3 font-semibold align-bottom text-center"><code>"packed"</code> / <code>"c509"</code> with C509 <code>c5c</code></th>
-<th class="p-3 font-semibold align-bottom text-center"><strong><code>"mtc"</code> (inline <code>pubKey</code> + <code>mtcCert</code>)</strong></th>
+<th class="p-3 font-semibold align-bottom text-center"><strong><code>"mtcl"</code> (inline <code>pubKey</code> + <code>mtcCert</code>)</strong></th>
 <th class="p-3 font-semibold align-bottom text-center"><strong><code>"mtc-mds"</code> (<code>mtcCert</code> only)</strong></th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
@@ -1641,7 +1641,7 @@ MtcEnterpriseExtension = {
 </tr>
 </tbody></table></div>
 <h3 id="93-where-c509-complements-fidont-post-quantum-webauthn" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">9.3 Where C509 Complements Fidont &amp; Post-Quantum WebAuthn</h3>
-<p class="text-sm my-2">While C509 cannot replace MTC (<code>"mtc"</code> / <code>"mtc-mds"</code>) for post-quantum attestation over USB HID, <code>draft-ietf-cose-cbor-encoded-cert-21</code> provides three valuable complementary capabilities:</p>
+<p class="text-sm my-2">While C509 cannot replace MTC (<code>"mtcl"</code> / <code>"mtc-mds"</code>) for post-quantum attestation over USB HID, <code>draft-ietf-cose-cbor-encoded-cert-21</code> provides three valuable complementary capabilities:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Lossless On-Device Flash Compression via Type 3 C509 (<code>c509CertificateType = 3</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Because Fidont provisions up to three X.509 certificates in NVRAM alongside <code>mtcCert</code> (the PQ batch <code>x5c</code>, the classical <code>ES256</code> batch <code>cX5c</code>, and the Enterprise <code>x5c</code>), storing those certificates in <strong>C509 Type 3 (CBOR re-encoded X.509v3)</strong> saves <strong><code>~300 bytes</code> per certificate</strong> (<code>~900 B</code> total across all three certificates in flash).</li>
@@ -1778,7 +1778,7 @@ MtcEnterpriseExtension = {
     <section id="section-11" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 11</span>
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Evaluation of Multi-Level HSS/LMS Certificate Trees (<code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtc</code> and <code>mtc-mds</code></h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Evaluation of Multi-Level HSS/LMS Certificate Trees (<code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code>) Over Stateless <code>ML-DSA</code> Leaf Keys (<code>x5c</code>) vs. <code>mtcl</code> and <code>mtc-mds</code></h2>
       </div>
 <p class="text-sm my-2">When Relying Parties explicitly require standard WebAuthn <strong><code>fmt: "packed"</code> (<code>attStmt.x5c</code>)</strong>, an alternative to signing leaf X.509 certificates with an <code>ML-DSA</code> Root CA (<code>4,627 B</code> signature for <code>ML-DSA-87</code>) is to use a <strong>stateful hash-based HSS/LMS Certificate Authority</strong> (<a href="https://datatracker.ietf.org/doc/html/rfc8554" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">RFC 8554</a>, <a href="https://csrc.nist.gov/pubs/sp/800/208/final" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">NIST SP 800-208</a>, <a href="https://datatracker.ietf.org/doc/html/rfc8708" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">RFC 8708</a> / <a href="https://datatracker.ietf.org/doc/html/rfc9802" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">RFC 9802</a> <code>id-alg-hss-lms-hashsig = 1.2.840.113549.1.9.16.3.17</code>, COSE <code>alg: -46</code>) in the vendor's factory HSM to sign <strong>stateless <code>ML-DSA</code> leaf attestation keys</strong> on the authenticator.</p>
 <h3 id="111-division-of-labor-rfc-8554-cap-nist-sp-800-208-parameter-sets-sha256_m32-n32" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">11.1 Division of Labor &amp; <code>RFC 8554</code> $\cap$ <code>NIST SP 800-208</code> Parameter Sets (<code>SHA256_M32</code> / <code>N32</code>)</h3>
@@ -1940,10 +1940,10 @@ MtcEnterpriseExtension = {
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Optimal 10M–100M Enterprise Hierarchy</strong>: An offline <strong><code>LMS_SHA256_M32_H10</code> + <code>LMOTS_N32_W8</code> Parent Root CA</strong> (<code>60 B</code> PK, capacity $1,024 \times 2^{20} = \mathbf{1.07\text{ billion}}$ devices) signs <strong>$10$ (<code>10.5M</code> devices, <code>18.4 KB</code> DER in MDS) to $96$ (<code>100.7M</code> devices, <code>176 KB</code> DER in MDS) <code>LMS_SHA256_M32_H20</code> + <code>LMOTS_N32_W8</code> Intermediate CAs</strong>.</li>
 <li>Unlike a raw MTC tree (where leaf <code>#0</code>'s sibling path depends on the public keys of all other leaves in that subtree), each <code>H20</code> LMS Intermediate is pre-built over the CA's own internal LM-OTS keys in <strong><code>~16 seconds</code></strong>, so <strong>each physical authenticator can generate its own unique <code>ML-DSA-44</code> keypair inside its on-chip TRNG on the assembly line</strong> and receive its signed <strong><code>3,488 B</code> <code>x5c</code> certificate in <code>&lt; 5 ms</code></strong> with zero MDS updates across 1,048,576 devices per factory HSM.</li>
-<li>For <code>FN-DSA-1024</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> user credentials in Enterprise mode (which exceed <code>7,609 B</code> with a <code>3,488 B</code> <code>x5c</code>), the authenticator cascades to Tier 2 <strong><code>fmt: "mtc"</code></strong> (<code>563–659 B</code> <code>mtcCert</code>), where the same <code>LMS_M32_H10</code> Parent Root CA signs <code>MtcTrustAnchor.subtrees[].signature</code>.</li>
+<li>For <code>FN-DSA-1024</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> user credentials in Enterprise mode (which exceed <code>7,609 B</code> with a <code>3,488 B</code> <code>x5c</code>), the authenticator cascades to Tier 2 <strong><code>fmt: "mtcl"</code></strong> (<code>563–659 B</code> <code>mtcCert</code>), where the same <code>LMS_M32_H10</code> Parent Root CA signs <code>MtcTrustAnchor.subtrees[].signature</code>.</li>
 </ul>
 <h3 id="114-impact-of-ml-dsa-44--48-ml-dsa-65--49-and-ml-dsa-87--50-batch-enterprise-leaf-keys" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">11.4 Impact of <code>ML-DSA-44</code> (<code>-48</code>), <code>ML-DSA-65</code> (<code>-49</code>), and <code>ML-DSA-87</code> (<code>-50</code>) Batch &amp; Enterprise Leaf Keys</h3>
-<p class="text-sm my-2">Upgrading the <strong>Batch or Enterprise Leaf Key</strong> from <code>ML-DSA-44</code> (<code>-48</code>) to <code>ML-DSA-65</code> (<code>-49</code>) or <code>ML-DSA-87</code> (<code>-50</code>) increases <strong>both</strong> <code>attStmt.sig</code> and the leaf <code>pubKey</code> on the wire (<code>+1,529 B</code> for <code>-49</code>, <code>+3,487 B</code> for <code>-50</code> in <code>"packed"</code> and <code>"mtc"</code>, vs. only <code>+889 B</code> and <code>+2,207 B</code> in <code>"mtc-mds"</code>):</p>
+<p class="text-sm my-2">Upgrading the <strong>Batch or Enterprise Leaf Key</strong> from <code>ML-DSA-44</code> (<code>-48</code>) to <code>ML-DSA-65</code> (<code>-49</code>) or <code>ML-DSA-87</code> (<code>-50</code>) increases <strong>both</strong> <code>attStmt.sig</code> and the leaf <code>pubKey</code> on the wire (<code>+1,529 B</code> for <code>-49</code>, <code>+3,487 B</code> for <code>-50</code> in <code>"packed"</code> and <code>"mtcl"</code>, vs. only <code>+889 B</code> and <code>+2,207 B</code> in <code>"mtc-mds"</code>):</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
@@ -1968,14 +1968,14 @@ MtcEnterpriseExtension = {
 <td class="p-3 align-top text-center"><code>4,768 B</code><br/><code>9,455 B</code><br/><strong><code>-1,846 B</code> (Over!)</strong> ⚠️<br/><strong><code>0/18</code> algs</strong> <em>(Exceeds before <code>authData</code>!)</em></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>3. Non-Enterprise <code>fmt: "mtc"</code></strong><br/><em>(Inline <code>pubKey</code> + <code>83 B</code> <code>mtcCert</code>)</em></td>
+<td class="p-3 align-top text-left"><strong>3. Non-Enterprise <code>fmt: "mtcl"</code></strong><br/><em>(Inline <code>pubKey</code> + <code>83 B</code> <code>mtcCert</code>)</em></td>
 <td class="p-3 align-top text-left"><code>pubKey + mtcCert</code><br/>Fixed Overhead<br/><strong><code>authData</code> Budget Left</strong><br/><strong>Algs Fitting <code>7,609 B</code></strong></td>
 <td class="p-3 align-top text-center"><code>1,405 B</code><br/><code>3,885 B</code><br/><strong><code>3,724 B</code> left</strong> ✅<br/><strong><code>18/18</code> algs</strong> <em>(All fit!)</em></td>
 <td class="p-3 align-top text-center"><code>2,045 B</code><br/><code>5,414 B</code><br/><strong><code>2,195 B</code> left</strong> ✅<br/><strong><code>15/18</code> algs</strong> <em>(up to <code>ML-DSA-65</code>)</em></td>
 <td class="p-3 align-top text-center"><code>2,687 B</code><br/><code>7,374 B</code><br/><strong><code>235 B</code> left</strong> ⚠️<br/><strong><code>3/18</code> algs</strong> <em>(32 B Classical only!)</em></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>4. Enterprise 100M <code>fmt: "mtc"</code></strong><br/><em>(Inline <code>pubKey</code> + <code>659 B</code> <code>H20</code> <code>mtcCert</code> + <code>36 B</code> ext)</em></td>
+<td class="p-3 align-top text-left"><strong>4. Enterprise 100M <code>fmt: "mtcl"</code></strong><br/><em>(Inline <code>pubKey</code> + <code>659 B</code> <code>H20</code> <code>mtcCert</code> + <code>36 B</code> ext)</em></td>
 <td class="p-3 align-top text-left"><code>pubKey + mtcCert</code><br/>Fixed Overhead<br/><strong><code>authData</code> Budget Left</strong><br/><strong>Algs Fitting <code>7,609 B</code></strong></td>
 <td class="p-3 align-top text-center"><code>1,981 B</code><br/><code>4,497 B</code><br/><strong><code>3,112 B</code> left</strong> ✅<br/><strong><code>18/18</code> algs</strong> <em>(All fit!)</em></td>
 <td class="p-3 align-top text-center"><code>2,621 B</code><br/><code>6,026 B</code><br/><strong><code>1,583 B</code> left</strong> ✅<br/><strong><code>11/18</code> algs</strong> <em>(up to <code>ML-DSA-44</code>)</em></td>
@@ -1996,7 +1996,7 @@ MtcEnterpriseExtension = {
 <td class="p-3 align-top text-center"><code>695 B</code><br/><code>5,382 B</code><br/><strong><code>2,227 B</code> left</strong> ✅<br/><strong><code>15/18</code> algs</strong> <em>(<code>18/18</code> w/ <code>H5</code> lot!)</em></td>
 </tr>
 </tbody></table></div>
-<h3 id="115-end-to-end-makecredential-latency-comparison-packed-ml-dsa-ca-vs-pre-published-lms_m32_h5-vs-mtc-vs-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">11.5 End-to-End <code>MakeCredential</code> Latency Comparison (<code>"packed"</code> <code>ML-DSA</code> CA vs. Pre-Published <code>LMS_M32_H5</code> vs. <code>"mtc"</code> vs. <code>"mtc-mds"</code>)</h3>
+<h3 id="115-end-to-end-makecredential-latency-comparison-packed-ml-dsa-ca-vs-pre-published-lms_m32_h5-vs-mtcl-vs-mtc-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">11.5 End-to-End <code>MakeCredential</code> Latency Comparison (<code>"packed"</code> <code>ML-DSA</code> CA vs. Pre-Published <code>LMS_M32_H5</code> vs. <code>"mtcl"</code> vs. <code>"mtc-mds"</code>)</h3>
 <p class="text-sm my-2">The table below calculates the <strong>complete end-to-end <code>MakeCredential</code> latency</strong> across all three <strong>Matched Security Pairs (<code>Batch Key == User Credential Key</code>)</strong> using our hardware DWT cycle measurements (<code>fidont_rtt.log</code> on the <code>64 MHz</code> <code>nRF52840</code>) and hardware USB analyzer timing (<code>totalphase.csv</code>, <code>4.0005 ms</code> per <code>59 B</code> continuation frame).</p>
 <div class="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Warning</div><p class="text-sm my-2"><strong>CTAPHID <code>7,609 B</code> Single-Message Limit Warnings Included Alongside Full Calculated Latencies:</strong> Entries marked <strong><code>⚠️ OVER HID LIMIT (+X B)</code></strong> exceed the current CTAP 2.3 / CTAPHID single-message ceiling of <strong><code>7,609 bytes</code> (<code>129</code> frames)</strong> and will fail on unpatched CTAPHID transports unless the <code>7,609 B</code> limit is lifted or chunked; their full latency is calculated assuming continuous extended framing so the pure transport/compute cost can be compared directly.</p></div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
@@ -2053,7 +2053,7 @@ MtcEnterpriseExtension = {
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
-<td class="p-3 align-top text-left"><strong>5. <code>fmt: "mtc"</code> (<code>pubKey</code> + <code>83 B</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>5. <code>fmt: "mtcl"</code> (<code>pubKey</code> + <code>83 B</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>5,355 B</code> (<code>91</code> fr) ✅ FITS (<code>-2,254 B</code>)</strong></td>
 <td class="p-3 align-top text-right"><strong><code>1,745 ms</code></strong> <em>(<code>-351 ms</code> vs #2)</em></td>
 <td class="p-3 align-top text-right"><strong><code>1,840 ms</code></strong> <em>(<code>-435 ms</code>)</em></td>
@@ -2113,7 +2113,7 @@ MtcEnterpriseExtension = {
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
-<td class="p-3 align-top text-left"><strong>5. <code>fmt: "mtc"</code> (<code>pubKey</code> + <code>83 B</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>5. <code>fmt: "mtcl"</code> (<code>pubKey</code> + <code>83 B</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>7,524 B</code> (<code>128</code> fr) ✅ FITS (<code>-85 B</code>)</strong></td>
 <td class="p-3 align-top text-right"><strong><code>2,467 ms</code></strong> <em>(<code>-352 ms</code> vs #2)</em></td>
 <td class="p-3 align-top text-right"><strong><code>2,599 ms</code></strong> <em>(<code>-436 ms</code>)</em></td>
@@ -2163,7 +2163,7 @@ MtcEnterpriseExtension = {
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
-<td class="p-3 align-top text-left"><strong>4. <code>fmt: "mtc"</code> (<code>pubKey</code> + <code>83 B</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>4. <code>fmt: "mtcl"</code> (<code>pubKey</code> + <code>83 B</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>10,124 B</code> (<code>172</code> fr) ⚠️ OVER (<code>+2,515 B</code>)</strong></td>
 <td class="p-3 align-top text-right"><strong><code>2,487 ms</code></strong> <em>(<code>-353 ms</code> vs #2)</em></td>
 <td class="p-3 align-top text-right"><strong><code>2,663 ms</code></strong> <em>(<code>-437 ms</code>)</em></td>
@@ -2196,7 +2196,7 @@ MtcEnterpriseExtension = {
 <li><strong>Operational Statefulness Risk (<code>LM-OTS</code> State Reuse vs. Stateless <code>ML-DSA</code> and Stateless <code>MTC</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Where a Pure <code>ML-DSA</code> chain beats <code>LMS</code> is <strong>statelessness</strong>: signing with a restored backup or cloned <code>ML-DSA</code> CA key never compromises the CA private key, whereas reusing the same <code>LM-OTS</code> leaf index $q$ on two different <code>TBSCertificate</code>s due to an HSM rollback or state clone allows Winternitz chain forgery at leaf $q$.</li>
 <li>Pre-publishing dedicated <code>LMS_M32_H5</code> (<code>32</code>-leaf) or <code>H20</code> (<code>1M</code>-leaf) Intermediates in MDS—one per physical FIPS 140-3 Level 3/4 HSM (<code>NIST SP 800-208 §6.1</code>), with cold spare Intermediates instead of state backups—contains this operational risk.</li>
-<li><strong>Why <code>MTC</code> (<code>"mtc"</code> / <code>"mtc-mds"</code>) Achieves the Best of Both Worlds</strong>: Because an <strong>MTC leaf hashes <code>FidoMtcLogEntry</code> directly into the SHA-256 Merkle tree without an <code>LM-OTS</code> one-time signature</strong>, <code>MTC</code> retains <strong>NIST Category 5 SHA-256 second-preimage security</strong> while being <strong>100% stateless (zero secret keys or OTS counters during Merkle tree construction)</strong> and shrinking the proof from <code>1,296 B</code> (<code>LMS_M32_H5</code>) down to <strong><code>83 B</code></strong>.</li>
+<li><strong>Why <code>MTC</code> (<code>"mtcl"</code> / <code>"mtc-mds"</code>) Achieves the Best of Both Worlds</strong>: Because an <strong>MTC leaf hashes <code>FidoMtcLogEntry</code> directly into the SHA-256 Merkle tree without an <code>LM-OTS</code> one-time signature</strong>, <code>MTC</code> retains <strong>NIST Category 5 SHA-256 second-preimage security</strong> while being <strong>100% stateless (zero secret keys or OTS counters during Merkle tree construction)</strong> and shrinking the proof from <code>1,296 B</code> (<code>LMS_M32_H5</code>) down to <strong><code>83 B</code></strong>.</li>
 </ul></li>
 </ol>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
@@ -2239,7 +2239,7 @@ MtcEnterpriseExtension = {
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
-<td class="p-3 align-top text-left"><strong>4. <code>fmt: "mtc"</code> / <code>"mtc-mds"</code></strong></td>
+<td class="p-3 align-top text-left"><strong>4. <code>fmt: "mtcl"</code> / <code>"mtc-mds"</code></strong></td>
 <td class="p-3 align-top text-center"><strong>Cat 5 SHA-256</strong> <em>(Stateless Tree)</em></td>
 <td class="p-3 align-top text-center">Cat 2 Lattice</td>
 <td class="p-3 align-top text-left"><strong><code>5,355 B</code> / <code>4,033 B</code> ✅ FITS</strong></td>
@@ -2275,7 +2275,7 @@ MtcEnterpriseExtension = {
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
-<td class="p-3 align-top text-left"><strong>4. <code>fmt: "mtc"</code> / <code>"mtc-mds"</code></strong></td>
+<td class="p-3 align-top text-left"><strong>4. <code>fmt: "mtcl"</code> / <code>"mtc-mds"</code></strong></td>
 <td class="p-3 align-top text-center"><strong>Cat 5 SHA-256</strong> <em>(Stateless Tree)</em></td>
 <td class="p-3 align-top text-center">Cat 3 Lattice</td>
 <td class="p-3 align-top text-left"><strong><code>7,524 B</code> / <code>5,562 B</code> ✅ FITS</strong></td>

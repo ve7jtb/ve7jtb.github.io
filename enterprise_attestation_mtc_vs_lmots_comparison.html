@@ -292,7 +292,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Credential Algorithm</th>
-<th class="p-3 font-semibold align-bottom text-center">Inline <code>"mtc"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof + serial)</th>
+<th class="p-3 font-semibold align-bottom text-center">Inline <code>"mtcl"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof + serial)</th>
 <th class="p-3 font-semibold align-bottom text-center">Enterprise <code>"mtc-mds"</code> (with <code>563 B</code> proof + serial)</th>
 <th class="p-3 font-semibold align-bottom text-center"><strong>Enterprise <code>"mtc-mds"</code> Proof-Less</strong> (serial in manifest only)</th>
 <th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=4$)</strong> ($3,008\text{ B}$ <code>attStmt</code> + serial)</th>
@@ -346,7 +346,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
     bar [5723, 7892, 10490, 4499, 5861]
     bar [3832, 5361, 7319, 2608, 3970]
     bar [3385, 4025, 4665, 2934, 3830]</pre></div>
-<p class="text-sm my-2"><em>(Legend: Bar 1 = Inline <code>"mtc"</code>; Bar 2 = Proof-Less <code>"mtc-mds"</code>; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)</em></p>
+<p class="text-sm my-2"><em>(Legend: Bar 1 = Inline <code>"mtcl"</code>; Bar 2 = Proof-Less <code>"mtc-mds"</code>; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)</em></p>
 <h3 id="23-key-wire-size-findings" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.3 Key Wire Size Findings</h3>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>The Category 5 <code>ML-DSA-87</code> Bottleneck</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
@@ -377,7 +377,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
         C --&gt;|mtcEntryDesc With-Proof| E[Branch 2: Landmark Subtree Proof]
         
         D --&gt; D1{Held manifest for caId?}
-        D1 --&gt;|No| D2[Fail or Request Client Retry with fmt: mtc]
+        D1 --&gt;|No| D2[Fail or Request Client Retry with fmt: mtcl]
         D1 --&gt;|Yes| D3[Lookup batchKeys by caId, serial]
         D3 --&gt; D4[Check deviceSerial matches authData ext if present]
         D4 --&gt; D5[Verify ML-DSA Signature over authData]
@@ -409,7 +409,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <li>In proof-less <code>mtc-mds</code>, the serial is bound in the manifest, making <code>"fido-mtc-ent"</code> on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).</li>
 </ul></li>
 <li><strong>Branch 4 (Manifest Drift &amp; Reseller Fallback)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, <code>mtc-mds</code> fails. The RP/client must initiate a fallback to inline <code>fmt: "mtc"</code> or <code>fmt: "packed"</code>, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.</li>
+<li>If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, <code>mtc-mds</code> fails. The RP/client must initiate a fallback to inline <code>fmt: "mtcl"</code> or <code>fmt: "packed"</code>, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.</li>
 </ul></li>
 <li><strong>Branch 5 (Revocation &amp; Key Life-Cycle Management)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Revocation requires tracking delta arrays of <code>revokedSerials</code> inside every manifest update.</li>
@@ -492,7 +492,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Conclusions &amp; Strategic Recommendation</h2>
       </div>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li><strong>For General Non-Enterprise Attestation (<code>fmt: "none"</code> / <code>fmt: "mtc-mds"</code> / <code>fmt: "mtc"</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>For General Non-Enterprise Attestation (<code>fmt: "none"</code> / <code>fmt: "mtc-mds"</code> / <code>fmt: "mtcl"</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong><code>mtc-mds</code> via FIDO MDS3 is the optimal path.</strong> It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.</li>
 </ul></li>
 <li><strong>For High-Assurance Enterprise Direct Attestation (<code>0x0A</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">

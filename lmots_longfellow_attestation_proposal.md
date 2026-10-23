@@ -215,13 +215,13 @@ Because the 15 static batch ancestor hashes occupy only **$15 \times 32\text{ B}
 
 ---
 
-### 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. `fmt: "mtc"` + `"fido-mtc-ent"`
+### 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. `fmt: "mtcl"` + `"fido-mtc-ent"`
 
 This section compares **only the two Enterprise Attestation designs** (`enterpriseAttestation` `0x0A = 1` or `2`). Both carry the **same signed device serial number**:
 - **Direct Enterprise HSS/LMS:** the standard RFC 8554 tree described above.
-- **Enterprise MTC (`fmt: "mtc"` + `"fido-mtc-ent"`):** from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses one stateless `ML-DSA`/`FN-DSA` key per device, sends `pubKey` inline, and carries a 17-hash `mtcCert`.
+- **Enterprise MTC (`fmt: "mtcl"` + `"fido-mtc-ent"`):** from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses one stateless `ML-DSA`/`FN-DSA` key per device, sends `pubKey` inline, and carries a 17-hash `mtcCert`.
 
-Non-enterprise batch formats (`mtc-mds`, batch `mtc`) are left out. They cannot carry a per-device serial.
+Non-enterprise batch formats (`mtc-mds`, batch `mtcl`) are left out. They cannot carry a per-device serial.
 
 #### 6.3.1 Carrying the Device Serial Number in Both Designs
 
@@ -287,7 +287,7 @@ The `7,609 B` USB CTAPHID single-message limit is 1 init packet (`57 B`) plus 12
 | **`ML-DSA-87` (`-50`)** | V / `2,592 B` | `2,698 B` | **`5,706 B`** (`97` fr) ✅ | **`4,650 B`** (`79` fr) ✅ | *`5,838 B`* (`99` fr) ✅ | `7,003 B` (`119` fr) ✅ *(`606 B` margin)* | **`10,490 B`** (`178` fr) ⚠️ **OVER HID LIMIT (`+2,881 B`)** | `-1,297 B` / `-4,784 B` |
 
 > [!NOTE]
-> **Normalization:** `pq_mtc_attestation_proposal.md` §8.1.1 quotes `5,931 / 6,571 / 7,211 B` for Enterprise `fmt: "mtc"` with a fixed `ML-DSA-44` key. Those figures use its larger `authData` estimate (`~198 B` more) and leave out the serial extension. The figures here put both designs on the same baseline. Sizing the MTC subtree to this section's `2^15` batch would shrink `mtcCert` to `499 B` (`-64 B`).
+> **Normalization:** `pq_mtc_attestation_proposal.md` §8.1.1 quotes `5,931 / 6,571 / 7,211 B` for Enterprise `fmt: "mtcl"` with a fixed `ML-DSA-44` key. Those figures use its larger `authData` estimate (`~198 B` more) and leave out the serial extension. The figures here put both designs on the same baseline. Sizing the MTC subtree to this section's `2^15` batch would shrink `mtcCert` to `499 B` (`-64 B`).
 
 > [!WARNING]
 > **Standard-tree provisioning tradeoff (`L = 1` vs. `L = 2`):**
