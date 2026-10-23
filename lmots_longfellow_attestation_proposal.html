@@ -166,7 +166,7 @@
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#61-self-contained-on-authenticator-storage-16-kb-total-persistent-storage" class="hover:underline">&sect;6.1 Self-Contained On-Authenticator Storage (~1.6 KB Total Persistent Storage)</a></div>
             <div><a href="#62-end-to-end-comparison-consumer-anonymous-zk-mode-vs-enterprise-direct-mode" class="hover:underline">&sect;6.2 End-to-End Comparison: Consumer Anonymous ZK Mode vs. Enterprise Direct Mode</a></div>
-            <div><a href="#63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-fmt-mtcl-fido-mtc-ent" class="hover:underline">&sect;6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. <code>fmt: "mtcl"</code> + <code>"fido-mtc-ent"</code></a></div>
+            <div><a href="#63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-enterprise-mtc-fmt-mtcl-fmt-mtc" class="hover:underline">&sect;6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. Enterprise MTC (fmt: "mtcl" / fmt: "mtc")</a></div>
           </div>
         </li>
           </ul>
@@ -557,7 +557,7 @@ LongfellowZkAttestationObject = {
 <tr>
 <td class="p-3 align-top text-left"><strong>Total CTAP 2.3 / WebAuthn Frame Size</strong></td>
 <td class="p-3 align-top text-left"><code>~4.66–5.20 KB</code> on USB bus $\to$ <code>~312–347 KB</code> to RP</td>
-<td class="p-3 align-top text-left"><strong><code>~4,011–5,706 B (~3.92–5.57 KB)</code> end-to-end</strong>, including the signed <code>"fido-mtc-ent"</code> <code>deviceSerial</code> extension (<code>5,066 B</code> for <code>ML-DSA-65</code>). Fits in a single <code>7,609 B</code> USB CTAPHID message for all 5 PQ credential algorithms (see §6.3)</td>
+<td class="p-3 align-top text-left"><strong><code>~4,011–5,706 B (~3.92–5.57 KB)</code> end-to-end</strong>, with hardware device serial binding (<code>5,030 B</code> for <code>ML-DSA-65</code>). Fits in a single <code>7,609 B</code> USB CTAPHID message for all 5 PQ credential algorithms (see §6.3)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Relying Party Verification Time</strong></td>
@@ -575,24 +575,21 @@ LongfellowZkAttestationObject = {
 <td class="p-3 align-top text-left"><strong>Dual-Mode Ready:</strong> The exact same <code>1.6 KB</code> key can pass the <code>3.0 KB</code> <code>attStmt</code> directly for <code>"enterprise"</code> RPs <strong>or</strong> let a participating platform wrap the 25-node witness in a 41-layer Longfellow ZK proof for <code>"indirect"</code> / <code>"direct"</code> consumer anonymity</td>
 </tr>
 </tbody></table></div>
-<h3 id="63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-fmt-mtcl-fido-mtc-ent" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. <code>fmt: "mtcl"</code> + <code>"fido-mtc-ent"</code></h3>
+<h3 id="63-enterprise-wire-size-comparison-with-device-serial-number-standard-rfc-8554-hsslms-vs-enterprise-mtc-fmt-mtcl-fmt-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. Enterprise MTC (fmt: "mtcl" / fmt: "mtc")</h3>
 <p class="text-sm my-2">This section compares <strong>only the two Enterprise Attestation designs</strong> (<code>enterpriseAttestation</code> <code>0x0A = 1</code> or <code>2</code>). Both carry the <strong>same signed device serial number</strong>:</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Direct Enterprise HSS/LMS:</strong> the standard RFC 8554 tree described above.</li>
-<li><strong>Enterprise MTC (<code>fmt: "mtcl"</code> + <code>"fido-mtc-ent"</code>):</strong> from <a href="./pq_mtc_attestation_proposal.html" class="text-[var(--primary)] hover:underline">pq_mtc_attestation_proposal.md §8.1–§8.3</a>. It uses one stateless <code>ML-DSA</code>/<code>FN-DSA</code> key per device, sends <code>pubKey</code> inline, and carries a 17-hash <code>mtcCert</code>.</li>
+<li><strong>Enterprise MTC (<code>fmt: "mtcl"</code> / <code>fmt: "mtc"</code>):</strong> from <a href="./pq_mtc_attestation_proposal.html" class="text-[var(--primary)] hover:underline">pq_mtc_attestation_proposal.md §8.1–§8.3</a>. It uses one stateless <code>ML-DSA</code>/<code>FN-DSA</code> key per device, committing the hardware serial number directly into the Merkle tree leaf hash (<code>FidoMtcLogEntry.extensions = deviceSerial</code>) and manufacturer manifest with zero wire extension overhead.</li>
 </ul>
 <p class="text-sm my-2">Non-enterprise batch formats (compact <code>mtc</code>, batch <code>mtcl</code>) are left out. They cannot carry a per-device serial.</p>
 <div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2"><strong>Authenticate 2026 CTAP2 TWG Naming Alignment:</strong> Following consensus in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted format (formerly <code>mtc-mds</code>) is named <strong><code>fmt: "mtc"</code></strong>, while the inline large format is designated <strong><code>fmt: "mtcl"</code></strong>.</p></div>
-<h4 id="631-carrying-the-device-serial-number-in-both-designs" class="text-base font-semibold text-[var(--foreground)]">6.3.1 Carrying the Device Serial Number in Both Designs</h4>
-<p class="text-sm my-2">Both designs set the <code>ED</code> flag (<code>0x80</code>) and add the <strong>same signed <code>authenticatorData.extensions</code> entry</strong> (<code>pq_mtc_attestation_proposal.md</code> §8.3):</p>
-<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>"fido-mtc-ent": { "deviceSerial": tstr / uint }   ; e.g. { "deviceSerial": "123456" }</code></pre></div>
-<p class="text-sm my-2">The CBOR encoding is <code>A1</code> + <code>"fido-mtc-ent"</code> (13 B) + <code>A1</code> + <code>"deviceSerial"</code> (13 B) + <code>"123456"</code> (7 B) = <code>35 B</code>. This section budgets <strong><code>36 B</code></strong> for it. In both designs the attestation signature covers it.</p>
-<p class="text-sm my-2">Neither design pays extra wire bytes to also bind the serial to the CA or factory. The difference is <em>how</em> that binding is made:</p>
+<h4 id="631-binding-the-device-serial-number-in-both-designs" class="text-base font-semibold text-[var(--foreground)]">6.3.1 Binding the Device Serial Number in Both Designs</h4>
+<p class="text-sm my-2">Neither design requires a separate serial extension in <code>authenticatorData.extensions</code>. Instead, both authenticate the hardware serial number out of band with <strong>zero extra wire bytes</strong> in <code>authData</code>:</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Binding Layer</th>
-<th class="p-3 font-semibold align-bottom text-left">Enterprise MTC (<code>"fido-mtc-ent"</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Enterprise MTC (Leaf / Manifest Binding)</th>
 <th class="p-3 font-semibold align-bottom text-left">Standard RFC 8554 HSS/LMS</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
@@ -612,7 +609,7 @@ LongfellowZkAttestationObject = {
 </tr>
 </tbody></table></div>
 <h4 id="632-fixed-attstmt-components" class="text-base font-semibold text-[var(--foreground)]">6.3.2 Fixed <code>attStmt</code> Components</h4>
-<p class="text-sm my-2">Both designs use the same <code>authData</code> baseline as §2.1 and §6.2: <code>PK_len + 70 B</code> (16-byte <code>credentialId</code>) <strong>plus <code>36 B</code> for <code>"fido-mtc-ent"</code></strong>, giving <code>authData = PK_len + 106 B</code>. A 32-byte <code>credentialId</code> plus full CTAP CBOR framing adds <code>+52 B</code> to every column and does not change the deltas. CBOR map-key framing inside <code>attStmt</code> (<code>~30–40 B</code>) is left out on both sides.</p>
+<p class="text-sm my-2">Both designs use the same <code>authData</code> baseline as §2.1 and §6.2: <code>PK_len + 70 B</code> (16-byte <code>credentialId</code>), requiring zero wire bytes for a serial extension. A 32-byte <code>credentialId</code> plus full CTAP CBOR framing adds <code>+52 B</code> to every column and does not change the deltas. CBOR map-key framing inside <code>attStmt</code> (<code>~30–40 B</code>) is left out on both sides.</p>
 <p class="text-sm my-2"><strong>Standard RFC 8554 HSS signature (<code>L = 1</code>, <code>LMS_SHA256_M32_H25</code>):</strong> <code>u32 Nspk = 0</code> (4 B) + <code>u32 q</code> (4 B) + LM-OTS signature + <code>u32</code> LMS type (4 B) + 25 × 32 B path (800 B), plus the 16-byte <code>I</code> so the RP can select the tree's 60 B public key from MDS:</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">

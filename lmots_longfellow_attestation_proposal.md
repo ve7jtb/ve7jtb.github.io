@@ -208,36 +208,28 @@ Because the 15 static batch ancestor hashes occupy only **$15 \times 32\text{ B}
 | **Authenticator `makeCredential` Latency** | `~15 ms` (Profile 1 BDS) or `~138 ms` (Profile 2 RO Cache) | **`~40 ms`** (`~8 ms` sign + `~32 ms` for 31 stateless leaves / `32,209` SHA-256 blocks) |
 | **Host Storage & Prover Latency** | `544 B` Subtree Token (if not on-key) + **`~785–1,470 ms` Longfellow ZK prover** | **`0 Bytes` + `0 ms` (pure CTAP 2.3 passthrough)** |
 | **WebAuthn `attStmt` Payload Size** | **310–345 KB** (`zkProof` + `batchRootId`) | **`3,008 B (~2.94 KB)`** (`2,992 B` standard RFC 8554 HSS `L=1` signature: `4 B` `Nspk` + `4 B` $q$ + `2,180 B` LM-OTS sig + `4 B` LMS type + `800 B` 25-node path; plus `16 B` `I` to select the tree — **$>100\times$ smaller**) |
-| **Total CTAP 2.3 / WebAuthn Frame Size** | `~4.66–5.20 KB` on USB bus $\to$ `~312–347 KB` to RP | **`~4,011–5,706 B (~3.92–5.57 KB)` end-to-end**, including the signed `"fido-mtc-ent"` `deviceSerial` extension (`5,066 B` for `ML-DSA-65`). Fits in a single `7,609 B` USB CTAPHID message for all 5 PQ credential algorithms (see §6.3) |
+| **Total CTAP 2.3 / WebAuthn Frame Size** | `~4.66–5.20 KB` on USB bus $\to$ `~312–347 KB` to RP | **`~4,011–5,706 B (~3.92–5.57 KB)` end-to-end**, with hardware device serial binding (`5,030 B` for `ML-DSA-65`). Fits in a single `7,609 B` USB CTAPHID message for all 5 PQ credential algorithms (see §6.3) |
 | **Relying Party Verification Time** | **`~480 ms`** (Longfellow GKR+Ligero verifier) | **`~0.08 ms (80 µs)`** (`~600–1,120` SHA-256 blocks — **`~6,000×` faster**) |
 | **Hardware Auditability & Trust Anchor** | **Zero-Knowledge Anonymity:** Unlinkable across RPs; RP trusts single 32 B `Batch Root ID` in FIDO MDS | **Built-In Subtree Auditability:** Upper 15 bits of $q$ ($\lfloor q / 1024 \rfloor$) = exact Device ID; lower 10 bits ($q \bmod 1024$) = exact registration count; RP trusts a single `60 B` standard HSS/LMS public key (`I` + `T[1]`) with zero X.509 `x5c` chains |
 | **Dual-Mode Hardware Compatibility** | Native `"longfellow-lmots-zk"` (with optional `"enterprise"` passthrough) | **Dual-Mode Ready:** The exact same `1.6 KB` key can pass the `3.0 KB` `attStmt` directly for `"enterprise"` RPs **or** let a participating platform wrap the 25-node witness in a 41-layer Longfellow ZK proof for `"indirect"` / `"direct"` consumer anonymity |
 
 ---
 
-### 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. `fmt: "mtcl"` + `"fido-mtc-ent"`
+### 6.3 Enterprise Wire-Size Comparison with Device Serial Number: Standard RFC 8554 HSS/LMS vs. Enterprise MTC (fmt: "mtcl" / fmt: "mtc")
 
 This section compares **only the two Enterprise Attestation designs** (`enterpriseAttestation` `0x0A = 1` or `2`). Both carry the **same signed device serial number**:
 - **Direct Enterprise HSS/LMS:** the standard RFC 8554 tree described above.
-- **Enterprise MTC (`fmt: "mtcl"` + `"fido-mtc-ent"`):** from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses one stateless `ML-DSA`/`FN-DSA` key per device, sends `pubKey` inline, and carries a 17-hash `mtcCert`.
+- **Enterprise MTC (`fmt: "mtcl"` / `fmt: "mtc"`):** from [pq_mtc_attestation_proposal.md §8.1–§8.3](file:///Users/jbradley/.gemini/antigravity/scratch/GitHub/ve7jtb.github.io/pq_mtc_attestation_proposal.md). It uses one stateless `ML-DSA`/`FN-DSA` key per device, committing the hardware serial number directly into the Merkle tree leaf hash (`FidoMtcLogEntry.extensions = deviceSerial`) and manufacturer manifest with zero wire extension overhead.
 
 Non-enterprise batch formats (compact `mtc`, batch `mtcl`) are left out. They cannot carry a per-device serial.
 > [!NOTE]
 > **Authenticate 2026 CTAP2 TWG Naming Alignment:** Following consensus in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted format (formerly `mtc-mds`) is named **`fmt: "mtc"`**, while the inline large format is designated **`fmt: "mtcl"`**.
 
-#### 6.3.1 Carrying the Device Serial Number in Both Designs
+#### 6.3.1 Binding the Device Serial Number in Both Designs
 
-Both designs set the `ED` flag (`0x80`) and add the **same signed `authenticatorData.extensions` entry** (`pq_mtc_attestation_proposal.md` §8.3):
+Neither design requires a separate serial extension in `authenticatorData.extensions`. Instead, both authenticate the hardware serial number out of band with **zero extra wire bytes** in `authData`:
 
-```cddl
-"fido-mtc-ent": { "deviceSerial": tstr / uint }   ; e.g. { "deviceSerial": "123456" }
-```
-
-The CBOR encoding is `A1` + `"fido-mtc-ent"` (13 B) + `A1` + `"deviceSerial"` (13 B) + `"123456"` (7 B) = `35 B`. This section budgets **`36 B`** for it. In both designs the attestation signature covers it.
-
-Neither design pays extra wire bytes to also bind the serial to the CA or factory. The difference is *how* that binding is made:
-
-| Binding Layer | Enterprise MTC (`"fido-mtc-ent"`) | Standard RFC 8554 HSS/LMS |
+| Binding Layer | Enterprise MTC (Leaf / Manifest Binding) | Standard RFC 8554 HSS/LMS |
 | :--- | :--- | :--- |
 | **Device-signed serial** | `deviceSerial` in `authData`, signed by the single-device `ML-DSA` key | `deviceSerial` in `authData`, signed by the one-time LM-OTS key at leaf $q$ |
 | **CA-committed serial** | `FidoMtcLogEntry` is a FIDO-defined leaf. The RP rebuilds it using `deviceSerial` taken from `authData`, the same way it already takes `aaguid` (§4.1). This adds **`0 B`**, so `mtcCert` stays **`563 B`**. *(Sending the serial again in `MtcProof.extensions`, as §8.3 also permits, would add `~10 B`.)* | A standard RFC 8554 leaf is fixed: $T[r] = H(I \parallel r \parallel \texttt{D\_LEAF} \parallel K)$, so there is **no room for a serial in the leaf**. Instead, the tree position authenticates the **Device ID** $d = \lfloor q / 1024 \rfloor$. The factory's signed provisioning manifest (`d → deviceSerial`, delivered to the enterprise IdP with the inventory) completes the binding. This adds **`0 B`** on the wire. Alternatively, define `deviceSerial` := `I`‖`d`, and no manifest is needed |
@@ -245,7 +237,7 @@ Neither design pays extra wire bytes to also bind the serial to the CA or factor
 
 #### 6.3.2 Fixed `attStmt` Components
 
-Both designs use the same `authData` baseline as §2.1 and §6.2: `PK_len + 70 B` (16-byte `credentialId`) **plus `36 B` for `"fido-mtc-ent"`**, giving `authData = PK_len + 106 B`. A 32-byte `credentialId` plus full CTAP CBOR framing adds `+52 B` to every column and does not change the deltas. CBOR map-key framing inside `attStmt` (`~30–40 B`) is left out on both sides.
+Both designs use the same `authData` baseline as §2.1 and §6.2: `PK_len + 70 B` (16-byte `credentialId`), requiring zero wire bytes for a serial extension. A 32-byte `credentialId` plus full CTAP CBOR framing adds `+52 B` to every column and does not change the deltas. CBOR map-key framing inside `attStmt` (`~30–40 B`) is left out on both sides.
 
 **Standard RFC 8554 HSS signature (`L = 1`, `LMS_SHA256_M32_H25`):** `u32 Nspk = 0` (4 B) + `u32 q` (4 B) + LM-OTS signature + `u32` LMS type (4 B) + 25 × 32 B path (800 B), plus the 16-byte `I` so the RP can select the tree's 60 B public key from MDS:
 

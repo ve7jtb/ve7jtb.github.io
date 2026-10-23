@@ -215,7 +215,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <li><strong>Lookup Key</strong>: Uniformly uses <strong><code>(caId, serial)</code></strong>—the device serial number is never used as the primary dictionary lookup key.</li>
 <li><strong>Individual Binding</strong>: The manifest maps each <code>(caId, serial)</code> to a physical <code>deviceSerial</code>.</li>
 <li><strong>Proof-Less Optimization (<code>mtcKeyRef</code>)</strong>: Because the purchaser's Relying Party (RP) already holds and cryptographically verifies the entire manifest, the $563\text{-byte}$ Merkle inclusion proof is redundant and can be omitted.</li>
-<li><strong>Wire Serial Extension</strong>: The <code>36 B</code> <code>"fido-mtc-ent"</code> extension in <code>authData.extensions</code> is optional on the wire because the manifest already binds the key to the hardware serial.</li>
+<li><strong>Zero Wire Serial Overhead</strong>: No separate serial extension is sent on the wire. The hardware serial number is authenticated directly via the manufacturer's signed manifest (<code>MtcBatchKeyEntry.deviceSerial</code>) or committed inside the Merkle tree leaf hash (<code>FidoMtcLogEntry.extensions</code>), eliminating wire overhead and duplicate fields.</li>
 </ul>
 <h3 id="13-architectural-comparison-non-enterprise-vs-enterprise-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.3 Architectural Comparison: Non-Enterprise vs. Enterprise <code>mtc</code></h3>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
@@ -276,7 +276,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <p class="text-sm my-2">For both schemes, the total <code>MakeCredential</code> response consists of:</p>
 <div class="overflow-x-auto py-1 text-sm my-2">$$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$</div>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><strong><code>authData</code> Baseline</strong>: $70\text{ B}$ (RP ID hash, flags, counter, credential ID, and user public key) + $36\text{ B}$ if carrying the signed <code>"fido-mtc-ent"</code> serial number.</li>
+<li><strong><code>authData</code> Baseline</strong>: $70\text{ B}$ (RP ID hash, flags, counter, credential ID, and user public key) with zero serial extension overhead on the wire.</li>
 <li><strong>Enterprise <code>mtc</code> <code>attStmt</code></strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><em>With Proof</em>: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $563\text{ B}$ <code>MTCProof</code>.</li>
 <li><em>Proof-Less</em>: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $\sim 30\text{ B}$ <code>mtcKeyRef</code>.</li>
@@ -292,11 +292,11 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Credential Algorithm</th>
-<th class="p-3 font-semibold align-bottom text-center">Inline <code>"mtcl"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof + serial)</th>
-<th class="p-3 font-semibold align-bottom text-center">Enterprise <code>"mtc"</code> (with <code>563 B</code> proof + serial)</th>
-<th class="p-3 font-semibold align-bottom text-center"><strong>Enterprise <code>"mtc"</code> Proof-Less</strong> (serial in manifest only)</th>
-<th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=4$)</strong> ($3,008\text{ B}$ <code>attStmt</code> + serial)</th>
-<th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=8$)</strong> ($1,952\text{ B}$ <code>attStmt</code> + serial)</th>
+<th class="p-3 font-semibold align-bottom text-center">Inline <code>"mtcl"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof)</th>
+<th class="p-3 font-semibold align-bottom text-center">Enterprise <code>"mtc"</code> (with <code>563 B</code> proof)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>Enterprise <code>"mtc"</code> Proof-Less</strong> (manifest-resolved)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=4$)</strong> ($3,008\text{ B}$ <code>attStmt</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=8$)</strong> ($1,952\text{ B}$ <code>attStmt</code>)</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-44</code></strong> (<code>-48</code>)</td>
@@ -405,8 +405,8 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <li><strong>Branch 2 (Landmark Proof Inclusion — <code>mtcEntryDesc</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>If the authenticator belongs to a contractor or BYOD scenario where the RP does not hold the manifest, the RP parses <code>mtcProof</code>, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB.</li>
 </ul></li>
-<li><strong>Branch 3 (Serial Extension Discrepancy Resolution)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>In proof-less <code>mtc</code>, the serial is bound in the manifest, making <code>"fido-mtc-ent"</code> on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).</li>
+<li><strong>Branch 3 (Manifest Serial Validation &amp; Inventory Lookup)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Because a separate wire serial extension is omitted, the RP extracts the hardware serial number directly from the manufacturer's manifest record (or leaf commitment in <code>fmt: "mtcl"</code>), verifying it against the organization's asset inventory.</li>
 </ul></li>
 <li><strong>Branch 4 (Manifest Drift &amp; Reseller Fallback)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, <code>mtc</code> fails. The RP/client must initiate a fallback to inline <code>fmt: "mtcl"</code> or <code>fmt: "packed"</code>, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.</li>

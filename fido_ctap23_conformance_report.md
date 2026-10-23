@@ -5,7 +5,6 @@
 > Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
 > - **`fmt: "mtc"`** (formerly `mtc-mds`): The compact, preferred default format where public keys are omitted from the wire and resolved out-of-band via FIDO MDS3.
 > - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key.
-> - **`"fido-mtc-ent"`**: Retained as the signed enterprise device serial extension.
 
 - **Log Files Analyzed**:
   1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`211,147` total lines / `28.31 MB`, including `56,117` lines in latest Run 20 `L155031–L211147` with `250 / 250` `100.00%` PASS across all 18 algorithms + RFC 8554 / NIST SP 800-208 HSS/LMS Root & Pre-Published Intermediate CAs + HSS/LMS `alg: -46` MTC Subtree Checkpoints; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)

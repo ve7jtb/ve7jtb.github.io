@@ -5,7 +5,6 @@
 > Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
 > - **`fmt: "mtc"`** (formerly `mtc`): The compact, preferred default format where public keys are omitted from the wire and resolved out-of-band via FIDO MDS3 or manufacturer manifests.
 > - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key.
-> - **`"fido-mtc-ent"`**: Retained as the signed enterprise device serial extension.
 ### Architectural Evaluation: Transport Wire Sizes, Manifest Distribution, and Relying Party Validation Complexity
 
 > [!IMPORTANT]
@@ -55,7 +54,7 @@ In enterprise deployments (`enterpriseAttestation` `0x0A = 1` or `2`):
 - **Lookup Key**: Uniformly uses **`(caId, serial)`**—the device serial number is never used as the primary dictionary lookup key.
 - **Individual Binding**: The manifest maps each `(caId, serial)` to a physical `deviceSerial`.
 - **Proof-Less Optimization (`mtcKeyRef`)**: Because the purchaser's Relying Party (RP) already holds and cryptographically verifies the entire manifest, the $563\text{-byte}$ Merkle inclusion proof is redundant and can be omitted.
-- **Wire Serial Extension**: The `36 B` `"fido-mtc-ent"` extension in `authData.extensions` is optional on the wire because the manifest already binds the key to the hardware serial.
+- **Zero Wire Serial Overhead**: No separate serial extension is sent on the wire. The hardware serial number is authenticated directly via the manufacturer's signed manifest (`MtcBatchKeyEntry.deviceSerial`) or committed inside the Merkle tree leaf hash (`FidoMtcLogEntry.extensions`), eliminating wire overhead and duplicate fields.
 
 ### 1.3 Architectural Comparison: Non-Enterprise vs. Enterprise `mtc`
 
@@ -79,7 +78,7 @@ Under CTAP 2.0–2.3, USB HID frames enforce a maximum single-message payload of
 
 For both schemes, the total `MakeCredential` response consists of:
 $$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$
-- **`authData` Baseline**: $70\text{ B}$ (RP ID hash, flags, counter, credential ID, and user public key) + $36\text{ B}$ if carrying the signed `"fido-mtc-ent"` serial number.
+- **`authData` Baseline**: $70\text{ B}$ (RP ID hash, flags, counter, credential ID, and user public key) with zero serial extension overhead on the wire.
 - **Enterprise `mtc` `attStmt`**:
   - *With Proof*: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $563\text{ B}$ `MTCProof`.
   - *Proof-Less*: Post-Quantum Signature ($2,420\text{–}4,627\text{ B}$) + $\sim 30\text{ B}$ `mtcKeyRef`.
@@ -91,7 +90,7 @@ $$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$
 
 The table below contrasts the end-to-end `MakeCredential` payload sizes across NIST post-quantum credential algorithms, evaluated against the **$7,609\text{-byte}$ USB CTAPHID limit**:
 
-| Credential Algorithm | Inline `"mtcl"` (sig + `pubKey` + `563 B` proof + serial) | Enterprise `"mtc"` (with `563 B` proof + serial) | **Enterprise `"mtc"` Proof-Less** (serial in manifest only) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt` + serial) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt` + serial) |
+| Credential Algorithm | Inline `"mtcl"` (sig + `pubKey` + `563 B` proof) | Enterprise `"mtc"` (with `563 B` proof) | **Enterprise `"mtc"` Proof-Less** (manifest-resolved) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt`) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt`) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **`ML-DSA-44`** (`-48`) | $5,723\text{ B}$ ✅ | $4,401\text{ B}$ ✅ | **$3,832\text{ B}$** ✅ | $4,441\text{ B}$ ✅ | **$3,385\text{ B}$** ✅ |
 | **`ML-DSA-65`** (`-49`) | $7,892\text{ B}$ ⚠️ *(+283 B)* | $5,930\text{ B}$ ✅ | **$5,361\text{ B}$** ✅ | $5,081\text{ B}$ ✅ | **$4,025\text{ B}$** ✅ |
@@ -162,8 +161,8 @@ To verify an `mtc` attestation statement, an Enterprise Relying Party must imple
    - **Upfront Table Validation**: Before accepting any lookup result, the RP must have verified the manifest table against the manufacturer's Root CA signature or recomputed the Merkle tree over all leaves to verify `subtrees[].rootHash`.
 2. **Branch 2 (Landmark Proof Inclusion — `mtcEntryDesc`)**:
    - If the authenticator belongs to a contractor or BYOD scenario where the RP does not hold the manifest, the RP parses `mtcProof`, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB.
-3. **Branch 3 (Serial Extension Discrepancy Resolution)**:
-   - In proof-less `mtc`, the serial is bound in the manifest, making `"fido-mtc-ent"` on the wire optional. The RP must handle three states: (a) serial in manifest only, (b) serial in extension only, or (c) serial in both (requiring strict equality validation).
+3. **Branch 3 (Manifest Serial Validation & Inventory Lookup)**:
+   - Because a separate wire serial extension is omitted, the RP extracts the hardware serial number directly from the manufacturer's manifest record (or leaf commitment in `fmt: "mtcl"`), verifying it against the organization's asset inventory.
 4. **Branch 4 (Manifest Drift & Reseller Fallback)**:
    - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc` fails. The RP/client must initiate a fallback to inline `fmt: "mtcl"` or `fmt: "packed"`, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.
 5. **Branch 5 (Revocation & Key Life-Cycle Management)**:

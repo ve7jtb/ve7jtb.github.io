@@ -7,7 +7,6 @@ Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/do
 > Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
 > - **`fmt: "mtc"`** (formerly `mtc-mds`): The compact, preferred default format. The multi-kilobyte post-quantum public key is omitted from the wire payload and fetched via FIDO MDS3 (`MtcTrustAnchor.batchKeys`) or the vendor's manifest.
 > - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key alongside the Merkle inclusion proof.
-> - **`"fido-mtc-ent"`**: Retained as the signed enterprise device serial extension.
 
 > [!IMPORTANT]
 > **Attribution & Scope of Fidont:**
@@ -233,7 +232,7 @@ Given `(fmt, attStmt, authenticatorData, clientDataHash)`:
    - Compute `expectedSubtreeHash` using RFC 9162 §2.1.3.2 over `(index = mtcCert.serial & 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)`.
    - Verify that `(mtcProof.start, mtcProof.end, expectedSubtreeHash)` matches an active landmark entry in `mtcTrustAnchor.trustedSubtrees` (or, if `mtcProof.signatures` is non-empty, satisfies `mtcTrustAnchor.quorum` over `mtcTrustAnchor.cosigners`).
    - **Proof-less `mtcKeyRef` (`"mtc"` only, §8.6):** if `mtcCert` has no `mtcProof`, skip this step. In step 5, use the matched `MtcBatchKeyEntry`'s `notBefore` / `notAfter` in place of `mtcCert`'s. This is permitted only if the RP verified the signature (or `rootHash`) over the whole `mtcTrustAnchor.batchKeys` table when it loaded the table. Otherwise fail verification.
-   - **Enterprise device serial (§8.3, §8.6):** if the matched entry contains `deviceSerial`, return it as the device serial. If `authenticatorData.extensions[fido-mtc-ent]` is also present, verify that the two are equal. The extension is optional for proof-less `"mtc"`, but required for `"mtcl"`, where it is the only source of the serial.
+   - **Enterprise device serial (§8.3, §8.6):** if the matched entry contains `deviceSerial`, return it as the device serial. In `fmt: "mtcl"`, the device serial is committed in `MtcProof.extensions` in the verified leaf hash.
 7. **Return Result:**
    - Return Attestation Type `Basic` (or `AttCA`) and the matched `mtcTrustAnchor`.
 
@@ -581,17 +580,17 @@ Loading **both** the Enterprise `mtcCert` and the per-enterprise-batch-key X.509
    - When `enterpriseAttestation` (`0x0A = 1` or `2`) is requested and:
      - `attestationFormatsPreference[0] == "packed"`, **or**
      - `attestationFormatsPreference` (`0x0B`) is **empty or omitted** and the total response with `enterprise_x509_der` fits within the single-frame `7,609 B` USB HID budget (`authData.len() + sig.len() + x5c.len() + 60 <= 7,550 B`),
-   - The authenticator selects **`fmt: "packed"`** and returns the provisioned per-enterprise-batch-key X.509 certificate in **`attStmt.x5c = [enterprise_x509_der]`**, signed by `AttestationId::Enterprise` (with `fido-mtc-ent` also signed inside `authenticatorData.extensions`).
+   - The authenticator selects **`fmt: "packed"`** and returns the provisioned per-enterprise-batch-key X.509 certificate in **`attStmt.x5c = [enterprise_x509_der]`**, signed by `AttestationId::Enterprise` (with the hardware serial number in the X.509 certificate extension OID `1.3.6.1.4.1.45724.1.1.2`).
    - This gives existing Enterprise Relying Parties (which often omit `0x0B` or pass `0x0B: ["packed"]`) a standard per-device X.509 certificate chain (`x5c`) automatically whenever certificate and credential sizes allow (e.g., classical ES256/EdDSA credentials, or `ML-DSA` credentials with compact/classical Enterprise X.509 certificates).
 
 2. **Case B — `"mtcl"` First in `0x0B`, OR `0x0B` Empty/Omitted and `x5c` Exceeds `7,609 B` Budget**:
-   - When `"mtcl"` precedes `"packed"` in `0x0B` (`0x0B: ["mtcl", ...]`)), **or** when `0x0B` is empty/omitted and including the post-quantum `x5c` certificate would exceed the `7,609 B` USB HID frame limit, the authenticator returns **`fmt: "mtcl"`** with its unique inline `pubKey` (`1,322 B` for `ML-DSA-44`), its 17-hash `mtcCert` (`563 B`), and the signed `fido-mtc-ent` extension in `authenticatorData`.
+   - When `"mtcl"` precedes `"packed"` in `0x0B` (`0x0B: ["mtcl", ...]`)), **or** when `0x0B` is empty/omitted and including the post-quantum `x5c` certificate would exceed the `7,609 B` USB HID frame limit, the authenticator returns **`fmt: "mtcl"`** with its unique inline `pubKey` (`1,322 B` for `ML-DSA-44`) and its 17-hash `mtcCert` (`563 B`) committing the device serial number in its leaf hash.
    - Unlike Non-Enterprise attestation (which has a Tier 3 `"mtc"` fallback using MDS `batchKeys`), single-device Enterprise public keys are never published in **public** FIDO MDS (`batchKeys: []`). For RPs that do not hold the manufacturer's manifest, Enterprise attestation therefore stops at Tier 2 (`"mtcl"`). With an `ML-DSA-44` Enterprise key, `"mtcl"` fits inside `7,609 B` for all credential algorithms (`5,931 B` for `ML-DSA-44`, `6,571 B` for `ML-DSA-65`, and `7,211 B` for `ML-DSA-87`).
 
 3. **Case C — `"mtc"` via the Enterprise Manifest (§8.6)**:
    - Applies when `"mtc"` is first in `0x0B`, **or** when `0x0B` is empty/omitted and Enterprise Attestation is requested, in **either** mode: vendor-facilitated (`0x0A = 1`) or platform-managed (`0x0A = 2`). Manufacturers provide the signed manifest to every key purchaser, and the RP receiving Enterprise Attestation is normally that purchaser.
-   - The authenticator returns `fmt: "mtc"` with a proof-less `mtcKeyRef` (`{caId, serial}`, `~20–30 B`). The RP resolves the device `pubKey` and `deviceSerial` by `(caId, serial)` from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. The signed `fido-mtc-ent` serial extension is **OPTIONAL** here (§8.6.1).
-   - An RP without the manifest (e.g. keys bought through a reseller, or BYOD into another organization) requests `0x0B: ["mtcl"]` or `["packed"]`. It then receives Case B or Case A, **with** `fido-mtc-ent`.
+   - The authenticator returns `fmt: "mtc"` with a proof-less `mtcKeyRef` (`{caId, serial}`, `~20–30 B`). The RP resolves the device `pubKey` and `deviceSerial` by `(caId, serial)` from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. No wire extension in `authenticatorData.extensions` is needed.
+   - An RP without the manifest (e.g. keys bought through a reseller, or BYOD into another organization) requests `0x0B: ["mtcl"]` or `["packed"]`. It then receives Case B (with device serial in the `mtcCert` leaf) or Case A (with serial in the X.509 certificate).
 
 ```mermaid
 flowchart TD
@@ -607,8 +606,8 @@ flowchart TD
         EntKey["AttestationId::Enterprise (1 unique key per authenticator)<br/>Loaded with: Single-Device mtcCert (563 B) + Per-Device X.509 x5c (4,127 B)"]
         EntPref{"Check 0x0B<br/>(attestationFormatsPreference)"}
         EntSize{"Does 'packed' with x5c fit<br/>in 7,609 B USB HID budget?"}
-        EntPacked["Tier 1: Return fmt = 'packed'<br/>attStmt: { alg, sig, x5c: [enterprise_x509_der] }<br/>+ Signed 'fido-mtc-ent' serial in authData"]
-        EntMtc["Tier 2: Return fmt = 'mtcl'<br/>attStmt: { alg, sig, pubKey, mtcCert (17-hash proof) }<br/>+ Signed 'fido-mtc-ent' serial in authData"]
+        EntPacked["Tier 1: Return fmt = 'packed'<br/>attStmt: { alg, sig, x5c: [enterprise_x509_der] }<br/>(serial in cert / leaf)"]
+        EntMtc["Tier 2: Return fmt = 'mtcl'<br/>attStmt: { alg, sig, pubKey, mtcCert (17-hash proof) }<br/>(serial in cert / leaf)"]
         EntKey --> EntPref
         EntPref -- "0x0B[0] == 'packed'" --> EntPacked
         EntPref -- "0x0B[0] == 'mtcl'" --> EntMtc
@@ -662,58 +661,26 @@ struct {
 
 ---
 
-### 8.3 Including the Device Serial Number in the Signed Data (`fido-mtc-ent`)
+### 8.3 Enterprise Device Serial Number Binding (Leaf Hash & Manifest)
 
 In standard X.509 Enterprise Attestation (`fmt: "packed"`), the authenticator's hardware serial number (e.g., `"123456"`) is carried in the FIDO Enterprise Serial Number X.509 extension (**`OID 1.3.6.1.4.1.45724.1.1.2`**, `id-fido-gen-ce-sernum`, encoded as an ASN.1 `OCTET STRING`).
 
-For Enterprise MTC Attestation (`fmt: "mtcl"`), because each authenticator has its own **single-device Enterprise batch key (`AttestationId::Enterprise`)**, the device serial number is committed in two ways:
-1. Inside `MtcProof.extensions` (`FidoMtcLogEntry.extensions`, committed into the Enterprise Merkle tree leaf hash), and
-2. Inside the signed `authenticatorData.extensions` map under **`fido-mtc-ent`**, containing **only the device serial number** (`"deviceSerial"`), since `signCount` and `attestedCredentialData.credentialId` are already natively present and signed in `authenticatorData`.
+For Enterprise MTC Attestation (`fmt: "mtc"` and `fmt: "mtcl"`), a separate wire serial extension in `authenticatorData.extensions` is **omitted**. Instead, the device serial number is bound and authenticated through two native mechanisms:
+1. **Committed in the Merkle Tree Leaf (`FidoMtcLogEntry.extensions`)**:
+   Inside the device's Merkle Tree Certificate (`mtcCert`), the hardware serial number is committed directly into the leaf hash ($H(\text{pubKey} \parallel \text{aaguid} \parallel \dots \parallel \text{deviceSerial})$). In `fmt: "mtcl"` (or `fmt: "mtc"` with proof), the Relying Party verifies that this leaf hash ascents to the Root CA-signed `rootHash`.
+2. **Delivered in the Manufacturer Manifest (`MtcBatchKeyEntry.deviceSerial`)**:
+   In compact manifest-assisted mode (`fmt: "mtc"`), the enterprise IdP resolves `deviceSerial` directly from the manufacturer's pre-loaded signed manifest keyed by `(caId, serial)`. The device's attestation signature proves possession of the private key matching that manifest entry.
 
-#### Signed Extension in `authenticatorData.extensions`: `fido-mtc-ent`
+#### Advantages of Omitting a Wire Serial Extension
 
-When `enterpriseAttestation` (`0x0A`) is requested and accepted by the authenticator, it adds the signed serial extension. This is **REQUIRED** for `"mtcl"` and `"packed"` (`x5c`), and **OPTIONAL** for proof-less `"mtc"`, where the RP obtains the serial from the manufacturer's manifest (§8.6.1):
-1. The authenticator sets the **`ED` (Extension Data included, bit 7 = `0x80`)** flag in `authenticatorData.flags`.
-2. It constructs the `fido-mtc-ent` CBOR map inside `authenticatorData.extensions` containing only `"deviceSerial"`:
-
-```cddl
-; Included in authenticatorData.extensions ONLY during Enterprise Attestation (0x0A = 1 or 2)
-$$extension-output //= (
-    fido-mtc-ent: MtcEnterpriseExtension
-)
-
-MtcEnterpriseExtension = {
-    "deviceSerial" : tstr / uint   ; Device serial number (e.g., "123456" from MtcProof.extensions, or mtcCert.serial)
-}
-```
-
-#### Concrete Wire Layout (`authenticatorData` Signed by `AttestationId::Enterprise`)
-
-```text
-+---------------------------------------------------------------------------------------------------+
-|                                   authenticatorData (Signed!)                                     |
-+-------------------+---------+----------+--------------------------+-------------------------------+
-| rpIdHash (32 B)   | flags   | signCnt  | attestedCredentialData   | extensions (CBOR Map, ~36 B)  |
-| SHA-256(rp.id)    | 0xC1    | (4 B)    | aaguid + credId + pubKey | { fido-mtc-ent: {           |
-|                   | (UP|AT  |          |                          |     "deviceSerial": "123456"  |
-|                   |  |ED)   |          |                          | } }                           |
-+-------------------+---------+----------+--------------------------+-------------------------------+
-                                                  |
-                                                  +---> Concatenated with clientDataHash (32 B)
-                                                  |
-                                                  v
-                         attStmt.sig = ML-DSA.Sign(sk_enterprise_device,
-                                                   authenticatorData || clientDataHash)
-```
-
-#### Why This Design Satisfies Every FIDO2 & Enterprise Requirement
-
-1. **Direct Parity with X.509 `id-fido-gen-ce-sernum` (`1.3.6.1.4.1.45724.1.1.2`)**:
-   - Whether the authenticator returns `fmt: "packed"` (X.509 `x5c` with `OID 1.3.6.1.4.1.45724.1.1.2 = "123456"`) or `fmt: "mtcl"` (`mtcCert` with `MtcProof.extensions = "123456"` and `fido-mtc-ent: { "deviceSerial": "123456" }`), the Relying Party receives the exact same device serial number (`"123456"`).
-2. **No Redundant Fields**:
-   - Per-credential uniqueness (`attestedCredentialData.credentialId`) and monotonic signature counting (`signCount`) are already native fields of `authenticatorData` covered by `attStmt.sig`, so `fido-mtc-ent` carries only `"deviceSerial"`.
-3. **Zero Privacy Leakage on Non-Enterprise Registrations**:
-   - When `enterpriseAttestation` (`0x0A`) is omitted, the authenticator uses **`AttestationId::Batch`** (shared across $\ge 100,000$ devices) and **omits `fido-mtc-ent`**, preserving a full $100,000$-device anonymity set.
+1. **Zero Extra Wire Overhead (`0 B`)**:
+   No CBOR map overhead is added to `authenticatorData.extensions`, keeping `authData` at its minimal 70-byte baseline and leaving the `ED` (Extension Data, bit 7) flag clear.
+2. **Direct Parity with X.509 Certificate Extensions**:
+   Just as standard X.509 attestation binds the serial inside the certificate (`id-fido-gen-ce-sernum`) rather than in `authenticatorData`, MTC binds the serial inside the Merkle Tree Certificate leaf and manifest.
+3. **No Redundant or Conflicting Fields**:
+   Eliminating a wire extension removes the risk of discrepancy between wire data and the verified CA leaf or manifest.
+4. **Zero Privacy Leakage on Non-Enterprise Registrations**:
+   When `enterpriseAttestation` (`0x0A`) is omitted, the authenticator uses **`AttestationId::Batch`** (shared across $\ge 100,000$ devices) where leaf entries omit `deviceSerial`, preserving the full 100,000-device anonymity set.
 
 ---
 
@@ -808,10 +775,7 @@ For Enterprise Attestation, the manufacturer delivers a file out of band to the 
 
 **Rule:** `"mtc"` always identifies the attestation key by `(caId, serial)`. The **device serial** is never a lookup key. In Enterprise mode:
 1. The device serial is **delivered by the manifest entry** (`MtcBatchKeyEntry.deviceSerial`). This is the authoritative source. The device signature verified with that entry's key proves the response came from the device holding that `(caId, serial)` key, and therefore from that serial.
-2. The signed `authenticatorData.extensions[fido-mtc-ent]` copy (§8.3) is **OPTIONAL with proof-less `"mtc"`**. The authenticator MAY omit it, saving `36 B` and leaving the `ED` flag clear if there are no other extensions.
-3. If both are present, the RP MUST check that they are equal (§5, step 6). A mismatch means a mixed-up or tampered manifest entry.
-
-`fido-mtc-ent` **remains REQUIRED** in `"mtcl"` and `"packed"` (`x5c`) Enterprise responses. Those responses do not involve a manifest lookup, so the signed extension is how the serial reaches the RP.
+2. In Enterprise mode, the device serial is delivered by the manifest entry (or committed inside the Merkle tree leaf in `fmt: "mtcl"`). No separate wire serial extension in `authenticatorData.extensions` is needed.
 
 #### 8.6.2 One Schema, Two Trust Sources
 
@@ -845,9 +809,9 @@ The Enterprise manifest **is** an `MtcTrustAnchor` (§6), with the same JSON lay
 
 #### 8.6.3 Wire Size: Proof-Less `"mtc"` vs. `"mtcl"`
 
-These figures use the same `authData` baseline as `lmots_longfellow_attestation_proposal.md` §6.3: `PK_len + 106 B` with the `36 B` `fido-mtc-ent` serial, or `PK_len + 70 B` without it. The Enterprise key is level-matched to the credential algorithm.
+These figures use the same `authData` baseline as `lmots_longfellow_attestation_proposal.md` §6.3: `PK_len + 70 B` with zero wire serial extension overhead. The Enterprise key is level-matched to the credential algorithm.
 
-| Credential = Enterprise Key | `"mtcl"` (sig + `pubKey` + `563 B` proof, serial ext required) | `"mtc"` with proof (sig + `563 B`, serial ext) | `"mtc"` proof-less, with optional serial ext | **`"mtc"` proof-less, serial from manifest only** |
+| Credential = Enterprise Key | `"mtcl"` (sig + `pubKey` + `563 B` proof) | `"mtc"` with proof (sig + `563 B`) | **`"mtc"` proof-less** (manifest-resolved) |
 | :--- | ---: | ---: | ---: | ---: |
 | `ML-DSA-44` (`-48`) | `5,723 B` ✅ | `4,401 B` ✅ | `3,868 B` ✅ | **`3,832 B`** ✅ |
 | `ML-DSA-65` (`-49`) | `7,892 B` ⚠️ **OVER HID LIMIT (`+283 B`)** | `5,930 B` ✅ | `5,397 B` ✅ | **`5,361 B`** ✅ |
@@ -861,16 +825,16 @@ Manufacturers are expected to provide the manifest to **every key purchaser**, w
 
 | Scenario | RP Holds Manifest? | Default Format (when `0x0B` is absent) |
 | :--- | :---: | :--- |
-| **Vendor-facilitated EA** (`0x0A = 1`): RP ID on the authenticator's preconfigured list | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`), `fido-mtc-ent` optional. §8.1.1 Case C |
-| **Platform-managed EA** (`0x0A = 2`): enterprise policy on the browser/platform permits EA for the RP | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`), `fido-mtc-ent` optional. §8.1.1 Case C |
-| Exception: an RP that did not purchase the keys (reseller or retail purchase, BYOD into another organization) | ❌ | The RP or client requests `0x0B: ["mtcl"]` or `["packed"]`. The authenticator then returns `"mtcl"` / `"packed"` `x5c` **with** `fido-mtc-ent` |
+| **Vendor-facilitated EA** (`0x0A = 1`): RP ID on the authenticator's preconfigured list | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`). §8.1.1 Case C |
+| **Platform-managed EA** (`0x0A = 2`): enterprise policy on the browser/platform permits EA for the RP | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`). §8.1.1 Case C |
+| Exception: an RP that did not purchase the keys (reseller or retail purchase, BYOD into another organization) | ❌ | The RP or client requests `0x0B: ["mtcl"]` or `["packed"]`. The authenticator then returns `"mtcl"` / `"packed"` `x5c` (serial bound in cert/manifest) |
 | **Non-Enterprise** | Public MDS | §7.3 cascade. `"mtc"` sends the proof unless the RP syncs and verifies the full `batchKeys` table |
 
 > [!WARNING]
 > **Operational costs of the manifest:**
 > - **Size:** one public key per device, about `133 MB` / `197 MB` / `261 MB` per 100,000 devices for `ML-DSA-44` / `-65` / `-87`. A 10,000-device enterprise needs `13–26 MB`.
 > - **Distribution:** every verifying RP needs the manifest, or a central enterprise IdP does all verification. Each new purchase requires a manifest update, and revocations are delivered as `revokedSerials` updates.
-> - **Fallback:** if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with `0x0B: ["mtcl"]`, which carries the inline `pubKey`, the proof, and the required `fido-mtc-ent` serial.
+> - **Fallback:** if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with `0x0B: ["mtcl"]`, which carries the inline `pubKey` and the proof committing the device serial.
 
 ---
 

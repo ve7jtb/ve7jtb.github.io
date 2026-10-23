@@ -143,7 +143,7 @@
               Standard RFC 8554 HSS/LMS Enterprise Direct Profile &amp; Wire Comparison vs. Enterprise MTC
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Fully compliant RFC 8554 single-tree profile (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, standard 16 B tree ID <code>I</code>, 60 B public key, standard leaf/internal prefix hashing) supporting <code>33.5M</code> signatures per batch with <code>3,008 B</code> (<code>W=4</code>) or <code>1,952 B</code> (<code>W=8</code>) <code>attStmt</code> and <code>80 &mu;s</code> RP verification. Section 6.3 evaluates wire payloads with individual device serial numbers against Enterprise MTC (<code>fmt: "mtcl"</code> + <code>"fido-mtc-ent"</code>) across all 3 ML-DSA parameter sets (<code>ML-DSA-44/65/87</code>: <code>6,857–10,344 B</code>) and 2 FN-DSA parameter sets (<code>FN-DSA-512/1024</code>: <code>4,499–5,861 B</code>).
+              Fully compliant RFC 8554 single-tree profile (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, standard 16 B tree ID <code>I</code>, 60 B public key, standard leaf/internal prefix hashing) supporting <code>33.5M</code> signatures per batch with <code>3,008 B</code> (<code>W=4</code>) or <code>1,952 B</code> (<code>W=8</code>) <code>attStmt</code> and <code>80 &mu;s</code> RP verification. Section 6.3 evaluates wire payloads with individual device serial numbers against Enterprise MTC (<code>fmt: "mtcl"</code> / <code>fmt: "mtc"</code>) across all 3 ML-DSA parameter sets (<code>ML-DSA-44/65/87</code>: <code>6,857–10,344 B</code>) and 2 FN-DSA parameter sets (<code>FN-DSA-512/1024</code>: <code>4,499–5,861 B</code>).
             </p>
           </a>
         </div>
@@ -351,7 +351,7 @@
               Enterprise Attestation (<code>0x0A</code>), Manifest-Assisted <code>mtc</code> &amp; 100k–5M Scaling
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Dual-key provisioning (<code>AttestationId::Batch</code> vs. individual <code>AttestationId::Enterprise</code>), Root CA subtree checkpoints, signed <code>fido-mtc-ent</code> serial numbers, and Section 8.6 unified <code>(caId, serial)</code> key lookup via manufacturer manifests. Removes proof overhead in Enterprise <code>mtc</code> (<code>3,832–7,319 B</code>), enabling Category 5 <code>ML-DSA-87</code> to fit under the 7,609-byte HID ceiling without fragmentation.
+              Dual-key provisioning (<code>AttestationId::Batch</code> vs. individual <code>AttestationId::Enterprise</code>), Root CA subtree checkpoints, leaf-committed and manifest device serial number binding, and Section 8.6 unified <code>(caId, serial)</code> key lookup via manufacturer manifests. Removes proof overhead in Enterprise <code>mtc</code> (<code>3,832–7,319 B</code>), enabling Category 5 <code>ML-DSA-87</code> to fit under the 7,609-byte HID ceiling without fragmentation.
             </p>
           </a>
 
