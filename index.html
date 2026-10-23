@@ -180,7 +180,7 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–20, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, RFC 8554 / NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (OID <code>1.2.840.113549.1.9.16.3.17</code>), HSS/LMS-signed (<code>alg: -46</code>) MTC Subtree Checkpoints, Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>1,163,679</code> lines of <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–21, covering all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, automated <code>scripts/generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, OID <code>1.2.840.113549.1.9.16.3.17</code>, <code>1,296 B</code> sig), compact <code>fmt: "mtc"</code> HSS/LMS-signed (<code>alg: -46</code>) Subtree Checkpoints, Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>1,468,647</code> cumulative RTT lines across <code>opensk_rtt.log</code> &amp; <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -203,9 +203,20 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-000"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000 (Latest — Run 21: 250 / 250 Pass with Automated LMS PKI Provisioning &amp; Compact fmt: &quot;mtc&quot;)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Automated <code>generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 Provisioning (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>), Compact <code>fmt: &quot;mtc&quot;</code> &amp; <code>opensk_rtt.log</code> Telemetry: <code>250 / 250</code> (<code>100.00%</code>) Pass
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              <code>250 / 250</code> (<code>100.00%</code>) pass across all active CTAP 2.3 suites (<code>25m 27.56s</code>) verifying deterministic LMS Root &amp; 4 Pre-Published Intermediate CAs (<code>g5k_AQE</code>..<code>g5k_AQQ</code>, <code>1,296 B</code> sig), LMS-signed <code>ML-DSA-44/65/87</code> Batch &amp; Enterprise X.509 <code>x5c</code> (<code>6,692–7,172 B</code>), compact <code>fmt: "mtc"</code> (<code>6,067–6,728 B</code>), and <code>304,967</code> lines of single-instance <code>probe-rs</code> RTT telemetry (<code>0</code> panics, <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines).
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-00"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00 (New — Run 20: 250 / 250 Pass with HSS/LMS Hierarchy &amp; MTC Subtree Checkpoints)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00 (Run 20: 250 / 250 Pass with HSS/LMS Hierarchy &amp; MTC Subtree Checkpoints)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
               RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (<code>1.2.840.113549.1.9.16.3.17</code>), HSS/LMS (<code>alg: -46</code>) MTC Subtree Checkpoints &amp; All 18 Algorithms: <code>250 / 250</code> (<code>100.00%</code>) Pass
             </h3>

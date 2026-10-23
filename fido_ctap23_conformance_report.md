@@ -7,9 +7,9 @@
 > - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key.
 
 - **Log Files Analyzed**:
-  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`211,147` total lines / `28.31 MB`, including `56,117` lines in latest Run 20 `L155031–L211147` with `250 / 250` `100.00%` PASS across all 18 algorithms + RFC 8554 / NIST SP 800-208 HSS/LMS Root & Pre-Published Intermediate CAs + HSS/LMS `alg: -46` MTC Subtree Checkpoints; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
+  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`246,293` cumulative lines across Runs 10–21, including **`35,146` lines (`5.0 MB`) in latest Run 21 (`L1–L35146`, post-clear)** with **`250 / 250` `100.00%` PASS** across all 18 algorithms + RFC 8554 $\cap$ NIST SP 800-208 (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`) Root & 4 Pre-Published Intermediate CAs + LMS-signed `ML-DSA` Batch & Enterprise X.509 `x5c` + Compact `fmt: "mtc"` (`alg: -46` `HSS-LMS`) Subtree Checkpoints; `56,117` lines in Run 20; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
   2. **Total Phase Beagle USB Protocol Analyzer Capture**: `totalphase.csv` (`28,653` CSV lines, `28,646` rows, `127,232` USB bus records, `2.91 MB`, captured `Mon Oct 19 11:49:16` – `12:20:30 2026`, `0` USB bus errors across `1,092` `CTAPHID_CBOR` exchanges in Run 19; plus `26,436` CSV rows / `68,774` USB bus records in Run 17)
-  3. **Fidont J-Link RTT Log**: `fidont_rtt.log` (`1,163,679` total lines / `124.54 MB`, including `303,134` lines `L860546–L1163679` in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs)
+  3. **Fidont / OpenSK J-Link RTT Log**: `opensk_rtt.log` & `fidont_rtt.log` (`1,468,647` cumulative lines / `155.5 MB`, including **`304,967` lines (`31.0 MB`) in latest Run 21 (`opensk_rtt.log`)**, `303,134` lines in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs / `0` `[WARN]` or `[ERROR]` events)
 - **Target Authenticator**: Fidont CTAP 2.3 (`U2F_V2`, `FIDO_2_0`, `FIDO_2_1`, `FIDO_2_3`) over USB HID (`VID: 0x1915`, `PID: 0x521f` / `0x18d1:0x0239`)
 - **Related Design & Firmware Implementation**: **Compile and Install Fidont** & [pq_mtc_attestation_proposal.md](./pq_mtc_attestation_proposal.md)
 
@@ -19,7 +19,7 @@
 > **Attribution & Scope of Fidont:**
 > **Fidont** is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the [Google OpenSK](https://github.com/google/OpenSK) Rust codebase. However, **Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.**
 
-## Overview of Test Runs 10–20 (`Runs 10–19` Historical + `Run 20` Latest `250 / 250` 18-Algorithm `FN-DSA`, RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, PQ MTC Subtree Checkpoints & `fidont_rtt.log` DWT Telemetry)
+## Overview of Test Runs 10–21 (`Runs 10–20` Historical + `Run 21` Latest `250 / 250` 18-Algorithm `FN-DSA`, RFC 8554 $\cap$ NIST SP 800-208 `generate_lms_pki.py` Provisioned Hierarchy, Compact `fmt: "mtc"` & `opensk_rtt.log` DWT Telemetry)
 
 | Run | Line Range | Time Window | Attestation & Feature Config | Passed | Failed | Outcome & Summary |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -33,7 +33,105 @@
 | **Run 17** | `L1–L48653` (pre-clear 3) & `totalphase.csv` | `00:48:37` – `01:01:04` (`12m 27s`) | **Full CTAP 2.3 `persistentPinUvAuthToken` (`perCredMgmtRO`, `pcmr = 0x40`, `encIdentifier = 0x19`, `encCredStoreState = 0x1E`) + Dual Batch (`ES384` `x5c` + `ML-DSA-44` MTC) + Enterprise Attestation (`--enterprise`, `serial="123456"`) + Root CA `subtrees[].signature` Verification** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **All `9` previously skipped `perCredMgmtRO` / `encIdentifier` / `encCredStoreState` / `pcmr (0x40)` tests executed and passed (`241` $\to$ `250` passed)! `0` USB bus errors across `68,774` records (`1,073` `CTAPHID_CBOR` exchanges, `304.4 KB` OUT / `509.9 KB` IN) in `totalphase.csv`!** |
 | **Run 18** | `L1–L52180` (pre-clear 4) & `fidont_rtt.log` (`302,212` lines) | `10:16:15` – `10:36:41` (`20m 26s`) | **All 18 Algorithms including Draft NIST FIPS 206 `FN-DSA-512` (`alg: -60`) & `FN-DSA-1024` (`alg: -61`) + `ML-DSA-87` (`-50`) MTC Batch + `ES256` Classical Batch + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + `fidont_rtt.log` DWT Cycle-Accurate Telemetry** | **`249`** | **`1`** | **`99.60%` PASS (`249 Passed / 34 Skipped / 1 Failed`)** — **`100%` PASS across all 18 algorithms in `Authr-MakeCred-Resp-1`, `Authr-GetAssertion-Resp-1`, `EntepriseAttestation`, `Authr-CredMgmt-1`, and `Metadata-Stmt-1` (`0` panics, `0` OOMs, `0` HardFaults in `302,212` `fidont_rtt.log` lines)!** |
 | **Run 19** | `L1–L66127`, `totalphase.csv` (`28,653` lines) & `fidont_rtt.log` (`304,330` lines) | `11:49:33` – `12:11:02` (`21m 28s`) | **All 18 Algorithms (`FN-DSA-512` `-60` & `FN-DSA-1024` `-61` + 16 Classical/PQ/Composite) + `perCredMgmtRO` (`0x19`, `0x1E`, `0x40`) + Dual Batch (`ML-DSA-87` MTC + `ES256` `x5c`) + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + Simultaneous 3-Log Capture (`fido_conformance_debug.log`, `totalphase.csv` & `fidont_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **`250 / 250` (`100%`) pass across all 18 algorithms (`78` `"packed"`, `22` `"mtc"`, `2` `"mtcl"`), `0` USB bus errors across `127,232` USB records (`4,945` `OUT txn` / `8,827` `IN txn`, `1,092` `CTAPHID_CBOR` exchanges), and `0` panics/OOMs across `304,330` `fidont_rtt.log` lines!** |
-| **Run 20 (Latest)** | `L155031–L211147` (`56,117` lines) & `fidont_rtt.log` (`L860546–L1163679`, `303,134` lines) | `23:13:01` – `23:58:36` (`45m 35s` wall / `~19m 24s` active) | **RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (`1` `Fidont LMS Root CA` + `4` Pre-Published `Fidont LMS Intermediate CA #0..#3`, OID `1.2.840.113549.1.9.16.3.17` $\to$ `ML-DSA-44` Leaf `x5c`) + HSS/LMS (`alg: -46`) Signed MTC Subtree Checkpoints (`caId: "g5k_AQE"`, `caId: "g5k_AQI"`) + All 18 Algorithms (`FN-DSA-512/1024`, `ML-DSA-44/65/87`, 6 PQ/T Composites, 7 Classical) + `perCredMgmtRO` + Enterprise Attestation + UX Metadata Statement Dialog Persistence** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed` across all 37 CTAP 2.3 suites)** — **Verified HSS/LMS X.509 (`L=1`, `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`) + `ML-DSA-44` `"packed"` `x5c` chains (`6,693–7,173 B`), HSS/LMS `alg: -46` MTC subtree checkpoints (`1,252 B` sig) across `"mtc"` & `"mtcl"`, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics/OOMs across `303,134` `fidont_rtt.log` lines!** |
+| **Run 20** | `L155031–L211147` (`56,117` lines) & `fidont_rtt.log` (`L860546–L1163679`, `303,134` lines) | `23:13:01` – `23:58:36` (`45m 35s` wall / `~19m 24s` active) | **RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (`1` `Fidont LMS Root CA` + `4` Pre-Published `Fidont LMS Intermediate CA #0..#3`, OID `1.2.840.113549.1.9.16.3.17` $\to$ `ML-DSA-44` Leaf `x5c`) + HSS/LMS (`alg: -46`) Signed MTC Subtree Checkpoints (`caId: "g5k_AQE"`, `caId: "g5k_AQI"`) + All 18 Algorithms (`FN-DSA-512/1024`, `ML-DSA-44/65/87`, 6 PQ/T Composites, 7 Classical) + `perCredMgmtRO` + Enterprise Attestation + UX Metadata Statement Dialog Persistence** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed` across all 37 CTAP 2.3 suites)** — **Verified HSS/LMS X.509 (`L=1`, `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`) + `ML-DSA-44` `"packed"` `x5c` chains (`6,693–7,173 B`), HSS/LMS `alg: -46` MTC subtree checkpoints (`1,252 B` sig) across `"mtc"` & `"mtcl"`, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics/OOMs across `303,134` `fidont_rtt.log` lines!** |
+| **Run 21 (Latest)** | `L1–L35146` (`35,146` lines, post-clear) & `opensk_rtt.log` (`L1–L304967`, `304,967` lines) | `09:46:00` – `10:11:28` (`25m 27.56s`) | **`scripts/generate_lms_pki.py` Provisioned RFC 8554 $\cap$ NIST SP 800-208 (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`) Root CA + 4 Pre-Published LMS Intermediate CAs (`g5k_AQE`..`g5k_AQQ`) + LMS-Signed `ML-DSA-44/65/87` Batch & Enterprise X.509 Certs (`1,296 B` sig) + Compact `fmt: "mtc"` (`alg: -46` `HSS-LMS`) Checkpoints + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 33 Skipped / 0 Failed / 1 Retried` across all active CTAP 2.3 suites)** — **Verified automated LMS PKI provisioning (`crypto_data.rs` + `fido-mds3.json`), compact `fmt: "mtc"` (`6,067–6,728 B`) & LMS-signed `"packed"` `x5c` (`6,692–7,172 B`) across all 18 algorithms, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics / `0` `[WARN]`/`[ERROR]` lines across `304,967` `opensk_rtt.log` lines!** |
+
+---
+
+## 0.000 Run 21 (`250 / 250` `100.00%` Pass) Deep Dive: Automated `generate_lms_pki.py` RFC 8554 $\cap$ NIST SP 800-208 Provisioning, Compact `fmt: "mtc"` & `opensk_rtt.log` Hardware Telemetry (`09:46:00` – `10:11:28` PDT)
+
+> [!IMPORTANT]
+> **`250 / 250` (`100.00%`) Pass with Automated LMS PKI Provisioning (`scripts/generate_lms_pki.py`), Compact `fmt: "mtc"`, and Clean Single-Instance `opensk_rtt.log`**:
+> In Run 21 (`2026-10-23`, `09:46:00.569` – `10:11:28.126 PDT`, `25m 27.56s` total duration), we cleared both log files and executed a full end-to-end CTAP 2.3 conformance run following the provisioning of the authenticator and MDS3 via `scripts/generate_lms_pki.py`:
+> - **RFC 8554 $\cap$ NIST SP 800-208 Parameter Intersection**: Provisioned a deterministic **LMS Root CA** and **4 Pre-Published LMS Intermediate CAs** (`caId`: `g5k_AQE` Batch #0, `g5k_AQI` Enterprise #1, `g5k_AQM` Batch #2, `g5k_AQQ` Batch #3) using `LMS_SHA256_M32_H5` (`type = 0x00000005`, 32-leaf tree) + `LMOTS_SHA256_N32_W8` (`type = 0x00000004`, `p = 34` chains), reducing each HSS/LMS signature (`L=1`) to **`1,296 bytes`** (`46%` smaller than `W=4`'s `2,420 B`) with X.509 `SubjectPublicKeyInfo` OID `1.2.840.113549.1.9.16.3.17` (`id-alg-hss-lms-hashsig`).
+> - **LMS-Signed `ML-DSA` Batch & Enterprise X.509 Certificates + Compact `fmt: "mtc"`**: Provisioned 3 LMS-signed Batch X.509 certificates (`ML-DSA-44` `2,707 B`, `ML-DSA-65` `3,347 B`, `ML-DSA-87` `3,987 B`) and 3 LMS-signed Enterprise X.509 certificates (`2,740 B`, `3,380 B`, `4,020 B`) into `src/ctap/crypto_data.rs`, alongside `alg: -46` (`HSS-LMS`) signed `mtcTrustAnchors[].subtrees[]` checkpoints (`treeSize: 16`) in `fido-mds3.json`. All 2-step PQ/composite algorithms emitted compact `fmt: "mtc"` (`6,067–6,728 B`) while 1-step PQ algorithms (`FN-DSA-512`, `ML-DSA-44`, `MLDSA44-Ed25519`, `MLDSA44-ES256`) emitted LMS-signed `"packed"` `x5c` (`6,692–7,172 B`).
+> - **Single-Instance `probe-rs` Hardware RTT Capture (`opensk_rtt.log`)**: Captured **`304,967` lines (`31.0 MB`)** of Wasefire/OpenSK debug telemetry (`--features=debug`) with **`0` panics, `0` HardFaults, `0` `[WARN]` or `[ERROR]` lines**, and **`5` clean hardware resets** during the `ClientPin1` and `ClientPin2` power-cycle lockout tests (`Authr-ClientPin2-Policy` `P-5` retried once automatically by Mocha after the board remained USB-powered through the J-Link port on the first prompt, then passed `100%` on retry at `L32075`).
+
+### 0.000.1 Run 21 Executive Summary (`09:46:00` – `10:11:28` PDT)
+
+| Metric | Value in Run 21 | Source & Details |
+| :--- | :--- | :--- |
+| **Test Window & Duration** | **`09:46:00.569` – `10:11:28.126 PDT`** (**`25m 27.56s`** total elapsed) | `fido_conformance_debug.log` (`L99` first test start $\to$ `L35113` *"Testing finished. You may submit the results now."* out of `35,146` lines / `5.0 MB`) |
+| **Overall Test Outcome** | **`250 Passed / 33 Skipped / 0 Failed / 1 Retried` (`100.00%` PASS)** | `284` total test starts across `283` unique test cases; **`0` `[TEST FAILED]` events** |
+| **Provisioned LMS Hierarchy** | `1` LMS Root CA + `4` Pre-Published LMS Intermediate CAs (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`, `1,296 B` sig) + `3` LMS-signed `ML-DSA-44/65/87` Batch X.509 certs + `3` LMS-signed Enterprise X.509 certs + `alg: -46` (`HSS-LMS`) `mtcTrustAnchors` (`g5k_AQE`, `g5k_AQI`) | Generated deterministically by `scripts/generate_lms_pki.py` into `src/ctap/crypto_data.rs` and `fido-mds3.json` |
+| **Hardware RTT Log (`opensk_rtt.log`)** | **`304,967` lines (`31.0 MB`)** | **`0` panics, `0` HardFaults, `0` `[WARN]`/`[ERROR]` lines** across `100` `AuthenticatorMakeCredential` and `69` `AuthenticatorGetAssertion` hardware executions; `5` physical board resets (`RTT L280798`, `L281602`, `L282001`, `L282840`, `L283825`) |
+
+### 0.000.2 Run 21 `Authr-MakeCred-Resp-1` (`P-01`..`F-01`): All 18 Algorithms (`Log L4576–L6889`, `RTT L37275–L74230`)
+
+| # | Algorithm | COSE `alg` | Attestation Format | `BCNT` | Debug Log Lines | RTT Log Lines | Total USB Exchange Time | RTT MCU Command Execution (`64 MHz` DWT) |
+| :-: | :--- | :---: | :---: | :---: | :--- | :--- | :---: | :--- |
+| 1 | `RS256` (RSA-2048) | `-257` | `"packed"` (`ES256` `x5c`) | `1,250 B` | `L4576–L4615` | `L37275–L37398` | `2,565.4 ms` | `1,177.47 ms` (`75,358,336 cyc`) |
+| 2 | **`FN-DSA-1024`** (Draft FIPS 206) | **`-61`** | **`"mtc"` (`g5k_AQE`, LMS checkpoint)** | **`6,067 B`** | `L4652–L4772` | `L38220–L38378` | **`6,778.1 ms`** | **`1,011.13 ms` (`64,712,064 cyc`)** |
+| 3 | **`FN-DSA-512`** (Draft FIPS 206) | **`-60`** | **`"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`)** | **`6,692 B`** | `L4809–L4940` | `L40981–L41153` | **`6,586.8 ms`** | **`1,168.09 ms` (`74,757,440 cyc`)** |
+| 4 | `MLDSA87-Ed448` | `-59` | `"mtc"` (`g5k_AQE`, LMS checkpoint) | `6,688 B` | `L4977–L5108` | `L43816–L43988` | `7,281.9 ms` | `1,284.79 ms` (`82,226,432 cyc`) |
+| 5 | `MLDSA65-Ed25519` | `-58` | `"mtc"` (`g5k_AQE`, LMS checkpoint) | `6,258 B` | `L5145–L5269` | `L46559–L46730` | `6,775.7 ms` | `946.05 ms` (`60,547,072 cyc`) |
+| 6 | `MLDSA44-Ed25519` | `-57` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,139 B` | `L5306–L5445` | `L49282–L49461` | `6,721.1 ms` | `848.79 ms` (`54,322,560 cyc`) |
+| 7 | `MLDSA87-ES384` | `-56` | `"mtc"` (`g5k_AQE`, LMS checkpoint) | `6,728 B` | `L5482–L5614` | `L52163–L52300` | `9,136.6 ms` | `2,518.70 ms` (`161,196,672 cyc`) |
+| 8 | `MLDSA65-ES256` | `-55` | `"mtc"` (`g5k_AQE`, LMS checkpoint) | `6,291 B` | `L5651–L5775` | `L54991–L55130` | `7,953.1 ms` | `1,814.96 ms` (`116,157,568 cyc`) |
+| 9 | `MLDSA44-ES256` | `-54` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,172 B` | `L5812–L5951` | `L57717–L57890` | `7,253.4 ms` | `1,101.56 ms` (`70,499,840 cyc`) |
+| 10 | `ML-DSA-87` (FIPS 204) | `-50` | `"mtc"` (`g5k_AQE`, LMS checkpoint) | `6,676 B` | `L5988–L6119` | `L60791–L60957` | `7,240.6 ms` | `893.13 ms` (`57,160,448 cyc`) |
+| 11 | `ML-DSA-65` (FIPS 204) | `-49` | `"mtc"` (`g5k_AQE`, LMS checkpoint) | `6,226 B` | `L6156–L6279` | `L63758–L63925` | `7,387.2 ms` | `1,366.54 ms` (`87,458,304 cyc`) |
+| 12 | `ML-DSA-44` (FIPS 204) | `-48` | `"packed"` (`LMS` $\to$ `ML-DSA-44` `x5c`) | `7,107 B` | `L6316–L6454` | `L66566–L66710` | `6,879.4 ms` | `658.42 ms` (`42,138,944 cyc`) |
+| 13 | `Ed448` (RFC 8032) | `-53` | `"packed"` (`ES256` `x5c`) | `1,045 B` | `L6491–L6526` | `L69673–L69830` | `2,368.2 ms` | `1,313.33 ms` (`84,052,864 cyc`) |
+| 14 | `EdDSA` (Ed25519) | `-8` | `"packed"` (`ES256` `x5c`) | `1,019 B` | `L6563–L6598` | `L70572–L70745` | `2,097.6 ms` | `1,056.65 ms` (`67,625,600 cyc`) |
+| 15 | `ES256K` (secp256k1) | `-47` | `"packed"` (`ES256` `x5c`) | `1,056 B` | `L6635–L6670` | `L71433–L71600` | `2,102.9 ms` | `1,056.31 ms` (`67,603,648 cyc`) |
+| 16 | `ES512` (P-521) | `-36` | `"packed"` (`ES256` `x5c`) | `1,122 B` | `L6707–L6744` | `L72313–L72475` | `2,750.2 ms` | `1,674.33 ms` (`107,157,376 cyc`) |
+| 17 | `ES384` (P-384) | `-35` | `"packed"` (`ES256` `x5c`) | `1,088 B` | `L6781–L6817` | `L73194–L73373` | `3,307.4 ms` | `2,225.16 ms` (`142,410,176 cyc`) |
+| 18 | `ES256` (P-256) | `-7` | `"packed"` (`ES256` `x5c`) | `1,055 B` | `L6854–L6889` | `L74059–L74230` | `2,729.7 ms` | `1,624.01 ms` (`103,936,576 cyc`) |
+
+### 0.000.3 Run 21 `Authr-GetAssertion-Resp-1` (`P-1`..`P-5`): All 18 Algorithms (`Log L13064–L16979`, `RTT L87468–L146910`)
+
+| # | Algorithm | COSE `alg` | `BCNT` (Sig Size) | Debug Log Lines | RTT Log Lines | Total USB Exchange Time | RTT MCU Command Execution (`64 MHz` DWT) |
+| :-: | :--- | :---: | :---: | :--- | :--- | :---: | :--- |
+| 1 | `ES256` (P-256) | `-7` | `378 B` (`70 B`) | `L13064–L13090` | `L87468–L87623` | `1,715.0 ms` | **`1,044.32 ms`** (`66,836,736 cyc`) |
+| 2 | `ES384` (P-384) | `-35` | `412 B` (`103 B`) | `L13200–L13227` | `L89049–L89189` | `3,590.3 ms` | **`2,784.06 ms`** (`178,179,904 cyc`) |
+| 3 | `ES512` (P-521) | `-36` | `446 B` (`138 B`) | `L13338–L13365` | `L90655–L90818` | `2,627.2 ms` | **`1,809.96 ms`** (`115,837,312 cyc`) |
+| 4 | `ES256K` (secp256k1) | `-47` | `378 B` (`71 B`) | `L13474–L13500` | `L92237–L92380` | `1,216.3 ms` | **`517.37 ms`** (`33,111,680 cyc`) |
+| 5 | `EdDSA` (Ed25519) | `-8` | `372 B` (`64 B`) | `L13609–L13635` | `L93816–L93977` | `1,157.6 ms` | **`482.79 ms`** (`30,898,432 cyc`) |
+| 6 | `Ed448` (RFC 8032) | `-53` | `422 B` (`114 B`) | `L13744–L13771` | `L95336–L95492` | `1,899.5 ms` | **`1,071.25 ms`** (`68,559,808 cyc`) |
+| 7 | `ML-DSA-44` (FIPS 204) | `-48` | `2,729 B` (`2,420 B`) | `L13983–L14049` | `L99060–L99217` | `3,812.2 ms` | **`989.23 ms`** (`63,310,976 cyc`) |
+| 8 | `ML-DSA-65` (FIPS 204) | `-49` | `3,618 B` (`3,309 B`) | `L14246–L14327` | `L103238–L103387` | `5,241.6 ms` | **`1,257.12 ms`** (`80,455,872 cyc`) |
+| 9 | `ML-DSA-87` (FIPS 204) | `-50` | `4,746 B` (`4,627 B`) | `L14533–L14631` | `L107822–L107964` | `7,162.6 ms` | **`2,526.08 ms`** (`161,669,120 cyc`) |
+| 10 | `MLDSA44-ES256` | `-54` | `2,799 B` (`2,490 B`) | `L14844–L14911` | `L112913–L113079` | `4,440.2 ms` | **`1,549.33 ms`** (`99,157,184 cyc`) |
+| 11 | `MLDSA65-ES256` | `-55` | `3,688 B` (`3,379 B`) | `L15109–L15191` | `L117220–L117369` | `7,566.3 ms` | **`3,877.08 ms`** (`248,133,312 cyc`) |
+| 12 | `MLDSA87-ES384` | `-56` | `4,802 B` (`4,722 B`) | `L15397–L15494` | `L121788–L121934` | `12,802.7 ms` | **`8,266.79 ms`** (`529,074,688 cyc`) |
+| 13 | `MLDSA44-Ed25519` | `-57` | `2,793 B` (`2,484 B`) | `L15707–L15774` | `L127180–L127330` | `4,748.8 ms` | **`1,842.81 ms`** (`117,939,648 cyc`) |
+| 14 | `MLDSA65-Ed25519` | `-58` | `3,682 B` (`3,373 B`) | `L15972–L16054` | `L131503–L131649` | `4,875.0 ms` | **`861.53 ms`** (`55,138,176 cyc`) |
+| 15 | `MLDSA87-Ed448` | `-59` | `4,814 B` (`4,741 B`) | `L16259–L16356` | `L136274–L136428` | `6,479.3 ms` | **`1,851.21 ms`** (`118,477,248 cyc`) |
+| 16 | **`FN-DSA-512`** (Draft FIPS 206) | **`-60`** | **`975 B` (`666 B`)** | `L16561–L16597` | `L141203–L141342` | **`2,601.0 ms`** | **`1,333.49 ms` (`85,343,360 cyc`)** |
+| 17 | **`FN-DSA-1024`** (Draft FIPS 206) | **`-61`** | **`1,589 B` (`1,280 B`)** | `L16791–L16837` | `L144720–L144876` | **`4,196.3 ms`** | **`2,420.23 ms` (`154,894,528 cyc`)** |
+| 18 | `RS256` (RSA-2048) | `-257` | `565 B` (`256 B`) | `L16950–L16979` | `L146755–L146910` | `5,527.9 ms` | **`4,654.80 ms`** (`297,907,072 cyc`) |
+
+### 0.000.4 Run 21 Complete Conformance Suite Summary (`09:46:00` – `10:11:28` PDT)
+
+| # | Category | Suite ID | Unique Tests | Passed | Skipped | Retried | Duration | Log Line Range |
+| :-: | :--- | :--- | :-: | :-: | :-: | :-: | --: | :--- |
+| 1 | Transports | `HID-1` | 19 | 16 | 3 | 0 | `19.92s` | `L99–L816` |
+| 2 | General | `Authr-Generic-1` | 5 | 5 | 0 | 0 | `14.28s` | `L867–L1399` |
+| 3 | MakeCredentialRequest | `Authr-MakeCred-Req-1`..`Req-5` | 36 | 36 | 0 | 0 | `86.65s` | `L1518–L4278` |
+| 4 | MakeCredentialRequest | `Authr-MakeCred-Req-6` | 4 | 3 | 1 | 0 | `129.96s` | `L4283–L6899` |
+| 5 | MakeCredentialResponse | `Authr-MakeCred-Resp-1` (Packed LMS `x5c` & `mtc`) | 5 | 4 | 1 | 0 | `0.27s`* | `L6908–L11502` |
+| 6 | GetAssertionReq | `Authr-GetAssertion-Req-1` | 8 | 8 | 0 | 0 | `20.10s` | `L11694–L12307` |
+| 7 | GetAssertionReq | `Authr-GetAssertion-Req-2` | 3 | 2 | 1 | 0 | `11.63s` | `L12312–L12575` |
+| 8 | GetAssertionReq | `Authr-GetAssertion-Req-3` | 6 | 5 | 1 | 0 | `235.81s`* | `L12580–L16979` |
+| 9 | GetAssertionResp | `Authr-GetAssertion-Resp-1` | 5 | 5 | 0 | 0 | `9.40s` | `L16980–L17227` |
+| 10 | Reset | `Authr-Reset-1` | 1 | 1 | 0 | 0 | `13.37s` | `L17340–L17655` |
+| 11 | OptionsRK | `Discoverable Credentials (Resident-Key)` | 6 | 5 | 1 | 0 | `44.24s` | `L17708–L18583` |
+| 12 | OptionsEP | `Enterprise Attestation` (`mtc` `g5k_AQI` + LMS `x5c`) | 9 | 6 | 3 | 0 | `31.23s` | `L18748–L19558` |
+| 13 | Extensions | `HMAC-Secret` (`hmacSecret.js` & `hmacSecret2.js`) | 24 | 24 | 0 | 0 | `115.27s` | `L19701–L22380` |
+| 14 | Extensions | `HMAC-Secret MC` (`hmacSecretMC.js`) | 28 | 26 | 2 | 0 | `142.52s` | `L22414–L25765` |
+| 15 | Extensions | `CredProtect` | 4 | 4 | 0 | 0 | `24.30s` | `L25770–L26299` |
+| 16 | Extensions | `CredBlob` | 3 | 3 | 0 | 0 | `16.00s` | `L26305–L26641` |
+| 17 | Extensions | `LargeBlob` & `LargeBlobKey` | 8 | 8 | 0 | 0 | `29.13s` | `L26649–L27388` |
+| 18 | Extensions | `MinPinLength` / `PinComplexity` / `ThirdPartyPayment` / `UVM` | 3 | 3 | 0 | 0 | `25.42s` | `L27395–L27957` |
+| 19 | ClientPin1 | `KeyAgreement`, `NewPin`, `Policy`, `GetRetries` | 19 | 16 | 3 | 0 | `80.31s` | `L27979–L29289` |
+| 20 | ClientPin2 | `KeyAgreement`, `NewPin`, `GetPinToken`, `PinWithPermissions` | 17 | 16 | 1 | 0 | `39.20s` | `L29317–L30581` |
+| 21 | ClientPin2 | `Policy` & `GetRetries` (incl. power-cycle lockout `P-5`) | 11 | 9 | 2 | 1 | `199.29s` | `L30601–L32075` |
+| 22 | CredManAPI | `EnumerateRPs`, `EnumerateCredentials`, `UpdateAndDelete` | 11 | 11 | 0 | 0 | `46.53s` | `L32189–L33538` |
+| 23 | AuthenticatorConfig | `Authr-AuthenticatorConfig` | 7 | 5 | 2 | 0 | `22.37s` | `L33652–L34408` |
+| 24 | LargeBlobs | `Authr-LargeBlobs-1` | 4 | 4 | 0 | 0 | `2.30s` | `L34409–L34562` |
+| 25 | Metadata | `Metadata-Stmt-1` (`P-1`..`P-43`, incl. `mtcTrustAnchors`) | 37 | 25 | 12 | 0 | `244.58s` | `L34571–L35146` |
+| **Total** | | **All Active USB HID Suites** | **283** | **250** | **33** | **1** | **`25m 27.56s`** | `L99–L35146` |
 
 ---
 

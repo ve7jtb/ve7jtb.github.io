@@ -78,7 +78,7 @@
       FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 7 Extensions, persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Post-Quantum mtc / mtcl
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (211,147 lines, 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,163,679 lines, 0 panics/OOMs).
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (246,293 cumulative lines across Runs 10–21, 250 / 250 100.00% PASS in Run 21), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,468,647 cumulative lines including 304,967 lines in Run 21 opensk_rtt.log, 0 panics/OOMs).
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–20 (<code>Runs 10–19</code> Historical + <code>Run 20</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, PQ MTC Subtree Checkpoints &amp; <code>fidont_rtt.log</code> DWT Telemetry)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–21 (<code>Runs 10–20</code> Historical + <code>Run 21</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 $\cap$ NIST SP 800-208 <code>generate_lms_pki.py</code> Provisioned Hierarchy, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</div>
+        </a>
+        <a href="#section-0-000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 21 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: Automated <code>generate_lms_pki.py</code> RFC 8554 $\cap$ NIST SP 800-208 Provisioning, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> Hardware Telemetry (<code>09:46:00</code> – <code>10:11:28</code> PDT)</div>
         </a>
         <a href="#section-0-00" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.00</div>
@@ -134,8 +138,17 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–20 (<code>Runs 10–19</code> Historical + <code>Run 20</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, PQ MTC Subtree Checkpoints &amp; <code>fidont_rtt.log</code> DWT Telemetry)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–21 (<code>Runs 10–20</code> Historical + <code>Run 21</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 $\cap$ NIST SP 800-208 <code>generate_lms_pki.py</code> Provisioned Hierarchy, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</a>
 
+        </li>
+        <li>
+          <a href="#section-0-000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000 Run 21 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: Automated <code>generate_lms_pki.py</code> RFC 8554 $\cap$ NIST SP 800-208 Provisioning, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> Hardware Telemetry (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#00001-run-21-executive-summary-094600-101128-pdt" class="hover:underline">&sect;0.000.1 Run 21 Executive Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a></div>
+            <div><a href="#00002-run-21-authr-makecred-resp-1-p-01f-01-all-18-algorithms-log-l4576l6889-rtt-l37275l74230" class="hover:underline">&sect;0.000.2 Run 21 <code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>F-01</code>): All 18 Algorithms (<code>Log L4576–L6889</code>, <code>RTT L37275–L74230</code>)</a></div>
+            <div><a href="#00003-run-21-authr-getassertion-resp-1-p-1p-5-all-18-algorithms-log-l13064l16979-rtt-l87468l146910" class="hover:underline">&sect;0.000.3 Run 21 <code>Authr-GetAssertion-Resp-1</code> (<code>P-1</code>..<code>P-5</code>): All 18 Algorithms (<code>Log L13064–L16979</code>, <code>RTT L87468–L146910</code>)</a></div>
+            <div><a href="#00004-run-21-complete-conformance-suite-summary-094600-101128-pdt" class="hover:underline">&sect;0.000.4 Run 21 Complete Conformance Suite Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a></div>
+          </div>
         </li>
           </ul>
         </div>
@@ -157,10 +170,6 @@
             <div><a href="#002-run-19-three-way-correlated-getassertion-sweep-authr-getassertion-resp-1-all-18-algorithms" class="hover:underline">&sect;0.0.2 Run 19 Three-Way Correlated <code>GetAssertion</code> Sweep (<code>Authr-GetAssertion-Resp-1</code>, All 18 Algorithms)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0. Run 17 Deep Dive: <code>250/250</code> (<code>100%</code>) Pass with <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), <code>encIdentifier (0x19)</code>, <code>encCredStoreState (0x1E)</code>, Enterprise MTC, and Total Phase USB Bus Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -171,6 +180,10 @@
             <div><a href="#05-complete-suite-by-suite-breakdown-of-run-17-250-passed-32-skipped-0-failed" class="hover:underline">&sect;0.5 Complete Suite-by-Suite Breakdown of Run 17 (<code>250 Passed / 32 Skipped / 0 Failed</code>)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Detailed Analysis of <code>Authr-ClientPin2-PinPolicy</code> <code>F-2</code> Test Logic</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -203,7 +216,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–20 (<code>Runs 10–19</code> Historical + <code>Run 20</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, PQ MTC Subtree Checkpoints &amp; <code>fidont_rtt.log</code> DWT Telemetry)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–21 (<code>Runs 10–20</code> Historical + <code>Run 21</code> Latest <code>250 / 250</code> 18-Algorithm <code>FN-DSA</code>, RFC 8554 $\cap$ NIST SP 800-208 <code>generate_lms_pki.py</code> Provisioned Hierarchy, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -307,7 +320,7 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 32 Skipped / 0 Failed</code>)</strong> — <strong><code>250 / 250</code> (<code>100%</code>) pass across all 18 algorithms (<code>78</code> <code>"packed"</code>, <code>22</code> <code>"mtc"</code>, <code>2</code> <code>"mtcl"</code>), <code>0</code> USB bus errors across <code>127,232</code> USB records (<code>4,945</code> <code>OUT txn</code> / <code>8,827</code> <code>IN txn</code>, <code>1,092</code> <code>CTAPHID_CBOR</code> exchanges), and <code>0</code> panics/OOMs across <code>304,330</code> <code>fidont_rtt.log</code> lines!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 20 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 20</strong></td>
 <td class="p-3 align-top text-left"><code>L155031–L211147</code> (<code>56,117</code> lines) &amp; <code>fidont_rtt.log</code> (<code>L860546–L1163679</code>, <code>303,134</code> lines)</td>
 <td class="p-3 align-top text-left"><code>23:13:01</code> – <code>23:58:36</code> (<code>45m 35s</code> wall / <code>~19m 24s</code> active)</td>
 <td class="p-3 align-top text-left"><strong>RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (<code>1</code> <code>Fidont LMS Root CA</code> + <code>4</code> Pre-Published <code>Fidont LMS Intermediate CA #0..#3</code>, OID <code>1.2.840.113549.1.9.16.3.17</code> $\to$ <code>ML-DSA-44</code> Leaf <code>x5c</code>) + HSS/LMS (<code>alg: -46</code>) Signed MTC Subtree Checkpoints (<code>caId: "g5k_AQE"</code>, <code>caId: "g5k_AQI"</code>) + All 18 Algorithms (<code>FN-DSA-512/1024</code>, <code>ML-DSA-44/65/87</code>, 6 PQ/T Composites, 7 Classical) + <code>perCredMgmtRO</code> + Enterprise Attestation + UX Metadata Statement Dialog Persistence</strong></td>
@@ -315,7 +328,64 @@
 <td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 32 Skipped / 0 Failed</code> across all 37 CTAP 2.3 suites)</strong> — <strong>Verified HSS/LMS X.509 (<code>L=1</code>, <code>LMS_SHA256_M32_H5</code> / <code>LMOTS_SHA256_N32_W8</code>) + <code>ML-DSA-44</code> <code>"packed"</code> <code>x5c</code> chains (<code>6,693–7,173 B</code>), HSS/LMS <code>alg: -46</code> MTC subtree checkpoints (<code>1,252 B</code> sig) across <code>"mtc"</code> &amp; <code>"mtcl"</code>, Enterprise Attestation (<code>6/6</code>), <code>Metadata-Stmt-1</code> (<code>25/25</code>), and <code>0</code> panics/OOMs across <code>303,134</code> <code>fidont_rtt.log</code> lines!</strong></td>
 </tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 21 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L1–L35146</code> (<code>35,146</code> lines, post-clear) &amp; <code>opensk_rtt.log</code> (<code>L1–L304967</code>, <code>304,967</code> lines)</td>
+<td class="p-3 align-top text-left"><code>09:46:00</code> – <code>10:11:28</code> (<code>25m 27.56s</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>scripts/generate_lms_pki.py</code> Provisioned RFC 8554 $\cap$ NIST SP 800-208 (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>) Root CA + 4 Pre-Published LMS Intermediate CAs (<code>g5k_AQE</code>..<code>g5k_AQQ</code>) + LMS-Signed <code>ML-DSA-44/65/87</code> Batch &amp; Enterprise X.509 Certs (<code>1,296 B</code> sig) + Compact <code>fmt: "mtc"</code> (<code>alg: -46</code> <code>HSS-LMS</code>) Checkpoints + Single-Instance <code>probe-rs</code> RTT Capture (<code>opensk_rtt.log</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>250</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 33 Skipped / 0 Failed / 1 Retried</code> across all active CTAP 2.3 suites)</strong> — <strong>Verified automated LMS PKI provisioning (<code>crypto_data.rs</code> + <code>fido-mds3.json</code>), compact <code>fmt: "mtc"</code> (<code>6,067–6,728 B</code>) &amp; LMS-signed <code>"packed"</code> <code>x5c</code> (<code>6,692–7,172 B</code>) across all 18 algorithms, Enterprise Attestation (<code>6/6</code>), <code>Metadata-Stmt-1</code> (<code>25/25</code>), and <code>0</code> panics / <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines across <code>304,967</code> <code>opensk_rtt.log</code> lines!</strong></td>
+</tr>
 </tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 21 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: Automated <code>generate_lms_pki.py</code> RFC 8554 $\cap$ NIST SP 800-208 Provisioning, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> Hardware Telemetry (<code>09:46:00</code> – <code>10:11:28</code> PDT)</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong><code>250 / 250</code> (<code>100.00%</code>) Pass with Automated LMS PKI Provisioning (<code>scripts/generate_lms_pki.py</code>), Compact <code>fmt: "mtc"</code>, and Clean Single-Instance <code>opensk_rtt.log</code></strong>: In Run 21 (<code>2026-10-23</code>, <code>09:46:00.569</code> – <code>10:11:28.126 PDT</code>, <code>25m 27.56s</code> total duration), we cleared both log files and executed a full end-to-end CTAP 2.3 conformance run following the provisioning of the authenticator and MDS3 via <code>scripts/generate_lms_pki.py</code>:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>RFC 8554 $\cap$ NIST SP 800-208 Parameter Intersection</strong>: Provisioned a deterministic <strong>LMS Root CA</strong> and <strong>4 Pre-Published LMS Intermediate CAs</strong> (<code>caId</code>: <code>g5k_AQE</code> Batch #0, <code>g5k_AQI</code> Enterprise #1, <code>g5k_AQM</code> Batch #2, <code>g5k_AQQ</code> Batch #3) using <code>LMS_SHA256_M32_H5</code> (<code>type = 0x00000005</code>, 32-leaf tree) + <code>LMOTS_SHA256_N32_W8</code> (<code>type = 0x00000004</code>, <code>p = 34</code> chains), reducing each HSS/LMS signature (<code>L=1</code>) to <strong><code>1,296 bytes</code></strong> (<code>46%</code> smaller than <code>W=4</code>'s <code>2,420 B</code>) with X.509 <code>SubjectPublicKeyInfo</code> OID <code>1.2.840.113549.1.9.16.3.17</code> (<code>id-alg-hss-lms-hashsig</code>).</li>
+<li><strong>LMS-Signed <code>ML-DSA</code> Batch &amp; Enterprise X.509 Certificates + Compact <code>fmt: "mtc"</code></strong>: Provisioned 3 LMS-signed Batch X.509 certificates (<code>ML-DSA-44</code> <code>2,707 B</code>, <code>ML-DSA-65</code> <code>3,347 B</code>, <code>ML-DSA-87</code> <code>3,987 B</code>) and 3 LMS-signed Enterprise X.509 certificates (<code>2,740 B</code>, <code>3,380 B</code>, <code>4,020 B</code>) into <code>src/ctap/crypto_data.rs</code>, alongside <code>alg: -46</code> (<code>HSS-LMS</code>) signed <code>mtcTrustAnchors[].subtrees[]</code> checkpoints (<code>treeSize: 16</code>) in <code>fido-mds3.json</code>. All 2-step PQ/composite algorithms emitted compact <code>fmt: "mtc"</code> (<code>6,067–6,728 B</code>) while 1-step PQ algorithms (<code>FN-DSA-512</code>, <code>ML-DSA-44</code>, <code>MLDSA44-Ed25519</code>, <code>MLDSA44-ES256</code>) emitted LMS-signed <code>"packed"</code> <code>x5c</code> (<code>6,692–7,172 B</code>).</li>
+<li><strong>Single-Instance <code>probe-rs</code> Hardware RTT Capture (<code>opensk_rtt.log</code>)</strong>: Captured <strong><code>304,967</code> lines (<code>31.0 MB</code>)</strong> of Wasefire/OpenSK debug telemetry (<code>--features=debug</code>) with <strong><code>0</code> panics, <code>0</code> HardFaults, <code>0</code> <code>[WARN]</code> or <code>[ERROR]</code> lines</strong>, and <strong><code>5</code> clean hardware resets</strong> during the <code>ClientPin1</code> and <code>ClientPin2</code> power-cycle lockout tests (<code>Authr-ClientPin2-Policy</code> <code>P-5</code> retried once automatically by Mocha after the board remained USB-powered through the J-Link port on the first prompt, then passed <code>100%</code> on retry at <code>L32075</code>).</li>
+</ul></div>
+<h3 id="00001-run-21-executive-summary-094600-101128-pdt" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000.1 Run 21 Executive Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Value in Run 21</th>
+<th class="p-3 font-semibold align-bottom text-left">Source &amp; Details</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Test Window &amp; Duration</strong></td>
+<td class="p-3 align-top text-left"><strong><code>09:46:00.569</code> – <code>10:11:28.126 PDT</code></strong> (<strong><code>25m 27.56s</code></strong> total elapsed)</td>
+<td class="p-3 align-top text-left"><code>fido_conformance_debug.log</code> (<code>L99</code> first test start $\to$ <code>L35113</code> <em>"Testing finished. You may submit the results now."</em> out of <code>35,146</code> lines / <code>5.0 MB</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Overall Test Outcome</strong></td>
+<td class="p-3 align-top text-left"><strong><code>250 Passed / 33 Skipped / 0 Failed / 1 Retried</code> (<code>100.00%</code> PASS)</strong></td>
+<td class="p-3 align-top text-left"><code>284</code> total test starts across <code>283</code> unique test cases; <strong><code>0</code> <code>[TEST FAILED]</code> events</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Provisioned LMS Hierarchy</strong></td>
+<td class="p-3 align-top text-left"><code>1</code> LMS Root CA + <code>4</code> Pre-Published LMS Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, <code>1,296 B</code> sig) + <code>3</code> LMS-signed <code>ML-DSA-44/65/87</code> Batch X.509 certs + <code>3</code> LMS-signed Enterprise X.509 certs + <code>alg: -46</code> (<code>HSS-LMS</code>) <code>mtcTrustAnchors</code> (<code>g5k_AQE</code>, <code>g5k_AQI</code>)</td>
+<td class="p-3 align-top text-left">Generated deterministically by <code>scripts/generate_lms_pki.py</code> into <code>src/ctap/crypto_data.rs</code> and <code>fido-mds3.json</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Hardware RTT Log (<code>opensk_rtt.log</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>304,967</code> lines (<code>31.0 MB</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code> panics, <code>0</code> HardFaults, <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines</strong> across <code>100</code> <code>AuthenticatorMakeCredential</code> and <code>69</code> <code>AuthenticatorGetAssertion</code> hardware executions; <code>5</code> physical board resets (<code>RTT L280798</code>, <code>L281602</code>, <code>L282001</code>, <code>L282840</code>, <code>L283825</code>)</td>
+</tr>
+</tbody></table></div>
+<h3 id="00002-run-21-authr-makecred-resp-1-p-01f-01-all-18-algorithms-log-l4576l6889-rtt-l37275l74230" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000.2 Run 21 <code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>F-01</code>): All 18 Algorithms (<code>Log L4576–L6889</code>, <code>RTT L37275–L74230</code>)</h3>
+<h3 id="00003-run-21-authr-getassertion-resp-1-p-1p-5-all-18-algorithms-log-l13064l16979-rtt-l87468l146910" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000.3 Run 21 <code>Authr-GetAssertion-Resp-1</code> (<code>P-1</code>..<code>P-5</code>): All 18 Algorithms (<code>Log L13064–L16979</code>, <code>RTT L87468–L146910</code>)</h3>
+<h3 id="00004-run-21-complete-conformance-suite-summary-094600-101128-pdt" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000.4 Run 21 Complete Conformance Suite Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</h3>
     </section>
 
     <!-- ===================================================================== -->

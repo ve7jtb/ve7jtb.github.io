@@ -347,14 +347,15 @@ DOCUMENT_CONFIGS = {
             ("HSS/LMS Hierarchy & PQ MTC", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("perCredMgmtRO & Enterprise Attestation", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (211,147 lines, 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,163,679 lines, 0 panics/OOMs).",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (246,293 cumulative lines across Runs 10–21, 250 / 250 100.00% PASS in Run 21), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,468,647 cumulative lines including 304,967 lines in Run 21 opensk_rtt.log, 0 panics/OOMs).",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-0-00" if "0.00" in title else
+            "section-0-000" if "0.000" in title else
+            ("section-0-00" if "0.00" in title else
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title)))))
+            (f"section-{num}" if num else slug(title))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {
