@@ -13,6 +13,13 @@ Pull request against the **W3C WebAuthentication Working Group [Level 4 Editor's
 >   2. **`mtcDebug` (`mtc-debug`)** in §10 (Defined Extensions): Diagnostic registration extension for in-band active attestation public key and enterprise device serial access.
 >   3. **IANA Registrations** in §11: Formal entries in WebAuthn Attestation Statement Format Identifiers and Extension Identifiers registries.
 
+> [!TIP]
+> **Live W3C Level 4 Specification Review Copy:**  
+> A complete, fully cross-linked review copy of the W3C WebAuthentication Level 4 Editor's Draft incorporating this pull request is published at **[webauthn_level4_review.html](./webauthn_level4_review.html)**. Direct jump links:
+> - [§8.10 Merkle Tree Certificate Attestation Statement Format (`mtc`)](./webauthn_level4_review.html#sctn-mtc-attestation)
+> - [§10.2.1 MTC Debug Extension (`mtcDebug`)](./webauthn_level4_review.html#sctn-mtc-debug-extension)
+> - [§11.2 IANA Registrations](./webauthn_level4_review.html#sctn-att-fmt-reg)
+
 ---
 
 ## 1. GitHub Pull Request Metadata & Checklist

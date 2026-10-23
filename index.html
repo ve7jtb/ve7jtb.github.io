@@ -465,6 +465,9 @@
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
             W3C WebAuthn Level 4 Proposal
           </span>
+          <a href="./webauthn_level4_review.html" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition">
+            ★ Full Level 4 Review Copy (HTML)
+          </a>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             fmt: "mtc"
           </span>
@@ -485,21 +488,25 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> statement format to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>.
+          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> statement format to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>. Includes the complete compiled <strong><a href="./webauthn_level4_review.html" class="text-[var(--primary)] hover:underline font-semibold">WebAuthn Level 4 Spec Review Copy (HTML)</a></strong>.
         </p>
       </div>
 
       <!-- Primary Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
-        <a href="./webauthn_level4_mtc_proposal.html"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition shadow-sm">
-          <span>Read Full Proposal</span>
+        <a href="./webauthn_level4_review.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition shadow-sm">
+          <span>Read Full Level 4 Review Copy (HTML)</span>
           <span>&rarr;</span>
         </a>
         <a href="./webauthn_level4_pull_request.html"
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-90 transition shadow-sm">
           <span>View W3C Pull Request (HEAD 0c50bd0)</span>
           <span>&rarr;</span>
+        </a>
+        <a href="./webauthn_level4_mtc_proposal.html"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <span>Read Proposal Analysis</span>
         </a>
         <a href="./webauthn_level4_mtc_proposal.md"
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
@@ -529,25 +536,25 @@
             </p>
           </a>
 
-          <a href="./webauthn_level4_mtc_proposal.html#section-2"
+          <a href="./webauthn_level4_review.html#sctn-mtc-attestation"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Spec §8.10</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              §8 Defined Format: <code>mtc</code>
+              Defined Format: <code>mtc</code>
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              CDDL definitions and Relying Party verification procedures for compact <code>fmt: "mtc"</code> (preferred default based on Authenticate 2026 TWG consensus).
+              View rendered Bikeshed normative text, CDDL syntax, and RP verification algorithm in the Level 4 review copy.
             </p>
           </a>
 
-          <a href="./webauthn_level4_mtc_proposal.html#section-3"
+          <a href="./webauthn_level4_review.html#sctn-mtc-debug-extension"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Spec §10.2.1</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              §10 Extension: <code>mtcDebug</code> (<code>mtc-debug</code>)
+              Extension: <code>mtcDebug</code>
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              WebIDL and CDDL specifications for the diagnostic extension providing in-band attestation public key access and enterprise device serial number verification.
+              View rendered WebIDL dictionaries, authenticator CDDL, and client processing algorithms in the Level 4 review copy.
             </p>
           </a>
         </div>

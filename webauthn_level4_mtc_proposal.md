@@ -10,6 +10,12 @@ Targeting the **[W3C WebAuthentication Working Group (WebAuthn Level 4 Editor's 
 > 1. **`fmt: "mtc"`** *(formerly `mtc-mds`)*: Compact Merkle Tree Certificate format (public key omitted from the wire; resolved out-of-band via FIDO MDS3 or manufacturer manifests).
 > 2. **`mtcDebug` (`mtc-debug`)**: WebAuthn Level 4 registration extension providing in-band diagnostic access to the active attestation public key and hardware serial number for automated test fixtures and conformance tools.
 
+> [!TIP]
+> **Complete WebAuthn Level 4 Specification Review Copy:**  
+> A full rendered review copy of the W3C WebAuthentication Level 4 specification including these changes is available at **[webauthn_level4_review.html](./webauthn_level4_review.html)**. Direct section jump links:
+> - [§8.10 Merkle Tree Certificate Attestation Statement Format (`mtc`)](./webauthn_level4_review.html#sctn-mtc-attestation)
+> - [§10.2.1 MTC Debug Extension (`mtcDebug`)](./webauthn_level4_review.html#sctn-mtc-debug-extension)
+
 ---
 
 ## 1. Background, Problem Statement & Motivation
