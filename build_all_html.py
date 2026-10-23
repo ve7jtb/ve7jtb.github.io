@@ -367,6 +367,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "Comprehensive technical comparison between MDS/Manifest-Assisted Merkle Tree Certificates (fmt: 'mtc') and Standard RFC 8554 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS) across wire payload budgets, manifest distribution logistics, and Relying Party verification complexity.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "webauthn_level4_mtc_proposal": {
+        "title": "Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (mtc / mtcl) and the mtcDebug Extension",
+        "badges": [
+            ("W3C WebAuthn Level 4 Proposal", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("fmt: \"mtc\" & \"mtcl\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("mtcDebug Extension (§10.x)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("IETF PLANTS & FIDO CTAP 2.3", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Formal specification changes targeting the W3C WebAuthentication Working Group to define the compact mtc and inline mtcl statement formats in §8, the mtcDebug registration extension in §10, and size-aware 3-tier attestation cascading.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 

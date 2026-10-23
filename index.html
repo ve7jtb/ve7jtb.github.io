@@ -458,6 +458,97 @@
       </div>
     </section>
 
+    <!-- Featured Specification Proposal: W3C WebAuthn Level 4 MTC & mtcDebug Extension -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            W3C WebAuthn Level 4 Proposal
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            fmt: "mtc" &amp; "mtcl"
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            mtcDebug Extension (§10.x)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            IETF PLANTS &amp; FIDO CTAP 2.3
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./webauthn_level4_mtc_proposal.html" class="hover:underline">
+            Proposed Changes to W3C WebAuthn Level 4: Merkle Tree Certificate Attestation Formats (<code>mtc</code> / <code>mtcl</code>) and the <code>mtcDebug</code> Extension
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> and large inline <strong><code>mtcl</code></strong> statement formats to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>.
+        </p>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./webauthn_level4_mtc_proposal.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition shadow-sm">
+          <span>Read Full Proposal</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./webauthn_level4_mtc_proposal.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <span>Markdown Source</span>
+        </a>
+        <a href="https://github.com/w3c/webauthn/" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition text-[var(--muted-foreground)]">
+          <span>W3C WebAuthn Repo</span>
+          <span class="text-xs">&nearr;</span>
+        </a>
+      </div>
+
+      <!-- Highlights Grid -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Proposal Sections &amp; Core Additions
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <a href="./webauthn_level4_mtc_proposal.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Post-Quantum USB HID Ceiling ($7,609\text{ B}$)
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Why classical X.509 <code>packed</code> attestation with ML-DSA CAs (7.9–22.9 KB) exceeds the USB HID single-message ceiling, and how MTC solves post-quantum scaling.
+            </p>
+          </a>
+
+          <a href="./webauthn_level4_mtc_proposal.html#section-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              §8 Defined Formats: <code>mtc</code> &amp; <code>mtcl</code>
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              CDDL definitions and Relying Party verification procedures for compact <code>fmt: "mtc"</code> (preferred default) and inline <code>fmt: "mtcl"</code> (MTC Large).
+            </p>
+          </a>
+
+          <a href="./webauthn_level4_mtc_proposal.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              §10 Extension: <code>mtcDebug</code> (<code>mtc-debug</code>)
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              WebIDL and CDDL specifications for the diagnostic extension providing in-band attestation public key access and enterprise device serial number verification.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- Featured Specification Report: CTAP 2.3+ PQ PIN/UV Auth Protocol 3 -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
