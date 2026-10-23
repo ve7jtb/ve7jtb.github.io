@@ -168,6 +168,10 @@ To verify an `mtc` attestation statement, an Enterprise Relying Party must imple
 5. **Branch 5 (Revocation & Key Life-Cycle Management)**:
    - Revocation requires tracking delta arrays of `revokedSerials` inside every manifest update.
 
+> [!TIP]
+> **Diagnostic Verification via WebAuthn Level 4 `mtc-debug`**:
+> For test harnesses and automated conformance suites, the WebAuthn Level 4 **`mtc-debug`** extension allows an RP to bypass manifest lookups by requesting `mtc-debug: true`, which instructs the authenticator to return the active public key (and device serial when Enterprise Attestation is active) directly in `authenticatorData.extensions["mtc-debug"]`.
+
 ### 3.2 Single Pure-Algebraic Path in RFC 8554 LM-OTS ($80\,\mu\text{s}$)
 
 In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branching paths entirely:

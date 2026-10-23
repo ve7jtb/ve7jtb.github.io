@@ -219,6 +219,7 @@ Given `(fmt, attStmt, authenticatorData, clientDataHash)`:
      - Extract `pubKey = attStmt.pubKey` and decode it as a `COSE_Key`.
    - **If `fmt == "mtc"`:**
      - Lookup `mtcCert.serial` in `mtcTrustAnchor.batchKeys` (or query the synced MTC log for `(mtcCert.caId, mtcCert.serial)`) to obtain the canonical CBOR-encoded `COSE_Key` bytes `pubKey`. Fail verification if `(caId, serial)` is unknown.
+     - *(Diagnostic Alternative)*: If the registration negotiated the WebAuthn Level 4 `mtc-debug` extension (§8.7), the RP MAY decode `pubKey` directly from `authenticatorData.extensions["mtc-debug"].pubKey` to perform immediate offline signature verification without external database access.
 4. **Verify Attestation Signature:**
    - Verify that `pubKey.alg == attStmt.alg`.
    - Verify that `attStmt.sig` is a valid signature over `authenticatorData || clientDataHash` using `pubKey`.
@@ -835,6 +836,74 @@ Manufacturers are expected to provide the manifest to **every key purchaser**, w
 > - **Size:** one public key per device, about `133 MB` / `197 MB` / `261 MB` per 100,000 devices for `ML-DSA-44` / `-65` / `-87`. A 10,000-device enterprise needs `13–26 MB`.
 > - **Distribution:** every verifying RP needs the manifest, or a central enterprise IdP does all verification. Each new purchase requires a manifest update, and revocations are delivered as `revokedSerials` updates.
 > - **Fallback:** if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with `0x0B: ["mtcl"]`, which carries the inline `pubKey` and the proof committing the device serial.
+
+---
+
+### 8.7 WebAuthn Level 4 Diagnostic Extension: `mtc-debug`
+
+Targeting **[W3C WebAuthn Level 4 (§10 Defined Extensions)](https://github.com/w3c/webauthn/)** and CTAP 2.3+, the **`mtc-debug`** extension provides an optional diagnostic mechanism for automated test harnesses, FIDO conformance tools, device driver certification, and developer sandbox environments.
+
+Because the preferred **`fmt: "mtc"`** format intentionally omits the multi-kilobyte post-quantum attestation public key from the wire payload to stay within USB HID framing limits, offline test fixtures and sandbox verifiers without an immediate FIDO MDS3 BLOB or manufacturer manifest connection cannot otherwise verify `attStmt.sig`. Furthermore, in Enterprise Attestation (`ep`), test harnesses need an in-band way to inspect TRNG key-injection records and hardware serial numbers.
+
+#### 8.7.1 WebIDL Definitions (WebAuthn Level 4)
+
+```webidl
+// WebAuthn Level 4 Partial Dictionary for Client Extension Inputs
+partial dictionary AuthenticationExtensionsClientInputs {
+    boolean mtcDebug;
+};
+
+// WebAuthn Level 4 Partial Dictionary for Client Extension Outputs
+partial dictionary AuthenticationExtensionsClientOutputs {
+    MtcDebugExtensionOutput mtcDebug;
+};
+
+// WebAuthn Level 4 Extension Output Structure
+dictionary MtcDebugExtensionOutput {
+    required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
+    DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
+};
+```
+
+#### 8.7.2 CTAP2 Protocol Definitions (CDDL)
+
+```cddl
+; CTAP2 authenticatorMakeCredential (0x01) parameter 0x04 (extensions map)
+$$extension-input //= (
+    mtc-debug: bool
+)
+
+; authenticatorData.extensions map entry
+$$extension-output //= (
+    mtc-debug: MtcDebugExtensionOutput
+)
+
+MtcDebugExtensionOutput = {
+    pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
+    ? deviceSerial: tstr / uint       ; OPTIONAL: Device serial number.
+                                      ; MUST be present IF AND ONLY IF Enterprise
+                                      ; Attestation (0x0A = 1 or 2) is active.
+}
+```
+
+#### 8.7.3 Processing Rules
+
+1. **Client Processing (`navigator.credentials.create()`)**:
+   - If `options.publicKey.extensions?.mtcDebug === true`, the browser/platform client sets `mtc-debug: true` in the CTAP2 `authenticatorMakeCredential` extensions parameter.
+2. **Authenticator Processing**:
+   - If `mtc-debug` is requested and enabled in firmware:
+     - Set bit 7 (`ED`, `0x80`) in `authenticatorData.flags`.
+     - Extract the canonical CBOR `COSE_Key` of the active attestation key: the shared batch key (`AttestationId::Batch`) if `!ep_att`, or the single-device key (`AttestationId::Enterprise`) if `ep_att`.
+     - **Conditional `deviceSerial`**: If Enterprise Attestation was negotiated and granted (`0x0A = 1` or `2`), populate `deviceSerial` with the hardware serial number. If Enterprise Attestation is **not** active, the authenticator **MUST NOT** include `deviceSerial`.
+     - Return `mtc-debug: { pubKey, [deviceSerial] }` in `authenticatorData.extensions`.
+3. **Relying Party / Test Harness Validation**:
+   - The RP decodes `pubKey` directly from `extensions["mtc-debug"]` and immediately verifies `attStmt.sig` over `authenticatorData || clientDataHash` without requiring an out-of-band MDS or manifest lookup.
+   - If `ep` was requested, the RP verifies `extensions["mtc-debug"].deviceSerial` against its test fixture or inventory database.
+
+#### 8.7.4 Privacy & Wire Framing Considerations
+
+- **Strict Anonymity Preservation**: When Enterprise Attestation is not granted, `deviceSerial` is omitted and `pubKey` is identical across all $\ge 100,000$ authenticators in the batch, guaranteeing zero tracking leakage on consumer registrations.
+- **Wire Overhead**: Returning `pubKey` adds $1,322\text{ B}$ (`ML-DSA-44`), $1,962\text{ B}$ (`ML-DSA-65`), or $2,602\text{ B}$ (`ML-DSA-87`). On USB HID with `ML-DSA-87`, this pushes total message size over $7,609\text{ B}$. Therefore, `mtc-debug` is intended exclusively for diagnostic test suites, laboratory evaluation, or transports supporting reassembly (NFC, BLE, framed channels).
 
 ---
 

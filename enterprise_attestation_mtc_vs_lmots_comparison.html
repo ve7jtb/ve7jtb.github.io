@@ -415,6 +415,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <li>Revocation requires tracking delta arrays of <code>revokedSerials</code> inside every manifest update.</li>
 </ul></li>
 </ol>
+<div class="rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Tip</div><p class="text-sm my-2"><strong>Diagnostic Verification via WebAuthn Level 4 <code>mtc-debug</code></strong>: For test harnesses and automated conformance suites, the WebAuthn Level 4 <strong><code>mtc-debug</code></strong> extension allows an RP to bypass manifest lookups by requesting <code>mtc-debug: true</code>, which instructs the authenticator to return the active public key (and device serial when Enterprise Attestation is active) directly in <code>authenticatorData.extensions["mtc-debug"]</code>.</p></div>
 <h3 id="32-single-pure-algebraic-path-in-rfc-8554-lm-ots-80mutexts" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Single Pure-Algebraic Path in RFC 8554 LM-OTS ($80\,\mu\text{s}$)</h3>
 <p class="text-sm my-2">In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branching paths entirely:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
