@@ -403,6 +403,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "Architecture and implementation proposal for adding consolidated Merkle Tree Certificate attestation (fmt: \"mtc\") and the mtc-debug registration extension to Yubico java-webauthn-server, resolving batch keys from FIDO MDS3 and enterprise keys from vendor manifests or mtc-debug authenticated against the MDS subtree rootHash.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "mtc_for_dummies": {
+        "title": "MTC (Merkle Tree COSE) for Dummies by a Bigger Dummy",
+        "badges": [
+            ("Merkle Tree COSE (fmt: \"mtc\")", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("CTAP 2.3 & W3C WebAuthn", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("FIDO MDS3 & Enterprise Attestation", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Append-Only & Sparse Merkle Trees", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "How I failed to explain this to Dirk — and why I don't want to have to explain it again to $2^8$ people (a Merkle joke, I hope you may get it by the end).",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 

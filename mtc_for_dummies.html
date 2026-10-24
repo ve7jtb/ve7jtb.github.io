@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTC (Merkle Tree COSE) for Dummies by a Bigger Dummy</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Merkle Tree COSE (fmt: &quot;mtc&quot;)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">CTAP 2.3 &amp; W3C WebAuthn</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">FIDO MDS3 &amp; Enterprise Attestation</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Append-Only &amp; Sparse Merkle Trees</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./mtc_for_dummies.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      MTC (Merkle Tree COSE) for Dummies by a Bigger Dummy
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      How I failed to explain this to Dirk — and why I don't want to have to explain it again to $2^8$ people (a Merkle joke, I hope you may get it by the end).
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">The Problem Statement: Why We Can't Have Nice (Small) Things Anymore</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">On to Solutioneering: Taking the <a href="https://www.facebook.com/AlisonBraunPhotography/posts/doa-the-time-joey-shithead-brought-a-working-chainsaw-on-stage-april-1989-and-i-/1408436129869327/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">Chainsaw</a> to <code>MakeCredential</code></div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Wait... Why Did You Mention Merkle Trees Then? (Dedicated to Karen)</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Saving Product Managers From Themselves: Append-Only Trees &amp; Checkpoints</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate"><a href="https://www.youtube.com/watch?v=Ug75diEyiA0" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">"Where's the Revocation?!"</a> &amp; Conclusion</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. The Problem Statement: Why We Can't Have Nice (Small) Things Anymore</a>
+
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. On to Solutioneering: Taking the <a href="https://www.facebook.com/AlisonBraunPhotography/posts/doa-the-time-joey-shithead-brought-a-working-chainsaw-on-stage-april-1989-and-i-/1408436129869327/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">Chainsaw</a> to <code>MakeCredential</code></a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#so-what-do-we-have-left" class="hover:underline">&sect;So What Do We Have Left?</a></div>
+            <div><a href="#reconstructing-the-pre-image-via-the-fido-mds" class="hover:underline">&sect;Reconstructing the Pre-Image via the FIDO MDS</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Wait... Why Did You Mention Merkle Trees Then? (Dedicated to Karen)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#the-trusty-thing-formerly-known-as-a-certificate" class="hover:underline">&sect;The Trusty Thing Formerly Known as a Certificate</a></div>
+            <div><a href="#roots-checkpoints-and-leaves" class="hover:underline">&sect;Roots, Checkpoints, and Leaves</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Saving Product Managers From Themselves: Append-Only Trees &amp; Checkpoints</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#before-depth-2-tree-22-4-leaves" class="hover:underline">&sect;Before: Depth 2 Tree ($2^2 = 4$ Leaves)</a></div>
+            <div><a href="#after-appending-to-make-a-depth-3-tree-23-8-leaves" class="hover:underline">&sect;After: Appending to Make a Depth 3 Tree ($2^3 = 8$ Leaves)</a></div>
+            <div><a href="#immutable-leaf-addresses-checkpoint-bridging" class="hover:underline">&sect;Immutable Leaf Addresses &amp; Checkpoint Bridging</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. <a href="https://www.youtube.com/watch?v=Ug75diEyiA0" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">"Where's the Revocation?!"</a> &amp; Conclusion</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#wheres-the-revocationhttpswwwyoutubecomwatchvug75dieyia0" class="hover:underline">&sect;<a href="https://www.youtube.com/watch?v=Ug75diEyiA0" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">"Where's the Revocation?!"</a></a></div>
+            <div><a href="#in-conclusion" class="hover:underline">&sect;In Conclusion</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">The Problem Statement: Why We Can't Have Nice (Small) Things Anymore</h2>
+      </div>
+<p class="text-sm my-2"><em>(Note: When I first started this proposal for CTAP and WebAuthn, <strong>MTC</strong> stood for "Merkle Tree Certificates." However, given that there is no asymmetric signature or certificate in the conventional sense, I am now retronyming it to <strong>Merkle Tree COSE</strong>, as it is based on COSE structures. Clever, no?)</em></p>
+<p class="text-sm my-2">A typical X.509 certificate, at its core, ties a number of claims together in a way that can be verified. Typically, that verification is done through a series of asymmetric signatures that chain back to a known trust anchor or root that is self-signed. Each of the signed objects allows the parent or signer to make additional claims—or "constraints," in X.509 speak.</p>
+<p class="text-sm my-2">Here is the problem: <strong>Post-Quantum Signatures</strong> (another misnomer; they aren't <em>post-quantum</em>, only <em>resistant to post-quantum attacks</em>, but marketing got there before me) are <strong>big</strong> compared to elliptic curve keys and signatures. <em>(Call out to Canada's BlackBerry/Certicom for the last 20 years of tiny signatures!)</em></p>
+<p class="text-sm my-2">Big keys and signatures mean we can't just toss them on the wire like we have gotten used to with ES256 without blowing up things like NFC that are designed for the current small data sizes. When I say "big," think <strong>orders of magnitude larger</strong>—for details, see my <a href="./pq_mtc_attestation_proposal.html" class="text-[var(--primary)] hover:underline">other papers with the numbers</a>. Just take my word for it for now.</p>
+<p class="text-sm my-2">So, what do we actually use attestations for, and how can we make them PQ-resistant to something like NIST's Level 5?</p>
+<p class="text-sm my-2">Currently, we have batch attestation. If the spec supports <strong>ML-DSA-87</strong> (NIST Level 5) attestation over an ML-DSA-87 public key, look at what we are actually shoving into the <code>MakeCredential</code> response:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li>A <strong>big</strong> credential public key (<code>ML-DSA-87</code>),</li>
+<li><code>authData</code> and <code>credentialId</code>,</li>
+<li>A <strong>big</strong> <code>ML-DSA-87</code> attestation signature,</li>
+<li><em>Another</em> <strong>big</strong> <code>ML-DSA-87</code> public key (the batch key), wrapped in X.509 ASN.1 overhead, and</li>
+<li><em>Yet another</em> <strong>big</strong> <code>ML-DSA-87</code> signature by the parent (intermediate or root CA)!</li>
+</ol>
+<p class="text-sm my-2">That is <strong>two signatures and two public keys</strong> to prove that the new credential public key comes from an authenticator that is legitimately part of a batch (at least 100,000 authenticators) that are identified in the FIDO MDS with a set of properties indexed by that AAGUID.</p>
+<p class="text-sm my-2">Can we do better? You probably guessed that I think the answer is <strong>yes</strong>; otherwise, this document is likely a bait-and-switch to trick you into purchasing a timeshare, or to get you to purchase tokens if I have been replaced by Skynet.</p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">On to Solutioneering: Taking the <a href="https://www.facebook.com/AlisonBraunPhotography/posts/doa-the-time-joey-shithead-brought-a-working-chainsaw-on-stage-april-1989-and-i-/1408436129869327/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">Chainsaw</a> to <code>MakeCredential</code></h2>
+      </div>
+<p class="text-sm my-2">The first thing is to strip out all the things we don't need:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>The Credential Public Key and <code>credentialId</code> (Keep):</strong> We can't get rid of the credential public key and <code>credentialId</code>. At this point, the authenticator is the only one that knows them, and the whole purpose of <code>MakeCredential</code> is to get them to the RP so they can be used by the user to authenticate later. So we need to keep them.</li>
+<li><strong>The <code>authData</code> (Keep):</strong> We also need to keep the <code>authData</code>; it has the <code>rpIdHash</code>, <code>AAGUID</code>, counter, and other flags about <code>UP</code>, <code>UV</code>, and <code>BE</code> relevant to the <code>MakeCredential</code> registration.</li>
+<li><strong>The Tricky <code>clientDataHash</code> (Keep Integrity-Protected):</strong> The batch attestation signs over it, but it is not in the CTAP response directly, because the unhashed <code>clientData</code> is returned to the RP by the WebAuthn client. The information in <code>clientData</code> is important as it contains the challenge, Web origin, and other security-related gunk from the browser. We already save space on the wire by not returning it, but need to keep it integrity-protected in any new response.</li>
+</ol>
+<h3 id="so-what-do-we-have-left" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">So What Do We Have Left?</h3>
+<p class="text-sm my-2">The <strong>X.509 certificate</strong> is the only thing we have remaining to work with.</p>
+<p class="text-sm my-2">The certificate contains:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The <strong>batch public key</strong> (<strong>big</strong>),</li>
+<li>The <strong>AAGUID</strong> (<strong>small</strong>),</li>
+<li>A <strong>device serial number</strong> if it is an enterprise attestation certificate,</li>
+<li>Some other stuff like the name of the manufacturer, the certificate expiry, and things that are generally ignored in practice, and</li>
+<li>Finally, the certificate is also signed by its <strong>parent</strong> (<strong>big</strong>).</li>
+</ul>
+<p class="text-sm my-2">For those following closely, you will have noticed that the <strong>AAGUID is sent twice</strong>. That is not large, but a definite candidate for trimming.</p>
+<h3 id="reconstructing-the-pre-image-via-the-fido-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Reconstructing the Pre-Image via the FIDO MDS</h3>
+<p class="text-sm my-2">Anything that both the authenticator and the RP know (via MDS) can, like the <code>clientData</code>, be integrity-protected without being sent on the wire if we have a rule to reconstruct the pre-image for a signature/integrity protection.</p>
+<p class="text-sm my-2">So, to look things up in the MDS, we do need the AAGUID as that is the master index. However, we really only need it once if it is integrity-protected. The one in <code>authData</code> is signed over by the batch key, so if the batch key is protected, then we are good with just sending it there.</p>
+<p class="text-sm my-2">The next candidate is the big signature in the X.509 cert. It binds the AAGUID and the batch key together, but we already have an AAGUID signed over by the batch key.</p>
+<p class="text-sm my-2">Hmm... if we have to look the AAGUID up in the MDS to validate the parent of the X.509 cert and the other metadata anyway to trust the <code>MakeCredential</code> result, then if the MDS had the batch public key in the AAGUID entry, we would have both sides knowing the same info and we could drop it from the wire!</p>
+<p class="text-sm my-2">Now you are probably thinking: <em>if I trust the MDS to look this shit up in, then why do I need to send the signature on the wire for a trust chain that I, as an RP, can get from the MDS by looking up the AAGUID along with a small key identifier to find all of that in the MDS?</em></p>
+<p class="text-sm my-2">So if we follow this to its logical conclusion—where we have the batch key signing over <code>authData</code> (which includes <code>credentialId</code> and the credential public key) plus <code>clientDataHash</code>—the RP now knows enough after looking up the AAGUID in the MDS to be able to reconstruct and validate the signature in the <code>MakeCredential</code> response <strong>without sending anything from the X.509 certificate</strong>.</p>
+<p class="text-sm my-2">To make it more efficient, we should send an index to identify the trust information for the batch public key. A given AAGUID in the MDS has roughly one batch key per 100,000 devices using that AAGUID. So there may be more than one batch key; best not to be ambiguous and force the RP to try all of them.</p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Wait... Why Did You Mention Merkle Trees Then? (Dedicated to Karen)</h2>
+      </div>
+<p class="text-sm my-2">So far, we have cut out almost 2/3 of the response, and I have not mentioned Merkle once. At this point, Dirk is thinking: <em>"Why did you confuse people by dragging in crypto that wasn't needed? Keep it simple!"</em></p>
+<p class="text-sm my-2">Well... I am not done yet.</p>
+<p class="text-sm my-2">We have the problem of not blowing up the size of the MDS, given that its current architecture is a monolithic signed blob of JSON. <em>(OK, so I can't really credibly complain about JOSE, but it is big, and we will eventually have to break it up in the same way that we had to for SAML metadata once the size of the files started blowing up XML parsers.)</em></p>
+<p class="text-sm my-2">If we were only talking about batch certificates over 100,000 keys, we could just move the batch certificate from the key to the MDS and call it good. One big certificate per batch key won't kill anyone in the short term.</p>
+<p class="text-sm my-2">However, we also have the crowd favourite: <strong>Enterprise Attestation</strong>. Those authenticators contain a second certificate with a <strong>batch size of 1</strong> and a serial number (see CTAP/WebAuthn for details).</p>
+<p class="text-sm my-2">That is <em>way</em> more batch keys, and stuffing individual PQ public keys for every single device into the MDS shortens the time before we need to make major architectural changes to the MDS—probably making Karen sad, or worse, mad at me. <strong>So I dedicate the Merkle part to her.</strong></p>
+<h3 id="the-trusty-thing-formerly-known-as-a-certificate" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">The Trusty Thing Formerly Known as a Certificate</h3>
+<p class="text-sm my-2">Remember back at the start I talked about MTC certificates? These are going to be all over the internet for TLS because they are small (see <a href="https://blog.cloudflare.com/bootstrap-mtc/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">this article from Cloudflare on bootstrapping MTCs</a>).</p>
+<p class="text-sm my-2">There are a bunch of math things that make them similar to what we need, but not a drop-in replacement because TLS is interactive and we only have 1 request/response to work with. <em>(Ask me about sibling paths and inclusion proofs sometime when you want to be put to sleep.)</em></p>
+<p class="text-sm my-2">So we determined that the <strong>trusty thing formerly known as a certificate</strong> can live in the MDS. If we have the trusty thing in the MDS and want to make it small, we can use the same techniques as X.509 MTC for TLS, but drop the ASN.1 encoding and other cruft to have a direct <strong>CBOR representation</strong> that fits with the rest of the protocol.</p>
+<p class="text-sm my-2">We continue to use <code>COSE_Key</code> to represent the public key <em>(there is a security reason for that—ask another time)</em>. And we can put all the required information for append-only Merkle trees in the MDS as JSON members.</p>
+<h3 id="roots-checkpoints-and-leaves" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Roots, Checkpoints, and Leaves</h3>
+<p class="text-sm my-2">Each batch key maps to one entry via its index in the tree. Each tree has one <strong>root</strong> and <strong>0 to many checkpoints</strong>. From a math perspective, they are sort of the same thing, but it is easier to differentiate them when talking about the lifetime.</p>
+<p class="text-sm my-2">The short version is that the <strong>root</strong> of the tree is normally pictured at the top, which can confuse people. The top is the hash of the concatenation of the two nodes below it, plus some other stuff you want to bind to it—like expiry, as an example.</p>
+<p class="text-sm my-2">The bits at the bottom are called <strong>leaves</strong>. I did not make this up. They are basically the hash of the claims you want to make—in our case, that the <code>COSE_Key</code>-encapsulated public key <code>X</code> belongs to AAGUID <code>Y</code> according to its manufacturer via a transitive trust chain going to some well-known root.</p>
+<p class="text-sm my-2"><em>(OK, for the pedantic readers: you will have figured out that if the trusted root is in the MDS and not provided out-of-band, then the MDS is the root of trust, and we could have ended the validation several steps earlier. Let's just pretend some RPs get root certificates out-of-band for the keys because they don't trust the MDS 100%; I could say who they are, but I don't want to spend my next vacation at a black site.)</em></p>
+<p class="text-sm my-2">Quickly moving on. If we start with a two-level tree that has one root and two leaves, that works OK if you only have two batches. Any reasonable person would make a bigger tree and plan ahead. All the AAGUIDs are the same; you just need to make some key pairs to fill the tree, keep them in your pocket, and publish them incrementally in the MDS as required. If you start off with a 5-level tree, you get 16 leaves. That is probably enough for most AAGUIDs.</p>
+<p class="text-sm my-2">You are starting to see a base-2 pattern here <em>(see first joke)</em>.</p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Saving Product Managers From Themselves: Append-Only Trees &amp; Checkpoints</h2>
+      </div>
+<p class="text-sm my-2">OK, so if you have a product manager incapable of planning ahead <em>(you know who you are)</em>, we do have a way to save your ass.</p>
+<p class="text-sm my-2">Remember I called them <strong>append-only trees</strong>. Pay close attention, as we are now getting towards the cool math stuff, and we have probably lost half the people who started reading this document at this point. Their loss—they are not cool like you, remaining reader.</p>
+<p class="text-sm my-2">The thing is that you can't add levels <em>below</em> the leaves, because those leaf values are hashes of the actual data we are asserting.</p>
+<p class="text-sm my-2">We <em>can</em>, however, add leaves to the bottom on the <strong>right</strong>. So if we start with a depth-2 tree, it has four leaves <em>(math nerds in graph theory count the connections between nodes to confuse regular people)</em>. Then, to append to it, we need to double the size by adding another 4 leaves to the right and nodes all the way up to make a new root at the top—and we call this new node a <strong>checkpoint</strong>.</p>
+<h3 id="before-depth-2-tree-22-4-leaves" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Before: Depth 2 Tree ($2^2 = 4$ Leaves)</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>               [ Original Root ]             &lt;-- Depth 0 (Root)
+                 /           \                 (1st connection)
+           [Node 0-1]     [Node 2-3]         &lt;-- Depth 1 (Intermediate Nodes)
+            /      \       /      \            (2nd connection)
+         [L0]     [L1]   [L2]     [L3]       &lt;-- Depth 2 (4 Leaves: Batch Keys 0..3)</code></pre></div>
+<h3 id="after-appending-to-make-a-depth-3-tree-23-8-leaves" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">After: Appending to Make a Depth 3 Tree ($2^3 = 8$ Leaves)</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>                             [ NEW CHECKPOINT ]                  &lt;-- Depth 0 (New Top / Checkpoint)
+                             /                \                    (1st connection)
+                            /                  \
+              [ Original Root ]              [New Node 4-7]      &lt;-- Depth 1
+                /           \                 /          \         (2nd connection)
+          [Node 0-1]     [Node 2-3]     [Node 4-5]    [Node 6-7] &lt;-- Depth 2
+           /      \       /      \       /      \      /      \    (3rd connection)
+        [L0]     [L1]   [L2]     [L3]  [L4]    [L5]  [L6]    [L7]&lt;-- Depth 3 (8 Leaves: 0..3 + New 4..7)
+        \___________  ______________/  \___________  ___________/
+                    \/                             \/
+           Original 4 Leaves             Appended 4 Leaves on Right</code></pre></div>
+<h3 id="immutable-leaf-addresses-checkpoint-bridging" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Immutable Leaf Addresses &amp; Checkpoint Bridging</h3>
+<p class="text-sm my-2">The leaves are indexed from left to right, so their "address" never changes even when you add a new level.</p>
+<p class="text-sm my-2">The original tree still validates against the old root without updating any information that enterprise customers received in their manifests. The next cool math trick is that if we include the value of the new <code>Node 4-7</code> in the metadata of the checkpoint, all the old leaves (<code>L0</code>..<code>L3</code>) can now <em>also</em> validate against the new checkpoint simply by taking the <code>Original Root</code> and hashing it with the concatenated value of <code>Node 4-7</code>.</p>
+<p class="text-sm my-2">We can now keep the paths for existing nodes immutable in the enterprise manifest while being able to double the size of the tree as many times as we need to allow for as many enterprise keys as needed—just by adding levels and making checkpoints.</p>
+<p class="text-sm my-2">I can just feel the excitement.</p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1"><a href="https://www.youtube.com/watch?v=Ug75diEyiA0" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">"Where's the Revocation?!"</a> &amp; Conclusion</h2>
+      </div>
+<h3 id="wheres-the-revocationhttpswwwyoutubecomwatchvug75dieyia0" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]"><a href="https://www.youtube.com/watch?v=Ug75diEyiA0" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">"Where's the Revocation?!"</a></h3>
+<p class="text-sm my-2">Now I can hear the remaining reader channeling that <a href="https://www.youtube.com/watch?v=Ug75diEyiA0" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">classic 1984 fast-food commercial (<em>"Where's the beef?!"</em>)</a> and saying: <em>"All well and good, but where's the revocation?! I had totally unworkable, unscalable Certificate Revocation Lists (CRLs) with my X.509 certificates!"</em></p>
+<p class="text-sm my-2">Well, remaining reader, if one Merkle is good, then two are better. I introduce you to <strong>Sparse Merkle Trees</strong> for proof of non-membership in a list of revoked credentials (see <a href="https://pse.dev/blog/revocation-in-zkid-merkle-tree-based-approaches" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">Revocation in zkID: Merkle-Tree-Based Approaches</a>).</p>
+<p class="text-sm my-2">We can incorporate a check for people like you who are emotionally attached to revocation. Only the nodes that are revoked are included, so the proof is small and fast to check.</p>
+<h3 id="in-conclusion" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">In Conclusion</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Most RPs</strong> don't care about attestation and should be asking for <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/Attestation_and_Assertion" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">attestation type <code>none</code></a>. This is the smallest response and gives the best performance on the wire.</li>
+<li><strong>RPs that want a traditional bloated certificate chain</strong> can get that by asking for attestation type <code>packed</code>. That works OK over USB in environments where you know the HID stack has been updated to support the larger size.</li>
+<li><strong>RPs that <em>do</em> care about authenticator provenance</strong> and are doing it through random end-user systems—banks perhaps being a good example of this—can use the new <strong><code>mtc</code> attestation type</strong> and get the best performance possible. Older platforms won't send the attestation type in CTAP 2.1 requests, causing authenticators to fall back to whatever they have as a default, perhaps batching with the smaller ES256 signature to be backwards compatible.</li>
+</ul>
+<p class="text-sm my-2">Finally, the good news is that <strong>authenticators don't need to choose</strong>. They can use the same batch keys for both <code>packed</code> and <code>mtc</code> attestation types, and the additional <code>mtc</code> storage requirements are super small.</p>
+<p class="text-sm my-2">So this is what I wish I could've explained to Dirk on the first go-round.</p>
+<p class="text-sm my-2">Send questions, and I will try to clarify and update this as I get feedback.</p>
+<p class="text-sm my-2"><em>All names used in this document are fictional, and any resemblance to persons living or dead is purely coincidental.</em></p>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./mtc_for_dummies.md" class="text-[var(--primary)] hover:underline">mtc_for_dummies.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>
