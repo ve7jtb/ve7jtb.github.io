@@ -78,7 +78,7 @@
       FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (280,714 cumulative lines across Runs 10–22, including Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: "mtc" with 1,331 B smaller wire responses and the "mtc-debug" extension, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,760,740 cumulative lines including 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (281,781 cumulative lines across Runs 10–23, including Run 23 6 / 6 100.00% PASS on EntepriseAttestation.js &amp; the "mtc-debug" privacy gate, Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: "mtc" with 1,331 B smaller wire responses, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,771,968 cumulative lines including 11,228 lines in Run 23 and 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–22 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Latest W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code>, <code>"mtc-debug"</code> Extension, 18-Algorithm <code>FN-DSA</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–23 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Full Suite W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> + <code>Run 23</code> Latest <code>EntepriseAttestation</code> &amp; <code>"mtc-debug"</code> Privacy Gate Deep Dive)</div>
+        </a>
+        <a href="#section-0-00000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.00000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 23 (<code>22:45:07.81</code> – <code>22:45:46.69</code> PDT) Message-Level Deep Dive: <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>"mtc-debug"</code> Privacy Gate</div>
         </a>
         <a href="#section-0-0000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.0000</div>
@@ -142,9 +146,22 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–22 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Latest W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code>, <code>"mtc-debug"</code> Extension, 18-Algorithm <code>FN-DSA</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–23 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Full Suite W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> + <code>Run 23</code> Latest <code>EntepriseAttestation</code> &amp; <code>"mtc-debug"</code> Privacy Gate Deep Dive)</a>
 
         </li>
+        <li>
+          <a href="#section-0-00000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000 Run 23 (<code>22:45:07.81</code> – <code>22:45:46.69</code> PDT) Message-Level Deep Dive: <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>"mtc-debug"</code> Privacy Gate</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#0000001-run-23-executive-summary-test-by-test-matrix" class="hover:underline">&sect;0.00000.1 Run 23 Executive Summary &amp; Test-by-Test Matrix</a></div>
+            <div><a href="#0000002-complete-ctaphid-rtt-message-trace-68-exchanges-136-messages-across-cid-0x000000050x00000026" class="hover:underline">&sect;0.00000.2 Complete CTAPHID &amp; RTT Message Trace (<code>68</code> Exchanges / <code>136</code> Messages Across <code>CID 0x00000005</code>..<code>0x00000026</code>)</a></div>
+            <div><a href="#0000003-byte-level-cbor-x509-dissection-of-key-protocol-exchanges" class="hover:underline">&sect;0.00000.3 Byte-Level CBOR &amp; X.509 Dissection of Key Protocol Exchanges</a></div>
+            <div><a href="#0000004-side-by-side-comparison-authorized-enterprise-attestation-p-2p-3-vs-unauthorized-rp-fallback-f-6" class="hover:underline">&sect;0.00000.4 Side-by-Side Comparison: Authorized Enterprise Attestation (<code>P-2</code>/<code>P-3</code>) vs. Unauthorized RP Fallback (<code>F-6</code>)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000 Run 22 (<code>11:51:49</code> – <code>12:11:56</code> PDT) Deep Dive: W3C WebAuthn Level 4 Pull Request Consolidated <code>fmt: "mtc"</code> (<code>4,736–5,397 B</code>, Saving <code>1,331 B</code> Wire Payload), <code>"mtc-debug"</code> Extension &amp; <code>opensk_rtt.log</code> Hardware Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -155,10 +172,6 @@
             <div><a href="#000005-root-cause-analysis-resolution-of-the-4-test-harness-typeerrors-getgetinfocached" class="hover:underline">&sect;0.0000.5 Root-Cause Analysis &amp; Resolution of the 4 Test-Harness <code>TypeError</code>s (<code>getGetInfoCached()</code>)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000 Run 21 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: Automated <code>generate_lms_pki.py</code> RFC 8554 $\cap$ NIST SP 800-208 Provisioning, Compact <code>fmt: "mtc"</code> &amp; <code>opensk_rtt.log</code> Hardware Telemetry (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -177,6 +190,10 @@
             <div><a href="#0004-run-20-complete-37-suite-conformance-summary-231301-235836-pdt" class="hover:underline">&sect;0.00.4 Run 20 Complete 37-Suite Conformance Summary (<code>23:13:01</code> – <code>23:58:36</code> PDT)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0 Run 19 (<code>250 / 250</code> <code>100%</code> Pass) &amp; Run 18 Deep Dive: All 18 Algorithms Including Draft NIST FIPS 206 (<code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>) Across <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -184,10 +201,6 @@
             <div><a href="#002-run-19-three-way-correlated-getassertion-sweep-authr-getassertion-resp-1-all-18-algorithms" class="hover:underline">&sect;0.0.2 Run 19 Three-Way Correlated <code>GetAssertion</code> Sweep (<code>Authr-GetAssertion-Resp-1</code>, All 18 Algorithms)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0. Run 17 Deep Dive: <code>250/250</code> (<code>100%</code>) Pass with <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), <code>encIdentifier (0x19)</code>, <code>encCredStoreState (0x1E)</code>, Enterprise MTC, and Total Phase USB Bus Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -230,7 +243,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–22 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Latest W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> Omitting Inline <code>pubKey</code>, <code>"mtc-debug"</code> Extension, 18-Algorithm <code>FN-DSA</code> &amp; <code>opensk_rtt.log</code> DWT Telemetry)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–23 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Full Suite W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> + <code>Run 23</code> Latest <code>EntepriseAttestation</code> &amp; <code>"mtc-debug"</code> Privacy Gate Deep Dive)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -352,13 +365,560 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 33 Skipped / 0 Failed / 1 Retried</code> across all active CTAP 2.3 suites)</strong> — <strong>Verified automated LMS PKI provisioning (<code>crypto_data.rs</code> + <code>fido-mds3.json</code>), compact <code>fmt: "mtc"</code> (<code>6,067–6,728 B</code>) &amp; LMS-signed <code>"packed"</code> <code>x5c</code> (<code>6,692–7,172 B</code>) across all 18 algorithms, Enterprise Attestation (<code>6/6</code>), <code>Metadata-Stmt-1</code> (<code>25/25</code>), and <code>0</code> panics / <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines across <code>304,967</code> <code>opensk_rtt.log</code> lines!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 22 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 22</strong></td>
 <td class="p-3 align-top text-left"><code>L1–L34421</code> (<code>34,421</code> lines, post-clear) &amp; <code>opensk_rtt.log</code> (<code>L1–L292093</code>, <code>292,093</code> lines)</td>
 <td class="p-3 align-top text-left"><code>11:51:49</code> – <code>12:11:56</code> (<code>20m 06.79s</code>)</td>
 <td class="p-3 align-top text-left"><strong>W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> (Omitting Inline <code>pubKey</code>, Saving <code>1,331 B</code> per Response: <code>4,736–5,397 B</code>) + <code>"mtc-debug"</code> Registration Extension + All 18 Algorithms + RFC 8554 $\cap$ NIST SP 800-208 LMS Hierarchy + Single-Instance <code>probe-rs</code> RTT Capture (<code>opensk_rtt.log</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>247</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>4</code></strong>*</td>
 <td class="p-3 align-top text-left"><strong><code>98.41%</code> PASS (<code>247 Passed / 32 Skipped / 4 Failed</code> across <code>283</code> unique tests)</strong> — <strong><code>100%</code> PASS on consolidated <code>fmt: "mtc"</code> (<code>Authr-MakeCred-Resp-1</code> <code>P-01</code>..<code>P-04</code>, <code>F-01</code> in <code>0.165s</code>) &amp; <code>Metadata-Stmt-1</code> (<code>25/25</code>), <code>0</code> panics / <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines across <code>292,093</code> <code>opensk_rtt.log</code> lines; <code>*4</code> test-harness <code>getGetInfoCached()</code> JS <code>TypeError</code>s in newly added <code>mtc-debug</code> tests fixed &amp; repackaged in <code>app.asar</code>!</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 23 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L1–L1067</code> (<code>1,067</code> lines, post-clear) &amp; <code>opensk_rtt.log</code> (<code>L1–L11228</code>, <code>11,228</code> lines)</td>
+<td class="p-3 align-top text-left"><code>22:45:07.81</code> – <code>22:45:46.69</code> (<code>38.88s</code>)</td>
+<td class="p-3 align-top text-left"><strong>Repackaged Self-Contained <code>app.asar</code> (<code>getGetInfoCached()</code> Fix) + <code>CTAP2/Protocol/Options/EntepriseAttestation.js</code> (<code>P-1</code>..<code>P-3</code>, <code>F-1</code>..<code>F-6</code>) + LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) + <code>"mtc-debug"</code> Privacy-Gate Verification (<code>deviceSerial</code> Emitted on <code>epAtt: true</code>, Omitted on Unauthorized RP Downgrade)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>6</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>6 Passed / 3 Skipped / 0 Failed</code>)</strong> — <strong>All 6 Enterprise Profile tests (<code>P-1</code>, <code>P-2</code>, <code>P-3</code>, <code>F-4</code>, <code>F-5</code>, <code>F-6</code>) passed <code>100%</code> across <code>136</code> CTAPHID messages (<code>68</code> exchanges), verifying both <code>getGetInfoCached()</code> harness fixes and the <code>"mtc-debug"</code> <code>deviceSerial</code> privacy gate (<code>0</code> panics / <code>0</code> errors in <code>11,228</code> <code>opensk_rtt.log</code> lines)!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-00000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-00000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 23 (<code>22:45:07.81</code> – <code>22:45:46.69</code> PDT) Message-Level Deep Dive: <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>"mtc-debug"</code> Privacy Gate</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>100% Pass (<code>6 Passed / 3 Skipped / 0 Failed</code>) on <code>EntepriseAttestation.js</code> &amp; Cryptographic Verification of the <code>"mtc-debug"</code> Privacy Gate</strong>: In Run 23 (<code>2026-10-23</code>, <code>22:45:07.813</code> – <code>22:45:46.695 PDT</code>, <code>38.88s</code> active execution), after repackaging <code>/Applications/FIDO Alliance - Certification Conformance Testing Tools (Patched).app/Contents/Resources/app.asar</code> (<code>46,624,232 B</code>) with the async <code>getGetInfoCached()</code> fix, we executed a clean post-clear trace of the <strong><code>CTAP2/Protocol/Options/EntepriseAttestation.js</code></strong> suite while capturing <code>fido_conformance_debug.log</code> (<code>1,067</code> lines) and <code>opensk_rtt.log</code> (<code>11,228</code> lines):</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>All 6 Enterprise Profile Tests Passed (<code>P-1</code>, <code>P-2</code>, <code>P-3</code>, <code>F-4</code>, <code>F-5</code>, <code>F-6</code>)</strong>: Resolved all 3 <code>TypeError</code> harness failures from Run 22 (<code>P-2</code>, <code>P-3</code>, <code>F-6</code>). The 3 Consumer Profile tests (<code>F-1</code>, <code>F-2</code>, <code>F-3</code>) were properly skipped because <code>GetInfo.options.ep = true</code>.</li>
+<li><strong>Authorized RP Enterprise Attestation (<code>P-2</code> with <code>epAtt = 1</code>, <code>P-3</code> with <code>epAtt = 2</code>)</strong>: When <code>rp.id = "enterprisetest.certinfra.fidoalliance.org"</code>, Fidont returns a <strong><code>7,265-byte</code></strong> (<code>124</code>-frame) <code>CTAPHID_CBOR</code> response with <code>fmt: "packed"</code>, <code>epAtt: true</code>, a <code>2,420 B</code> <code>ML-DSA-44</code> (<code>alg: -48</code>) attestation signature, a <strong><code>3,069 B</code> LMS-signed <code>ML-DSA-44</code> Enterprise X.509 certificate</strong> (<code>Issuer: CN=Fidont LMS Intermediate CA #0</code>, <code>Subject: CN=Fidont Enterprise Attestation</code>, OID <code>1.3.6.1.4.1.45724.1.1.2 = "123456"</code>), and <code>authenticatorData.extensions["mtc-debug"]</code> (<code>1,364 B</code>) containing both <code>pubKey</code> (<code>1,322 B</code> <code>ML-DSA-44</code> <code>COSE_Key</code>) and <strong><code>deviceSerial: "123456"</code></strong>.</li>
+<li><strong>Unauthorized RP Privacy-Gate Downgrade (<code>F-6</code> with <code>rp.id = "pinegrapefruit.gy"</code> &amp; <code>epAtt = 1</code>)</strong>: When an unauthorized RP requests <code>enterpriseAttestation = 1</code> alongside <code>extensions: {"mtc-debug": true}</code>, Fidont enforces the CTAP 2.3 RP allowlist privacy gate (<code>rp.id != "enterprisetest.certinfra.fidoalliance.org"</code>), downgrades the response to standard non-Enterprise attestation (<code>1,153 B</code> / <code>20</code> frames, <code>epAtt</code> omitted, <code>576 B</code> classical batch <code>x5c</code> without serial OID), and emits <strong><code>extensions["mtc-debug"] = { pubKey: 77 B }</code> with <code>deviceSerial</code> strictly omitted</strong>, preventing hardware serial-number tracking across unauthorized origins.</li>
+</ul></div>
+<h3 id="0000001-run-23-executive-summary-test-by-test-matrix" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000.1 Run 23 Executive Summary &amp; Test-by-Test Matrix</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Test ID</th>
+<th class="p-3 font-semibold align-bottom text-center">Profile</th>
+<th class="p-3 font-semibold align-bottom text-center">CTAPHID Channels</th>
+<th class="p-3 font-semibold align-bottom text-left">Description</th>
+<th class="p-3 font-semibold align-bottom text-center">Outcome</th>
+<th class="p-3 font-semibold align-bottom text-center">Wall Time</th>
+<th class="p-3 font-semibold align-bottom text-center">MCU Exec Time (<code>MakeCred</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Wire Response Summary</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Suite <code>before()</code></strong></td>
+<td class="p-3 align-top text-center">Setup</td>
+<td class="p-3 align-top text-center"><code>CID 0x05</code>..<code>0x0d</code> (<code>9</code> ch)</td>
+<td class="p-3 align-top text-left"><code>GetInfo</code> $\to$ <code>Reset</code> $\to$ <code>GetInfo</code> $\to$ <code>setPIN</code> $\to$ <code>GetInfo</code> $\to$ <code>getPinUvAuthToken(acfg=0x20)</code> $\to$ <code>Config(EnableEnterpriseAttestation)</code></td>
+<td class="p-3 align-top text-center"><strong>OK</strong></td>
+<td class="p-3 align-top text-center"><code>6.30s</code></td>
+<td class="p-3 align-top text-center"><code>84.33 ms</code> (<code>Config</code>)</td>
+<td class="p-3 align-top text-left"><code>GetInfo.options.ep</code> transitions <code>false</code> (<code>0xf4</code>) $\to$ <code>true</code> (<code>0xf5</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-1</code></strong></td>
+<td class="p-3 align-top text-center">Enterprise</td>
+<td class="p-3 align-top text-center"><code>CID 0x0e</code>..<code>0x0f</code> (<code>2</code> ch)</td>
+<td class="p-3 align-top text-left">Check <code>GetInfo.options.ep !== undefined</code> (<code>true</code>)</td>
+<td class="p-3 align-top text-center"><strong>PASSED</strong></td>
+<td class="p-3 align-top text-center"><code>1.22s</code></td>
+<td class="p-3 align-top text-center">—</td>
+<td class="p-3 align-top text-left"><code>GetInfo.options.ep === true</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-2</code></strong></td>
+<td class="p-3 align-top text-center">Enterprise</td>
+<td class="p-3 align-top text-center"><code>CID 0x10</code>..<code>0x12</code> (<code>3</code> ch)</td>
+<td class="p-3 align-top text-left"><code>MakeCredential</code> with <code>rp.id = "enterprisetest.certinfra.fidoalliance.org"</code>, <code>epAtt = 1</code> ( vendor-facilitated), <code>extensions: {"mtc-debug": true}</code></td>
+<td class="p-3 align-top text-center"><strong>PASSED</strong></td>
+<td class="p-3 align-top text-center"><code>8.76s</code></td>
+<td class="p-3 align-top text-center"><strong><code>1,376.32 ms</code></strong> (<code>88,084,224 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>7,265 B</code></strong> (<code>124</code> frames): <code>fmt: "packed"</code>, <code>epAtt: true</code>, <code>alg: -48</code> (<code>ML-DSA-44</code>), <code>sig: 2,420 B</code>, <code>x5c: [3,069 B]</code>, <code>mtc-debug: {pubKey: 1,322 B, deviceSerial: "123456"}</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-3</code></strong></td>
+<td class="p-3 align-top text-center">Enterprise</td>
+<td class="p-3 align-top text-center"><code>CID 0x13</code>..<code>0x15</code> (<code>3</code> ch)</td>
+<td class="p-3 align-top text-left"><code>MakeCredential</code> with <code>rp.id = "enterprisetest.certinfra.fidoalliance.org"</code>, <code>epAtt = 2</code> (platform-managed), <code>extensions: {"mtc-debug": true}</code></td>
+<td class="p-3 align-top text-center"><strong>PASSED</strong></td>
+<td class="p-3 align-top text-center"><code>9.29s</code></td>
+<td class="p-3 align-top text-center"><strong><code>2,076.27 ms</code></strong> (<code>132,881,472 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>7,265 B</code></strong> (<code>124</code> frames): <code>fmt: "packed"</code>, <code>epAtt: true</code>, <code>alg: -48</code> (<code>ML-DSA-44</code>), <code>sig: 2,420 B</code>, <code>x5c: [3,069 B]</code>, <code>mtc-debug: {pubKey: 1,322 B, deviceSerial: "123456"}</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-1</code></strong></td>
+<td class="p-3 align-top text-center">Consumer</td>
+<td class="p-3 align-top text-center"><code>CID 0x16</code>..<code>0x17</code> (<code>2</code> ch)</td>
+<td class="p-3 align-top text-left">Consumer profile check (<code>options.ep === undefined</code>)</td>
+<td class="p-3 align-top text-center"><strong>SKIPPED</strong></td>
+<td class="p-3 align-top text-center"><code>1.24s</code></td>
+<td class="p-3 align-top text-center">—</td>
+<td class="p-3 align-top text-left">Skipped (Enterprise Profile active)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-2</code></strong></td>
+<td class="p-3 align-top text-center">Consumer</td>
+<td class="p-3 align-top text-center"><code>CID 0x18</code>..<code>0x19</code> (<code>2</code> ch)</td>
+<td class="p-3 align-top text-left">Consumer profile <code>epAtt = 1</code> rejection</td>
+<td class="p-3 align-top text-center"><strong>SKIPPED</strong></td>
+<td class="p-3 align-top text-center"><code>1.26s</code></td>
+<td class="p-3 align-top text-center">—</td>
+<td class="p-3 align-top text-left">Skipped (Enterprise Profile active)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-3</code></strong></td>
+<td class="p-3 align-top text-center">Consumer</td>
+<td class="p-3 align-top text-center"><code>CID 0x1a</code>..<code>0x1b</code> (<code>2</code> ch)</td>
+<td class="p-3 align-top text-left">Consumer profile <code>epAtt = 2</code> rejection</td>
+<td class="p-3 align-top text-center"><strong>SKIPPED</strong></td>
+<td class="p-3 align-top text-center"><code>1.23s</code></td>
+<td class="p-3 align-top text-center">—</td>
+<td class="p-3 align-top text-left">Skipped (Enterprise Profile active)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-4</code></strong></td>
+<td class="p-3 align-top text-center">Enterprise</td>
+<td class="p-3 align-top text-center"><code>CID 0x1c</code>..<code>0x1e</code> (<code>3</code> ch)</td>
+<td class="p-3 align-top text-left"><code>MakeCredential</code> with <code>enterpriseAttestation</code> set to invalid CBOR boolean (<code>true</code> / <code>0xf5</code>)</td>
+<td class="p-3 align-top text-center"><strong>PASSED</strong></td>
+<td class="p-3 align-top text-center"><code>1.77s</code></td>
+<td class="p-3 align-top text-center"><strong><code>&lt; 1 ms</code></strong> (CBOR parser)</td>
+<td class="p-3 align-top text-left"><strong><code>1 B</code></strong> (<code>1</code> frame): <code>CTAP2_ERR_CBOR_UNEXPECTED_TYPE</code> (<code>0x11</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-5</code></strong></td>
+<td class="p-3 align-top text-center">Enterprise</td>
+<td class="p-3 align-top text-center"><code>CID 0x1f</code>..<code>0x21</code> (<code>3</code> ch)</td>
+<td class="p-3 align-top text-left"><code>MakeCredential</code> with <code>enterpriseAttestation = 117</code> (<code>0x18 0x75</code>, neither <code>1</code> nor <code>2</code>)</td>
+<td class="p-3 align-top text-center"><strong>PASSED</strong></td>
+<td class="p-3 align-top text-center"><code>1.92s</code></td>
+<td class="p-3 align-top text-center"><strong><code>196.93 ms</code></strong> (<code>12,603,776 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1 B</code></strong> (<code>1</code> frame): <code>CTAP2_ERR_INVALID_OPTION</code> (<code>0x2C</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-6</code></strong></td>
+<td class="p-3 align-top text-center">Enterprise</td>
+<td class="p-3 align-top text-center"><code>CID 0x22</code>..<code>0x26</code> (<code>5</code> ch)</td>
+<td class="p-3 align-top text-left"><code>MakeCredential</code> with unauthorized <code>rp.id = "pinegrapefruit.gy"</code>, <code>epAtt = 1</code>, <code>extensions: {"mtc-debug": true}</code></td>
+<td class="p-3 align-top text-center"><strong>PASSED</strong></td>
+<td class="p-3 align-top text-center"><code>5.85s</code></td>
+<td class="p-3 align-top text-center"><strong><code>2,045.12 ms</code></strong> (<code>130,887,616 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,153 B</code></strong> (<code>20</code> frames): <code>fmt: "packed"</code>, <strong><code>epAtt</code> omitted</strong>, <code>alg: -7</code> (<code>ES256</code>), <code>sig: 71 B</code>, <code>x5c: [576 B]</code>, <strong><code>mtc-debug: {pubKey: 77 B}</code> (<code>deviceSerial</code> omitted)</strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="0000002-complete-ctaphid-rtt-message-trace-68-exchanges-136-messages-across-cid-0x000000050x00000026" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000.2 Complete CTAPHID &amp; RTT Message Trace (<code>68</code> Exchanges / <code>136</code> Messages Across <code>CID 0x00000005</code>..<code>0x00000026</code>)</h3>
+<p class="text-sm my-2">Every test in <code>EntepriseAttestation.js</code> allocates a fresh CTAPHID channel via <code>CTAPHID_INIT (0x86)</code> on broadcast channel <code>0xffffffff</code> before transmitting <code>CTAPHID_CBOR (0x90)</code>:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Phase / Test</th>
+<th class="p-3 font-semibold align-bottom text-center">CID</th>
+<th class="p-3 font-semibold align-bottom text-center">Timestamp (PDT)</th>
+<th class="p-3 font-semibold align-bottom text-left">CTAP Command &amp; Subcommand</th>
+<th class="p-3 font-semibold align-bottom text-center">Req (<code>OUT</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">Resp (<code>IN</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">RTT Lines (<code>opensk_rtt.log</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">RTT MCU Execution (<code>64 MHz</code> DWT)</th>
+<th class="p-3 font-semibold align-bottom text-left">Status &amp; Key Result</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 1</strong></td>
+<td class="p-3 align-top text-center"><code>00000005</code></td>
+<td class="p-3 align-top text-center"><code>22:45:07.948</code></td>
+<td class="p-3 align-top text-left"><code>authenticatorGetInfo (0x04)</code></td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>841 B</code> (<code>15f</code>)</td>
+<td class="p-3 align-top text-center"><code>L58–L96</code></td>
+<td class="p-3 align-top text-center"><code>70.31 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>ep: false</code>, <code>clientPin: true</code>, <code>exts: [..., "mtc-debug"]</code>, <code>attFmts: ["mtc", "packed"]</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 2</strong></td>
+<td class="p-3 align-top text-center"><code>00000006</code></td>
+<td class="p-3 align-top text-center"><code>22:45:08.801</code></td>
+<td class="p-3 align-top text-left"><code>authenticatorReset (0x07)</code></td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>L426–L448</code></td>
+<td class="p-3 align-top text-center"><code>717.54 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: Credentials &amp; PIN cleared, persistent storage reset</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 3</strong></td>
+<td class="p-3 align-top text-center"><code>00000007</code></td>
+<td class="p-3 align-top text-center"><code>22:45:09.616</code></td>
+<td class="p-3 align-top text-left"><code>authenticatorGetInfo (0x04)</code></td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>841 B</code> (<code>15f</code>)</td>
+<td class="p-3 align-top text-center"><code>L523–L563</code></td>
+<td class="p-3 align-top text-center"><code>129.59 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>ep: false</code>, <code>clientPin: false</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 4</strong></td>
+<td class="p-3 align-top text-center"><code>00000008</code></td>
+<td class="p-3 align-top text-center"><code>22:45:10.525</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN (0x06)</code> <code>getKeyAgreement (0x02)</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>81 B</code> (<code>2f</code>)</td>
+<td class="p-3 align-top text-center"><code>L901–L907</code></td>
+<td class="p-3 align-top text-center"><code>320.12 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: Ephemeral <code>P-256</code> <code>COSE_Key</code> (<code>alg: -25</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 5</strong></td>
+<td class="p-3 align-top text-center"><code>00000009</code></td>
+<td class="p-3 align-top text-center"><code>22:45:11.074</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN (0x06)</code> <code>setPIN (0x03)</code> (<code>protocol=2</code>)</td>
+<td class="p-3 align-top text-center"><code>203 B</code> (<code>4f</code>)</td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>L1059–L1096</code></td>
+<td class="p-3 align-top text-center"><code>465.85 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: New PIN established</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 6</strong></td>
+<td class="p-3 align-top text-center"><code>0000000a</code></td>
+<td class="p-3 align-top text-center"><code>22:45:11.815</code></td>
+<td class="p-3 align-top text-left"><code>authenticatorGetInfo (0x04)</code></td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>841 B</code> (<code>15f</code>)</td>
+<td class="p-3 align-top text-center"><code>L1171–L1208</code></td>
+<td class="p-3 align-top text-center"><code>66.93 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>ep: false</code>, <code>clientPin: true</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 7</strong></td>
+<td class="p-3 align-top text-center"><code>0000000b</code></td>
+<td class="p-3 align-top text-center"><code>22:45:12.725</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN (0x06)</code> <code>getKeyAgreement (0x02)</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>81 B</code> (<code>2f</code>)</td>
+<td class="p-3 align-top text-center"><code>L1611–L1617</code></td>
+<td class="p-3 align-top text-center"><code>320.12 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: Ephemeral <code>P-256</code> <code>COSE_Key</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 8</strong></td>
+<td class="p-3 align-top text-center"><code>0000000c</code></td>
+<td class="p-3 align-top text-center"><code>22:45:13.307</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN (0x06)</code> <code>getPinUvAuthTokenUsingPinWithPermissions (0x09)</code> (<code>perms=0x20</code> <code>acfg</code>)</td>
+<td class="p-3 align-top text-center"><code>123 B</code> (<code>3f</code>)</td>
+<td class="p-3 align-top text-center"><code>53 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>L1735–L1765</code></td>
+<td class="p-3 align-top text-center"><code>416.47 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>48 B</code> encrypted <code>pinUvAuthToken</code> (<code>acfg</code> permission)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Setup 9</strong></td>
+<td class="p-3 align-top text-center"><code>0000000d</code></td>
+<td class="p-3 align-top text-center"><code>22:45:13.976</code></td>
+<td class="p-3 align-top text-left"><code>authenticatorConfig (0x0D)</code> <code>enableEnterpriseAttestation (0x01)</code></td>
+<td class="p-3 align-top text-center"><code>41 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>L1838–L1863</code></td>
+<td class="p-3 align-top text-center"><strong><code>84.33 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: Enterprise Attestation enabled (<code>options.ep = true</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-1</code></strong></td>
+<td class="p-3 align-top text-center"><code>0000000e</code>..<code>0f</code></td>
+<td class="p-3 align-top text-center"><code>22:45:14.162</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN</code> <code>getKeyAgreement</code> + <code>getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> / <code>166 B</code></td>
+<td class="p-3 align-top text-center"><code>81 B</code> / <code>53 B</code></td>
+<td class="p-3 align-top text-center"><code>L1927–L2071</code></td>
+<td class="p-3 align-top text-center"><code>320.36 ms</code> + <code>416.76 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>P-1</code> verifies <code>GetInfo.options.ep === true</code> (<strong>PASSED</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-2</code> (PUAT)</strong></td>
+<td class="p-3 align-top text-center"><code>00000010</code>..<code>11</code></td>
+<td class="p-3 align-top text-center"><code>22:45:15.388</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN</code> <code>getKeyAgreement</code> + <code>getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> / <code>166 B</code></td>
+<td class="p-3 align-top text-center"><code>81 B</code> / <code>53 B</code></td>
+<td class="p-3 align-top text-center"><code>L2144–L2310</code></td>
+<td class="p-3 align-top text-center"><code>320.35 ms</code> + <code>419.00 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: PUAT scoped to <code>"enterprisetest.certinfra.fidoalliance.org"</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-2</code> (<code>MakeCred</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>00000012</code></td>
+<td class="p-3 align-top text-center"><code>22:45:16.648</code></td>
+<td class="p-3 align-top text-left"><code>MakeCredential (0x01)</code> (<code>epAtt=1</code>, <code>exts={"mtc-debug": true}</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>707 B</code> (<code>13f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>7,265 B</code> (<code>124f</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>L2579–L2758</code></td>
+<td class="p-3 align-top text-center"><strong><code>1,376.32 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>fmt: "packed"</code>, <code>epAtt: true</code>, <code>ML-DSA-44</code> sig (<code>2,420 B</code>), LMS-signed <code>x5c</code> (<code>3,069 B</code>), <code>mtc-debug.deviceSerial: "123456"</code> (<strong>PASSED</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-3</code> (PUAT)</strong></td>
+<td class="p-3 align-top text-center"><code>00000013</code>..<code>14</code></td>
+<td class="p-3 align-top text-center"><code>22:45:24.141</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN</code> <code>getKeyAgreement</code> + <code>getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> / <code>166 B</code></td>
+<td class="p-3 align-top text-center"><code>81 B</code> / <code>53 B</code></td>
+<td class="p-3 align-top text-center"><code>L5295–L5450</code></td>
+<td class="p-3 align-top text-center"><code>320.36 ms</code> + <code>416.98 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: PUAT scoped to <code>"enterprisetest.certinfra.fidoalliance.org"</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>P-3</code> (<code>MakeCred</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>00000015</code></td>
+<td class="p-3 align-top text-center"><code>22:45:25.454</code></td>
+<td class="p-3 align-top text-left"><code>MakeCredential (0x01)</code> (<code>epAtt=2</code>, <code>exts={"mtc-debug": true}</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>708 B</code> (<code>13f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>7,265 B</code> (<code>124f</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>L5702–L5884</code></td>
+<td class="p-3 align-top text-center"><strong><code>2,076.27 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: <code>fmt: "packed"</code>, <code>epAtt: true</code>, <code>ML-DSA-44</code> sig (<code>2,420 B</code>), LMS-signed <code>x5c</code> (<code>3,069 B</code>), <code>mtc-debug.deviceSerial: "123456"</code> (<strong>PASSED</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-1</code>..<code>F-3</code></strong></td>
+<td class="p-3 align-top text-center"><code>00000016</code>..<code>1b</code></td>
+<td class="p-3 align-top text-center"><code>22:45:33.461</code></td>
+<td class="p-3 align-top text-left"><code>beforeEach()</code> PUAT acquisition (<code>3</code> pairs) $\to$ Mocha <code>this.skip()</code></td>
+<td class="p-3 align-top text-center"><code>3×(6B+166B)</code></td>
+<td class="p-3 align-top text-center"><code>3×(81B+53B)</code></td>
+<td class="p-3 align-top text-center"><code>L8259–L8911</code></td>
+<td class="p-3 align-top text-center"><code>3×(~740 ms)</code></td>
+<td class="p-3 align-top text-left">Consumer-only tests skipped when Enterprise Profile is selected (<strong>SKIPPED</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-4</code> (PUAT)</strong></td>
+<td class="p-3 align-top text-center"><code>0000001c</code>..<code>1d</code></td>
+<td class="p-3 align-top text-center"><code>22:45:37.188</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN</code> <code>getKeyAgreement</code> + <code>getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> / <code>166 B</code></td>
+<td class="p-3 align-top text-center"><code>81 B</code> / <code>53 B</code></td>
+<td class="p-3 align-top text-center"><code>L8983–L9147</code></td>
+<td class="p-3 align-top text-center"><code>320.35 ms</code> + <code>452.46 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: PUAT acquired</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-4</code> (<code>MakeCred</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>0000001e</code></td>
+<td class="p-3 align-top text-center"><code>22:45:38.433</code></td>
+<td class="p-3 align-top text-left"><code>MakeCredential (0x01)</code> (<code>epAtt=true</code> <code>0xf5</code>, invalid CBOR type)</td>
+<td class="p-3 align-top text-center"><strong><code>693 B</code> (<code>12f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>1 B</code> (<code>1f</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>L9418</code></td>
+<td class="p-3 align-top text-center"><strong><code>&lt; 1 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0x11</code> (<code>CTAP2_ERR_CBOR_UNEXPECTED_TYPE</code>)</strong> — rejected at CBOR schema decode (<strong>PASSED</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-5</code> (PUAT)</strong></td>
+<td class="p-3 align-top text-center"><code>0000001f</code>..<code>20</code></td>
+<td class="p-3 align-top text-center"><code>22:45:38.953</code></td>
+<td class="p-3 align-top text-left"><code>ClientPIN</code> <code>getKeyAgreement</code> + <code>getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")</code></td>
+<td class="p-3 align-top text-center"><code>6 B</code> / <code>166 B</code></td>
+<td class="p-3 align-top text-center"><code>81 B</code> / <code>53 B</code></td>
+<td class="p-3 align-top text-center"><code>L9466–L9630</code></td>
+<td class="p-3 align-top text-center"><code>320.36 ms</code> + <code>459.34 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: PUAT acquired</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-5</code> (<code>MakeCred</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>00000021</code></td>
+<td class="p-3 align-top text-center"><code>22:45:40.205</code></td>
+<td class="p-3 align-top text-left"><code>MakeCredential (0x01)</code> (<code>epAtt=117</code> <code>0x18 0x75</code>, out-of-range integer)</td>
+<td class="p-3 align-top text-center"><strong><code>679 B</code> (<code>12f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>1 B</code> (<code>1f</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>L9885–L9905</code></td>
+<td class="p-3 align-top text-center"><strong><code>196.93 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0x2C</code> (<code>CTAP2_ERR_INVALID_OPTION</code>)</strong> — rejected after PIN/UV check (<strong>PASSED</strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-6</code> (PUAT)</strong></td>
+<td class="p-3 align-top text-center"><code>00000022</code>..<code>25</code></td>
+<td class="p-3 align-top text-center"><code>22:45:40.882</code></td>
+<td class="p-3 align-top text-left"><code>beforeEach()</code> PUAT + <code>getPinToken (0x05)</code> unscoped token for <code>"pinegrapefruit.gy"</code></td>
+<td class="p-3 align-top text-center"><code>6B+166B+6B+120B</code></td>
+<td class="p-3 align-top text-center"><code>81B+53B+81B+53B</code></td>
+<td class="p-3 align-top text-center"><code>L9978–L10388</code></td>
+<td class="p-3 align-top text-center"><code>737.86 ms</code> + <code>774.26 ms</code></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: Unscoped PIN token acquired for <code>"pinegrapefruit.gy"</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>F-6</code> (<code>MakeCred</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>00000026</code></td>
+<td class="p-3 align-top text-center"><code>22:45:43.385</code></td>
+<td class="p-3 align-top text-left"><code>MakeCredential (0x01)</code> (<code>rp.id="pinegrapefruit.gy"</code>, <code>epAtt=1</code>, <code>exts={"mtc-debug": true}</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>673 B</code> (<code>12f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>1,153 B</code> (<code>20f</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>L10633–L10834</code></td>
+<td class="p-3 align-top text-center"><strong><code>2,045.12 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>0x00</code>: Downgraded to non-Enterprise <code>fmt: "packed"</code> (<code>epAtt</code> omitted, <code>576 B</code> <code>x5c</code>, <strong><code>mtc-debug.deviceSerial</code> omitted</strong>) (<strong>PASSED</strong>)</td>
+</tr>
+</tbody></table></div>
+<h3 id="0000003-byte-level-cbor-x509-dissection-of-key-protocol-exchanges" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000.3 Byte-Level CBOR &amp; X.509 Dissection of Key Protocol Exchanges</h3>
+<h4 id="1-enabling-enterprise-attestation-via-authenticatorconfig-0x0d-cid0000000d-log-l185l199-rtt-l1838l1863" class="text-base font-semibold text-[var(--foreground)]">1. Enabling Enterprise Attestation via <code>authenticatorConfig (0x0D)</code> (<code>CID=0000000d</code>, <code>Log L185–L199</code>, <code>RTT L1838–L1863</code>)</h4>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Request (<code>41 B</code> payload, 1 CTAPHID frame)</strong>:<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>0d                                                                 # authenticatorConfig (0x0D)
+a3                                                                 # map(3)
+   01: 01                                                          # subCommand: enableEnterpriseAttestation (1)
+   03: 02                                                          # pinUvAuthProtocol: 2
+   04: 58 20 5d390addc9c015e92b498ecdcb45ef91                      # pinUvAuthParam (32 B): HMAC-SHA-256 over
+             481f08b64d0d5bd19bfed058e9d1b795                      #   ff*32 || 0x0d || 0x01 || b""</code></pre></div></li>
+<li><strong>Response (<code>1 B</code> payload, <code>84.33 ms</code> MCU execution)</strong>: <code>00</code> (<code>CTAP1_ERR_SUCCESS</code>). Subsequent <code>authenticatorGetInfo</code> responses report <code>options.ep: true</code> (<code>0x62 0x65 0x70 0xf5</code>).</li>
+</ul>
+<h4 id="2-authorized-enterprise-attestation-p-2-epatt1-on-cid00000012-p-3-epatt2-on-cid00000015" class="text-base font-semibold text-[var(--foreground)]">2. Authorized Enterprise Attestation (<code>P-2</code> <code>epAtt=1</code> on <code>CID=00000012</code> &amp; <code>P-3</code> <code>epAtt=2</code> on <code>CID=00000015</code>)</h4>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Request (<code>707 B</code> in <code>P-2</code> / <code>708 B</code> in <code>P-3</code>, 13 CTAPHID frames)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>req[1]</code> (<code>clientDataHash</code>, <code>32 B</code>): <code>abfd62825ac75897...</code> (<code>P-2</code>) / <code>ad133375a01eb8d5...</code> (<code>P-3</code>)</li>
+<li><code>req[2]</code> (<code>rp</code>): <code>{"id": "enterprisetest.certinfra.fidoalliance.org", "name": "The Example Corporation with fake domain!"}</code></li>
+<li><code>req[4]</code> (<code>pubKeyCredParams</code>, <code>18</code> algorithms): <code>[-7 (ES256), -8 (EdDSA), -35 (ES384), -36 (ES512), -53 (Ed448), -48 (ML-DSA-44), -49 (ML-DSA-65), -50 (ML-DSA-87), -257 (RS256), -47 (ES256K), -54 (MLDSA44-ES256), -55 (MLDSA65-ES256), -56 (MLDSA87-ES384), -57 (MLDSA44-Ed25519), -58 (MLDSA65-Ed25519), -59 (MLDSA87-Ed448), -60 (FN-DSA-512), -61 (FN-DSA-1024)]</code></li>
+<li><code>req[6]</code> (<code>extensions</code>): <strong><code>{"mtc-debug": true}</code></strong> (<code>a1 69 6d74632d6465627567 f5</code>)</li>
+<li><code>req[9]</code> (<code>pinUvAuthProtocol</code>): <code>2</code></li>
+<li><code>req[10]</code> (<code>enterpriseAttestation</code>): <strong><code>1</code></strong> (<code>0x0a 0x01</code> in <code>P-2</code>) / <strong><code>2</code></strong> (<code>0x0a 0x02</code> in <code>P-3</code>)</li>
+</ul></li>
+<li><strong>Response (<code>7,265 B</code> = <code>0x1c61</code>, 124 CTAPHID frames — <code>344 B</code> under the <code>7,609 B</code> USB HID limit)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>status</code> (<code>1 B</code>): <code>0x00</code> (<code>CTAP1_ERR_SUCCESS</code>)</li>
+<li><code>resp[1]</code> (<code>fmt</code>): <strong><code>"packed"</code></strong></li>
+<li><code>resp[2]</code> (<code>authData</code>, <strong><code>1,737 B</code></strong>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>rpIdHash</code> (<code>32 B</code>): <code>4aaf81997cdb64e348a296a7ee06405b99921966ff653b9ed364df6e78306439</code> (<code>SHA-256("enterprisetest.certinfra.fidoalliance.org")</code>)</li>
+<li><code>flags</code> (<code>1 B</code>): <code>0xc5</code> (<code>UP=1</code>, <code>UV=1</code>, <code>AT=1</code>, <code>ED=1</code>)</li>
+<li><code>signCount</code> (<code>4 B</code>): <code>1</code> (<code>00000001</code>)</li>
+<li><code>aaguid</code> (<code>16 B</code>): <code>deadbeef000000000000deadbeef0000</code></li>
+<li><code>credIdLen</code> (<code>2 B</code>) + <code>credId</code> (<code>241 B</code>): <code>0x00f1</code> + <code>014154b26666e546...</code> (<code>0x01</code> encrypted classical <code>ES256</code> handle)</li>
+<li><code>credentialPublicKey</code> (<code>77 B</code>): <code>COSE_Key</code> (<code>kty: 2 (EC2)</code>, <code>alg: -7 (ES256)</code>, <code>crv: 1 (P-256)</code>)</li>
+<li><code>extensions</code> (<strong><code>1,364 B</code></strong> CBOR map):<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>{
+  "mtc-debug": {
+    "pubKey": h'a3 01 07 03 38 2f 20 59 0520 dcd864884928fdce...' (1,322 B COSE_Key: kty=7 AKP, alg=-48 ML-DSA-44, pub=1,312 B),
+    "deviceSerial": "123456"
+  }
+}</code></pre></div></li>
+</ul></li>
+<li><code>resp[3]</code> (<code>attStmt</code>, <strong><code>5,507 B</code></strong>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>alg</code>: <strong><code>-48</code> (<code>ML-DSA-44</code>)</strong></li>
+<li><code>sig</code> (<code>2,420 B</code>): <code>ML-DSA-44</code> signature over <code>authData || clientDataHash</code> (<code>8df6f8064214d3d3...</code> in <code>P-2</code>, <code>8da2154917f0c360...</code> in <code>P-3</code>)</li>
+<li><code>x5c</code> (<code>[3,069 B]</code>): 1-element DER X.509 Enterprise batch certificate (<code>SHA-256 = d17af264bd4a44eb9caf2e9471019f5e486f0b7778be61d9f926d356ca051a8c</code>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Serial Number</strong>: <code>771</code> (<code>0x0303</code>)</li>
+<li><strong>Issuer</strong>: <code>C=CA, O=John Bradley, OU=Authenticator Attestation, CN=Fidont LMS Intermediate CA #0</code></li>
+<li><strong>Subject</strong>: <code>C=CA, O=John Bradley, OU=Authenticator Attestation, CN=Fidont Enterprise Attestation</code></li>
+<li><strong>Subject Public Key Info</strong>: <code>ML-DSA-44</code> (<code>2.16.840.1.101.3.4.3.17</code>), <code>1,312 B</code> public key (<code>dcd864884928fdce...</code>, matching <code>mtc-debug.pubKey</code> byte-for-byte)</li>
+<li><strong>X.509v3 Extensions</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>Basic Constraints</code> (critical): <code>CA:FALSE</code></li>
+<li><code>Key Usage</code> (critical): <code>Digital Signature</code></li>
+<li><code>Authority Key Identifier</code>: <code>CB:02:7F:08:B2:25:5B:AB:D1:36:D2:0B:AB:81:CB:0F:03:54:39:ED</code> (keyIdentifier of <code>Fidont LMS Intermediate CA #0</code>)</li>
+<li><code>id-fido-gen-ce-aaguid</code> (<code>1.3.6.1.4.1.45724.1.1.4</code>): <code>04 10 deadbeef000000000000deadbeef0000</code></li>
+<li><strong><code>id-fido-gen-ce-serial-number</code> (<code>1.3.6.1.4.1.45724.1.1.2</code>)</strong>: <strong><code>04 06 31 32 33 34 35 36</code> (<code>"123456"</code>, matching <code>mtc-debug.deviceSerial</code>)</strong></li>
+</ul></li>
+<li><strong>Signature Algorithm &amp; Value</strong>: <code>id-alg-hss-lms-hashsig</code> (<code>1.2.840.113549.1.9.16.3.17</code>), <strong><code>1,296 B</code> <code>LMS_SHA256_M32_H5</code> / <code>LMOTS_SHA256_N32_W8</code> signature</strong> (<code>00000000 00000003 00000004 d500aea5...</code>, tree leaf index <code>q = 3</code>)</li>
+</ul></li>
+</ul></li>
+<li><code>resp[4]</code> (<code>epAtt</code>): <strong><code>true</code> (<code>0xf5</code>)</strong></li>
+</ul></li>
+</ul>
+<h4 id="3-negative-option-validation-f-4-on-cid0000001e-f-5-on-cid00000021" class="text-base font-semibold text-[var(--foreground)]">3. Negative Option Validation (<code>F-4</code> on <code>CID=0000001e</code> &amp; <code>F-5</code> on <code>CID=00000021</code>)</h4>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>F-4</code> (<code>enterpriseAttestation = true</code> / <code>0x0a 0xf5</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Rejected immediately by Fidont's CBOR request decoder because <code>enterprise_attestation</code> expects an unsigned integer (<code>u8</code>), returning <code>1 B</code> status <strong><code>0x11</code> (<code>CTAP2_ERR_CBOR_UNEXPECTED_TYPE</code>)</strong> in <code>&lt; 1 ms</code> (<code>RTT L9418</code>).</li>
+</ul></li>
+<li><strong><code>F-5</code> (<code>enterpriseAttestation = 117</code> / <code>0x0a 0x18 0x75</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Decodes as <code>Some(117)</code>, verifies <code>pinUvAuthParam</code>, and is rejected by the CTAP 2.3 option validator (<code>enterprise_attestation != 1 &amp;&amp; enterprise_attestation != 2</code>), returning <code>1 B</code> status <strong><code>0x2C</code> (<code>CTAP2_ERR_INVALID_OPTION</code>)</strong> in <code>196.93 ms</code> (<code>RTT L9885–L9905</code>).</li>
+</ul></li>
+</ul>
+<h4 id="4-unauthorized-rp-privacy-gate-fallback-f-6-on-cid00000026-log-l937l1066-rtt-l10633l10834" class="text-base font-semibold text-[var(--foreground)]">4. Unauthorized RP Privacy-Gate Fallback (<code>F-6</code> on <code>CID=00000026</code>, <code>Log L937–L1066</code>, <code>RTT L10633–L10834</code>)</h4>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Request (<code>673 B</code>, 12 CTAPHID frames)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>req[2]</code> (<code>rp</code>): <code>{"id": "pinegrapefruit.gy", "name": "The Example Corporation with fake domain!"}</code> (<strong>not</strong> on the authenticator's Enterprise RP ID allowlist)</li>
+<li><code>req[6]</code> (<code>extensions</code>): <strong><code>{"mtc-debug": true}</code></strong></li>
+<li><code>req[10]</code> (<code>enterpriseAttestation</code>): <strong><code>1</code></strong> (<code>0x0a 0x01</code>)</li>
+</ul></li>
+<li><strong>Response (<code>1,153 B</code> = <code>0x0481</code>, 20 CTAPHID frames)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>status</code> (<code>1 B</code>): <code>0x00</code> (<code>CTAP1_ERR_SUCCESS</code>)</li>
+<li><code>resp[1]</code> (<code>fmt</code>): <strong><code>"packed"</code></strong></li>
+<li><code>resp[2]</code> (<code>authData</code>, <strong><code>471 B</code></strong>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>rpIdHash</code> (<code>32 B</code>): <code>64a484738a7d0600ae50147600bf74055480467703cfe0028f1d9b2c511ff4e2</code> (<code>SHA-256("pinegrapefruit.gy")</code>)</li>
+<li><code>flags</code> (<code>1 B</code>): <code>0xc5</code> (<code>UP=1</code>, <code>UV=1</code>, <code>AT=1</code>, <code>ED=1</code>)</li>
+<li><code>credId</code> (<code>241 B</code>) + <code>credentialPublicKey</code> (<code>77 B</code> <code>ES256</code> <code>COSE_Key</code>)</li>
+<li><code>extensions</code> (<strong><code>98 B</code></strong> CBOR map):<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>{
+  "mtc-debug": {
+    "pubKey": h'a5 01 02 03 26 20 01 21 58 20 071cfc02f042a7b6... 22 58 20 ecfda307ac994a6d...' (77 B ES256 COSE_Key)
+    # NOTE: "deviceSerial" is STRICTLY OMITTED because epAtt was downgraded to false!
+  }
+}</code></pre></div></li>
+</ul></li>
+<li><code>resp[3]</code> (<code>attStmt</code>, <strong><code>664 B</code></strong>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>alg</code>: <strong><code>-7</code> (<code>ES256</code>)</strong></li>
+<li><code>sig</code> (<code>71 B</code>): <code>30450220126a412ece48b0b36269cab5...</code></li>
+<li><code>x5c</code> (<code>[576 B]</code>): Classical non-Enterprise batch certificate (<code>Subject: CN=Fidont Attestation</code>, <code>Issuer: CN=Fidont Enterprise Root CA ES384</code>, <code>SPKI: P-256 04071cfc02...</code> matching <code>mtc-debug.pubKey</code>, <code>1.3.6.1.4.1.45724.1.1.4</code> AAGUID extension only, <strong>no <code>1.3.6.1.4.1.45724.1.1.2</code> serial number OID</strong>)</li>
+</ul></li>
+<li><code>resp[4]</code> (<code>epAtt</code>): <strong>Omitted (<code>None</code>)</strong></li>
+</ul></li>
+</ul>
+<h3 id="0000004-side-by-side-comparison-authorized-enterprise-attestation-p-2p-3-vs-unauthorized-rp-fallback-f-6" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000.4 Side-by-Side Comparison: Authorized Enterprise Attestation (<code>P-2</code>/<code>P-3</code>) vs. Unauthorized RP Fallback (<code>F-6</code>)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Field / Property</th>
+<th class="p-3 font-semibold align-bottom text-left">Authorized Enterprise RP (<code>P-2</code> <code>epAtt=1</code> / <code>P-3</code> <code>epAtt=2</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Unauthorized RP Downgrade (<code>F-6</code> <code>epAtt=1</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Security &amp; Privacy Guarantee</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Requested <code>rp.id</code></strong></td>
+<td class="p-3 align-top text-left"><code>"enterprisetest.certinfra.fidoalliance.org"</code> (Allowlisted)</td>
+<td class="p-3 align-top text-left"><code>"pinegrapefruit.gy"</code> (Not Allowlisted)</td>
+<td class="p-3 align-top text-left">RP allowlist enforced in firmware before attestation key selection</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Requested <code>extensions</code></strong></td>
+<td class="p-3 align-top text-left"><code>{"mtc-debug": true}</code></td>
+<td class="p-3 align-top text-left"><code>{"mtc-debug": true}</code></td>
+<td class="p-3 align-top text-left">Identical client extension request</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Response <code>BCNT</code> (Frames)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>7,265 B</code></strong> (<code>124</code> CTAPHID frames)</td>
+<td class="p-3 align-top text-left"><strong><code>1,153 B</code></strong> (<code>20</code> CTAPHID frames)</td>
+<td class="p-3 align-top text-left">Both fit comfortably within the <code>7,609 B</code> CTAPHID limit</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Response <code>epAtt</code> (Key <code>0x04</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>true</code> (<code>0xf5</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Omitted (<code>undefined</code>)</strong></td>
+<td class="p-3 align-top text-left">Conforms to CTAP 2.3 §6.1.2 step 11</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Attestation Key &amp; <code>attStmt.alg</code></strong></td>
+<td class="p-3 align-top text-left">Enterprise <code>ML-DSA-44</code> (<code>alg: -48</code>, <code>sig: 2,420 B</code>)</td>
+<td class="p-3 align-top text-left">Classical Batch <code>ES256</code> (<code>alg: -7</code>, <code>sig: 71 B</code>)</td>
+<td class="p-3 align-top text-left">Enterprise key never signs for non-allowlisted RP IDs</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>attStmt.x5c[0]</code> Certificate</strong></td>
+<td class="p-3 align-top text-left"><strong><code>3,069 B</code></strong> LMS-signed (<code>id-alg-hss-lms-hashsig</code>) <code>ML-DSA-44</code> Enterprise cert</td>
+<td class="p-3 align-top text-left"><strong><code>576 B</code></strong> <code>ES384</code>-signed <code>P-256</code> Classical Batch cert</td>
+<td class="p-3 align-top text-left">Enterprise certificate never disclosed to non-allowlisted RP IDs</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>X.509 Serial Number OID (<code>1.3.6.1.4.1.45724.1.1.2</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Present (<code>"123456"</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Absent</strong></td>
+<td class="p-3 align-top text-left">Hardware serial number omitted from X.509 cert on downgrade</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>extensions["mtc-debug"].pubKey</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,322 B</code></strong> (<code>ML-DSA-44</code> <code>COSE_Key</code>, matches <code>3,069 B</code> <code>x5c</code> SPKI)</td>
+<td class="p-3 align-top text-left"><strong><code>77 B</code></strong> (<code>ES256</code> <code>COSE_Key</code>, matches <code>576 B</code> <code>x5c</code> SPKI)</td>
+<td class="p-3 align-top text-left">Always reflects the actual signing key used for <code>attStmt.sig</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>extensions["mtc-debug"].deviceSerial</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>"123456"</code></strong> (matches X.509 OID <code>1.3.6.1.4.1.45724.1.1.2</code>)</td>
+<td class="p-3 align-top text-left"><strong>Strictly Omitted (<code>undefined</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Prevents <code>"mtc-debug"</code> from being abused to bypass the Enterprise RP allowlist</strong></td>
 </tr>
 </tbody></table></div>
     </section>

@@ -203,9 +203,20 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-00000"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Latest — Run 23: EntepriseAttestation.js 6 / 6 100% PASS &amp; &quot;mtc-debug&quot; Privacy Gate Deep Dive)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Message-Level Deep Dive of <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>&quot;mtc-debug&quot;</code> Privacy Gate
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Complete <code>136</code>-message (<code>68</code>-exchange) CTAPHID &amp; <code>opensk_rtt.log</code> trace verifying <code>100%</code> pass across all 6 Enterprise Profile tests (<code>P-1..P-3</code>, <code>F-4..F-6</code>) after repackaging <code>app.asar</code> with <code>getGetInfoCached()</code>: authorized RPs receive <code>7,265 B</code> responses with <code>3,069 B</code> LMS-signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> and <code>mtc-debug.deviceSerial = &quot;123456&quot;</code>, while unauthorized RPs (<code>F-6</code>) are downgraded to <code>1,153 B</code> classical batch attestation with <code>deviceSerial</code> strictly omitted.
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-0000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000 (Latest — Run 22: W3C WebAuthn L4 PR Consolidated fmt: &quot;mtc&quot; Saving 1,331 B &amp; &quot;mtc-debug&quot; Extension)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000 (Run 22: W3C WebAuthn L4 PR Consolidated fmt: &quot;mtc&quot; Saving 1,331 B &amp; &quot;mtc-debug&quot; Extension)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
               W3C WebAuthn Level 4 PR Verification: Consolidated <code>fmt: &quot;mtc&quot;</code> (Omitting Inline <code>pubKey</code>, <code>4,736–5,397 B</code>), <code>&quot;mtc-debug&quot;</code> Extension &amp; <code>opensk_rtt.log</code> Telemetry
             </h3>

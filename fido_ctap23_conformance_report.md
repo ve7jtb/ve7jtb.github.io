@@ -7,9 +7,9 @@
 > - **`"mtc-debug"` Registration Extension**: An opt-in CTAP 2.3 / WebAuthn Level 4 registration extension (`authenticatorGetInfo.extensions` includes `"mtc-debug"`) that returns `{ pubKey, deviceSerial? }` inside `authenticatorData.extensions["mtc-debug"]` for standalone conformance and diagnostic verification without pre-loaded `batchKeys`, enforcing a strict privacy gate where `deviceSerial` is emitted only when `epAtt: true`.
 
 - **Log Files Analyzed**:
-  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`280,714` cumulative lines across Runs 10–22, including **`34,421` lines (`5.1 MB`) in latest Run 22 (`L1–L34421`, post-clear)** verifying the W3C WebAuthn Level 4 PR consolidated `fmt: "mtc"` (`4,736–5,397 B`, saving `1,331 B` per `MakeCredential` response across all 2-step PQ/composite algorithms) and `"mtc-debug"` registration extension; **`35,146` lines (`5.0 MB`) in Run 21 (`L1–L35146`)** with **`250 / 250` `100.00%` PASS**; `56,117` lines in Run 20; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
+  1. **FIDO Conformance Debug Log**: `fido_conformance_debug.log` (`281,781` cumulative lines across Runs 10–23, including **`1,067` lines in Run 23 (`L1–L1067`, post-clear)** verifying **`6 / 6` `100.00%` PASS** on `EntepriseAttestation.js` (`P-1`..`P-3`, `F-4`..`F-6`) and the `"mtc-debug"` privacy gate after repackaging `app.asar` with `getGetInfoCached()`; **`34,421` lines (`5.1 MB`) in Run 22 (`L1–L34421`)** verifying the W3C WebAuthn Level 4 PR consolidated `fmt: "mtc"` (`4,736–5,397 B`, saving `1,331 B` per `MakeCredential` response across all 2-step PQ/composite algorithms) and `"mtc-debug"` registration extension; **`35,146` lines (`5.0 MB`) in Run 21 (`L1–L35146`)** with **`250 / 250` `100.00%` PASS**; `56,117` lines in Run 20; `66,127` lines in Run 19; `52,180` lines in Run 18; `48,653` lines in Run 17; plus `282,939` lines across Runs 10–16)
   2. **Total Phase Beagle USB Protocol Analyzer Capture**: `totalphase.csv` (`28,653` CSV lines, `28,646` rows, `127,232` USB bus records, `2.91 MB`, captured `Mon Oct 19 11:49:16` – `12:20:30 2026`, `0` USB bus errors across `1,092` `CTAPHID_CBOR` exchanges in Run 19; plus `26,436` CSV rows / `68,774` USB bus records in Run 17)
-  3. **Fidont / OpenSK J-Link RTT Log**: `opensk_rtt.log` & `fidont_rtt.log` (`1,760,740` cumulative lines / `186.7 MB`, including **`292,093` lines (`31.2 MB`) in latest Run 22 (`opensk_rtt.log`)**, `304,967` lines (`31.0 MB`) in Run 21, `303,134` lines in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs / `0` `[WARN]` or `[ERROR]` events)
+  3. **Fidont / OpenSK J-Link RTT Log**: `opensk_rtt.log` & `fidont_rtt.log` (`1,771,968` cumulative lines / `187.9 MB`, including **`11,228` lines in Run 23 (`opensk_rtt.log`)**, **`292,093` lines (`31.2 MB`) in Run 22 (`opensk_rtt.log`)**, `304,967` lines (`31.0 MB`) in Run 21, `303,134` lines in Run 20, `304,330` lines in Run 19, and `302,212` lines in Run 18 with `--features=debug` `64 MHz` DWT cycle-accurate timestamps across all 18 algorithms, `0` panics / `0` HardFaults / `0` OOMs / `0` `[WARN]` or `[ERROR]` events)
 - **Target Authenticator**: Fidont CTAP 2.3 (`U2F_V2`, `FIDO_2_0`, `FIDO_2_1`, `FIDO_2_3`) over USB HID (`VID: 0x1915`, `PID: 0x521f` / `0x18d1:0x0239`)
 - **Related Design & Firmware Implementation**: **Compile and Install Fidont**, [webauthn_level4_pull_request.html](./webauthn_level4_pull_request.html), [webauthn_level4_mtc_proposal.html](./webauthn_level4_mtc_proposal.html) & [pq_mtc_attestation_proposal.md](./pq_mtc_attestation_proposal.md)
 
@@ -19,7 +19,7 @@
 > **Attribution & Scope of Fidont:**
 > **Fidont** is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the [Google OpenSK](https://github.com/google/OpenSK) Rust codebase. However, **Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.**
 
-## Overview of Test Runs 10–22 (`Runs 10–21` Historical + `Run 22` Latest W3C WebAuthn Level 4 PR Consolidated `fmt: "mtc"` Omitting Inline `pubKey`, `"mtc-debug"` Extension, 18-Algorithm `FN-DSA` & `opensk_rtt.log` DWT Telemetry)
+## Overview of Test Runs 10–23 (`Runs 10–21` Historical + `Run 22` Full Suite W3C WebAuthn Level 4 PR Consolidated `fmt: "mtc"` + `Run 23` Latest `EntepriseAttestation` & `"mtc-debug"` Privacy Gate Deep Dive)
 
 | Run | Line Range | Time Window | Attestation & Feature Config | Passed | Failed | Outcome & Summary |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -35,7 +35,169 @@
 | **Run 19** | `L1–L66127`, `totalphase.csv` (`28,653` lines) & `fidont_rtt.log` (`304,330` lines) | `11:49:33` – `12:11:02` (`21m 28s`) | **All 18 Algorithms (`FN-DSA-512` `-60` & `FN-DSA-1024` `-61` + 16 Classical/PQ/Composite) + `perCredMgmtRO` (`0x19`, `0x1E`, `0x40`) + Dual Batch (`ML-DSA-87` MTC + `ES256` `x5c`) + Enterprise Dual (`ML-DSA-44` leaf / `ML-DSA-87` Root CA) + Simultaneous 3-Log Capture (`fido_conformance_debug.log`, `totalphase.csv` & `fidont_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed`)** — **`250 / 250` (`100%`) pass across all 18 algorithms (`78` `"packed"`, `22` `"mtc"`, `2` `"mtcl"`), `0` USB bus errors across `127,232` USB records (`4,945` `OUT txn` / `8,827` `IN txn`, `1,092` `CTAPHID_CBOR` exchanges), and `0` panics/OOMs across `304,330` `fidont_rtt.log` lines!** |
 | **Run 20** | `L155031–L211147` (`56,117` lines) & `fidont_rtt.log` (`L860546–L1163679`, `303,134` lines) | `23:13:01` – `23:58:36` (`45m 35s` wall / `~19m 24s` active) | **RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (`1` `Fidont LMS Root CA` + `4` Pre-Published `Fidont LMS Intermediate CA #0..#3`, OID `1.2.840.113549.1.9.16.3.17` $\to$ `ML-DSA-44` Leaf `x5c`) + HSS/LMS (`alg: -46`) Signed MTC Subtree Checkpoints (`caId: "g5k_AQE"`, `caId: "g5k_AQI"`) + All 18 Algorithms (`FN-DSA-512/1024`, `ML-DSA-44/65/87`, 6 PQ/T Composites, 7 Classical) + `perCredMgmtRO` + Enterprise Attestation + UX Metadata Statement Dialog Persistence** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 32 Skipped / 0 Failed` across all 37 CTAP 2.3 suites)** — **Verified HSS/LMS X.509 (`L=1`, `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8`) + `ML-DSA-44` `"packed"` `x5c` chains (`6,693–7,173 B`), HSS/LMS `alg: -46` MTC subtree checkpoints (`1,252 B` sig) across `"mtc"` & `"mtcl"`, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics/OOMs across `303,134` `fidont_rtt.log` lines!** |
 | **Run 21** | `L1–L35146` (`35,146` lines, post-clear) & `opensk_rtt.log` (`L1–L304967`, `304,967` lines) | `09:46:00` – `10:11:28` (`25m 27.56s`) | **`scripts/generate_lms_pki.py` Provisioned RFC 8554 $\cap$ NIST SP 800-208 (`LMS_SHA256_M32_H5` + `LMOTS_SHA256_N32_W8`) Root CA + 4 Pre-Published LMS Intermediate CAs (`g5k_AQE`..`g5k_AQQ`) + LMS-Signed `ML-DSA-44/65/87` Batch & Enterprise X.509 Certs (`1,296 B` sig) + Compact `fmt: "mtc"` (`alg: -46` `HSS-LMS`) Checkpoints + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`250`** | **`0`** | **`100.00%` PASS (`250 Passed / 33 Skipped / 0 Failed / 1 Retried` across all active CTAP 2.3 suites)** — **Verified automated LMS PKI provisioning (`crypto_data.rs` + `fido-mds3.json`), compact `fmt: "mtc"` (`6,067–6,728 B`) & LMS-signed `"packed"` `x5c` (`6,692–7,172 B`) across all 18 algorithms, Enterprise Attestation (`6/6`), `Metadata-Stmt-1` (`25/25`), and `0` panics / `0` `[WARN]`/`[ERROR]` lines across `304,967` `opensk_rtt.log` lines!** |
-| **Run 22 (Latest)** | `L1–L34421` (`34,421` lines, post-clear) & `opensk_rtt.log` (`L1–L292093`, `292,093` lines) | `11:51:49` – `12:11:56` (`20m 06.79s`) | **W3C WebAuthn Level 4 PR Consolidated `fmt: "mtc"` (Omitting Inline `pubKey`, Saving `1,331 B` per Response: `4,736–5,397 B`) + `"mtc-debug"` Registration Extension + All 18 Algorithms + RFC 8554 $\cap$ NIST SP 800-208 LMS Hierarchy + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`247`** | **`4`*** | **`98.41%` PASS (`247 Passed / 32 Skipped / 4 Failed` across `283` unique tests)** — **`100%` PASS on consolidated `fmt: "mtc"` (`Authr-MakeCred-Resp-1` `P-01`..`P-04`, `F-01` in `0.165s`) & `Metadata-Stmt-1` (`25/25`), `0` panics / `0` `[WARN]`/`[ERROR]` lines across `292,093` `opensk_rtt.log` lines; `*4` test-harness `getGetInfoCached()` JS `TypeError`s in newly added `mtc-debug` tests fixed & repackaged in `app.asar`!** |
+| **Run 22** | `L1–L34421` (`34,421` lines, post-clear) & `opensk_rtt.log` (`L1–L292093`, `292,093` lines) | `11:51:49` – `12:11:56` (`20m 06.79s`) | **W3C WebAuthn Level 4 PR Consolidated `fmt: "mtc"` (Omitting Inline `pubKey`, Saving `1,331 B` per Response: `4,736–5,397 B`) + `"mtc-debug"` Registration Extension + All 18 Algorithms + RFC 8554 $\cap$ NIST SP 800-208 LMS Hierarchy + Single-Instance `probe-rs` RTT Capture (`opensk_rtt.log`)** | **`247`** | **`4`*** | **`98.41%` PASS (`247 Passed / 32 Skipped / 4 Failed` across `283` unique tests)** — **`100%` PASS on consolidated `fmt: "mtc"` (`Authr-MakeCred-Resp-1` `P-01`..`P-04`, `F-01` in `0.165s`) & `Metadata-Stmt-1` (`25/25`), `0` panics / `0` `[WARN]`/`[ERROR]` lines across `292,093` `opensk_rtt.log` lines; `*4` test-harness `getGetInfoCached()` JS `TypeError`s in newly added `mtc-debug` tests fixed & repackaged in `app.asar`!** |
+| **Run 23 (Latest)** | `L1–L1067` (`1,067` lines, post-clear) & `opensk_rtt.log` (`L1–L11228`, `11,228` lines) | `22:45:07.81` – `22:45:46.69` (`38.88s`) | **Repackaged Self-Contained `app.asar` (`getGetInfoCached()` Fix) + `CTAP2/Protocol/Options/EntepriseAttestation.js` (`P-1`..`P-3`, `F-1`..`F-6`) + LMS-Signed `ML-DSA-44` Enterprise `x5c` (`3,069 B`) + `"mtc-debug"` Privacy-Gate Verification (`deviceSerial` Emitted on `epAtt: true`, Omitted on Unauthorized RP Downgrade)** | **`6`** | **`0`** | **`100.00%` PASS (`6 Passed / 3 Skipped / 0 Failed`)** — **All 6 Enterprise Profile tests (`P-1`, `P-2`, `P-3`, `F-4`, `F-5`, `F-6`) passed `100%` across `136` CTAPHID messages (`68` exchanges), verifying both `getGetInfoCached()` harness fixes and the `"mtc-debug"` `deviceSerial` privacy gate (`0` panics / `0` errors in `11,228` `opensk_rtt.log` lines)!** |
+
+---
+
+## 0.00000 Run 23 (`22:45:07.81` – `22:45:46.69` PDT) Message-Level Deep Dive: `EntepriseAttestation.js` (`6 / 6` `100.00%` PASS), LMS-Signed `ML-DSA-44` Enterprise `x5c` (`3,069 B`) & `"mtc-debug"` Privacy Gate
+
+> [!IMPORTANT]
+> **100% Pass (`6 Passed / 3 Skipped / 0 Failed`) on `EntepriseAttestation.js` & Cryptographic Verification of the `"mtc-debug"` Privacy Gate**:
+> In Run 23 (`2026-10-23`, `22:45:07.813` – `22:45:46.695 PDT`, `38.88s` active execution), after repackaging `/Applications/FIDO Alliance - Certification Conformance Testing Tools (Patched).app/Contents/Resources/app.asar` (`46,624,232 B`) with the async `getGetInfoCached()` fix, we executed a clean post-clear trace of the **`CTAP2/Protocol/Options/EntepriseAttestation.js`** suite while capturing `fido_conformance_debug.log` (`1,067` lines) and `opensk_rtt.log` (`11,228` lines):
+> - **All 6 Enterprise Profile Tests Passed (`P-1`, `P-2`, `P-3`, `F-4`, `F-5`, `F-6`)**: Resolved all 3 `TypeError` harness failures from Run 22 (`P-2`, `P-3`, `F-6`). The 3 Consumer Profile tests (`F-1`, `F-2`, `F-3`) were properly skipped because `GetInfo.options.ep = true`.
+> - **Authorized RP Enterprise Attestation (`P-2` with `epAtt = 1`, `P-3` with `epAtt = 2`)**: When `rp.id = "enterprisetest.certinfra.fidoalliance.org"`, Fidont returns a **`7,265-byte`** (`124`-frame) `CTAPHID_CBOR` response with `fmt: "packed"`, `epAtt: true`, a `2,420 B` `ML-DSA-44` (`alg: -48`) attestation signature, a **`3,069 B` LMS-signed `ML-DSA-44` Enterprise X.509 certificate** (`Issuer: CN=Fidont LMS Intermediate CA #0`, `Subject: CN=Fidont Enterprise Attestation`, OID `1.3.6.1.4.1.45724.1.1.2 = "123456"`), and `authenticatorData.extensions["mtc-debug"]` (`1,364 B`) containing both `pubKey` (`1,322 B` `ML-DSA-44` `COSE_Key`) and **`deviceSerial: "123456"`**.
+> - **Unauthorized RP Privacy-Gate Downgrade (`F-6` with `rp.id = "pinegrapefruit.gy"` & `epAtt = 1`)**: When an unauthorized RP requests `enterpriseAttestation = 1` alongside `extensions: {"mtc-debug": true}`, Fidont enforces the CTAP 2.3 RP allowlist privacy gate (`rp.id != "enterprisetest.certinfra.fidoalliance.org"`), downgrades the response to standard non-Enterprise attestation (`1,153 B` / `20` frames, `epAtt` omitted, `576 B` classical batch `x5c` without serial OID), and emits **`extensions["mtc-debug"] = { pubKey: 77 B }` with `deviceSerial` strictly omitted**, preventing hardware serial-number tracking across unauthorized origins.
+
+### 0.00000.1 Run 23 Executive Summary & Test-by-Test Matrix
+
+| Test ID | Profile | CTAPHID Channels | Description | Outcome | Wall Time | MCU Exec Time (`MakeCred`) | Wire Response Summary |
+| :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- |
+| **Suite `before()`** | Setup | `CID 0x05`..`0x0d` (`9` ch) | `GetInfo` $\to$ `Reset` $\to$ `GetInfo` $\to$ `setPIN` $\to$ `GetInfo` $\to$ `getPinUvAuthToken(acfg=0x20)` $\to$ `Config(EnableEnterpriseAttestation)` | **OK** | `6.30s` | `84.33 ms` (`Config`) | `GetInfo.options.ep` transitions `false` (`0xf4`) $\to$ `true` (`0xf5`) |
+| **`P-1`** | Enterprise | `CID 0x0e`..`0x0f` (`2` ch) | Check `GetInfo.options.ep !== undefined` (`true`) | **PASSED** | `1.22s` | — | `GetInfo.options.ep === true` |
+| **`P-2`** | Enterprise | `CID 0x10`..`0x12` (`3` ch) | `MakeCredential` with `rp.id = "enterprisetest.certinfra.fidoalliance.org"`, `epAtt = 1` ( vendor-facilitated), `extensions: {"mtc-debug": true}` | **PASSED** | `8.76s` | **`1,376.32 ms`** (`88,084,224 cyc`) | **`7,265 B`** (`124` frames): `fmt: "packed"`, `epAtt: true`, `alg: -48` (`ML-DSA-44`), `sig: 2,420 B`, `x5c: [3,069 B]`, `mtc-debug: {pubKey: 1,322 B, deviceSerial: "123456"}` |
+| **`P-3`** | Enterprise | `CID 0x13`..`0x15` (`3` ch) | `MakeCredential` with `rp.id = "enterprisetest.certinfra.fidoalliance.org"`, `epAtt = 2` (platform-managed), `extensions: {"mtc-debug": true}` | **PASSED** | `9.29s` | **`2,076.27 ms`** (`132,881,472 cyc`) | **`7,265 B`** (`124` frames): `fmt: "packed"`, `epAtt: true`, `alg: -48` (`ML-DSA-44`), `sig: 2,420 B`, `x5c: [3,069 B]`, `mtc-debug: {pubKey: 1,322 B, deviceSerial: "123456"}` |
+| **`F-1`** | Consumer | `CID 0x16`..`0x17` (`2` ch) | Consumer profile check (`options.ep === undefined`) | **SKIPPED** | `1.24s` | — | Skipped (Enterprise Profile active) |
+| **`F-2`** | Consumer | `CID 0x18`..`0x19` (`2` ch) | Consumer profile `epAtt = 1` rejection | **SKIPPED** | `1.26s` | — | Skipped (Enterprise Profile active) |
+| **`F-3`** | Consumer | `CID 0x1a`..`0x1b` (`2` ch) | Consumer profile `epAtt = 2` rejection | **SKIPPED** | `1.23s` | — | Skipped (Enterprise Profile active) |
+| **`F-4`** | Enterprise | `CID 0x1c`..`0x1e` (`3` ch) | `MakeCredential` with `enterpriseAttestation` set to invalid CBOR boolean (`true` / `0xf5`) | **PASSED** | `1.77s` | **`< 1 ms`** (CBOR parser) | **`1 B`** (`1` frame): `CTAP2_ERR_CBOR_UNEXPECTED_TYPE` (`0x11`) |
+| **`F-5`** | Enterprise | `CID 0x1f`..`0x21` (`3` ch) | `MakeCredential` with `enterpriseAttestation = 117` (`0x18 0x75`, neither `1` nor `2`) | **PASSED** | `1.92s` | **`196.93 ms`** (`12,603,776 cyc`) | **`1 B`** (`1` frame): `CTAP2_ERR_INVALID_OPTION` (`0x2C`) |
+| **`F-6`** | Enterprise | `CID 0x22`..`0x26` (`5` ch) | `MakeCredential` with unauthorized `rp.id = "pinegrapefruit.gy"`, `epAtt = 1`, `extensions: {"mtc-debug": true}` | **PASSED** | `5.85s` | **`2,045.12 ms`** (`130,887,616 cyc`) | **`1,153 B`** (`20` frames): `fmt: "packed"`, **`epAtt` omitted**, `alg: -7` (`ES256`), `sig: 71 B`, `x5c: [576 B]`, **`mtc-debug: {pubKey: 77 B}` (`deviceSerial` omitted)** |
+
+### 0.00000.2 Complete CTAPHID & RTT Message Trace (`68` Exchanges / `136` Messages Across `CID 0x00000005`..`0x00000026`)
+
+Every test in `EntepriseAttestation.js` allocates a fresh CTAPHID channel via `CTAPHID_INIT (0x86)` on broadcast channel `0xffffffff` before transmitting `CTAPHID_CBOR (0x90)`:
+
+| Phase / Test | CID | Timestamp (PDT) | CTAP Command & Subcommand | Req (`OUT`) | Resp (`IN`) | RTT Lines (`opensk_rtt.log`) | RTT MCU Execution (`64 MHz` DWT) | Status & Key Result |
+| :--- | :---: | :---: | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Setup 1** | `00000005` | `22:45:07.948` | `authenticatorGetInfo (0x04)` | `1 B` (`1f`) | `841 B` (`15f`) | `L58–L96` | `70.31 ms` | `0x00`: `ep: false`, `clientPin: true`, `exts: [..., "mtc-debug"]`, `attFmts: ["mtc", "packed"]` |
+| **Setup 2** | `00000006` | `22:45:08.801` | `authenticatorReset (0x07)` | `1 B` (`1f`) | `1 B` (`1f`) | `L426–L448` | `717.54 ms` | `0x00`: Credentials & PIN cleared, persistent storage reset |
+| **Setup 3** | `00000007` | `22:45:09.616` | `authenticatorGetInfo (0x04)` | `1 B` (`1f`) | `841 B` (`15f`) | `L523–L563` | `129.59 ms` | `0x00`: `ep: false`, `clientPin: false` |
+| **Setup 4** | `00000008` | `22:45:10.525` | `ClientPIN (0x06)` `getKeyAgreement (0x02)` | `6 B` (`1f`) | `81 B` (`2f`) | `L901–L907` | `320.12 ms` | `0x00`: Ephemeral `P-256` `COSE_Key` (`alg: -25`) |
+| **Setup 5** | `00000009` | `22:45:11.074` | `ClientPIN (0x06)` `setPIN (0x03)` (`protocol=2`) | `203 B` (`4f`) | `1 B` (`1f`) | `L1059–L1096` | `465.85 ms` | `0x00`: New PIN established |
+| **Setup 6** | `0000000a` | `22:45:11.815` | `authenticatorGetInfo (0x04)` | `1 B` (`1f`) | `841 B` (`15f`) | `L1171–L1208` | `66.93 ms` | `0x00`: `ep: false`, `clientPin: true` |
+| **Setup 7** | `0000000b` | `22:45:12.725` | `ClientPIN (0x06)` `getKeyAgreement (0x02)` | `6 B` (`1f`) | `81 B` (`2f`) | `L1611–L1617` | `320.12 ms` | `0x00`: Ephemeral `P-256` `COSE_Key` |
+| **Setup 8** | `0000000c` | `22:45:13.307` | `ClientPIN (0x06)` `getPinUvAuthTokenUsingPinWithPermissions (0x09)` (`perms=0x20` `acfg`) | `123 B` (`3f`) | `53 B` (`1f`) | `L1735–L1765` | `416.47 ms` | `0x00`: `48 B` encrypted `pinUvAuthToken` (`acfg` permission) |
+| **Setup 9** | `0000000d` | `22:45:13.976` | `authenticatorConfig (0x0D)` `enableEnterpriseAttestation (0x01)` | `41 B` (`1f`) | `1 B` (`1f`) | `L1838–L1863` | **`84.33 ms`** | `0x00`: Enterprise Attestation enabled (`options.ep = true`) |
+| **`P-1`** | `0000000e`..`0f` | `22:45:14.162` | `ClientPIN` `getKeyAgreement` + `getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")` | `6 B` / `166 B` | `81 B` / `53 B` | `L1927–L2071` | `320.36 ms` + `416.76 ms` | `0x00`: `P-1` verifies `GetInfo.options.ep === true` (**PASSED**) |
+| **`P-2` (PUAT)** | `00000010`..`11` | `22:45:15.388` | `ClientPIN` `getKeyAgreement` + `getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")` | `6 B` / `166 B` | `81 B` / `53 B` | `L2144–L2310` | `320.35 ms` + `419.00 ms` | `0x00`: PUAT scoped to `"enterprisetest.certinfra.fidoalliance.org"` |
+| **`P-2` (`MakeCred`)** | `00000012` | `22:45:16.648` | `MakeCredential (0x01)` (`epAtt=1`, `exts={"mtc-debug": true}`) | **`707 B` (`13f`)** | **`7,265 B` (`124f`)** | `L2579–L2758` | **`1,376.32 ms`** | `0x00`: `fmt: "packed"`, `epAtt: true`, `ML-DSA-44` sig (`2,420 B`), LMS-signed `x5c` (`3,069 B`), `mtc-debug.deviceSerial: "123456"` (**PASSED**) |
+| **`P-3` (PUAT)** | `00000013`..`14` | `22:45:24.141` | `ClientPIN` `getKeyAgreement` + `getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")` | `6 B` / `166 B` | `81 B` / `53 B` | `L5295–L5450` | `320.36 ms` + `416.98 ms` | `0x00`: PUAT scoped to `"enterprisetest.certinfra.fidoalliance.org"` |
+| **`P-3` (`MakeCred`)** | `00000015` | `22:45:25.454` | `MakeCredential (0x01)` (`epAtt=2`, `exts={"mtc-debug": true}`) | **`708 B` (`13f`)** | **`7,265 B` (`124f`)** | `L5702–L5884` | **`2,076.27 ms`** | `0x00`: `fmt: "packed"`, `epAtt: true`, `ML-DSA-44` sig (`2,420 B`), LMS-signed `x5c` (`3,069 B`), `mtc-debug.deviceSerial: "123456"` (**PASSED**) |
+| **`F-1`..`F-3`** | `00000016`..`1b` | `22:45:33.461` | `beforeEach()` PUAT acquisition (`3` pairs) $\to$ Mocha `this.skip()` | `3×(6B+166B)` | `3×(81B+53B)` | `L8259–L8911` | `3×(~740 ms)` | Consumer-only tests skipped when Enterprise Profile is selected (**SKIPPED**) |
+| **`F-4` (PUAT)** | `0000001c`..`1d` | `22:45:37.188` | `ClientPIN` `getKeyAgreement` + `getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")` | `6 B` / `166 B` | `81 B` / `53 B` | `L8983–L9147` | `320.35 ms` + `452.46 ms` | `0x00`: PUAT acquired |
+| **`F-4` (`MakeCred`)** | `0000001e` | `22:45:38.433` | `MakeCredential (0x01)` (`epAtt=true` `0xf5`, invalid CBOR type) | **`693 B` (`12f`)** | **`1 B` (`1f`)** | `L9418` | **`< 1 ms`** | **`0x11` (`CTAP2_ERR_CBOR_UNEXPECTED_TYPE`)** — rejected at CBOR schema decode (**PASSED**) |
+| **`F-5` (PUAT)** | `0000001f`..`20` | `22:45:38.953` | `ClientPIN` `getKeyAgreement` + `getPinUvAuthToken (perms=0x03, rpId="enterprisetest...")` | `6 B` / `166 B` | `81 B` / `53 B` | `L9466–L9630` | `320.36 ms` + `459.34 ms` | `0x00`: PUAT acquired |
+| **`F-5` (`MakeCred`)** | `00000021` | `22:45:40.205` | `MakeCredential (0x01)` (`epAtt=117` `0x18 0x75`, out-of-range integer) | **`679 B` (`12f`)** | **`1 B` (`1f`)** | `L9885–L9905` | **`196.93 ms`** | **`0x2C` (`CTAP2_ERR_INVALID_OPTION`)** — rejected after PIN/UV check (**PASSED**) |
+| **`F-6` (PUAT)** | `00000022`..`25` | `22:45:40.882` | `beforeEach()` PUAT + `getPinToken (0x05)` unscoped token for `"pinegrapefruit.gy"` | `6B+166B+6B+120B` | `81B+53B+81B+53B` | `L9978–L10388` | `737.86 ms` + `774.26 ms` | `0x00`: Unscoped PIN token acquired for `"pinegrapefruit.gy"` |
+| **`F-6` (`MakeCred`)** | `00000026` | `22:45:43.385` | `MakeCredential (0x01)` (`rp.id="pinegrapefruit.gy"`, `epAtt=1`, `exts={"mtc-debug": true}`) | **`673 B` (`12f`)** | **`1,153 B` (`20f`)** | `L10633–L10834` | **`2,045.12 ms`** | `0x00`: Downgraded to non-Enterprise `fmt: "packed"` (`epAtt` omitted, `576 B` `x5c`, **`mtc-debug.deviceSerial` omitted**) (**PASSED**) |
+
+---
+
+### 0.00000.3 Byte-Level CBOR & X.509 Dissection of Key Protocol Exchanges
+
+#### 1. Enabling Enterprise Attestation via `authenticatorConfig (0x0D)` (`CID=0000000d`, `Log L185–L199`, `RTT L1838–L1863`)
+- **Request (`41 B` payload, 1 CTAPHID frame)**:
+  ```text
+  0d                                                                 # authenticatorConfig (0x0D)
+  a3                                                                 # map(3)
+     01: 01                                                          # subCommand: enableEnterpriseAttestation (1)
+     03: 02                                                          # pinUvAuthProtocol: 2
+     04: 58 20 5d390addc9c015e92b498ecdcb45ef91                      # pinUvAuthParam (32 B): HMAC-SHA-256 over
+               481f08b64d0d5bd19bfed058e9d1b795                      #   ff*32 || 0x0d || 0x01 || b""
+  ```
+- **Response (`1 B` payload, `84.33 ms` MCU execution)**: `00` (`CTAP1_ERR_SUCCESS`). Subsequent `authenticatorGetInfo` responses report `options.ep: true` (`0x62 0x65 0x70 0xf5`).
+
+#### 2. Authorized Enterprise Attestation (`P-2` `epAtt=1` on `CID=00000012` & `P-3` `epAtt=2` on `CID=00000015`)
+- **Request (`707 B` in `P-2` / `708 B` in `P-3`, 13 CTAPHID frames)**:
+  - `req[1]` (`clientDataHash`, `32 B`): `abfd62825ac75897...` (`P-2`) / `ad133375a01eb8d5...` (`P-3`)
+  - `req[2]` (`rp`): `{"id": "enterprisetest.certinfra.fidoalliance.org", "name": "The Example Corporation with fake domain!"}`
+  - `req[4]` (`pubKeyCredParams`, `18` algorithms): `[-7 (ES256), -8 (EdDSA), -35 (ES384), -36 (ES512), -53 (Ed448), -48 (ML-DSA-44), -49 (ML-DSA-65), -50 (ML-DSA-87), -257 (RS256), -47 (ES256K), -54 (MLDSA44-ES256), -55 (MLDSA65-ES256), -56 (MLDSA87-ES384), -57 (MLDSA44-Ed25519), -58 (MLDSA65-Ed25519), -59 (MLDSA87-Ed448), -60 (FN-DSA-512), -61 (FN-DSA-1024)]`
+  - `req[6]` (`extensions`): **`{"mtc-debug": true}`** (`a1 69 6d74632d6465627567 f5`)
+  - `req[9]` (`pinUvAuthProtocol`): `2`
+  - `req[10]` (`enterpriseAttestation`): **`1`** (`0x0a 0x01` in `P-2`) / **`2`** (`0x0a 0x02` in `P-3`)
+- **Response (`7,265 B` = `0x1c61`, 124 CTAPHID frames — `344 B` under the `7,609 B` USB HID limit)**:
+  - `status` (`1 B`): `0x00` (`CTAP1_ERR_SUCCESS`)
+  - `resp[1]` (`fmt`): **`"packed"`**
+  - `resp[2]` (`authData`, **`1,737 B`**):
+    - `rpIdHash` (`32 B`): `4aaf81997cdb64e348a296a7ee06405b99921966ff653b9ed364df6e78306439` (`SHA-256("enterprisetest.certinfra.fidoalliance.org")`)
+    - `flags` (`1 B`): `0xc5` (`UP=1`, `UV=1`, `AT=1`, `ED=1`)
+    - `signCount` (`4 B`): `1` (`00000001`)
+    - `aaguid` (`16 B`): `deadbeef000000000000deadbeef0000`
+    - `credIdLen` (`2 B`) + `credId` (`241 B`): `0x00f1` + `014154b26666e546...` (`0x01` encrypted classical `ES256` handle)
+    - `credentialPublicKey` (`77 B`): `COSE_Key` (`kty: 2 (EC2)`, `alg: -7 (ES256)`, `crv: 1 (P-256)`)
+    - `extensions` (**`1,364 B`** CBOR map):
+      ```text
+      {
+        "mtc-debug": {
+          "pubKey": h'a3 01 07 03 38 2f 20 59 0520 dcd864884928fdce...' (1,322 B COSE_Key: kty=7 AKP, alg=-48 ML-DSA-44, pub=1,312 B),
+          "deviceSerial": "123456"
+        }
+      }
+      ```
+  - `resp[3]` (`attStmt`, **`5,507 B`**):
+    - `alg`: **`-48` (`ML-DSA-44`)**
+    - `sig` (`2,420 B`): `ML-DSA-44` signature over `authData || clientDataHash` (`8df6f8064214d3d3...` in `P-2`, `8da2154917f0c360...` in `P-3`)
+    - `x5c` (`[3,069 B]`): 1-element DER X.509 Enterprise batch certificate (`SHA-256 = d17af264bd4a44eb9caf2e9471019f5e486f0b7778be61d9f926d356ca051a8c`):
+      - **Serial Number**: `771` (`0x0303`)
+      - **Issuer**: `C=CA, O=John Bradley, OU=Authenticator Attestation, CN=Fidont LMS Intermediate CA #0`
+      - **Subject**: `C=CA, O=John Bradley, OU=Authenticator Attestation, CN=Fidont Enterprise Attestation`
+      - **Subject Public Key Info**: `ML-DSA-44` (`2.16.840.1.101.3.4.3.17`), `1,312 B` public key (`dcd864884928fdce...`, matching `mtc-debug.pubKey` byte-for-byte)
+      - **X.509v3 Extensions**:
+        - `Basic Constraints` (critical): `CA:FALSE`
+        - `Key Usage` (critical): `Digital Signature`
+        - `Authority Key Identifier`: `CB:02:7F:08:B2:25:5B:AB:D1:36:D2:0B:AB:81:CB:0F:03:54:39:ED` (keyIdentifier of `Fidont LMS Intermediate CA #0`)
+        - `id-fido-gen-ce-aaguid` (`1.3.6.1.4.1.45724.1.1.4`): `04 10 deadbeef000000000000deadbeef0000`
+        - **`id-fido-gen-ce-serial-number` (`1.3.6.1.4.1.45724.1.1.2`)**: **`04 06 31 32 33 34 35 36` (`"123456"`, matching `mtc-debug.deviceSerial`)**
+      - **Signature Algorithm & Value**: `id-alg-hss-lms-hashsig` (`1.2.840.113549.1.9.16.3.17`), **`1,296 B` `LMS_SHA256_M32_H5` / `LMOTS_SHA256_N32_W8` signature** (`00000000 00000003 00000004 d500aea5...`, tree leaf index `q = 3`)
+  - `resp[4]` (`epAtt`): **`true` (`0xf5`)**
+
+#### 3. Negative Option Validation (`F-4` on `CID=0000001e` & `F-5` on `CID=00000021`)
+- **`F-4` (`enterpriseAttestation = true` / `0x0a 0xf5`)**:
+  - Rejected immediately by Fidont's CBOR request decoder because `enterprise_attestation` expects an unsigned integer (`u8`), returning `1 B` status **`0x11` (`CTAP2_ERR_CBOR_UNEXPECTED_TYPE`)** in `< 1 ms` (`RTT L9418`).
+- **`F-5` (`enterpriseAttestation = 117` / `0x0a 0x18 0x75`)**:
+  - Decodes as `Some(117)`, verifies `pinUvAuthParam`, and is rejected by the CTAP 2.3 option validator (`enterprise_attestation != 1 && enterprise_attestation != 2`), returning `1 B` status **`0x2C` (`CTAP2_ERR_INVALID_OPTION`)** in `196.93 ms` (`RTT L9885–L9905`).
+
+#### 4. Unauthorized RP Privacy-Gate Fallback (`F-6` on `CID=00000026`, `Log L937–L1066`, `RTT L10633–L10834`)
+- **Request (`673 B`, 12 CTAPHID frames)**:
+  - `req[2]` (`rp`): `{"id": "pinegrapefruit.gy", "name": "The Example Corporation with fake domain!"}` (**not** on the authenticator's Enterprise RP ID allowlist)
+  - `req[6]` (`extensions`): **`{"mtc-debug": true}`**
+  - `req[10]` (`enterpriseAttestation`): **`1`** (`0x0a 0x01`)
+- **Response (`1,153 B` = `0x0481`, 20 CTAPHID frames)**:
+  - `status` (`1 B`): `0x00` (`CTAP1_ERR_SUCCESS`)
+  - `resp[1]` (`fmt`): **`"packed"`**
+  - `resp[2]` (`authData`, **`471 B`**):
+    - `rpIdHash` (`32 B`): `64a484738a7d0600ae50147600bf74055480467703cfe0028f1d9b2c511ff4e2` (`SHA-256("pinegrapefruit.gy")`)
+    - `flags` (`1 B`): `0xc5` (`UP=1`, `UV=1`, `AT=1`, `ED=1`)
+    - `credId` (`241 B`) + `credentialPublicKey` (`77 B` `ES256` `COSE_Key`)
+    - `extensions` (**`98 B`** CBOR map):
+      ```text
+      {
+        "mtc-debug": {
+          "pubKey": h'a5 01 02 03 26 20 01 21 58 20 071cfc02f042a7b6... 22 58 20 ecfda307ac994a6d...' (77 B ES256 COSE_Key)
+          # NOTE: "deviceSerial" is STRICTLY OMITTED because epAtt was downgraded to false!
+        }
+      }
+      ```
+  - `resp[3]` (`attStmt`, **`664 B`**):
+    - `alg`: **`-7` (`ES256`)**
+    - `sig` (`71 B`): `30450220126a412ece48b0b36269cab5...`
+    - `x5c` (`[576 B]`): Classical non-Enterprise batch certificate (`Subject: CN=Fidont Attestation`, `Issuer: CN=Fidont Enterprise Root CA ES384`, `SPKI: P-256 04071cfc02...` matching `mtc-debug.pubKey`, `1.3.6.1.4.1.45724.1.1.4` AAGUID extension only, **no `1.3.6.1.4.1.45724.1.1.2` serial number OID**)
+  - `resp[4]` (`epAtt`): **Omitted (`None`)**
+
+### 0.00000.4 Side-by-Side Comparison: Authorized Enterprise Attestation (`P-2`/`P-3`) vs. Unauthorized RP Fallback (`F-6`)
+
+| Field / Property | Authorized Enterprise RP (`P-2` `epAtt=1` / `P-3` `epAtt=2`) | Unauthorized RP Downgrade (`F-6` `epAtt=1`) | Security & Privacy Guarantee |
+| :--- | :--- | :--- | :--- |
+| **Requested `rp.id`** | `"enterprisetest.certinfra.fidoalliance.org"` (Allowlisted) | `"pinegrapefruit.gy"` (Not Allowlisted) | RP allowlist enforced in firmware before attestation key selection |
+| **Requested `extensions`** | `{"mtc-debug": true}` | `{"mtc-debug": true}` | Identical client extension request |
+| **Response `BCNT` (Frames)** | **`7,265 B`** (`124` CTAPHID frames) | **`1,153 B`** (`20` CTAPHID frames) | Both fit comfortably within the `7,609 B` CTAPHID limit |
+| **Response `epAtt` (Key `0x04`)** | **`true` (`0xf5`)** | **Omitted (`undefined`)** | Conforms to CTAP 2.3 §6.1.2 step 11 |
+| **Attestation Key & `attStmt.alg`** | Enterprise `ML-DSA-44` (`alg: -48`, `sig: 2,420 B`) | Classical Batch `ES256` (`alg: -7`, `sig: 71 B`) | Enterprise key never signs for non-allowlisted RP IDs |
+| **`attStmt.x5c[0]` Certificate** | **`3,069 B`** LMS-signed (`id-alg-hss-lms-hashsig`) `ML-DSA-44` Enterprise cert | **`576 B`** `ES384`-signed `P-256` Classical Batch cert | Enterprise certificate never disclosed to non-allowlisted RP IDs |
+| **X.509 Serial Number OID (`1.3.6.1.4.1.45724.1.1.2`)** | **Present (`"123456"`)** | **Absent** | Hardware serial number omitted from X.509 cert on downgrade |
+| **`extensions["mtc-debug"].pubKey`** | **`1,322 B`** (`ML-DSA-44` `COSE_Key`, matches `3,069 B` `x5c` SPKI) | **`77 B`** (`ES256` `COSE_Key`, matches `576 B` `x5c` SPKI) | Always reflects the actual signing key used for `attStmt.sig` |
+| **`extensions["mtc-debug"].deviceSerial`** | **`"123456"`** (matches X.509 OID `1.3.6.1.4.1.45724.1.1.2`) | **Strictly Omitted (`undefined`)** | **Prevents `"mtc-debug"` from being abused to bypass the Enterprise RP allowlist** |
 
 ---
 

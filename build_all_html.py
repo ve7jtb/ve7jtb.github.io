@@ -347,16 +347,17 @@ DOCUMENT_CONFIGS = {
             ("HSS/LMS Hierarchy & PQ MTC (-1,331 B Wire)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("perCredMgmtRO & Enterprise Attestation", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (280,714 cumulative lines across Runs 10–22, including Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: \"mtc\" with 1,331 B smaller wire responses and the \"mtc-debug\" extension, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,760,740 cumulative lines including 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (281,781 cumulative lines across Runs 10–23, including Run 23 6 / 6 100.00% PASS on EntepriseAttestation.js & the \"mtc-debug\" privacy gate, Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: \"mtc\" with 1,331 B smaller wire responses, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,771,968 cumulative lines including 11,228 lines in Run 23 and 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-0-0000" if "0.0000" in title else
+            "section-0-00000" if "0.00000" in title else
+            ("section-0-0000" if "0.0000" in title else
             ("section-0-000" if "0.000" in title else
             ("section-0-00" if "0.00" in title else
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title)))))))
+            (f"section-{num}" if num else slug(title))))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {
