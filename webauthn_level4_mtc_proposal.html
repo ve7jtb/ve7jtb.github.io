@@ -299,6 +299,10 @@ partial dictionary AuthenticationExtensionsClientOutputs {
     MtcDebugExtensionOutput mtcDebug;
 };
 
+partial dictionary AuthenticationExtensionsClientOutputsJSON {
+    MtcDebugExtensionOutputJSON mtcDebug;
+};
+
 dictionary MtcDebugExtensionOutput {
     required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
     DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
@@ -307,6 +311,16 @@ dictionary MtcDebugExtensionOutput {
     unsigned long        firmwareVersion; // CTAP 2.3 parameter 0x0E
     ArrayBuffer          mtcProof;        // RFC 9162 Merkle inclusion proof
     ArrayBuffer          rootHash;        // 32-byte Landmark / Trust Anchor root hash
+};
+
+dictionary MtcDebugExtensionOutputJSON {
+    required Base64URLString pubKey;          // Base64url-encoded COSE_Key
+    DOMString                deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
+    unsigned long long       notBefore;       // Unix timestamp (seconds)
+    unsigned long long       notAfter;        // Unix timestamp (seconds)
+    unsigned long            firmwareVersion; // CTAP 2.3 parameter 0x0E
+    Base64URLString          mtcProof;        // Base64url-encoded RFC 9162 Merkle inclusion proof
+    Base64URLString          rootHash;        // Base64url-encoded 32-byte root hash
 };</code></pre></div>
 <h3 id="32-protocol-cddl" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Protocol CDDL</h3>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; CTAP2 authenticatorMakeCredential (0x01) parameter 0x04

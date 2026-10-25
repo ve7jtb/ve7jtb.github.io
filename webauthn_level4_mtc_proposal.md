@@ -135,6 +135,10 @@ partial dictionary AuthenticationExtensionsClientOutputs {
     MtcDebugExtensionOutput mtcDebug;
 };
 
+partial dictionary AuthenticationExtensionsClientOutputsJSON {
+    MtcDebugExtensionOutputJSON mtcDebug;
+};
+
 dictionary MtcDebugExtensionOutput {
     required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
     DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
@@ -143,6 +147,16 @@ dictionary MtcDebugExtensionOutput {
     unsigned long        firmwareVersion; // CTAP 2.3 parameter 0x0E
     ArrayBuffer          mtcProof;        // RFC 9162 Merkle inclusion proof
     ArrayBuffer          rootHash;        // 32-byte Landmark / Trust Anchor root hash
+};
+
+dictionary MtcDebugExtensionOutputJSON {
+    required Base64URLString pubKey;          // Base64url-encoded COSE_Key
+    DOMString                deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
+    unsigned long long       notBefore;       // Unix timestamp (seconds)
+    unsigned long long       notAfter;        // Unix timestamp (seconds)
+    unsigned long            firmwareVersion; // CTAP 2.3 parameter 0x0E
+    Base64URLString          mtcProof;        // Base64url-encoded RFC 9162 Merkle inclusion proof
+    Base64URLString          rootHash;        // Base64url-encoded 32-byte root hash
 };
 ```
 

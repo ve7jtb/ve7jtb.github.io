@@ -300,6 +300,7 @@ index 70e98e0..fd42f74 100644
 +                - `firmwareVersion`: <code>|rawOutput|["firmwareVersion"]</code>, if present.
 +                - `mtcProof`: <code>|rawOutput|["mtcProof"]</code>, if present.
 +                - `rootHash`: <code>|rawOutput|["rootHash"]</code>, if present.
++        3. When {{PublicKeyCredential/toJSON()}} is invoked on a {{PublicKeyCredential}} containing an `mtcDebug` client extension output, serialize `clientExtensionResults.mtcDebug` into a {{MtcDebugExtensionOutputJSON}} dictionary by base64url encoding the {{ArrayBuffer}} members `pubKey`, `mtcProof` (if present), and `rootHash` (if present) into {{Base64URLString}} values per [[#sctn-json-types]].
 +
 +: Client extension output
 +::
@@ -314,11 +315,21 @@ index 70e98e0..fd42f74 100644
 +        ArrayBuffer rootHash;
 +    };
 +
++    dictionary MtcDebugExtensionOutputJSON {
++        required Base64URLString pubKey;
++        DOMString deviceSerial;
++        unsigned long long notBefore;
++        unsigned long long notAfter;
++        unsigned long firmwareVersion;
++        Base64URLString mtcProof;
++        Base64URLString rootHash;
++    };
++
 +    partial dictionary AuthenticationExtensionsClientOutputs {
 +        MtcDebugExtensionOutput mtcDebug;
 +    };
 +    partial dictionary AuthenticationExtensionsClientOutputsJSON {
-+        MtcDebugExtensionOutput mtcDebug;
++        MtcDebugExtensionOutputJSON mtcDebug;
 +    };
 +    </xmp>
 +
