@@ -278,7 +278,7 @@ public class MtcAttestationInfo {
   Optional&lt;String&gt; deviceSerial;
   Optional&lt;Instant&gt; notBefore;
   Optional&lt;Instant&gt; notAfter;
-  Optional&lt;Long&gt; fwVersion;
+  Optional&lt;Long&gt; firmwareVersion;
 }</code></pre></div>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Expose <code>Optional&lt;MtcAttestationInfo&gt; getMtcAttestation()</code> on <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/RegistrationResult.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>RegistrationResult</code></a>.</li>
@@ -291,7 +291,7 @@ public class MtcAttestationInfo {
 <li><code>alg</code>: <code>COSEAlgorithmIdentifier</code> (<code>-48</code> <code>ML-DSA-44</code>, <code>-49</code> <code>ML-DSA-65</code>, <code>-50</code> <code>ML-DSA-87</code>, <code>-7</code> <code>ES256</code>, etc.)</li>
 <li><code>sig</code>: <code>ByteArray</code></li>
 <li><code>mtcCert</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><code>mtcEntryDesc</code>: <code>{ caId, serial, notBefore, notAfter, ?fwVersion, ?mtcProof }</code></li>
+<li><code>mtcEntryDesc</code>: <code>{ caId, serial, notBefore, notAfter, ?firmwareVersion, ?mtcProof }</code></li>
 <li><code>mtcKeyRef</code>: <code>{ caId, serial }</code> (proof-less)</li>
 </ul></li>
 </ul></li>

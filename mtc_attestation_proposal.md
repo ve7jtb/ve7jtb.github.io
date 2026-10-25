@@ -120,7 +120,7 @@ public class MtcAttestationInfo {
   Optional<String> deviceSerial;
   Optional<Instant> notBefore;
   Optional<Instant> notAfter;
-  Optional<Long> fwVersion;
+  Optional<Long> firmwareVersion;
 }
 ```
 
@@ -134,7 +134,7 @@ public class MtcAttestationInfo {
      - `alg`: `COSEAlgorithmIdentifier` (`-48` `ML-DSA-44`, `-49` `ML-DSA-65`, `-50` `ML-DSA-87`, `-7` `ES256`, etc.)
      - `sig`: `ByteArray`
      - `mtcCert`:
-       - `mtcEntryDesc`: `{ caId, serial, notBefore, notAfter, ?fwVersion, ?mtcProof }`
+       - `mtcEntryDesc`: `{ caId, serial, notBefore, notAfter, ?firmwareVersion, ?mtcProof }`
        - `mtcKeyRef`: `{ caId, serial }` (proof-less)
    - Rejects `attStmt` if an inline `pubKey` field is present (enforcing consolidated `fmt: "mtc"`).
 

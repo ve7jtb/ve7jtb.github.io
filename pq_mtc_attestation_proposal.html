@@ -397,7 +397,7 @@
 <p class="text-sm my-2"><em>(With $2^4 = 16$ batches per model, the Landmark <code>MTCProof</code> inclusion path is only $4 \times 32 = 128\text{ B}$, reducing <code>mtc</code> for <code>ML-DSA-87</code> to <strong>~7,467 B</strong> and <code>ML-DSA-87-Ed448</code> to <strong>~7,641 B</strong>—or <strong>~7,577 B</strong> for a 4-batch log!)</em></p>
 <div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TB
     subgraph Vendor["Authenticator Vendor (MTC CA)"]
-        Log["Append-Only Batch Key Log\nMTCLogEntry[i] = { serial, validity,\nSHA-256(pubKey), aaguid, fwVersion }"]
+        Log["Append-Only Batch Key Log\nMTCLogEntry[i] = { serial, validity,\nSHA-256(pubKey), aaguid, firmwareVersion }"]
         Tree["Merkle Tree [0..end)\n32-byte Landmark SubtreeHash"]
         Log --&gt; Tree
     end
@@ -407,8 +407,8 @@
     end
 
     subgraph Formats["Two CTAP2 / WebAuthn Formats"]
-        MTC["fmt: 'mtcl' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}"]
-        MTCC["fmt: 'mtc' (MDS Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}\n(Saves 1.3–2.7 KB on wire!)"]
+        MTC["fmt: 'mtcl' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, firmwareVersion?, mtcProof }\n}"]
+        MTCC["fmt: 'mtc' (MDS Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, firmwareVersion?, mtcProof }\n}\n(Saves 1.3–2.7 KB on wire!)"]
     end
 
     subgraph RP["WebAuthn Relying Party Verification"]
@@ -458,7 +458,7 @@ mtcEntryDesc = {
     serial: uint,             ; uint64: (log_number &lt;&lt; 48) | index
     notBefore: uint,          ; uint64 Unix epoch seconds
     notAfter: uint,           ; uint64 Unix epoch seconds
-    ? fwVersion: uint,        ; Optional firmware version (replaces id-fido-gen-ce-fw-version)
+    ? firmwareVersion: uint,  ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
 }                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof</code></pre></div>
 <h3 id="32-format-2-compact-mds-assisted-mtc-attestation-statement-format-fmt-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Format 2: Compact MDS-Assisted MTC Attestation Statement Format (<code>fmt: "mtc"</code>)</h3>
@@ -571,7 +571,7 @@ mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid whe
 </ul></li>
 <li><strong>Reconstruct Leaf &amp; Verify Merkle Inclusion Proof (<code>draft-ietf-plants-merkle-tree-certs</code> §6.2 Steps 4–6):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Compute <code>pubKeyHash = SHA-256(pubKey)</code>.</li>
-<li>Reconstruct <code>FidoMtcLogEntry</code> from <code>(mtcCert.caId, mtcCert.serial, mtcCert.notBefore, mtcCert.notAfter, authenticatorData.aaguid, mtcCert.fwVersion, pubKeyHash, mtcProof.extensions)</code>.</li>
+<li>Reconstruct <code>FidoMtcLogEntry</code> from <code>(mtcCert.caId, mtcCert.serial, mtcCert.notBefore, mtcCert.notAfter, authenticatorData.aaguid, mtcCert.firmwareVersion, pubKeyHash, mtcProof.extensions)</code>.</li>
 <li>Compute <code>expectedSubtreeHash</code> using RFC 9162 §2.1.3.2 over <code>(index = mtcCert.serial &amp; 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)</code>.</li>
 <li>Verify that <code>(mtcProof.start, mtcProof.end, expectedSubtreeHash)</code> matches an active landmark entry in <code>mtcTrustAnchor.trustedSubtrees</code> (or, if <code>mtcProof.signatures</code> is non-empty, satisfies <code>mtcTrustAnchor.quorum</code> over <code>mtcTrustAnchor.cosigners</code>).</li>
 <li><strong>Proof-less <code>mtcKeyRef</code> (<code>"mtc"</code> only, §8.6):</strong> if <code>mtcCert</code> has no <code>mtcProof</code>, skip this step. In step 5, use the matched <code>MtcBatchKeyEntry</code>'s <code>notBefore</code> / <code>notAfter</code> in place of <code>mtcCert</code>'s. This is permitted only if the RP verified the signature (or <code>rootHash</code>) over the whole <code>mtcTrustAnchor.batchKeys</code> table when it loaded the table. Otherwise fail verification.</li>

@@ -8075,7 +8075,7 @@ mtcEntryDesc = {
                    serial: uint,                     ; Log entry serial number = (logNumber &lt;&lt; 48) | index
                    notBefore: uint,                  ; Unix timestamp (seconds)
                    notAfter: uint,                   ; Unix timestamp (seconds)
-                   ? fwVersion: uint,                ; Optional firmware version integer
+                   ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
                    ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
                }
 
@@ -8107,9 +8107,9 @@ mtcKeyRef = {
       <dt data-md>notAfter
       <dd data-md>
        <p>An unsigned integer Unix timestamp representing the expiration time of the attestation key.</p>
-      <dt data-md>fwVersion
+      <dt data-md>firmwareVersion
       <dd data-md>
-       <p>An optional integer representing the authenticator firmware version.</p>
+       <p>An optional unsigned integer representing the authenticator firmware version, formatted in accordance with parameter <code>0x0E</code> (<code>firmwareVersion</code>) in CTAP 2.3 <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a>.</p>
       <dt data-md>mtcProof
       <dd data-md>
        <p>An optional byte array containing the binary Merkle inclusion proof formatted in accordance with <span>[draft-ietf-plants-merkle-tree-certs]</span> and <a data-link-type="biblio" href="#biblio-rfc9162" title="Certificate Transparency Version 2.0">[RFC9162]</a>.</p>
@@ -8135,7 +8135,7 @@ mtcKeyRef = {
        <p>Otherwise (standard operation with Merkle inclusion proof):</p>
        <ol>
         <li data-md>
-         <p>Let <var>mtcCert</var> be a map conforming to <code>mtcEntryDesc</code> containing <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>fwVersion</code>, and <code>mtcProof</code> (the binary Merkle inclusion proof).</p>
+         <p>Let <var>mtcCert</var> be a map conforming to <code>mtcEntryDesc</code> containing <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, and <code>mtcProof</code> (the binary Merkle inclusion proof).</p>
        </ol>
       <li data-md>
        <p>Set <var>attStmt</var> to the CBOR map <code>{ alg: alg, sig: sig, mtcCert: mtcCert }</code>.</p>
@@ -8189,7 +8189,7 @@ mtcKeyRef = {
           <li data-md>
            <p>Compute <code>pubKeyHash = SHA-256(batchPubKey)</code>.</p>
           <li data-md>
-           <p>Reconstruct the leaf entry structure (<code>FidoMtcLogEntry</code>) binding <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter</code>, <code>authenticatorData.aaguid</code>, optional <code>fwVersion</code>, <code>pubKeyHash</code>, and any leaf extensions (such as the enterprise device serial number if committed in the leaf).</p>
+           <p>Reconstruct the leaf entry structure (<code>FidoMtcLogEntry</code>) binding <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter</code>, <code>authenticatorData.aaguid</code>, optional <code>firmwareVersion</code>, <code>pubKeyHash</code>, and any leaf extensions (such as the enterprise device serial number if committed in the leaf).</p>
           <li data-md>
            <p>Compute the leaf hash from the reconstructed entry according to <span>[draft-ietf-plants-merkle-tree-certs]</span> and <a data-link-type="biblio" href="#biblio-rfc9162" title="Certificate Transparency Version 2.0">[RFC9162]</a>: <code>SHA-256(0x00 || FidoMtcLogEntry)</code>.</p>
           <li data-md>
@@ -9272,23 +9272,37 @@ resulting in a signature mismatch at the <a data-link-type="dfn" href="#relying-
        <p>If <code>mtc-debug</code> is <code>true</code> in the authenticator extension inputs:</p>
        <ol>
         <li data-md>
-         <p>Let <var>pubKey</var> be the canonical CBOR-encoded COSE_Key representation of the authenticator’s active attestation public key.</p>
+         <p>Let <var>output</var> be a new CBOR map.</p>
+        <li data-md>
+         <p>Let <var>pubKey</var> be the canonical CBOR-encoded COSE_Key representation of the authenticator’s active attestation public key. Set <code><var>output</var>["pubKey"] = <var>pubKey</var></code>.</p>
         <li data-md>
          <p>If Enterprise Attestation was requested and granted for this operation:</p>
          <ol>
           <li data-md>
-           <p>Let <var>serial</var> be the device serial number text string.</p>
-          <li data-md>
-           <p>Return an authenticator extension output map containing <code>pubKey</code> set to <var>pubKey</var> and <code>deviceSerial</code> set to <var>serial</var>.</p>
+           <p>Let <var>serial</var> be the device serial number text string. Set <code><var>output</var>["deviceSerial"] = <var>serial</var></code>.</p>
          </ol>
         <li data-md>
          <p>Otherwise:</p>
          <ol>
           <li data-md>
-           <p>Return an authenticator extension output map containing <code>pubKey</code> set to <var>pubKey</var>.</p>
-          <li data-md>
            <p>The authenticator MUST NOT include <code>deviceSerial</code> if Enterprise Attestation was not granted.</p>
          </ol>
+        <li data-md>
+         <p>If the authenticator is configured to emit diagnostic manifest and inclusion proof data (e.g. to support autonomous offline verification in proof-less <code>mtcKeyRef</code> environments):</p>
+         <ol>
+          <li data-md>
+           <p>If known to the authenticator, set <code><var>output</var>["notBefore"]</code> to the earliest Unix timestamp at which the key is valid.</p>
+          <li data-md>
+           <p>If known to the authenticator, set <code><var>output</var>["notAfter"]</code> to the Unix timestamp at which the key expires.</p>
+          <li data-md>
+           <p>If the authenticator reports a firmware version in <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a> <code>authenticatorGetInfo</code> (parameter <code>0x0E</code>), set <code><var>output</var>["firmwareVersion"]</code> to that unsigned integer.</p>
+          <li data-md>
+           <p>If the authenticator maintains the Merkle inclusion proof for <code>serial</code>, set <code><var>output</var>["mtcProof"]</code> to the binary RFC 9162 inclusion proof byte array.</p>
+          <li data-md>
+           <p>If the authenticator maintains the trust anchor or landmark subtree root hash, set <code><var>output</var>["rootHash"]</code> to that 32-byte root hash.</p>
+         </ol>
+        <li data-md>
+         <p>Return <var>output</var> as the authenticator extension output.</p>
        </ol>
      </ol>
     <dt data-md>Authenticator extension output
@@ -9300,7 +9314,12 @@ resulting in a signature mismatch at the <a data-link-type="dfn" href="#relying-
 
 MtcDebugAuthOutput = {
     pubKey: bytes,
-    ? deviceSerial: text
+    ? deviceSerial: text,
+    ? notBefore: uint,
+    ? notAfter: uint,
+    ? firmwareVersion: uint,
+    ? mtcProof: bytes,
+    ? rootHash: bytes
 }
 </pre>
     <dt data-md>Client extension processing
@@ -9315,12 +9334,24 @@ MtcDebugAuthOutput = {
          <p>Upon receiving the authenticator response, if the authenticator data contains an extension output for <code>mtc-debug</code>:</p>
          <ol>
           <li data-md>
+           <p>Let <var>rawOutput</var> be the decoded map for <code>mtc-debug</code>.</p>
+          <li data-md>
            <p>Set <code>clientExtensionResults.mtcDebug</code> to a dictionary containing:</p>
            <ul>
             <li data-md>
-             <p><code>pubKey</code>: the <code>pubKey</code> byte array from the authenticator extension output.</p>
+             <p><code>pubKey</code>: <code><var>rawOutput</var>["pubKey"]</code>.</p>
             <li data-md>
-             <p><code>deviceSerial</code>: the <code>deviceSerial</code> string, if present.</p>
+             <p><code>deviceSerial</code>: <code><var>rawOutput</var>["deviceSerial"]</code>, if present.</p>
+            <li data-md>
+             <p><code>notBefore</code>: <code><var>rawOutput</var>["notBefore"]</code>, if present.</p>
+            <li data-md>
+             <p><code>notAfter</code>: <code><var>rawOutput</var>["notAfter"]</code>, if present.</p>
+            <li data-md>
+             <p><code>firmwareVersion</code>: <code><var>rawOutput</var>["firmwareVersion"]</code>, if present.</p>
+            <li data-md>
+             <p><code>mtcProof</code>: <code><var>rawOutput</var>["mtcProof"]</code>, if present.</p>
+            <li data-md>
+             <p><code>rootHash</code>: <code><var>rawOutput</var>["rootHash"]</code>, if present.</p>
            </ul>
          </ol>
        </ol>
@@ -9330,6 +9361,11 @@ MtcDebugAuthOutput = {
 <pre class="def highlight idl"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-mtcdebugextensionoutput"><code><c- g>MtcDebugExtensionOutput</c-></code></dfn> {
     <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer②⑨"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="ArrayBuffer" href="#dom-mtcdebugextensionoutput-pubkey" id="ref-for-dom-mtcdebugextensionoutput-pubkey"><c- g>pubKey</c-></a>;
     <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑧⑨"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString" href="#dom-mtcdebugextensionoutput-deviceserial" id="ref-for-dom-mtcdebugextensionoutput-deviceserial"><c- g>deviceSerial</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long" href="#dom-mtcdebugextensionoutput-notbefore" id="ref-for-dom-mtcdebugextensionoutput-notbefore"><c- g>notBefore</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long①"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long" href="#dom-mtcdebugextensionoutput-notafter" id="ref-for-dom-mtcdebugextensionoutput-notafter"><c- g>notAfter</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑥"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long" href="#dom-mtcdebugextensionoutput-firmwareversion" id="ref-for-dom-mtcdebugextensionoutput-firmwareversion"><c- g>firmwareVersion</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③⓪"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="ArrayBuffer" href="#dom-mtcdebugextensionoutput-mtcproof" id="ref-for-dom-mtcdebugextensionoutput-mtcproof"><c- g>mtcProof</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③①"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="ArrayBuffer" href="#dom-mtcdebugextensionoutput-roothash" id="ref-for-dom-mtcdebugextensionoutput-roothash"><c- g>rootHash</c-></a>;
 };
 
 <c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="#dictdef-authenticationextensionsclientoutputs" id="ref-for-dictdef-authenticationextensionsclientoutputs①②"><c- g>AuthenticationExtensionsClientOutputs</c-></a> {
@@ -9341,12 +9377,27 @@ MtcDebugAuthOutput = {
 </pre>
      <div>
       <dl>
-       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-pubkey"><code>pubKey</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③⓪">ArrayBuffer</a></span>
+       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-pubkey"><code>pubKey</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③②">ArrayBuffer</a></span>
        <dd data-md>
         <p>The canonical CBOR-encoded COSE_Key representation of the authenticator’s active attestation public key.</p>
        <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-deviceserial"><code>deviceSerial</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑨⓪">DOMString</a></span>
        <dd data-md>
         <p>An OPTIONAL text string representing the physical hardware serial number. This member MUST be present if and only if Enterprise Attestation was granted for the registration ceremony.</p>
+       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-notbefore"><code>notBefore</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long②">unsigned long long</a></span>
+       <dd data-md>
+        <p>An OPTIONAL unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.</p>
+       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-notafter"><code>notAfter</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long③">unsigned long long</a></span>
+       <dd data-md>
+        <p>An OPTIONAL unsigned integer Unix timestamp representing the expiration time of the attestation key.</p>
+       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-firmwareversion"><code>firmwareVersion</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑦">unsigned long</a></span>
+       <dd data-md>
+        <p>An OPTIONAL unsigned integer representing the authenticator firmware version, formatted in accordance with parameter <code>0x0E</code> (<code>firmwareVersion</code>) in CTAP 2.3 <code>authenticatorGetInfo</code> <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a>.</p>
+       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-mtcproof"><code>mtcProof</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③③">ArrayBuffer</a></span>
+       <dd data-md>
+        <p>An OPTIONAL byte array containing the binary Merkle inclusion proof formatted in accordance with <span>[draft-ietf-plants-merkle-tree-certs]</span> and <a data-link-type="biblio" href="#biblio-rfc9162" title="Certificate Transparency Version 2.0">[RFC9162]</a>.</p>
+       <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-roothash"><code>rootHash</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer③④">ArrayBuffer</a></span>
+       <dd data-md>
+        <p>An OPTIONAL 32-byte array containing the expected Landmark or Trust Anchor Merkle root hash.</p>
       </dl>
      </div>
    </dl>
@@ -12012,6 +12063,7 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
      <li><a href="#dom-publickeycredentialrequestoptions-extensions">dict-member for PublicKeyCredentialRequestOptions</a><span>, in § 5.5</span>
      <li><a href="#dom-publickeycredentialrequestoptionsjson-extensions">dict-member for PublicKeyCredentialRequestOptionsJSON</a><span>, in § 5.1.9</span>
     </ul>
+   <li><a href="#dom-mtcdebugextensionoutput-firmwareversion">firmwareVersion</a><span>, in § 10.2.1</span>
    <li>
     first
     <ul>
@@ -12097,6 +12149,7 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
      <li><a href="#dom-authenticationextensionsclientoutputsjson-mtcdebug">dict-member for AuthenticationExtensionsClientOutputsJSON</a><span>, in § 10.2.1</span>
     </ul>
    <li><a href="#dictdef-mtcdebugextensionoutput">MtcDebugExtensionOutput</a><span>, in § 10.2.1</span>
+   <li><a href="#dom-mtcdebugextensionoutput-mtcproof">mtcProof</a><span>, in § 10.2.1</span>
    <li><a href="#multi-device-credential">multi-device credential</a><span>, in § 4</span>
    <li><a href="#multi-factor-capable">multi-factor capable</a><span>, in § 6.2.3</span>
    <li><a href="#public-key-credential-source-mutable-item">mutable item</a><span>, in § 4</span>
@@ -12114,6 +12167,8 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
    <li><a href="#none">None</a><span>, in § 6.5.3</span>
    <li><a href="#dom-attestationconveyancepreference-none">none</a><span>, in § 5.4.7</span>
    <li><a href="#non-resident-credential">Non-Resident Credential</a><span>, in § 4</span>
+   <li><a href="#dom-mtcdebugextensionoutput-notafter">notAfter</a><span>, in § 10.2.1</span>
+   <li><a href="#dom-mtcdebugextensionoutput-notbefore">notBefore</a><span>, in § 10.2.1</span>
    <li><a href="#dom-collectedclientdata-origin">origin</a><span>, in § 5.8.1</span>
    <li>
     otherUI
@@ -12271,6 +12326,7 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
    <li><a href="#dom-credentialpropertiesoutput-rk">rk</a><span>, in § 10.1.3</span>
    <li><a href="#roaming-authenticators">roaming authenticators</a><span>, in § 6.2.1</span>
    <li><a href="#roaming-credential">roaming credential</a><span>, in § 6.2.1</span>
+   <li><a href="#dom-mtcdebugextensionoutput-roothash">rootHash</a><span>, in § 10.2.1</span>
    <li>
     rp
     <ul>
@@ -12783,6 +12839,7 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
      <li><span class="dfn-paneled" id="aa747739">simple exception</span>
      <li><span class="dfn-paneled" id="5f90bbfb">undefined</span>
      <li><span class="dfn-paneled" id="e97a9688">unsigned long</span>
+     <li><span class="dfn-paneled" id="f14b47b8">unsigned long long</span>
      <li><span class="dfn-paneled" id="24bd7d25">upon fulfillment</span>
     </ul>
   </ul>
@@ -13405,6 +13462,11 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
 <c- b>dictionary</c-> <a href="#dictdef-mtcdebugextensionoutput"><code><c- g>MtcDebugExtensionOutput</c-></code></a> {
     <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="ArrayBuffer" href="#dom-mtcdebugextensionoutput-pubkey"><c- g>pubKey</c-></a>;
     <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="DOMString" href="#dom-mtcdebugextensionoutput-deviceserial"><c- g>deviceSerial</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long" href="#dom-mtcdebugextensionoutput-notbefore"><c- g>notBefore</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long"><c- b>unsigned</c-> <c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long long" href="#dom-mtcdebugextensionoutput-notafter"><c- g>notAfter</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-unsigned-long"><c- b>unsigned</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="unsigned long" href="#dom-mtcdebugextensionoutput-firmwareversion"><c- g>firmwareVersion</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="ArrayBuffer" href="#dom-mtcdebugextensionoutput-mtcproof"><c- g>mtcProof</c-></a>;
+    <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="dict-member" data-type="ArrayBuffer" href="#dom-mtcdebugextensionoutput-roothash"><c- g>rootHash</c-></a>;
 };
 
 <c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="#dictdef-authenticationextensionsclientoutputs"><c- g>AuthenticationExtensionsClientOutputs</c-></a> {
@@ -13688,7 +13750,7 @@ let dfnPanelData = {
 "2a800450": {"dfnID":"2a800450","dfnText":"Section 4","external":true,"refSections":[{"refs":[{"id":"ref-for-section-4"}],"title":"6.5.1.1. Examples of credentialPublicKey Values Encoded in COSE_Key Format"}],"url":"https://tools.ietf.org/html/rfc8230#section-4"},
 "2e66eaf1": {"dfnID":"2e66eaf1","dfnText":"AbortController","external":true,"refSections":[{"refs":[{"id":"ref-for-abortcontroller"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-abortcontroller\u2460"}],"title":"5.1.3.1. Create Request Exceptions"},{"refs":[{"id":"ref-for-abortcontroller\u2461"}],"title":"5.1.4. Use an Existing Credential to Make an Assertion"},{"refs":[{"id":"ref-for-abortcontroller\u2462"}],"title":"5.1.4.3. Get Request Exceptions"},{"refs":[{"id":"ref-for-abortcontroller\u2463"},{"id":"ref-for-abortcontroller\u2464"}],"title":"5.6. Abort Operations with AbortSignal"}],"url":"https://dom.spec.whatwg.org/#abortcontroller"},
 "2ec1d49c": {"dfnID":"2ec1d49c","dfnText":"authentication factor","external":true,"refSections":[{"refs":[{"id":"ref-for-af"},{"id":"ref-for-af\u2460"},{"id":"ref-for-af\u2461"},{"id":"ref-for-af\u2462"}],"title":"4. Terminology"},{"refs":[{"id":"ref-for-af\u2463"},{"id":"ref-for-af\u2464"},{"id":"ref-for-af\u2465"},{"id":"ref-for-af\u2466"},{"id":"ref-for-af\u2467"},{"id":"ref-for-af\u2468"},{"id":"ref-for-af\u2460\u24ea"},{"id":"ref-for-af\u2460\u2460"}],"title":"6.2. Authenticator Taxonomy"},{"refs":[{"id":"ref-for-af\u2460\u2461"},{"id":"ref-for-af\u2460\u2462"}],"title":"6.2.1. Authenticator Attachment Modality"},{"refs":[{"id":"ref-for-af\u2460\u2463"},{"id":"ref-for-af\u2460\u2464"},{"id":"ref-for-af\u2460\u2465"},{"id":"ref-for-af\u2460\u2466"},{"id":"ref-for-af\u2460\u2467"},{"id":"ref-for-af\u2460\u2468"},{"id":"ref-for-af\u2461\u24ea"},{"id":"ref-for-af\u2461\u2460"},{"id":"ref-for-af\u2461\u2461"},{"id":"ref-for-af\u2461\u2462"}],"title":"6.2.3. Authentication Factor Capability"},{"refs":[{"id":"ref-for-af\u2461\u2463"}],"title":"7.2. Verifying an Authentication Assertion"},{"refs":[{"id":"ref-for-af\u2461\u2464"},{"id":"ref-for-af\u2461\u2465"},{"id":"ref-for-af\u2461\u2466"}],"title":"13.2. Physical Proximity between Client and Authenticator"}],"url":"https://pages.nist.gov/800-63-3/sp800-63-3.html#af"},
-"2f8afbfe": {"dfnID":"2f8afbfe","dfnText":"ArrayBuffer","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-ArrayBuffer"},{"id":"ref-for-idl-ArrayBuffer\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2462"},{"id":"ref-for-idl-ArrayBuffer\u2463"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2464"},{"id":"ref-for-idl-ArrayBuffer\u2465"},{"id":"ref-for-idl-ArrayBuffer\u2466"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2467"},{"id":"ref-for-idl-ArrayBuffer\u2468"},{"id":"ref-for-idl-ArrayBuffer\u2460\u24ea"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2462"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2460\u2463"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2464"}],"title":"5.2. Authenticator Responses (interface AuthenticatorResponse)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2460\u2465"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2466"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2467"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2468"}],"title":"5.2.1. Information About Public Key Credential (interface AuthenticatorAttestationResponse)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u24ea"}],"title":"5.2.1.1. Easily accessing credential data"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2462"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2463"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2464"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2465"}],"title":"5.2.2. Web Authentication Assertion (interface AuthenticatorAssertionResponse)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u2466"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2467"}],"title":"10.1.5. Large blob storage extension (largeBlob)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u2468"},{"id":"ref-for-idl-ArrayBuffer\u2462\u24ea"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"https://webidl.spec.whatwg.org/#idl-ArrayBuffer"},
+"2f8afbfe": {"dfnID":"2f8afbfe","dfnText":"ArrayBuffer","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-ArrayBuffer"},{"id":"ref-for-idl-ArrayBuffer\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2462"},{"id":"ref-for-idl-ArrayBuffer\u2463"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2464"},{"id":"ref-for-idl-ArrayBuffer\u2465"},{"id":"ref-for-idl-ArrayBuffer\u2466"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2467"},{"id":"ref-for-idl-ArrayBuffer\u2468"},{"id":"ref-for-idl-ArrayBuffer\u2460\u24ea"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2462"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2460\u2463"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2464"}],"title":"5.2. Authenticator Responses (interface AuthenticatorResponse)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2460\u2465"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2466"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2467"},{"id":"ref-for-idl-ArrayBuffer\u2460\u2468"}],"title":"5.2.1. Information About Public Key Credential (interface AuthenticatorAttestationResponse)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u24ea"}],"title":"5.2.1.1. Easily accessing credential data"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2462"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2463"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2464"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2465"}],"title":"5.2.2. Web Authentication Assertion (interface AuthenticatorAssertionResponse)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u2466"},{"id":"ref-for-idl-ArrayBuffer\u2461\u2467"}],"title":"10.1.5. Large blob storage extension (largeBlob)"},{"refs":[{"id":"ref-for-idl-ArrayBuffer\u2461\u2468"},{"id":"ref-for-idl-ArrayBuffer\u2462\u24ea"},{"id":"ref-for-idl-ArrayBuffer\u2462\u2460"},{"id":"ref-for-idl-ArrayBuffer\u2462\u2461"},{"id":"ref-for-idl-ArrayBuffer\u2462\u2462"},{"id":"ref-for-idl-ArrayBuffer\u2462\u2463"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"https://webidl.spec.whatwg.org/#idl-ArrayBuffer"},
 "31236ec1": {"dfnID":"31236ec1","dfnText":"Section 4.3","external":true,"refSections":[{"refs":[{"id":"ref-for-registration-response-message-success"},{"id":"ref-for-registration-response-message-success\u2460"}],"title":"8.6. FIDO U2F Attestation Statement Format"}],"url":"https://fidoalliance.org/specs/fido-u2f-v1.1-id-20160915/fido-u2f-raw-message-formats-v1.1-id-20160915.html#registration-response-message-success"},
 "3182eb71": {"dfnID":"3182eb71","dfnText":"NotSupportedError","external":true,"refSections":[{"refs":[{"id":"ref-for-notsupportederror"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-notsupportederror\u2460"}],"title":"5.1.3.1. Create Request Exceptions"},{"refs":[{"id":"ref-for-notsupportederror\u2461"}],"title":"5.1.5. Store an Existing Credential - PublicKeyCredential\u2019s [[Store]](credential, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-notsupportederror\u2462"}],"title":"6.3.2. The authenticatorMakeCredential Operation"},{"refs":[{"id":"ref-for-notsupportederror\u2463"},{"id":"ref-for-notsupportederror\u2464"}],"title":"10.1.4. Pseudo-random function extension (prf)"},{"refs":[{"id":"ref-for-notsupportederror\u2465"},{"id":"ref-for-notsupportederror\u2466"},{"id":"ref-for-notsupportederror\u2467"},{"id":"ref-for-notsupportederror\u2468"}],"title":"10.1.5. Large blob storage extension (largeBlob)"}],"url":"https://webidl.spec.whatwg.org/#notsupportederror"},
 "31db57e6": {"dfnID":"31db57e6","dfnText":"keys","external":true,"refSections":[{"refs":[{"id":"ref-for-map-getting-the-keys"},{"id":"ref-for-map-getting-the-keys\u2460"},{"id":"ref-for-map-getting-the-keys\u2461"}],"title":"5.1.7. Availability of client capabilities - PublicKeyCredential\u2019s getClientCapabilities() Method"}],"url":"https://infra.spec.whatwg.org/#map-getting-the-keys"},
@@ -14164,7 +14226,12 @@ let dfnPanelData = {
 "dom-largeblobsupport-preferred": {"dfnID":"dom-largeblobsupport-preferred","dfnText":"\"preferred\"","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-largeblobsupport-preferred"}],"title":"10.1.5. Large blob storage extension (largeBlob)"}],"url":"#dom-largeblobsupport-preferred"},
 "dom-largeblobsupport-required": {"dfnID":"dom-largeblobsupport-required","dfnText":"\"required\"","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-largeblobsupport-required"}],"title":"10.1.5. Large blob storage extension (largeBlob)"}],"url":"#dom-largeblobsupport-required"},
 "dom-mtcdebugextensionoutput-deviceserial": {"dfnID":"dom-mtcdebugextensionoutput-deviceserial","dfnText":"deviceSerial","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-deviceserial"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-deviceserial"},
+"dom-mtcdebugextensionoutput-firmwareversion": {"dfnID":"dom-mtcdebugextensionoutput-firmwareversion","dfnText":"firmwareVersion","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-firmwareversion"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-firmwareversion"},
+"dom-mtcdebugextensionoutput-mtcproof": {"dfnID":"dom-mtcdebugextensionoutput-mtcproof","dfnText":"mtcProof","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-mtcproof"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-mtcproof"},
+"dom-mtcdebugextensionoutput-notafter": {"dfnID":"dom-mtcdebugextensionoutput-notafter","dfnText":"notAfter","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-notafter"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-notafter"},
+"dom-mtcdebugextensionoutput-notbefore": {"dfnID":"dom-mtcdebugextensionoutput-notbefore","dfnText":"notBefore","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-notbefore"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-notbefore"},
 "dom-mtcdebugextensionoutput-pubkey": {"dfnID":"dom-mtcdebugextensionoutput-pubkey","dfnText":"pubKey","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-pubkey"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-pubkey"},
+"dom-mtcdebugextensionoutput-roothash": {"dfnID":"dom-mtcdebugextensionoutput-roothash","dfnText":"rootHash","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-mtcdebugextensionoutput-roothash"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"#dom-mtcdebugextensionoutput-roothash"},
 "dom-publickeycredential-authenticatorattachment": {"dfnID":"dom-publickeycredential-authenticatorattachment","dfnText":"authenticatorAttachment","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-publickeycredential-authenticatorattachment"},{"id":"ref-for-dom-publickeycredential-authenticatorattachment\u2460"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-dom-publickeycredential-authenticatorattachment\u2461"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-dom-publickeycredential-authenticatorattachment\u2462"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-dom-publickeycredential-authenticatorattachment\u2463"}],"title":"5.4.4. Authenticator Selection Criteria (dictionary AuthenticatorSelectionCriteria)"}],"url":"#dom-publickeycredential-authenticatorattachment"},
 "dom-publickeycredential-clientextensionsresults-slot": {"dfnID":"dom-publickeycredential-clientextensionsresults-slot","dfnText":"[[clientExtensionsResults]]","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-publickeycredential-clientextensionsresults-slot"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-dom-publickeycredential-clientextensionsresults-slot\u2460"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-dom-publickeycredential-clientextensionsresults-slot\u2461"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"}],"url":"#dom-publickeycredential-clientextensionsresults-slot"},
 "dom-publickeycredential-create-origin-options-sameoriginwithancestors-options": {"dfnID":"dom-publickeycredential-create-origin-options-sameoriginwithancestors-options","dfnText":"options","external":false,"refSections":[],"url":"#dom-publickeycredential-create-origin-options-sameoriginwithancestors-options"},
@@ -14275,7 +14342,7 @@ let dfnPanelData = {
 "e1812e4c": {"dfnID":"e1812e4c","dfnText":"Token Binding ID","external":true,"refSections":[{"refs":[{"id":"ref-for-section-3.2"},{"id":"ref-for-section-3.2\u2460"}],"title":"5.8.1. Client Data Used in WebAuthn Signatures (dictionary CollectedClientData)"}],"url":"https://tools.ietf.org/html/rfc8471#section-3.2"},
 "e3db52cd": {"dfnID":"e3db52cd","dfnText":"signal (for CredentialCreationOptions)","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-credentialcreationoptions-signal"},{"id":"ref-for-dom-credentialcreationoptions-signal\u2460"},{"id":"ref-for-dom-credentialcreationoptions-signal\u2461"},{"id":"ref-for-dom-credentialcreationoptions-signal\u2462"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"}],"url":"https://w3c.github.io/webappsec-credential-management/#dom-credentialcreationoptions-signal"},
 "e6ee5aa7": {"dfnID":"e6ee5aa7","dfnText":"type","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-credential-type"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-dom-credential-type\u2460"}],"title":"5.8.3. Credential Descriptor (dictionary PublicKeyCredentialDescriptor)"},{"refs":[{"id":"ref-for-dom-credential-type\u2461"}],"title":"7.1. Registering a New Credential"}],"url":"https://w3c.github.io/webappsec-credential-management/#dom-credential-type"},
-"e97a9688": {"dfnID":"e97a9688","dfnText":"unsigned long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-unsigned-long"}],"title":"5.1.8. Deserialize Registration ceremony options - PublicKeyCredential\u2019s parseCreationOptionsFromJSON() Method"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2460"}],"title":"5.1.9. Deserialize Authentication ceremony options - PublicKeyCredential\u2019s parseRequestOptionsFromJSON() Methods"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2461"},{"id":"ref-for-idl-unsigned-long\u2462"}],"title":"5.4. Options for Credential Creation (dictionary PublicKeyCredentialCreationOptions)"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2463"},{"id":"ref-for-idl-unsigned-long\u2464"}],"title":"5.5. Options for Assertion Generation (dictionary PublicKeyCredentialRequestOptions)"}],"url":"https://webidl.spec.whatwg.org/#idl-unsigned-long"},
+"e97a9688": {"dfnID":"e97a9688","dfnText":"unsigned long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-unsigned-long"}],"title":"5.1.8. Deserialize Registration ceremony options - PublicKeyCredential\u2019s parseCreationOptionsFromJSON() Method"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2460"}],"title":"5.1.9. Deserialize Authentication ceremony options - PublicKeyCredential\u2019s parseRequestOptionsFromJSON() Methods"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2461"},{"id":"ref-for-idl-unsigned-long\u2462"}],"title":"5.4. Options for Credential Creation (dictionary PublicKeyCredentialCreationOptions)"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2463"},{"id":"ref-for-idl-unsigned-long\u2464"}],"title":"5.5. Options for Assertion Generation (dictionary PublicKeyCredentialRequestOptions)"},{"refs":[{"id":"ref-for-idl-unsigned-long\u2465"},{"id":"ref-for-idl-unsigned-long\u2466"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"https://webidl.spec.whatwg.org/#idl-unsigned-long"},
 "e99bd18e": {"dfnID":"e99bd18e","dfnText":"relevant global object","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-relevant-global"},{"id":"ref-for-concept-relevant-global\u2460"},{"id":"ref-for-concept-relevant-global\u2461"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global"},
 "ea9cb8e8": {"dfnID":"ea9cb8e8","dfnText":"signal (for CredentialRequestOptions)","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-credentialrequestoptions-signal"},{"id":"ref-for-dom-credentialrequestoptions-signal\u2460"},{"id":"ref-for-dom-credentialrequestoptions-signal\u2461"},{"id":"ref-for-dom-credentialrequestoptions-signal\u2462"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"}],"url":"https://w3c.github.io/webappsec-credential-management/#dom-credentialrequestoptions-signal"},
 "eb72e898": {"dfnID":"eb72e898","dfnText":"something you know","external":true,"refSections":[{"refs":[{"id":"ref-for-af"},{"id":"ref-for-af\u2460"},{"id":"ref-for-af\u2461"},{"id":"ref-for-af\u2462"}],"title":"4. Terminology"},{"refs":[{"id":"ref-for-af\u2463"},{"id":"ref-for-af\u2464"},{"id":"ref-for-af\u2465"},{"id":"ref-for-af\u2466"},{"id":"ref-for-af\u2467"},{"id":"ref-for-af\u2468"},{"id":"ref-for-af\u2460\u24ea"},{"id":"ref-for-af\u2460\u2460"}],"title":"6.2. Authenticator Taxonomy"},{"refs":[{"id":"ref-for-af\u2460\u2461"},{"id":"ref-for-af\u2460\u2462"}],"title":"6.2.1. Authenticator Attachment Modality"},{"refs":[{"id":"ref-for-af\u2460\u2463"},{"id":"ref-for-af\u2460\u2464"},{"id":"ref-for-af\u2460\u2465"},{"id":"ref-for-af\u2460\u2466"},{"id":"ref-for-af\u2460\u2467"},{"id":"ref-for-af\u2460\u2468"},{"id":"ref-for-af\u2461\u24ea"},{"id":"ref-for-af\u2461\u2460"},{"id":"ref-for-af\u2461\u2461"},{"id":"ref-for-af\u2461\u2462"}],"title":"6.2.3. Authentication Factor Capability"},{"refs":[{"id":"ref-for-af\u2461\u2463"}],"title":"7.2. Verifying an Authentication Assertion"},{"refs":[{"id":"ref-for-af\u2461\u2464"},{"id":"ref-for-af\u2461\u2465"},{"id":"ref-for-af\u2461\u2466"}],"title":"13.2. Physical Proximity between Client and Authenticator"}],"url":"https://pages.nist.gov/800-63-3/sp800-63-3.html#af"},
@@ -14299,6 +14366,7 @@ let dfnPanelData = {
 "extension-identifier": {"dfnID":"extension-identifier","dfnText":"extension identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-extension-identifier"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-extension-identifier\u2460"}],"title":"5.1.3. Create a New Credential - PublicKeyCredential\u2019s [[Create]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-extension-identifier\u2461"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-extension-identifier\u2462"}],"title":"5.1.4.2. Issuing a Credential Request to an Authenticator"},{"refs":[{"id":"ref-for-extension-identifier\u2463"}],"title":"5.1.7. Availability of client capabilities - PublicKeyCredential\u2019s getClientCapabilities() Method"},{"refs":[{"id":"ref-for-extension-identifier\u2464"}],"title":"6.1. Authenticator Data"},{"refs":[{"id":"ref-for-extension-identifier\u2465"},{"id":"ref-for-extension-identifier\u2466"}],"title":"6.3.2. The authenticatorMakeCredential Operation"},{"refs":[{"id":"ref-for-extension-identifier\u2467"},{"id":"ref-for-extension-identifier\u2468"}],"title":"6.3.3. The authenticatorGetAssertion Operation"},{"refs":[{"id":"ref-for-extension-identifier\u2460\u24ea"},{"id":"ref-for-extension-identifier\u2460\u2460"}],"title":"9. WebAuthn Extensions"},{"refs":[{"id":"ref-for-extension-identifier\u2460\u2461"}],"title":"9.2. Defining Extensions"},{"refs":[{"id":"ref-for-extension-identifier\u2460\u2462"},{"id":"ref-for-extension-identifier\u2460\u2463"},{"id":"ref-for-extension-identifier\u2460\u2464"},{"id":"ref-for-extension-identifier\u2460\u2465"}],"title":"9.3. Extending Request Parameters"},{"refs":[{"id":"ref-for-extension-identifier\u2460\u2466"},{"id":"ref-for-extension-identifier\u2460\u2467"}],"title":"9.4. Client Extension Processing"},{"refs":[{"id":"ref-for-extension-identifier\u2460\u2468"},{"id":"ref-for-extension-identifier\u2461\u24ea"},{"id":"ref-for-extension-identifier\u2461\u2460"}],"title":"9.5. Authenticator Extension Processing"},{"refs":[{"id":"ref-for-extension-identifier\u2461\u2461"}],"title":"11.2. Virtual Authenticators"},{"refs":[{"id":"ref-for-extension-identifier\u2461\u2462"},{"id":"ref-for-extension-identifier\u2461\u2463"}],"title":"11.3. Add Virtual Authenticator"},{"refs":[{"id":"ref-for-extension-identifier\u2461\u2464"}],"title":"12.3. WebAuthn Extension Identifier Registrations Updates"},{"refs":[{"id":"ref-for-extension-identifier\u2461\u2465"}],"title":"12.4. WebAuthn Extension Identifier Registrations"}],"url":"#extension-identifier"},
 "f01a551e": {"dfnID":"f01a551e","dfnText":"Permissions","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-permissions"}],"title":"10.1.6. Remote Client Data JSON extension (remoteClientDataJSON)"}],"url":"https://w3c.github.io/permissions/#dom-permissions"},
 "f023908c": {"dfnID":"f023908c","dfnText":"user mediation","external":true,"refSections":[{"refs":[{"id":"ref-for-user-mediated"},{"id":"ref-for-user-mediated\u2460"},{"id":"ref-for-user-mediated\u2461"}],"title":"5.1. PublicKeyCredential Interface"},{"refs":[{"id":"ref-for-user-mediated\u2462"}],"title":"5.1.4. Use an Existing Credential to Make an Assertion"},{"refs":[{"id":"ref-for-user-mediated\u2463"}],"title":"5.1.4.1. PublicKeyCredential\u2019s [[DiscoverFromExternalSource]](origin, options, sameOriginWithAncestors) Internal Method"},{"refs":[{"id":"ref-for-user-mediated\u2464"}],"title":"5.1.4.2. Issuing a Credential Request to an Authenticator"},{"refs":[{"id":"ref-for-user-mediated\u2465"}],"title":"6.3.5. The silentCredentialDiscovery operation"}],"url":"https://w3c.github.io/webappsec-credential-management/#user-mediated"},
+"f14b47b8": {"dfnID":"f14b47b8","dfnText":"unsigned long long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-unsigned-long-long"},{"id":"ref-for-idl-unsigned-long-long\u2460"},{"id":"ref-for-idl-unsigned-long-long\u2461"},{"id":"ref-for-idl-unsigned-long-long\u2462"}],"title":"10.2.1. MTC Debug Extension (mtcDebug)"}],"url":"https://webidl.spec.whatwg.org/#idl-unsigned-long-long"},
 "f41069dd": {"dfnID":"f41069dd","dfnText":"[[type]]","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-credential-type-slot"}],"title":"5.1. PublicKeyCredential Interface"}],"url":"https://w3c.github.io/webappsec-credential-management/#dom-credential-type-slot"},
 "f456317b": {"dfnID":"f456317b","dfnText":"Section 3.6.2 Public Key Representation Formats","external":true,"refSections":[{"refs":[{"id":"ref-for-public-key-representation-formats"}],"title":"8.6. FIDO U2F Attestation Statement Format"}],"url":"https://fidoalliance.org/specs/common-specs/fido-registry-v2.1-ps-20191217.html#public-key-representation-formats"},
 "f8de33a3": {"dfnID":"f8de33a3","dfnText":"long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-long"}],"title":"5.8.5. Cryptographic Algorithm Identifier (typedef COSEAlgorithmIdentifier)"}],"url":"https://webidl.spec.whatwg.org/#idl-long"},
@@ -15319,7 +15387,12 @@ let refsData = {
 "#dom-largeblobsupport-preferred": {"displayText":"\"preferred\"","export":true,"for_":["LargeBlobSupport"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"\"preferred\"","type":"enum-value","url":"#dom-largeblobsupport-preferred"},
 "#dom-largeblobsupport-required": {"displayText":"\"required\"","export":true,"for_":["LargeBlobSupport"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"\"required\"","type":"enum-value","url":"#dom-largeblobsupport-required"},
 "#dom-mtcdebugextensionoutput-deviceserial": {"displayText":"deviceSerial","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"deviceSerial","type":"dict-member","url":"#dom-mtcdebugextensionoutput-deviceserial"},
+"#dom-mtcdebugextensionoutput-firmwareversion": {"displayText":"firmwareVersion","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"firmwareVersion","type":"dict-member","url":"#dom-mtcdebugextensionoutput-firmwareversion"},
+"#dom-mtcdebugextensionoutput-mtcproof": {"displayText":"mtcProof","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"mtcProof","type":"dict-member","url":"#dom-mtcdebugextensionoutput-mtcproof"},
+"#dom-mtcdebugextensionoutput-notafter": {"displayText":"notAfter","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"notAfter","type":"dict-member","url":"#dom-mtcdebugextensionoutput-notafter"},
+"#dom-mtcdebugextensionoutput-notbefore": {"displayText":"notBefore","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"notBefore","type":"dict-member","url":"#dom-mtcdebugextensionoutput-notbefore"},
 "#dom-mtcdebugextensionoutput-pubkey": {"displayText":"pubKey","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"pubKey","type":"dict-member","url":"#dom-mtcdebugextensionoutput-pubkey"},
+"#dom-mtcdebugextensionoutput-roothash": {"displayText":"rootHash","export":true,"for_":["MtcDebugExtensionOutput"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"rootHash","type":"dict-member","url":"#dom-mtcdebugextensionoutput-roothash"},
 "#dom-publickeycredential-authenticatorattachment": {"displayText":"authenticatorAttachment","export":true,"for_":["PublicKeyCredential"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"authenticatorAttachment","type":"attribute","url":"#dom-publickeycredential-authenticatorattachment"},
 "#dom-publickeycredential-clientextensionsresults-slot": {"displayText":"[[clientExtensionsResults]]","export":true,"for_":["PublicKeyCredential"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"[[clientExtensionsResults]]","type":"attribute","url":"#dom-publickeycredential-clientextensionsresults-slot"},
 "#dom-publickeycredential-create-origin-options-sameoriginwithancestors-origin": {"displayText":"origin","export":true,"for_":["PublicKeyCredential/[[Create]](origin, options, sameOriginWithAncestors)"],"level":"4","normative":true,"shortname":"webauthn","spec":"webauthn-4","status":"local","text":"origin","type":"argument","url":"#dom-publickeycredential-create-origin-options-sameoriginwithancestors-origin"},
@@ -15694,6 +15767,7 @@ let refsData = {
 "https://webidl.spec.whatwg.org/#idl-sequence": {"displayText":"sequence","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"sequence","type":"dfn","url":"https://webidl.spec.whatwg.org/#idl-sequence"},
 "https://webidl.spec.whatwg.org/#idl-undefined": {"displayText":"undefined","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"undefined","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-undefined"},
 "https://webidl.spec.whatwg.org/#idl-unsigned-long": {"displayText":"unsigned long","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"unsigned long","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-unsigned-long"},
+"https://webidl.spec.whatwg.org/#idl-unsigned-long-long": {"displayText":"unsigned long long","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"unsigned long long","type":"interface","url":"https://webidl.spec.whatwg.org/#idl-unsigned-long-long"},
 "https://webidl.spec.whatwg.org/#invalidstateerror": {"displayText":"InvalidStateError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"InvalidStateError","type":"exception","url":"https://webidl.spec.whatwg.org/#invalidstateerror"},
 "https://webidl.spec.whatwg.org/#notallowederror": {"displayText":"NotAllowedError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"NotAllowedError","type":"exception","url":"https://webidl.spec.whatwg.org/#notallowederror"},
 "https://webidl.spec.whatwg.org/#notsupportederror": {"displayText":"NotSupportedError","export":true,"for_":[],"level":"1","normative":true,"shortname":"webidl","spec":"webidl","status":"current","text":"NotSupportedError","type":"exception","url":"https://webidl.spec.whatwg.org/#notsupportederror"},

@@ -125,7 +125,7 @@ index 70e98e0..fd42f74 100644
 +                       serial: uint,                     ; Log entry serial number = (logNumber << 48) | index
 +                       notBefore: uint,                  ; Unix timestamp (seconds)
 +                       notAfter: uint,                   ; Unix timestamp (seconds)
-+                       ? fwVersion: uint,                ; Optional firmware version integer
++                       ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
 +                       ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
 +                   }
 +
@@ -158,9 +158,9 @@ index 70e98e0..fd42f74 100644
 +    : notAfter
 +    :: An unsigned integer Unix timestamp representing the expiration time of the attestation key.
 +
-+    : fwVersion
-+    :: An optional integer representing the authenticator firmware version.
-+
++    : firmwareVersion
++    :: An optional unsigned integer representing the authenticator firmware version, formatted in accordance with parameter `0x0E` (`firmwareVersion`) in CTAP 2.3 [[!FIDO-CTAP]].
+
 +    : mtcProof
 +    :: An optional byte array containing the binary Merkle inclusion proof formatted in accordance with [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]].
 +
@@ -173,7 +173,7 @@ index 70e98e0..fd42f74 100644
 +    5. If the authenticator is configured for proof-less operation (manifest-assisted key lookup where the Relying Party caches the full key table):
 +        1. Let |mtcCert| be a map conforming to `mtcKeyRef` containing `caId` and `serial`.
 +    6. Otherwise (standard operation with Merkle inclusion proof):
-+        1. Let |mtcCert| be a map conforming to `mtcEntryDesc` containing `caId`, `serial`, `notBefore`, `notAfter`, optional `fwVersion`, and `mtcProof` (the binary Merkle inclusion proof).
++        1. Let |mtcCert| be a map conforming to `mtcEntryDesc` containing `caId`, `serial`, `notBefore`, `notAfter`, optional `firmwareVersion`, and `mtcProof` (the binary Merkle inclusion proof).
 +    7. Set |attStmt| to the CBOR map `{ alg: alg, sig: sig, mtcCert: mtcCert }`.
 +
 +: Verification procedure
@@ -196,7 +196,7 @@ index 70e98e0..fd42f74 100644
 +    9. Verify Merkle tree commitment:
 +        1. If |mtcCert| conforms to `mtcEntryDesc` and contains `mtcProof`:
 +            1. Compute `pubKeyHash = SHA-256(batchPubKey)`.
-+            2. Reconstruct the leaf entry structure (`FidoMtcLogEntry`) binding `caId`, `serial`, `notBefore`, `notAfter`, `authenticatorData.aaguid`, optional `fwVersion`, `pubKeyHash`, and any leaf extensions (such as the enterprise device serial number if committed in the leaf).
++            2. Reconstruct the leaf entry structure (`FidoMtcLogEntry`) binding `caId`, `serial`, `notBefore`, `notAfter`, `authenticatorData.aaguid`, optional `firmwareVersion`, `pubKeyHash`, and any leaf extensions (such as the enterprise device serial number if committed in the leaf).
 +            3. Compute the leaf hash from the reconstructed entry according to [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]]: <code>SHA-256(0x00 || FidoMtcLogEntry)</code>.
 +            4. Evaluate the Merkle inclusion proof using the leaf hash and `mtcProof` to derive the calculated root hash.
 +            5. Verify that the calculated root hash matches an acceptable [=attestation trust path|trust anchor=] root hash established for `caId` (e.g., published in FIDO MDS3 `mtcTrustAnchors`).
@@ -251,12 +251,19 @@ index 70e98e0..fd42f74 100644
 +::
 +    1. If `mtc-debug` is [TRUE] in the authenticator extension inputs:
 +        1. Let |pubKey| be the canonical CBOR-encoded COSE_Key representation of the authenticator's active attestation public key.
-+        2. If Enterprise Attestation was requested and granted for this operation:
++        2. Let |output| be a new CBOR map with `pubKey` set to |pubKey|.
++        3. If Enterprise Attestation was requested and granted for this operation:
 +            1. Let |serial| be the device serial number text string.
-+            2. Return an authenticator extension output map containing `pubKey` set to |pubKey| and `deviceSerial` set to |serial|.
-+        3. Otherwise:
-+            1. Return an authenticator extension output map containing `pubKey` set to |pubKey|.
-+            2. The authenticator MUST NOT include `deviceSerial` if Enterprise Attestation was not granted.
++            2. Set <code>|output|["deviceSerial"] = |serial|</code>.
++        4. Otherwise:
++            1. The authenticator MUST NOT include `deviceSerial` if Enterprise Attestation was not granted.
++        5. If the authenticator is configured to emit diagnostic manifest and inclusion proof data (e.g. to support autonomous offline verification in proof-less `mtcKeyRef` environments):
++            1. If known to the authenticator, set <code>|output|["notBefore"]</code> to the earliest Unix timestamp at which the key is valid.
++            2. If known to the authenticator, set <code>|output|["notAfter"]</code> to the Unix timestamp at which the key expires.
++            3. If the authenticator reports a firmware version in [[!FIDO-CTAP]] `authenticatorGetInfo` (parameter `0x0E`), set <code>|output|["firmwareVersion"]</code> to that unsigned integer.
++            4. If the authenticator maintains the Merkle inclusion proof for `serial`, set <code>|output|["mtcProof"]</code> to the binary RFC 9162 inclusion proof byte array.
++            5. If the authenticator maintains the trust anchor or landmark subtree root hash, set <code>|output|["rootHash"]</code> to that 32-byte root hash.
++        6. Return |output| as the authenticator extension output.
 +
 +: Authenticator extension output
 +:: A CBOR map conforming to the following CDDL:
@@ -268,7 +275,12 @@ index 70e98e0..fd42f74 100644
 +
 +    MtcDebugAuthOutput = {
 +        pubKey: bytes,
-+        ? deviceSerial: text
++        ? deviceSerial: text,
++        ? notBefore: uint,
++        ? notAfter: uint,
++        ? firmwareVersion: uint,
++        ? mtcProof: bytes,
++        ? rootHash: bytes
 +    }
 +    ```
 +
@@ -277,9 +289,15 @@ index 70e98e0..fd42f74 100644
 +    1. In {{CredentialsContainer/create()}}, if `options.publicKey.extensions.mtcDebug` is [TRUE]:
 +        1. Include `mtc-debug: true` in the authenticator extension inputs when invoking the authenticator.
 +        2. Upon receiving the authenticator response, if the authenticator data contains an extension output for `mtc-debug`:
-+            1. Set `clientExtensionResults.mtcDebug` to a dictionary containing:
-+                - `pubKey`: the `pubKey` byte array from the authenticator extension output.
-+                - `deviceSerial`: the `deviceSerial` string, if present.
++            1. Let |rawOutput| be the decoded map for `mtc-debug`.
++            2. Set `clientExtensionResults.mtcDebug` to a dictionary containing:
++                - `pubKey`: <code>|rawOutput|["pubKey"]</code>.
++                - `deviceSerial`: <code>|rawOutput|["deviceSerial"]</code>, if present.
++                - `notBefore`: <code>|rawOutput|["notBefore"]</code>, if present.
++                - `notAfter`: <code>|rawOutput|["notAfter"]</code>, if present.
++                - `firmwareVersion`: <code>|rawOutput|["firmwareVersion"]</code>, if present.
++                - `mtcProof`: <code>|rawOutput|["mtcProof"]</code>, if present.
++                - `rootHash`: <code>|rawOutput|["rootHash"]</code>, if present.
 +
 +: Client extension output
 +::
@@ -287,6 +305,11 @@ index 70e98e0..fd42f74 100644
 +    dictionary MtcDebugExtensionOutput {
 +        required ArrayBuffer pubKey;
 +        DOMString deviceSerial;
++        unsigned long long notBefore;
++        unsigned long long notAfter;
++        unsigned long firmwareVersion;
++        ArrayBuffer mtcProof;
++        ArrayBuffer rootHash;
 +    };
 +
 +    partial dictionary AuthenticationExtensionsClientOutputs {
@@ -303,6 +326,21 @@ index 70e98e0..fd42f74 100644
 +
 +        : <dfn>deviceSerial</dfn>
 +        :: An OPTIONAL text string representing the physical hardware serial number. This member MUST be present if and only if Enterprise Attestation was granted for the registration ceremony.
++
++        : <dfn>notBefore</dfn>
++        :: An OPTIONAL unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.
++
++        : <dfn>notAfter</dfn>
++        :: An OPTIONAL unsigned integer Unix timestamp representing the expiration time of the attestation key.
++
++        : <dfn>firmwareVersion</dfn>
++        :: An OPTIONAL unsigned integer representing the authenticator firmware version, formatted in accordance with parameter `0x0E` (`firmwareVersion`) in CTAP 2.3 `authenticatorGetInfo` [[!FIDO-CTAP]].
++
++        : <dfn>mtcProof</dfn>
++        :: An OPTIONAL byte array containing the binary Merkle inclusion proof formatted in accordance with [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]].
++
++        : <dfn>rootHash</dfn>
++        :: An OPTIONAL 32-byte array containing the expected Landmark or Trust Anchor Merkle root hash.
 +    </div>
  
  

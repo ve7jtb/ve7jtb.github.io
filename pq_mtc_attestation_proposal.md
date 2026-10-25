@@ -69,7 +69,7 @@ Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/do
 ```mermaid
 flowchart TB
     subgraph Vendor["Authenticator Vendor (MTC CA)"]
-        Log["Append-Only Batch Key Log\nMTCLogEntry[i] = { serial, validity,\nSHA-256(pubKey), aaguid, fwVersion }"]
+        Log["Append-Only Batch Key Log\nMTCLogEntry[i] = { serial, validity,\nSHA-256(pubKey), aaguid, firmwareVersion }"]
         Tree["Merkle Tree [0..end)\n32-byte Landmark SubtreeHash"]
         Log --> Tree
     end
@@ -79,8 +79,8 @@ flowchart TB
     end
 
     subgraph Formats["Two CTAP2 / WebAuthn Formats"]
-        MTC["fmt: 'mtcl' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}"]
-        MTCC["fmt: 'mtc' (MDS Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, fwVersion?, mtcProof }\n}\n(Saves 1.3–2.7 KB on wire!)"]
+        MTC["fmt: 'mtcl' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, firmwareVersion?, mtcProof }\n}"]
+        MTCC["fmt: 'mtc' (MDS Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, firmwareVersion?, mtcProof }\n}\n(Saves 1.3–2.7 KB on wire!)"]
     end
 
     subgraph RP["WebAuthn Relying Party Verification"]
@@ -127,7 +127,7 @@ mtcEntryDesc = {
     serial: uint,             ; uint64: (log_number << 48) | index
     notBefore: uint,          ; uint64 Unix epoch seconds
     notAfter: uint,           ; uint64 Unix epoch seconds
-    ? fwVersion: uint,        ; Optional firmware version (replaces id-fido-gen-ce-fw-version)
+    ? firmwareVersion: uint,  ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
 }                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof
 ```
@@ -229,7 +229,7 @@ Given `(fmt, attStmt, authenticatorData, clientDataHash)`:
    - Check that `mtcCert.serial` is not within any `[minSerial, maxSerial]` range in `mtcTrustAnchor.revokedSerialRanges`.
 6. **Reconstruct Leaf & Verify Merkle Inclusion Proof (`draft-ietf-plants-merkle-tree-certs` §6.2 Steps 4–6):**
    - Compute `pubKeyHash = SHA-256(pubKey)`.
-   - Reconstruct `FidoMtcLogEntry` from `(mtcCert.caId, mtcCert.serial, mtcCert.notBefore, mtcCert.notAfter, authenticatorData.aaguid, mtcCert.fwVersion, pubKeyHash, mtcProof.extensions)`.
+   - Reconstruct `FidoMtcLogEntry` from `(mtcCert.caId, mtcCert.serial, mtcCert.notBefore, mtcCert.notAfter, authenticatorData.aaguid, mtcCert.firmwareVersion, pubKeyHash, mtcProof.extensions)`.
    - Compute `expectedSubtreeHash` using RFC 9162 §2.1.3.2 over `(index = mtcCert.serial & 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)`.
    - Verify that `(mtcProof.start, mtcProof.end, expectedSubtreeHash)` matches an active landmark entry in `mtcTrustAnchor.trustedSubtrees` (or, if `mtcProof.signatures` is non-empty, satisfies `mtcTrustAnchor.quorum` over `mtcTrustAnchor.cosigners`).
    - **Proof-less `mtcKeyRef` (`"mtc"` only, §8.6):** if `mtcCert` has no `mtcProof`, skip this step. In step 5, use the matched `MtcBatchKeyEntry`'s `notBefore` / `notAfter` in place of `mtcCert`'s. This is permitted only if the RP verified the signature (or `rootHash`) over the whole `mtcTrustAnchor.batchKeys` table when it loaded the table. Otherwise fail verification.

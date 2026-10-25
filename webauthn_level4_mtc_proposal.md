@@ -80,7 +80,7 @@ mtcEntryDesc = {
     serial: uint,                     ; Log entry serial number = (logNumber << 48) | index
     notBefore: uint,                  ; Unix timestamp (seconds)
     notAfter: uint,                   ; Unix timestamp (seconds)
-    ? fwVersion: uint,                ; Optional firmware version integer
+    ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
 }
 
@@ -134,6 +134,11 @@ partial dictionary AuthenticationExtensionsClientOutputs {
 dictionary MtcDebugExtensionOutput {
     required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
     DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
+    unsigned long long   notBefore;       // Unix timestamp (seconds)
+    unsigned long long   notAfter;        // Unix timestamp (seconds)
+    unsigned long        firmwareVersion; // CTAP 2.3 parameter 0x0E
+    ArrayBuffer          mtcProof;        // RFC 9162 Merkle inclusion proof
+    ArrayBuffer          rootHash;        // 32-byte Landmark / Trust Anchor root hash
 };
 ```
 
@@ -152,9 +157,12 @@ $$extension-output //= (
 
 MtcDebugExtensionOutput = {
     pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
-    ? deviceSerial: tstr / uint       ; OPTIONAL: Device serial number.
-                                      ; MUST be present IF AND ONLY IF Enterprise
-                                      ; Attestation (0x0A = 1 or 2) is active.
+    ? deviceSerial: tstr / uint,      ; OPTIONAL: Device serial number (Enterprise only)
+    ? notBefore: uint,                ; OPTIONAL: Earliest Unix timestamp at which key is valid
+    ? notAfter: uint,                 ; OPTIONAL: Key expiration Unix timestamp
+    ? firmwareVersion: uint,          ; OPTIONAL: Authenticator firmware version (CTAP 2.3 0x0E)
+    ? mtcProof: bytes,                ; OPTIONAL: Binary RFC 9162 Merkle inclusion proof
+    ? rootHash: bytes                 ; OPTIONAL: 32-byte expected Landmark/Trust Anchor root hash
 }
 ```
 
@@ -162,7 +170,7 @@ MtcDebugExtensionOutput = {
 
 #### Client (Browser/Platform) Processing:
 - In `navigator.credentials.create()`, if `extensions.mtcDebug === true`, pass `mtc-debug: true` into CTAP2 `authenticatorMakeCredential`.
-- Upon receiving the response, parse `authenticatorData.extensions["mtc-debug"]` and expose it in `clientExtensionResults.mtcDebug`.
+- Upon receiving the response, parse `authenticatorData.extensions["mtc-debug"]` and expose `pubKey`, `deviceSerial`, `notBefore`, `notAfter`, `firmwareVersion`, `mtcProof`, and `rootHash` in `clientExtensionResults.mtcDebug`.
 
 #### Authenticator Processing:
 1. If `mtc-debug` is requested:
@@ -170,9 +178,11 @@ MtcDebugExtensionOutput = {
    - Include the active attestation `pubKey` (batch key if non-enterprise, single-device key if enterprise).
    - If Enterprise Attestation is active (`0x0A = 1` or `2`), include `deviceSerial`.
    - **Privacy Gate:** If Enterprise Attestation is **not** active, the authenticator **MUST NOT** include `deviceSerial`.
+   - **Offline Manifest & Diagnostic Mode Support:** If configured for diagnostic output or autonomous offline verification in proof-less `mtcKeyRef` environments, include `notBefore`, `notAfter`, `firmwareVersion` (matching parameter `0x0E` in `authenticatorGetInfo`), `mtcProof`, and `rootHash`.
 
 #### Relying Party / Verifier Processing:
 - Test fixtures and automated certification suites inspect `mtcDebug.pubKey` to perform immediate offline cryptographic verification of `attStmt.sig` without connecting to external MDS3 infrastructure.
+- In proof-less `mtcKeyRef` environments, verifiers use `notBefore`, `notAfter`, `firmwareVersion`, and `pubKey` from `mtcDebug` to reconstruct the leaf preimage, verify the inclusion proof against `rootHash`, and authenticate the device completely offline.
 
 ---
 
