@@ -414,6 +414,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "How I failed to explain this to Dirk — and why I don't want to have to explain it again to $2^8$ people (a Merkle joke, I hope you may get it by the end).",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "chromium_mtc_debug_pull_request": {
+        "title": "Chromium Pull Request: WebAuthn Level 4 mtcDebug (mtc-debug) Extension & Enterprise Attestation (EP 1/2) Privacy Gate",
+        "badges": [
+            ("Chromium HEAD (4f9f0d6afb)", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("feat/webauthn-l4-mtc-debug", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("mtcDebug & MtcDebugExtensionOutputJSON", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("EP 1/2 Privacy Gate for deviceSerial", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Pull request / Gerrit CL against Chromium HEAD (4f9f0d6afb) implementing the W3C WebAuthn Level 4 §10.2.1 mtcDebug registration extension, toJSON() Base64URL serialization, proof-less manifest verification fields, and dual-layer Enterprise Attestation (EP 1 or 2) privacy enforcement across Blink, Mojo IPC, content/browser, and device/fido.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 

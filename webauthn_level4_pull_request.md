@@ -14,11 +14,12 @@ Pull request against the **W3C WebAuthentication Working Group [Level 4 Editor's
 >   3. **IANA Registrations** in §11: Formal entries in WebAuthn Attestation Statement Format Identifiers and Extension Identifiers registries.
 
 > [!TIP]
-> **Live W3C Level 4 Specification Review Copy:**  
-> A complete, fully cross-linked review copy of the W3C WebAuthentication Level 4 Editor's Draft incorporating this pull request is published at **[webauthn_level4_review.html](./webauthn_level4_review.html)**. Direct jump links:
+> **Live W3C Level 4 Specification Review Copy & Companion Chromium PR:**  
+> A complete, fully cross-linked review copy of the W3C WebAuthentication Level 4 Editor's Draft incorporating this pull request is published at **[webauthn_level4_review.html](./webauthn_level4_review.html)**, alongside the companion **[Chromium Pull Request (`feat/webauthn-l4-mtc-debug`)](./chromium_mtc_debug_pull_request.html)**. Direct jump links:
 > - [§8.10 Merkle Tree Certificate Attestation Statement Format (`mtc`)](./webauthn_level4_review.html#sctn-mtc-attestation)
 > - [§10.2.1 MTC Debug Extension (`mtcDebug`)](./webauthn_level4_review.html#sctn-mtc-debug-extension)
 > - [§11.2 IANA Registrations](./webauthn_level4_review.html#sctn-att-fmt-reg)
+> - [Chromium Pull Request (`mtcDebug` & `EP 1/2` Privacy Gate)](./chromium_mtc_debug_pull_request.html)
 
 ---
 

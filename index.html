@@ -626,6 +626,15 @@
           <span>View W3C Pull Request (HEAD 0c50bd0)</span>
           <span>&rarr;</span>
         </a>
+        <a href="./chromium_mtc_debug_pull_request.html"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 transition shadow-sm">
+          <span>View Chromium Pull Request (HEAD 4f9f0d6afb)</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./chromium_mtc_debug_pull_request.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+          <span>Chromium PR (.md)</span>
+        </a>
         <a href="./webauthn_level4_mtc_proposal.html"
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
           <span>Read Proposal Analysis</span>
@@ -686,6 +695,97 @@
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
               View rendered WebIDL dictionaries, authenticator CDDL, and client processing algorithms in the Level 4 review copy.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Pull Request: Chromium HEAD mtcDebug Extension & EP 1/2 Privacy Gate -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Chromium Pull Request / CL
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Base: HEAD (4f9f0d6afb)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Branch: feat/webauthn-l4-mtc-debug
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            EP 1/2 Privacy Gate for deviceSerial
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./chromium_mtc_debug_pull_request.html" class="hover:underline">
+            Chromium Pull Request: WebAuthn Level 4 <code>mtcDebug</code> (<code>mtc-debug</code>) Extension &amp; Enterprise Attestation (<code>EP</code> 1/2) Privacy Gate
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Full implementation against <strong>Chromium <code>HEAD</code> (<code>4f9f0d6afb</code>)</strong> on branch <code>feat/webauthn-l4-mtc-debug</code> (<code>27 files changed, +474 / -5 lines</code>). Implements the WebAuthn Level 4 §10.2.1 <strong><code>mtcDebug</code></strong> registration extension across Blink WebIDL (<code>MtcDebugExtensionOutput</code> &amp; <code>MtcDebugExtensionOutputJSON</code>), <code>PublicKeyCredential.toJSON()</code> Base64URL serialization, Mojo IPC (<code>authenticator.mojom</code>), <code>content/browser/webauth</code>, and <code>device/fido</code> CTAP2 CBOR parsing—including dual-layer <strong>Enterprise Attestation (<code>EP 1</code> or <code>2</code>) privacy enforcement</strong> that cancels the ceremony with <code>NotAllowedError</code> if an authenticator returns <code>deviceSerial</code> when Enterprise Attestation was not requested.
+        </p>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./chromium_mtc_debug_pull_request.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full Chromium PR &amp; Unified Diff (HTML)</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./chromium_mtc_debug_pull_request.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+        <a href="./webauthn_level4_pull_request.html"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>Companion W3C Spec PR</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Deep-Link Cards into Report Sections -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          PR Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a href="./chromium_mtc_debug_pull_request.html#section-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              End-to-End Chromium Pipeline &amp; Build Verification
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Request/response flow across Blink, Mojo IPC, <code>AuthenticatorCommonImpl</code>, and <code>device/fido</code>, verified with zero warnings across <code>out/Default</code>.
+            </p>
+          </a>
+
+          <a href="./chromium_mtc_debug_pull_request.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–4</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              <code>EP</code> 1/2 Privacy Gate &amp; CBOR-to-JSON Mapping
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Dual-layer enforcement in <code>make_credential_request_handler.cc</code> and <code>authenticator_common_impl.cc</code> rejecting unsolicited <code>deviceSerial</code>, plus full CBOR/Mojo/WebIDL/JSON type matrix.
+            </p>
+          </a>
+
+          <a href="./chromium_mtc_debug_pull_request.html#section-6"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 5–6</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              27-File Breakdown &amp; Complete Unified Diff
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Full <code>+474 / -5</code> unified diff against <code>origin/main</code> (<code>4f9f0d6afb</code>) including WebIDL dictionaries, <code>json.cc</code>, and <code>public_key_credential_unittest.cc</code>.
             </p>
           </a>
         </div>

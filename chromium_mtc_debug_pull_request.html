@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chromium Pull Request: WebAuthn Level 4 mtcDebug (mtc-debug) Extension &amp; Enterprise Attestation (EP 1/2) Privacy Gate</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Chromium HEAD (4f9f0d6afb)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">feat/webauthn-l4-mtc-debug</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">mtcDebug &amp; MtcDebugExtensionOutputJSON</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">EP 1/2 Privacy Gate for deviceSerial</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./chromium_mtc_debug_pull_request.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      Chromium Pull Request: WebAuthn Level 4 mtcDebug (mtc-debug) Extension &amp; Enterprise Attestation (EP 1/2) Privacy Gate
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Pull request / Gerrit CL against Chromium HEAD (4f9f0d6afb) implementing the W3C WebAuthn Level 4 §10.2.1 mtcDebug registration extension, toJSON() Base64URL serialization, proof-less manifest verification fields, and dual-layer Enterprise Attestation (EP 1 or 2) privacy enforcement across Blink, Mojo IPC, content/browser, and device/fido.
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Pull Request Metadata, Commits &amp; Build Verification</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Architecture &amp; End-to-End Pipeline Across Chromium Layers</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Enterprise Attestation (<code>EP</code> 1 or 2) Privacy Gate for <code>deviceSerial</code></div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">CTAP2 CBOR to WebIDL &amp; <code>toJSON()</code> Translation Reference</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Layer-by-Layer Summary of Modified Files</div>
+        </a>
+        <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 6</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Complete Unified Diff Against Chromium <code>origin/main</code> (<code>4f9f0d6afb</code>)</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Pull Request Metadata, Commits &amp; Build Verification</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#11-commit-breakdown-on-featwebauthn-l4-mtc-debug" class="hover:underline">&sect;1.1 Commit Breakdown on <code>feat/webauthn-l4-mtc-debug</code></a></div>
+            <div><a href="#12-build-test-verification-checklist-outdefault" class="hover:underline">&sect;1.2 Build &amp; Test Verification Checklist (<code>out/Default</code>)</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Architecture &amp; End-to-End Pipeline Across Chromium Layers</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-why-chromium-needs-mtcdebug-support" class="hover:underline">&sect;2.1 Why Chromium Needs <code>mtcDebug</code> Support</a></div>
+            <div><a href="#22-end-to-end-request-response-flow-in-chromium" class="hover:underline">&sect;2.2 End-to-End Request &amp; Response Flow in Chromium</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Enterprise Attestation (<code>EP</code> 1 or 2) Privacy Gate for <code>deviceSerial</code></a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#31-threat-model-unsolicited-hardware-serial-tracking" class="hover:underline">&sect;3.1 Threat Model: Unsolicited Hardware Serial Tracking</a></div>
+            <div><a href="#32-dual-layer-enforcement-in-chromium" class="hover:underline">&sect;3.2 Dual-Layer Enforcement in Chromium</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. CTAP2 CBOR to WebIDL &amp; <code>toJSON()</code> Translation Reference</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#41-field-by-field-type-mapping-across-all-layers" class="hover:underline">&sect;4.1 Field-by-Field Type Mapping Across All Layers</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Layer-by-Layer Summary of Modified Files</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#51-blink-webidl-v8-bindings-third_partyblinkrenderer" class="hover:underline">&sect;5.1 Blink WebIDL &amp; V8 Bindings (<code>third_party/blink/renderer/</code>)</a></div>
+            <div><a href="#52-blink-credential-management-tojson-third_partyblinkrenderermodulescredentialmanagement" class="hover:underline">&sect;5.2 Blink Credential Management &amp; <code>toJSON()</code> (<code>third_party/blink/renderer/modules/credentialmanagement/</code>)</a></div>
+            <div><a href="#53-mojo-ipc-content-browser-third_partyblinkpublicmojomwebauthn-contentbrowserwebauth" class="hover:underline">&sect;5.3 Mojo IPC &amp; Content Browser (<code>third_party/blink/public/mojom/webauthn/</code> &amp; <code>content/browser/webauth/</code>)</a></div>
+            <div><a href="#54-ctap2-cbor-request-parsing-validation-devicefido" class="hover:underline">&sect;5.4 CTAP2 CBOR Request, Parsing &amp; Validation (<code>device/fido/</code>)</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-6" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">6. Complete Unified Diff Against Chromium <code>origin/main</code> (<code>4f9f0d6afb</code>)</a>
+
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Pull Request Metadata, Commits &amp; Build Verification</h2>
+      </div>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">markdown</div><pre class="text-xs leading-relaxed"><code>Title: [webauthn] Implement WebAuthn Level 4 mtcDebug extension and EP 1/2 privacy gate for deviceSerial
+Base: origin/main (4f9f0d6afb) &lt;- Head: feat/webauthn-l4-mtc-debug (decd73629a)</code></pre></div>
+<h3 id="11-commit-breakdown-on-featwebauthn-l4-mtc-debug" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.1 Commit Breakdown on <code>feat/webauthn-l4-mtc-debug</code></h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Commit Hash</th>
+<th class="p-3 font-semibold align-bottom text-left">Subject</th>
+<th class="p-3 font-semibold align-bottom text-center">Files Modified</th>
+<th class="p-3 font-semibold align-bottom text-center">Lines Changed</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>a489cfff2f</code></strong></td>
+<td class="p-3 align-top text-left"><code>[webauthn] Implement WebAuthn Level 4 mtcDebug registration extension</code></td>
+<td class="p-3 align-top text-center">23 files</td>
+<td class="p-3 align-top text-center"><code>+390 / -0</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>decd73629a</code></strong></td>
+<td class="p-3 align-top text-left"><code>[webauthn] Enforce EP 1 or 2 requirement for mtcDebug deviceSerial</code></td>
+<td class="p-3 align-top text-center">6 files</td>
+<td class="p-3 align-top text-center"><code>+111 / -32</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Combined Diff</strong></td>
+<td class="p-3 align-top text-left"><strong><code>origin/main..feat/webauthn-l4-mtc-debug</code></strong></td>
+<td class="p-3 align-top text-center"><strong>27 files</strong></td>
+<td class="p-3 align-top text-center"><strong><code>+474 / -5</code></strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="12-build-test-verification-checklist-outdefault" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.2 Build &amp; Test Verification Checklist (<code>out/Default</code>)</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>[x] <strong><code>device/fido</code> Component:</strong> Compiled <code>mtc_debug_response.{cc,h}</code>, <code>ctap_make_credential_request.cc</code>, <code>device_response_converter.cc</code>, and <code>make_credential_request_handler.cc</code> with zero warnings (<code>-Werror</code>).</li>
+<li>[x] <strong>Mojo IPC Bindings (<code>//third_party/blink/public/mojom:mojom_platform</code>):</strong> Generated C++ and Blink Mojo bindings for <code>blink::mojom::MtcDebugResponse</code> and <code>PublicKeyCredentialCreationOptions::mtc_debug</code>.</li>
+<li>[x] <strong>Blink V8 IDL Bindings (<code>//third_party/blink/renderer/bindings:check_generated_file_list</code> &amp; <code>modules/v8:v8</code>):</strong> Generated <code>v8_mtc_debug_extension_output.{cc,h}</code> and <code>v8_mtc_debug_extension_output_js_on.{cc,h}</code>, verified against <code>generated_in_modules.gni</code> (<code>1,780 / 1,780</code> targets).</li>
+<li>[x] <strong>Blink Credential Management &amp; Content Browser (<code>libblink_modules.dylib</code> &amp; <code>libcontent.dylib</code>):</strong> Compiled and linked <code>authentication_credentials_container.cc</code>, <code>credential_manager_type_converters.cc</code>, <code>json.cc</code>, <code>public_key_credential.cc</code>, and <code>authenticator_common_impl.cc</code> (<code>1,928 / 1,928</code> targets).</li>
+<li>[x] <strong>Blink Unit Tests (<code>public_key_credential_unittest.o</code>):</strong> Compiled <code>PublicKeyCredentialTest.AuthenticationExtensionsClientOutputsToJSON</code> covering both full proof-less manifest mode (<code>pubKey</code>, <code>deviceSerial</code>, <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, <code>mtcProof</code>, <code>rootHash</code>) and minimal batch mode (<code>pubKey</code> only).</li>
+</ul>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Architecture &amp; End-to-End Pipeline Across Chromium Layers</h2>
+      </div>
+<h3 id="21-why-chromium-needs-mtcdebug-support" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Why Chromium Needs <code>mtcDebug</code> Support</h3>
+<p class="text-sm my-2">In W3C WebAuthn Level 4 §8.10 (<code>fmt: "mtc"</code>), standard Merkle Tree Certificate attestation statements omit the multi-kilobyte post-quantum attestation public key (<code>pubKey</code>) from <code>attStmt</code> so that <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> responses fit within the unfragmented <strong>$7,609\text{ B}$ USB HID transport limit</strong>. In production, Relying Parties resolve the attestation public key out-of-band from the FIDO Metadata Service (MDS3) or a vendor Enterprise manifest.</p>
+<p class="text-sm my-2">However, <strong>automated conformance suites, hardware test fixtures, and offline developer environments</strong> need in-band access to the authenticator's active attestation public key, validity window, firmware version, and Merkle inclusion proof—especially when the authenticator emits a compact proof-less manifest reference (<code>mtcKeyRef = { caId, serial }</code>).</p>
+<p class="text-sm my-2">Because <strong>CTAP2 authenticators only include an extension in <code>authenticatorData.extensions</code> if the platform explicitly forwards that extension identifier in <code>authenticatorMakeCredential</code> parameter <code>0x06</code> (<code>extensions</code>)</strong>, Chromium must explicitly recognize <code>mtcDebug: true</code> in the WebAuthn JS API, translate it to <code>"mtc-debug": true</code> over CTAP2 CBOR, validate the response, and map the result back to <code>getClientExtensionResults()</code> and <code>toJSON()</code>.</p>
+<h3 id="22-end-to-end-request-response-flow-in-chromium" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 End-to-End Request &amp; Response Flow in Chromium</h3>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">sequenceDiagram
+    autonumber
+    participant RP as Relying Party JS&lt;br/&gt;(navigator.credentials.create)
+    participant Blink as Blink Renderer&lt;br/&gt;(credentialmanagement/)
+    participant Browser as Content Browser&lt;br/&gt;(AuthenticatorCommonImpl)
+    participant Fido as device/fido&lt;br/&gt;(MakeCredentialRequestHandler)
+    participant Auth as CTAP 2.3 Authenticator&lt;br/&gt;(USB HID / NFC / BLE)
+
+    RP-&gt;&gt;Blink: create({ publicKey: { attestation, extensions: { mtcDebug: true } } })
+    Blink-&gt;&gt;Blink: Convert AuthenticationExtensionsClientInputs -&gt; mojom::PublicKeyCredentialCreationOptions (mtc_debug = true)
+    Blink-&gt;&gt;Browser: Mojo IPC: Authenticator::MakeCredential(options)
+    Browser-&gt;&gt;Browser: Record RequestExtension::kMtcDebug &amp; set ctap_request.mtc_debug = true
+    Browser-&gt;&gt;Fido: Dispatch CtapMakeCredentialRequest (attestation_preference, mtc_debug = true)
+    Fido-&gt;&gt;Auth: CTAP2 authenticatorMakeCredential (0x01)&lt;br/&gt;0x06 extensions: {"mtc-debug": true}&lt;br/&gt;0x0A enterpriseAttestation: 1 or 2 (if EP requested)
+    Auth--&gt;&gt;Fido: CTAP2 Response (0x00)&lt;br/&gt;authData.extensions["mtc-debug"] = { pubKey, ?deviceSerial, ?notBefore, ... }
+    Fido-&gt;&gt;Fido: ValidateResponseExtensions() &amp; ResponseValid()&lt;br/&gt;Check: if deviceSerial present, was EP (1 or 2) requested?
+    alt deviceSerial present WITHOUT EP 1 or 2
+        Fido--&gt;&gt;Browser: FidoReturnCode::kAuthenticatorResponseInvalid
+        Browser--&gt;&gt;Blink: AuthenticatorStatus::NOT_ALLOWED_ERROR
+        Blink--&gt;&gt;RP: Reject Promise with DOMException (NotAllowedError)
+    else Valid Response (no deviceSerial, or EP 1/2 was requested)
+        Fido--&gt;&gt;Browser: AuthenticatorMakeCredentialResponse (mtc_debug)
+        Browser-&gt;&gt;Browser: CreateMakeCredentialResponse() defense-in-depth EP 1/2 check
+        Browser--&gt;&gt;Blink: mojom::MakeCredentialAuthenticatorResponse (mtc_debug)
+        Blink-&gt;&gt;Blink: TypeConverter -&gt; MtcDebugExtensionOutput (ArrayBuffers)
+        Blink--&gt;&gt;RP: Resolve PublicKeyCredential&lt;br/&gt;cred.getClientExtensionResults().mtcDebug&lt;br/&gt;cred.toJSON().clientExtensionResults.mtcDebug (Base64URL)
+    end</pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Enterprise Attestation (<code>EP</code> 1 or 2) Privacy Gate for <code>deviceSerial</code></h2>
+      </div>
+<h3 id="31-threat-model-unsolicited-hardware-serial-tracking" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.1 Threat Model: Unsolicited Hardware Serial Tracking</h3>
+<p class="text-sm my-2">A hardware serial number (<code>deviceSerial</code>) uniquely and permanently identifies an individual physical security key across Relying Parties. Under CTAP 2.3 (<code>authenticatorMakeCredential</code> parameter <code>0x0A</code>, <code>enterpriseAttestation</code>) and W3C WebAuthn Level 4 §10.2.1:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The browser only sets CTAP parameter <code>0x0A</code> (<code>ep = 1</code> for vendor-facilitated <code>kEnterpriseIfRPListedOnAuthenticator</code>, or <code>ep = 2</code> for platform-managed <code>kEnterpriseApprovedByBrowser</code>) when the Relying Party requested <code>attestation: "enterprise"</code> <strong>and</strong> browser policy/user consent permitted Enterprise Attestation.</li>
+<li>If a buggy or non-compliant authenticator returns <code>deviceSerial</code> inside <code>authenticatorData.extensions["mtc-debug"]</code> during a standard registration (<code>attestation: "none"</code>, <code>"indirect"</code>, <code>"direct"</code>, or <code>"enterprise"</code> downgraded by the browser), forwarding that output to JavaScript would leak a persistent cross-origin hardware identifier without enterprise authorization.</li>
+</ul>
+<h3 id="32-dual-layer-enforcement-in-chromium" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Dual-Layer Enforcement in Chromium</h3>
+<p class="text-sm my-2">To guarantee that <code>deviceSerial</code> can <strong>never</strong> reach the renderer unless the browser explicitly requested <code>EP = 1</code> or <code>EP = 2</code> over CTAP, this pull request enforces the check at two independent layers and cancels the ceremony immediately if violated:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>CTAP Transport Validation Layer (<code>device/fido/make_credential_request_handler.cc</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In <strong><code>ValidateResponseExtensions()</code></strong> (lines 312–331), when inspecting the raw <code>authenticatorData.extensions</code> CBOR map for <code>"mtc-debug"</code>, Chromium checks whether the <code>"deviceSerial"</code> key exists in the CBOR map (regardless of its CBOR value type).</li>
+<li>In <strong><code>ResponseValid()</code></strong> (lines 370–383), Chromium also checks the parsed <code>response.mtc_debug-&gt;device_serial.has_value()</code>.</li>
+<li>In both places, Chromium verifies:<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cpp</div><pre class="text-xs leading-relaxed"><code>const bool enterprise_requested =
+    request.attestation_preference ==
+        AttestationConveyancePreference::
+            kEnterpriseIfRPListedOnAuthenticator ||
+    request.attestation_preference ==
+        AttestationConveyancePreference::kEnterpriseApprovedByBrowser;</code></pre></div></li>
+<li>If <code>deviceSerial</code> is present and <code>!enterprise_requested</code>, <code>ResponseValid()</code> logs an error via <code>FIDO_LOG(ERROR)</code> and returns <code>false</code>. The request handler immediately aborts with <code>FidoReturnCode::kAuthenticatorResponseInvalid</code>, cancelling the response before it leaves <code>device/fido</code>.</li>
+</ul></li>
+<li><strong>Browser Ceremony Layer (<code>content/browser/webauth/authenticator_common_impl.cc</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>As defense-in-depth (covering virtual authenticators or non-CTAP paths), <strong><code>CreateMakeCredentialResponse()</code></strong> (lines 3229–3248) inspects <code>req_state_-&gt;ctap_request</code> (<code>device::CtapMakeCredentialRequest::attestation_preference</code>).</li>
+<li>If <code>response_data.mtc_debug-&gt;device_serial.has_value()</code> is true when neither <code>kEnterpriseIfRPListedOnAuthenticator</code> (<code>EP 1</code>) nor <code>kEnterpriseApprovedByBrowser</code> (<code>EP 2</code>) was requested, <code>CreateMakeCredentialResponse()</code> returns <code>nullptr</code>.</li>
+<li><strong><code>OnRegisterResponse()</code></strong> (lines 2774–2783) detects the <code>nullptr</code> response and completes the request with <code>blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR</code>, rejecting the JavaScript <code>navigator.credentials.create()</code> promise with a <code>NotAllowedError</code> <code>DOMException</code>.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">CTAP2 CBOR to WebIDL &amp; <code>toJSON()</code> Translation Reference</h2>
+      </div>
+<h3 id="41-field-by-field-type-mapping-across-all-layers" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 Field-by-Field Type Mapping Across All Layers</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Field Name</th>
+<th class="p-3 font-semibold align-bottom text-left">CTAP2 CBOR (<code>"mtc-debug"</code> Map)</th>
+<th class="p-3 font-semibold align-bottom text-left"><code>device::MtcDebugResponse</code> (<code>device/fido</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left"><code>blink::mojom::MtcDebugResponse</code> (Mojo IPC)</th>
+<th class="p-3 font-semibold align-bottom text-left"><code>MtcDebugExtensionOutput</code> (<code>getClientExtensionResults()</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left"><code>MtcDebugExtensionOutputJSON</code> (<code>cred.toJSON()</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Required / Condition</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>pubKey</code></strong></td>
+<td class="p-3 align-top text-left"><code>bstr</code> (Major 2)<br/>Canonical <code>COSE_Key</code></td>
+<td class="p-3 align-top text-left"><code>std::vector&lt;uint8_t&gt; pub_key</code></td>
+<td class="p-3 align-top text-left"><code>array&lt;uint8&gt; pub_key</code></td>
+<td class="p-3 align-top text-left"><code>required ArrayBuffer pubKey</code></td>
+<td class="p-3 align-top text-left"><code>required Base64URLString pubKey</code></td>
+<td class="p-3 align-top text-left"><strong>Required</strong> in all <code>mtc-debug</code> outputs</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>deviceSerial</code></strong></td>
+<td class="p-3 align-top text-left"><code>tstr</code> (Major 3)<br/>UTF-8 string</td>
+<td class="p-3 align-top text-left"><code>std::optional&lt;std::string&gt; device_serial</code></td>
+<td class="p-3 align-top text-left"><code>string? device_serial</code></td>
+<td class="p-3 align-top text-left"><code>DOMString deviceSerial</code></td>
+<td class="p-3 align-top text-left"><code>DOMString deviceSerial</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — <strong>Strictly gated on CTAP <code>ep = 1</code> or <code>2</code></strong>; cancels ceremony if present without EP 1/2</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>notBefore</code></strong></td>
+<td class="p-3 align-top text-left"><code>uint</code> (Major 0)<br/>Unix epoch seconds</td>
+<td class="p-3 align-top text-left"><code>std::optional&lt;uint64_t&gt; not_before</code></td>
+<td class="p-3 align-top text-left"><code>uint64 not_before</code><br/><code>bool has_not_before</code></td>
+<td class="p-3 align-top text-left"><code>unsigned long long notBefore</code></td>
+<td class="p-3 align-top text-left"><code>unsigned long long notBefore</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — Required when <code>mtcCert</code> uses proof-less <code>mtcKeyRef</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>notAfter</code></strong></td>
+<td class="p-3 align-top text-left"><code>uint</code> (Major 0)<br/>Unix epoch seconds</td>
+<td class="p-3 align-top text-left"><code>std::optional&lt;uint64_t&gt; not_after</code></td>
+<td class="p-3 align-top text-left"><code>uint64 not_after</code><br/><code>bool has_not_after</code></td>
+<td class="p-3 align-top text-left"><code>unsigned long long notAfter</code></td>
+<td class="p-3 align-top text-left"><code>unsigned long long notAfter</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — Required when <code>mtcCert</code> uses proof-less <code>mtcKeyRef</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>firmwareVersion</code></strong></td>
+<td class="p-3 align-top text-left"><code>uint</code> (Major 0)<br/>CTAP 2.3 param <code>0x0E</code></td>
+<td class="p-3 align-top text-left"><code>std::optional&lt;uint32_t&gt; firmware_version</code></td>
+<td class="p-3 align-top text-left"><code>uint32 firmware_version</code><br/><code>bool has_firmware_version</code></td>
+<td class="p-3 align-top text-left"><code>unsigned long firmwareVersion</code></td>
+<td class="p-3 align-top text-left"><code>unsigned long firmwareVersion</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — Matches CTAP <code>authenticatorGetInfo</code> <code>0x0E</code> (<code>uint32</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcProof</code></strong></td>
+<td class="p-3 align-top text-left"><code>bstr</code> (Major 2)<br/>RFC 9162 inclusion proof</td>
+<td class="p-3 align-top text-left"><code>std::optional&lt;std::vector&lt;uint8_t&gt;&gt; mtc_proof</code></td>
+<td class="p-3 align-top text-left"><code>array&lt;uint8&gt;? mtc_proof</code></td>
+<td class="p-3 align-top text-left"><code>ArrayBuffer mtcProof</code></td>
+<td class="p-3 align-top text-left"><code>Base64URLString mtcProof</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — Supplied in-band when <code>mtcCert</code> uses proof-less <code>mtcKeyRef</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>rootHash</code></strong></td>
+<td class="p-3 align-top text-left"><code>bstr</code> (Major 2)<br/>32-byte Merkle root</td>
+<td class="p-3 align-top text-left"><code>std::optional&lt;std::vector&lt;uint8_t&gt;&gt; root_hash</code></td>
+<td class="p-3 align-top text-left"><code>array&lt;uint8&gt;? root_hash</code></td>
+<td class="p-3 align-top text-left"><code>ArrayBuffer rootHash</code></td>
+<td class="p-3 align-top text-left"><code>Base64URLString rootHash</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — Expected 32-byte Landmark or Trust Anchor root hash</td>
+</tr>
+</tbody></table></div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Why <code>firmwareVersion</code> Uses <code>uint32_t</code> / <code>unsigned long</code>:</strong> In CTAP 2.3 §6.4 (<code>authenticatorGetInfo</code>), parameter <code>0x0E</code> (<code>firmwareVersion</code>) is defined as an unsigned integer (<code>uint</code>) fitting in a 32-bit unsigned value (e.g., <code>0x00051405</code> = <code>332805</code> for v5.20.5). In <code>device_response_converter.cc</code>, Chromium validates <code>fw_it-&gt;second.is_unsigned()</code> and converts it safely via <code>base::checked_cast&lt;uint32_t&gt;(fw_it-&gt;second.GetUnsigned())</code>. Even if an authenticator's AAGUID remains stable across minor firmware updates, any change to <code>firmwareVersion</code> alters the hashed <code>FidoMtcLogEntry</code> leaf pre-image and therefore requires a new batch key entry in the MTC log.</p></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Layer-by-Layer Summary of Modified Files</h2>
+      </div>
+<h3 id="51-blink-webidl-v8-bindings-third_partyblinkrenderer" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Blink WebIDL &amp; V8 Bindings (<code>third_party/blink/renderer/</code>)</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><a href="https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/modules/credentialmanagement/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>mtc_debug_extension_output.idl</code></a> (New):</strong> Defines the <code>MtcDebugExtensionOutput</code> WebIDL dictionary returned inside <code>AuthenticationExtensionsClientOutputs</code> when calling <code>credential.getClientExtensionResults()</code>.</li>
+<li><strong><a href="https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/modules/credentialmanagement/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>mtc_debug_extension_output_json.idl</code></a> (New):</strong> Defines the <code>MtcDebugExtensionOutputJSON</code> WebIDL dictionary where binary fields (<code>pubKey</code>, <code>mtcProof</code>, <code>rootHash</code>) are typed as <code>Base64URLString</code>.</li>
+<li><strong><code>authentication_extensions_client_inputs.idl</code> &amp; <code>authentication_extensions_client_inputs_json.idl</code>:</strong> Adds <code>[RuntimeEnabled=WebAuthenticationMtcDebug] boolean mtcDebug;</code>.</li>
+<li><strong><code>authentication_extensions_client_outputs.idl</code> &amp; <code>authentication_extensions_client_outputs_json.idl</code>:</strong> Adds <code>[RuntimeEnabled=WebAuthenticationMtcDebug] MtcDebugExtensionOutput mtcDebug;</code> and <code>MtcDebugExtensionOutputJSON mtcDebug;</code>.</li>
+<li><strong><code>bindings/idl_in_modules.gni</code> &amp; <code>bindings/generated_in_modules.gni</code>:</strong> Registers the two new <code>.idl</code> files and four generated V8 binding files (<code>v8_mtc_debug_extension_output.{cc,h}</code> and <code>v8_mtc_debug_extension_output_js_on.{cc,h}</code>).</li>
+<li><strong><code>platform/runtime_enabled_features.json5</code>:</strong> Defines <code>WebAuthenticationMtcDebug</code> with <code>status: "experimental"</code>, enabling exposure under <code>--enable-experimental-web-platform-features</code> and in unit tests.</li>
+</ul>
+<h3 id="52-blink-credential-management-tojson-third_partyblinkrenderermodulescredentialmanagement" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.2 Blink Credential Management &amp; <code>toJSON()</code> (<code>third_party/blink/renderer/modules/credentialmanagement/</code>)</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>public_key_credential.cc</code>:</strong> Reports <code>"extension:mtcDebug"</code> in <code>PublicKeyCredential.getClientCapabilities()</code> when <code>WebAuthenticationMtcDebug</code> is enabled.</li>
+<li><strong><code>credential_manager_type_converters.{h,cc}</code> &amp; <code>authentication_credentials_container.cc</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Converts <code>extensions-&gt;mtcDebug()</code> on <code>PublicKeyCredentialCreationOptions</code> to <code>mojo_options-&gt;mtc_debug</code>.</li>
+<li>Implements <code>TypeConverter&lt;blink::MtcDebugExtensionOutput*, blink::mojom::blink::MtcDebugResponsePtr&gt;</code> and attaches the converted <code>MtcDebugExtensionOutput</code> in <code>OnMakePublicKeyCredentialComplete()</code>.</li>
+</ul></li>
+<li><strong><code>json.cc</code>:</strong> In <code>AuthenticationExtensionsClientOutputsToJSON()</code>, converts <code>in.mtcDebug()</code> into <code>MtcDebugExtensionOutputJSON</code>, base64url-encoding <code>pubKey</code>, <code>mtcProof</code>, and <code>rootHash</code> via <code>WebAuthnBase64UrlEncode()</code> and copying <code>deviceSerial</code>, <code>notBefore</code>, <code>notAfter</code>, and <code>firmwareVersion</code>.</li>
+<li><strong><code>public_key_credential_unittest.cc</code>:</strong> Extends <code>PublicKeyCredentialTest.AuthenticationExtensionsClientOutputsToJSON</code> with two <code>MtcDebugValues</code> test cases verifying round-trip <code>toJSON()</code> serialization for both full proof-less manifest outputs and minimal batch outputs.</li>
+</ul>
+<h3 id="53-mojo-ipc-content-browser-third_partyblinkpublicmojomwebauthn-contentbrowserwebauth" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.3 Mojo IPC &amp; Content Browser (<code>third_party/blink/public/mojom/webauthn/</code> &amp; <code>content/browser/webauth/</code>)</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>authenticator.mojom</code>:</strong> Adds <code>struct MtcDebugResponse</code>, <code>MtcDebugResponse? mtc_debug</code> on <code>MakeCredentialAuthenticatorResponse</code>, and <code>bool mtc_debug = false</code> on <code>PublicKeyCredentialCreationOptions</code>.</li>
+<li><strong><code>authenticator_common_impl.cc</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Adds <code>RequestExtension::kMtcDebug</code>.</li>
+<li>Sets <code>ctap_make_credential_request-&gt;mtc_debug = true</code> when <code>options-&gt;mtc_debug</code> is requested.</li>
+<li>Enforces the defense-in-depth <code>EP 1 or 2</code> requirement in <code>CreateMakeCredentialResponse()</code>, returning <code>nullptr</code> and completing the request with <code>NOT_ALLOWED_ERROR</code> in <code>OnRegisterResponse()</code> if <code>device_serial</code> is present without Enterprise Attestation.</li>
+</ul></li>
+</ul>
+<h3 id="54-ctap2-cbor-request-parsing-validation-devicefido" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.4 CTAP2 CBOR Request, Parsing &amp; Validation (<code>device/fido/</code>)</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>public/fido_constants.{h,cc}</code>:</strong> Defines <code>const char kExtensionMtcDebug[] = "mtc-debug";</code>.</li>
+<li><strong><code>mtc_debug_response.{h,cc}</code> (New) &amp; <code>BUILD.gn</code>:</strong> Defines <code>struct COMPONENT_EXPORT(DEVICE_FIDO) MtcDebugResponse</code> and adds it to <code>AuthenticatorMakeCredentialResponse</code>.</li>
+<li><strong><code>ctap_make_credential_request.{h,cc}</code>:</strong> Adds <code>bool mtc_debug = false;</code> and serializes <code>"mtc-debug": true</code> into the CTAP2 <code>extensions</code> map (parameter <code>0x06</code>).</li>
+<li><strong><code>device_response_converter.cc</code>:</strong> Implements <code>ParseMtcDebugResponse(const cbor::Value&amp;)</code> and extracts <code>"mtc-debug"</code> from <code>authenticatorData.extensions</code> (or top-level unsigned extensions map).</li>
+<li><strong><code>make_credential_request_handler.cc</code>:</strong> Updates <code>ValidateResponseExtensions()</code> and <code>ResponseValid()</code> to validate <code>"mtc-debug"</code> and reject any response containing <code>deviceSerial</code> when <code>request.attestation_preference</code> is neither <code>kEnterpriseIfRPListedOnAuthenticator</code> (<code>EP 1</code>) nor <code>kEnterpriseApprovedByBrowser</code> (<code>EP 2</code>).</li>
+</ul>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-6 -->
+    <!-- ===================================================================== -->
+    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Complete Unified Diff Against Chromium <code>origin/main</code> (<code>4f9f0d6afb</code>)</h2>
+      </div>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">diff</div><pre class="text-xs leading-relaxed"><code>diff --git a/content/browser/webauth/authenticator_common_impl.cc b/content/browser/webauth/authenticator_common_impl.cc
+index 9e4649349b..c1e2864d11 100644
+--- a/content/browser/webauth/authenticator_common_impl.cc
++++ b/content/browser/webauth/authenticator_common_impl.cc
+@@ -142,6 +142,7 @@ enum class RequestExtension {
+   kMinPINLength,
+   kCrossDeviceFallbackUrl,
+   kCmtgKey,
++  kMtcDebug,
+   kRemoteClientDataJSON,
+ };
+ 
+@@ -1502,6 +1503,10 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
+     req_state_-&gt;requested_extensions.insert(RequestExtension::kCmtgKey);
+     ctap_make_credential_request-&gt;cmtg_key = true;
+   }
++  if (options-&gt;mtc_debug) {
++    req_state_-&gt;requested_extensions.insert(RequestExtension::kMtcDebug);
++    ctap_make_credential_request-&gt;mtc_debug = true;
++  }
+   make_credential_options-&gt;large_blob_support = options-&gt;large_blob_enable;
+   ctap_make_credential_request-&gt;app_id_exclude = std::move(appid_exclude);
+   make_credential_options-&gt;is_off_the_record_context =
+@@ -2766,11 +2771,16 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
+     attestation_erasure = AttestationErasureOption::kIncludeAttestation;
+   }
+ 
+-  CompleteMakeCredentialRequest(
+-      blink::mojom::AuthenticatorStatus::SUCCESS,
+-      CreateMakeCredentialResponse(std::move(*response_data),
+-                                   *attestation_erasure),
+-      nullptr, Focus::kDoCheck);
++  auto response = CreateMakeCredentialResponse(std::move(*response_data),
++                                               *attestation_erasure);
++  if (!response) {
++    FIDO_LOG(ERROR) &lt;&lt; "Failed to create make credential response";
++    CompleteMakeCredentialRequest(
++        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr, nullptr);
++    return;
++  }
++  CompleteMakeCredentialRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
++                                std::move(response), nullptr, Focus::kDoCheck);
+ }
+ 
+ void AuthenticatorCommonImpl::OnSignResponse(
+@@ -3216,6 +3226,52 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
+               std::move(response_data.cmtg_key-&gt;signature);
+         }
+         break;
++      case RequestExtension::kMtcDebug:
++        if (response_data.mtc_debug) {
++          if (response_data.mtc_debug-&gt;device_serial.has_value()) {
++            const auto&amp; ctap_request =
++                std::get&lt;device::CtapMakeCredentialRequest&gt;(
++                    req_state_-&gt;ctap_request);
++            const bool enterprise_requested =
++                ctap_request.attestation_preference ==
++                    device::AttestationConveyancePreference::
++                        kEnterpriseIfRPListedOnAuthenticator ||
++                ctap_request.attestation_preference ==
++                    device::AttestationConveyancePreference::
++                        kEnterpriseApprovedByBrowser;
++            if (!enterprise_requested) {
++              FIDO_LOG(ERROR)
++                  &lt;&lt; "deviceSerial returned in mtc-debug, but Enterprise "
++                     "Attestation (EP 1 or 2) was not requested";
++              return nullptr;
++            }
++          }
++          response-&gt;mtc_debug = blink::mojom::MtcDebugResponse::New();
++          response-&gt;mtc_debug-&gt;pub_key =
++              std::move(response_data.mtc_debug-&gt;pub_key);
++          response-&gt;mtc_debug-&gt;device_serial =
++              std::move(response_data.mtc_debug-&gt;device_serial);
++          if (response_data.mtc_debug-&gt;not_before) {
++            response-&gt;mtc_debug-&gt;has_not_before = true;
++            response-&gt;mtc_debug-&gt;not_before =
++                *response_data.mtc_debug-&gt;not_before;
++          }
++          if (response_data.mtc_debug-&gt;not_after) {
++            response-&gt;mtc_debug-&gt;has_not_after = true;
++            response-&gt;mtc_debug-&gt;not_after =
++                *response_data.mtc_debug-&gt;not_after;
++          }
++          if (response_data.mtc_debug-&gt;firmware_version) {
++            response-&gt;mtc_debug-&gt;has_firmware_version = true;
++            response-&gt;mtc_debug-&gt;firmware_version =
++                *response_data.mtc_debug-&gt;firmware_version;
++          }
++          response-&gt;mtc_debug-&gt;mtc_proof =
++              std::move(response_data.mtc_debug-&gt;mtc_proof);
++          response-&gt;mtc_debug-&gt;root_hash =
++              std::move(response_data.mtc_debug-&gt;root_hash);
++        }
++        break;
+       case RequestExtension::kHMACSecret:
+         response-&gt;echo_hmac_create_secret = true;
+         response-&gt;hmac_create_secret = did_create_hmac_secret;
+@@ -3410,6 +3466,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
+       case RequestExtension::kLargeBlobEnable:
+       case RequestExtension::kCredBlob:
+       case RequestExtension::kMinPINLength:
++      case RequestExtension::kMtcDebug:
+         NOTREACHED();
+     }
+   }
+diff --git a/device/fido/BUILD.gn b/device/fido/BUILD.gn
+index 91f41520cc..85aa9b34b4 100644
+--- a/device/fido/BUILD.gn
++++ b/device/fido/BUILD.gn
+@@ -184,6 +184,8 @@ component("fido") {
+         "make_credential_request_handler.h",
+         "make_credential_task.cc",
+         "make_credential_task.h",
++        "mtc_debug_response.cc",
++        "mtc_debug_response.h",
+         "pin.cc",
+         "pin.h",
+         "pin_internal.cc",
+diff --git a/device/fido/authenticator_make_credential_response.h b/device/fido/authenticator_make_credential_response.h
+index 5f2f700e47..94e5e3d913 100644
+--- a/device/fido/authenticator_make_credential_response.h
++++ b/device/fido/authenticator_make_credential_response.h
+@@ -16,6 +16,7 @@
+ #include "base/containers/span.h"
+ #include "device/fido/attestation_object.h"
+ #include "device/fido/cmtg_key_response.h"
++#include "device/fido/mtc_debug_response.h"
+ #include "device/fido/public/fido_constants.h"
+ #include "device/fido/public/fido_transport_protocol.h"
+ 
+@@ -97,6 +98,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
+   // `cmtg_key` is present if the client requested a CMTG key and the
+   // authenticator supported it.
+   std::optional&lt;CmtgKeyResponse&gt; cmtg_key;
++
++  // `mtc_debug` is present if the client requested MTC diagnostic data and the
++  // authenticator included it in authenticatorData.extensions.
++  std::optional&lt;MtcDebugResponse&gt; mtc_debug;
+ };
+ 
+ // Through cbor::Writer, produces a CTAP style CBOR-encoded byte array
+diff --git a/device/fido/ctap_make_credential_request.cc b/device/fido/ctap_make_credential_request.cc
+index 1de09bfffa..6315d793f1 100644
+--- a/device/fido/ctap_make_credential_request.cc
++++ b/device/fido/ctap_make_credential_request.cc
+@@ -379,6 +379,10 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest&amp; request) {
+     extensions.emplace(kExtensionMinPINLength, true);
+   }
+ 
++  if (request.mtc_debug) {
++    extensions.emplace(kExtensionMtcDebug, true);
++  }
++
+   if (!extensions.empty()) {
+     cbor_map.emplace(6, std::move(extensions));
+   }
+diff --git a/device/fido/ctap_make_credential_request.h b/device/fido/ctap_make_credential_request.h
+index 02712529ff..3fb1f40e3c 100644
+--- a/device/fido/ctap_make_credential_request.h
++++ b/device/fido/ctap_make_credential_request.h
+@@ -155,6 +155,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
+   // cred_blob contains an optional credBlob extension.
+   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+   std::optional&lt;std::vector&lt;uint8_t&gt;&gt; cred_blob;
++
++  // mtc_debug indicates that the mtc-debug extension should be sent.
++  // https://w3c.github.io/webauthn/#sctn-mtc-debug-extension
++  bool mtc_debug = false;
+ };
+ 
+ // MakeCredentialOptions contains higher-level request parameters that aren't
+diff --git a/device/fido/device_response_converter.cc b/device/fido/device_response_converter.cc
+index 836b80e737..2377d4356b 100644
+--- a/device/fido/device_response_converter.cc
++++ b/device/fido/device_response_converter.cc
+@@ -25,6 +25,7 @@
+ #include "device/fido/authenticator_supported_options.h"
+ #include "device/fido/cbor_util.h"
+ #include "device/fido/cmtg_key_response.h"
++#include "device/fido/mtc_debug_response.h"
+ #include "device/fido/opaque_attestation_statement.h"
+ #include "device/fido/public/features.h"
+ #include "device/fido/public/fido_constants.h"
+@@ -55,6 +56,46 @@ std::optional&lt;CmtgKeyResponse&gt; ParseCmtgKeyResponse(
+                          signature_value.GetBytestring());
+ }
+ 
++std::optional&lt;MtcDebugResponse&gt; ParseMtcDebugResponse(
++    const cbor::Value&amp; debug_value) {
++  if (!debug_value.is_map()) {
++    return std::nullopt;
++  }
++  const auto&amp; debug_map = debug_value.GetMap();
++  auto pub_key_it = debug_map.find(cbor::Value("pubKey"));
++  if (pub_key_it == debug_map.end() || !pub_key_it-&gt;second.is_bytestring()) {
++    return std::nullopt;
++  }
++  MtcDebugResponse response(pub_key_it-&gt;second.GetBytestring());
++
++  auto serial_it = debug_map.find(cbor::Value("deviceSerial"));
++  if (serial_it != debug_map.end() &amp;&amp; serial_it-&gt;second.is_string()) {
++    response.device_serial = serial_it-&gt;second.GetString();
++  }
++  auto nb_it = debug_map.find(cbor::Value("notBefore"));
++  if (nb_it != debug_map.end() &amp;&amp; nb_it-&gt;second.is_unsigned()) {
++    response.not_before = nb_it-&gt;second.GetUnsigned();
++  }
++  auto na_it = debug_map.find(cbor::Value("notAfter"));
++  if (na_it != debug_map.end() &amp;&amp; na_it-&gt;second.is_unsigned()) {
++    response.not_after = na_it-&gt;second.GetUnsigned();
++  }
++  auto fw_it = debug_map.find(cbor::Value("firmwareVersion"));
++  if (fw_it != debug_map.end() &amp;&amp; fw_it-&gt;second.is_unsigned()) {
++    response.firmware_version =
++        base::checked_cast&lt;uint32_t&gt;(fw_it-&gt;second.GetUnsigned());
++  }
++  auto proof_it = debug_map.find(cbor::Value("mtcProof"));
++  if (proof_it != debug_map.end() &amp;&amp; proof_it-&gt;second.is_bytestring()) {
++    response.mtc_proof = proof_it-&gt;second.GetBytestring();
++  }
++  auto root_it = debug_map.find(cbor::Value("rootHash"));
++  if (root_it != debug_map.end() &amp;&amp; root_it-&gt;second.is_bytestring()) {
++    response.root_hash = root_it-&gt;second.GetBytestring();
++  }
++  return response;
++}
++
+ ProtocolVersion ConvertStringToProtocolVersion(std::string_view version) {
+   if (version == kCtap2Version || version == kCtap2_1Version ||
+       version == kCtap2_2Version) {
+@@ -224,6 +265,20 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
+         if (!response.cmtg_key) {
+           return std::nullopt;
+         }
++      } else if (extension_name == device::kExtensionMtcDebug) {
++        response.mtc_debug = ParseMtcDebugResponse(map_it.second);
++      }
++    }
++  }
++
++  if (!response.mtc_debug) {
++    const auto&amp; auth_extensions =
++        response.attestation_object.authenticator_data().extensions();
++    if (auth_extensions &amp;&amp; auth_extensions-&gt;is_map()) {
++      const auto&amp; ext_map = auth_extensions-&gt;GetMap();
++      auto mtc_it = ext_map.find(cbor::Value(device::kExtensionMtcDebug));
++      if (mtc_it != ext_map.end()) {
++        response.mtc_debug = ParseMtcDebugResponse(mtc_it-&gt;second);
+       }
+     }
+   }
+diff --git a/device/fido/make_credential_request_handler.cc b/device/fido/make_credential_request_handler.cc
+index a18e77b452..6f1c6be93d 100644
+--- a/device/fido/make_credential_request_handler.cc
++++ b/device/fido/make_credential_request_handler.cc
+@@ -312,6 +312,25 @@ bool ValidateResponseExtensions(
+       if (!request.cmtg_key || !it.second.is_bytestring()) {
+         return false;
+       }
++    } else if (ext_name == kExtensionMtcDebug) {
++      if (!request.mtc_debug || !it.second.is_map()) {
++        return false;
++      }
++      const auto&amp; debug_map = it.second.GetMap();
++      const bool has_device_serial =
++          debug_map.find(cbor::Value("deviceSerial")) != debug_map.end();
++      const bool enterprise_requested =
++          request.attestation_preference ==
++              AttestationConveyancePreference::
++                  kEnterpriseIfRPListedOnAuthenticator ||
++          request.attestation_preference ==
++              AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
++      if (has_device_serial &amp;&amp; !enterprise_requested) {
++        FIDO_LOG(ERROR)
++            &lt;&lt; "deviceSerial returned in mtc-debug extension output, but "
++               "Enterprise Attestation (EP 1 or 2) was not requested";
++        return false;
++      }
+     } else {
+       // Authenticators may not return unknown extensions.
+       return false;
+@@ -351,6 +370,21 @@ bool ResponseValid(const FidoAuthenticator&amp; authenticator,
+     return false;
+   }
+ 
++  if (response.mtc_debug &amp;&amp; response.mtc_debug-&gt;device_serial.has_value()) {
++    const bool enterprise_requested =
++        request.attestation_preference ==
++            AttestationConveyancePreference::
++                kEnterpriseIfRPListedOnAuthenticator ||
++        request.attestation_preference ==
++            AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
++    if (!enterprise_requested) {
++      FIDO_LOG(ERROR)
++          &lt;&lt; "deviceSerial present in mtc-debug response, but Enterprise "
++             "Attestation (EP 1 or 2) was not requested";
++      return false;
++    }
++  }
++
+   if ((request.large_blob_key &amp;&amp;
+        response.large_blob_type != LargeBlobSupportType::kKey) ||
+       (options.large_blob_support == LargeBlobSupport::kRequired &amp;&amp;
+diff --git a/device/fido/mtc_debug_response.cc b/device/fido/mtc_debug_response.cc
+new file mode 100644
+index 0000000000..d60f1f55d0
+--- /dev/null
++++ b/device/fido/mtc_debug_response.cc
+@@ -0,0 +1,20 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "device/fido/mtc_debug_response.h"
++
++namespace device {
++
++MtcDebugResponse::MtcDebugResponse() = default;
++
++MtcDebugResponse::MtcDebugResponse(std::vector&lt;uint8_t&gt; in_pub_key)
++    : pub_key(std::move(in_pub_key)) {}
++
++MtcDebugResponse::~MtcDebugResponse() = default;
++
++MtcDebugResponse::MtcDebugResponse(MtcDebugResponse&amp;&amp;) = default;
++
++MtcDebugResponse&amp; MtcDebugResponse::operator=(MtcDebugResponse&amp;&amp;) = default;
++
++}  // namespace device
+diff --git a/device/fido/mtc_debug_response.h b/device/fido/mtc_debug_response.h
+new file mode 100644
+index 0000000000..0b8fdacf18
+--- /dev/null
++++ b/device/fido/mtc_debug_response.h
+@@ -0,0 +1,51 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef DEVICE_FIDO_MTC_DEBUG_RESPONSE_H_
++#define DEVICE_FIDO_MTC_DEBUG_RESPONSE_H_
++
++#include &lt;stdint.h&gt;
++
++#include &lt;optional&gt;
++#include &lt;string&gt;
++#include &lt;vector&gt;
++
++#include "base/component_export.h"
++
++namespace device {
++
++// The response to an MTC Debug extension (mtcDebug) request during MakeCredential.
++struct COMPONENT_EXPORT(DEVICE_FIDO) MtcDebugResponse {
++  MtcDebugResponse();
++  explicit MtcDebugResponse(std::vector&lt;uint8_t&gt; pub_key);
++  ~MtcDebugResponse();
++
++  MtcDebugResponse(MtcDebugResponse&amp;&amp;);
++  MtcDebugResponse&amp; operator=(MtcDebugResponse&amp;&amp;);
++  MtcDebugResponse(const MtcDebugResponse&amp;) = delete;
++  MtcDebugResponse&amp; operator=(const MtcDebugResponse&amp;) = delete;
++
++  // The canonical CBOR-encoded COSE_Key of the active attestation public key.
++  std::vector&lt;uint8_t&gt; pub_key;
++
++  // Optional device physical serial number (Enterprise attestation only).
++  std::optional&lt;std::string&gt; device_serial;
++
++  // Optional Unix timestamps defining key validity period.
++  std::optional&lt;uint64_t&gt; not_before;
++  std::optional&lt;uint64_t&gt; not_after;
++
++  // Optional authenticator firmware version (CTAP 2.3 parameter 0x0E).
++  std::optional&lt;uint32_t&gt; firmware_version;
++
++  // Optional binary RFC 9162 Merkle tree inclusion proof.
++  std::optional&lt;std::vector&lt;uint8_t&gt;&gt; mtc_proof;
++
++  // Optional 32-byte expected Landmark or Trust Anchor Merkle root hash.
++  std::optional&lt;std::vector&lt;uint8_t&gt;&gt; root_hash;
++};
++
++}  // namespace device
++
++#endif  // DEVICE_FIDO_MTC_DEBUG_RESPONSE_H_
+diff --git a/device/fido/public/fido_constants.cc b/device/fido/public/fido_constants.cc
+index c97ffe1cb4..7b179b0136 100644
+--- a/device/fido/public/fido_constants.cc
++++ b/device/fido/public/fido_constants.cc
+@@ -236,6 +236,7 @@ const char kExtensionPRFFirst[] = "first";
+ const char kExtensionPRFResults[] = "results";
+ const char kExtensionPRFSecond[] = "second";
+ const char kExtensionCmtgKey[] = "cmtgKey";
++const char kExtensionMtcDebug[] = "mtc-debug";
+ 
+ const char kExtensionLargeBlobBlob[] = "blob";
+ const char kExtensionLargeBlobOriginalSize[] = "originalSize";
+diff --git a/device/fido/public/fido_constants.h b/device/fido/public/fido_constants.h
+index e92f0a1daa..472547a523 100644
+--- a/device/fido/public/fido_constants.h
++++ b/device/fido/public/fido_constants.h
+@@ -504,6 +504,7 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRFFirst[];
+ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRFResults[];
+ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionPRFSecond[];
+ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionCmtgKey[];
++COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionMtcDebug[];
+ 
+ // Constants for the largeBlob extension
+ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionLargeBlobBlob[];
+diff --git a/third_party/blink/public/mojom/webauthn/authenticator.mojom b/third_party/blink/public/mojom/webauthn/authenticator.mojom
+index e32ebd984d..ac8cdef746 100644
+--- a/third_party/blink/public/mojom/webauthn/authenticator.mojom
++++ b/third_party/blink/public/mojom/webauthn/authenticator.mojom
+@@ -123,6 +123,20 @@ struct CmtgKeyResponse {
+   array&lt;uint8&gt; signature;
+ };
+ 
++// The output for the MTC Debug extension (mtcDebug).
++struct MtcDebugResponse {
++  array&lt;uint8&gt; pub_key;
++  string? device_serial;
++  uint64 not_before;
++  bool has_not_before;
++  uint64 not_after;
++  bool has_not_after;
++  uint32 firmware_version;
++  bool has_firmware_version;
++  array&lt;uint8&gt;? mtc_proof;
++  array&lt;uint8&gt;? root_hash;
++};
++
+ // The `payment` extension response.
+ struct AuthenticationExtensionsPaymentResponse {
+   // The signature of the browser bound key corresponding to the public key in
+@@ -192,6 +206,9 @@ struct MakeCredentialAuthenticatorResponse {
+   // The response for the Credential Manager Trust Group key extension.
+   CmtgKeyResponse? cmtg_key;
+ 
++  // The response for the MTC Debug extension.
++  MtcDebugResponse? mtc_debug;
++
+   // True if getClientExtensionResults() called on the returned
+   // PublicKeyCredential instance should contain a `remoteClientDataJSON`
+   // extension output.
+@@ -644,6 +661,10 @@ struct PublicKeyCredentialCreationOptions {
+   // Group key extension.
+   // https://github.com/w3c/webauthn/pull/2377
+   bool cmtg_key = false;
++
++  // `mtc_debug` is true if the request contained an MTC Debug extension.
++  // https://w3c.github.io/webauthn/#sctn-mtc-debug-extension
++  bool mtc_debug = false;
+ };
+ 
+ // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
+diff --git a/third_party/blink/renderer/bindings/generated_in_modules.gni b/third_party/blink/renderer/bindings/generated_in_modules.gni
+index b56e9a96eb..9be56b9376 100644
+--- a/third_party/blink/renderer/bindings/generated_in_modules.gni
++++ b/third_party/blink/renderer/bindings/generated_in_modules.gni
+@@ -924,6 +924,10 @@ generated_dictionary_sources_in_modules = [
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h",
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.cc",
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h",
++  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output.cc",
++  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output.h",
++  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output_js_on.cc",
++  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output_js_on.h",
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multi_cache_query_options.cc",
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multi_cache_query_options.h",
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_navigation_preload_state.cc",
+diff --git a/third_party/blink/renderer/bindings/idl_in_modules.gni b/third_party/blink/renderer/bindings/idl_in_modules.gni
+index 68b809c784..fca4415bc0 100644
+--- a/third_party/blink/renderer/bindings/idl_in_modules.gni
++++ b/third_party/blink/renderer/bindings/idl_in_modules.gni
+@@ -198,6 +198,8 @@ static_idl_files_in_modules = [
+   "//third_party/blink/renderer/modules/credentialmanagement/identity_provider.idl",
+   "//third_party/blink/renderer/modules/credentialmanagement/identity_provider_account.idl",
+   "//third_party/blink/renderer/modules/credentialmanagement/identity_provider_config.idl",
++  "//third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output.idl",
++  "//third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output_json.idl",
+   "//third_party/blink/renderer/modules/credentialmanagement/navigator_credentials.idl",
+   "//third_party/blink/renderer/modules/credentialmanagement/navigator_login.idl",
+   "//third_party/blink/renderer/modules/credentialmanagement/otp_credential.idl",
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc b/third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc
+index 9e02a77153..e53386f2ba 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc
++++ b/third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.cc
+@@ -46,6 +46,7 @@
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
++#include "third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_otp_credential_request_options.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
+@@ -707,6 +708,11 @@ void OnMakePublicKeyCredentialComplete(
+         ConvertTo&lt;blink::AuthenticationExtensionsCmtgKeyOutputs*&gt;(
+             std::move(credential-&gt;cmtg_key)));
+   }
++  if (credential-&gt;mtc_debug) {
++    extension_outputs-&gt;setMtcDebug(
++        ConvertTo&lt;blink::MtcDebugExtensionOutput*&gt;(
++            std::move(credential-&gt;mtc_debug)));
++  }
+   if (credential-&gt;echo_prf) {
+     auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
+     prf_outputs-&gt;setEnabled(credential-&gt;prf);
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs.idl b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs.idl
+index 594a2278e9..1554ac7857 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs.idl
++++ b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs.idl
+@@ -61,5 +61,9 @@ dictionary AuthenticationExtensionsClientInputs {
+   // Cross-device fallback URL support.
+   // https://github.com/w3c/webauthn/pull/2380
+   [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] USVString crossDeviceFallbackUrl;
++
++  // MTC Debug extension support.
++  // https://w3c.github.io/webauthn/#sctn-mtc-debug-extension
++  [RuntimeEnabled=WebAuthenticationMtcDebug] boolean mtcDebug;
+ };
+ // LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc)
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs_json.idl b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs_json.idl
+index 11a22a3618..e100f1cf04 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs_json.idl
++++ b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_inputs_json.idl
+@@ -37,4 +37,5 @@ dictionary AuthenticationExtensionsClientInputsJSON {
+   AuthenticationExtensionsPRFInputsJSON prf;
+   [RuntimeEnabled=WebAuthenticationCmtgKey] boolean cmtgKey;
+   [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] USVString crossDeviceFallbackUrl;
++  [RuntimeEnabled=WebAuthenticationMtcDebug] boolean mtcDebug;
+ };
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs.idl b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs.idl
+index 2d54fc3239..8b71d3ec9c 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs.idl
++++ b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs.idl
+@@ -42,4 +42,8 @@ dictionary AuthenticationExtensionsClientOutputs {
+   // RemoteClientDataJSON extension for remote desktop clients.
+   // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+   [RuntimeEnabled=WebAuthenticationRemoteClientDataJson] boolean remoteClientDataJSON;
++
++  // MTC Debug extension output.
++  // https://w3c.github.io/webauthn/#sctn-mtc-debug-extension
++  [RuntimeEnabled=WebAuthenticationMtcDebug] MtcDebugExtensionOutput mtcDebug;
+ };
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs_json.idl b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs_json.idl
+index 9d72503bcd..d3cc205f12 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs_json.idl
++++ b/third_party/blink/renderer/modules/credentialmanagement/authentication_extensions_client_outputs_json.idl
+@@ -39,4 +39,8 @@ dictionary AuthenticationExtensionsClientOutputsJSON {
+   // remoteClientDataJSON extension output.
+   // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+   [RuntimeEnabled=WebAuthenticationRemoteClientDataJson] boolean remoteClientDataJSON;
++
++  // MTC Debug extension output.
++  // https://w3c.github.io/webauthn/#sctn-mtc-debug-extension
++  [RuntimeEnabled=WebAuthenticationMtcDebug] MtcDebugExtensionOutputJSON mtcDebug;
+ };
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.cc b/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.cc
+index 0d7aa2a47b..84d34cbaca 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.cc
++++ b/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.cc
+@@ -24,6 +24,7 @@
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
++#include "third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_browser_bound_signature.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_outputs.h"
+@@ -321,6 +322,36 @@ TypeConverter&lt;blink::AuthenticationExtensionsCmtgKeyOutputs*,
+   return cmtg_key_output;
+ }
+ 
++// static
++blink::MtcDebugExtensionOutput*
++TypeConverter&lt;blink::MtcDebugExtensionOutput*,
++              blink::mojom::blink::MtcDebugResponsePtr&gt;::
++    Convert(const blink::mojom::blink::MtcDebugResponsePtr&amp; mtc_debug) {
++  auto* mtc_output = blink::MtcDebugExtensionOutput::Create();
++  mtc_output-&gt;setPubKey(blink::DOMArrayBuffer::Create(mtc_debug-&gt;pub_key));
++  if (!mtc_debug-&gt;device_serial.IsNull()) {
++    mtc_output-&gt;setDeviceSerial(mtc_debug-&gt;device_serial);
++  }
++  if (mtc_debug-&gt;has_not_before) {
++    mtc_output-&gt;setNotBefore(mtc_debug-&gt;not_before);
++  }
++  if (mtc_debug-&gt;has_not_after) {
++    mtc_output-&gt;setNotAfter(mtc_debug-&gt;not_after);
++  }
++  if (mtc_debug-&gt;has_firmware_version) {
++    mtc_output-&gt;setFirmwareVersion(mtc_debug-&gt;firmware_version);
++  }
++  if (mtc_debug-&gt;mtc_proof) {
++    mtc_output-&gt;setMtcProof(
++        blink::DOMArrayBuffer::Create(*mtc_debug-&gt;mtc_proof));
++  }
++  if (mtc_debug-&gt;root_hash) {
++    mtc_output-&gt;setRootHash(
++        blink::DOMArrayBuffer::Create(*mtc_debug-&gt;root_hash));
++  }
++  return mtc_output;
++}
++
+ // static
+ blink::Vector&lt;uint8_t&gt;
+ TypeConverter&lt;blink::Vector&lt;uint8_t&gt;,
+@@ -770,6 +801,9 @@ TypeConverter&lt;PublicKeyCredentialCreationOptionsPtr,
+     if (extensions-&gt;hasCmtgKey()) {
+       mojo_options-&gt;cmtg_key = extensions-&gt;cmtgKey();
+     }
++    if (extensions-&gt;hasMtcDebug()) {
++      mojo_options-&gt;mtc_debug = extensions-&gt;mtcDebug();
++    }
+   }
+ 
+   return mojo_options;
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h b/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h
+index ba06703cfe..c732faba02 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h
++++ b/third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h
+@@ -37,6 +37,7 @@ class IdentityProviderConfig;
+ class IdentityProviderRequestOptions;
+ class LoginStatusOptions;
+ class IdentityUserInfo;
++class MtcDebugExtensionOutput;
+ class PublicKeyCredentialCreationOptions;
+ class PublicKeyCredentialDescriptor;
+ class PublicKeyCredentialParameters;
+@@ -94,6 +95,13 @@ struct TypeConverter&lt;blink::AuthenticationExtensionsCmtgKeyOutputs*,
+       const blink::mojom::blink::CmtgKeyResponsePtr&amp;);
+ };
+ 
++template &lt;&gt;
++struct TypeConverter&lt;blink::MtcDebugExtensionOutput*,
++                     blink::mojom::blink::MtcDebugResponsePtr&gt; {
++  static blink::MtcDebugExtensionOutput* Convert(
++      const blink::mojom::blink::MtcDebugResponsePtr&amp;);
++};
++
+ // blink::mojom::blink::Authenticator ---------------------------------------
+ template &lt;&gt;
+ struct TypeConverter&lt;blink::Vector&lt;uint8_t&gt;,
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/json.cc b/third_party/blink/renderer/modules/credentialmanagement/json.cc
+index d69382c042..dced27bd74 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/json.cc
++++ b/third_party/blink/renderer/modules/credentialmanagement/json.cc
+@@ -18,6 +18,8 @@
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs_js_on.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
++#include "third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output.h"
++#include "third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output_js_on.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs_js_on.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
+@@ -327,6 +329,32 @@ AuthenticationExtensionsClientOutputsToJSON(
+   if (in.hasRemoteClientDataJSON()) {
+     json-&gt;setRemoteClientDataJSON(in.remoteClientDataJSON());
+   }
++  if (in.hasMtcDebug()) {
++    auto* mtc_debug_json = MtcDebugExtensionOutputJSON::Create();
++    mtc_debug_json-&gt;setPubKey(
++        WebAuthnBase64UrlEncode(in.mtcDebug()-&gt;pubKey()-&gt;ByteSpan()));
++    if (in.mtcDebug()-&gt;hasDeviceSerial()) {
++      mtc_debug_json-&gt;setDeviceSerial(in.mtcDebug()-&gt;deviceSerial());
++    }
++    if (in.mtcDebug()-&gt;hasNotBefore()) {
++      mtc_debug_json-&gt;setNotBefore(in.mtcDebug()-&gt;notBefore());
++    }
++    if (in.mtcDebug()-&gt;hasNotAfter()) {
++      mtc_debug_json-&gt;setNotAfter(in.mtcDebug()-&gt;notAfter());
++    }
++    if (in.mtcDebug()-&gt;hasFirmwareVersion()) {
++      mtc_debug_json-&gt;setFirmwareVersion(in.mtcDebug()-&gt;firmwareVersion());
++    }
++    if (in.mtcDebug()-&gt;hasMtcProof()) {
++      mtc_debug_json-&gt;setMtcProof(
++          WebAuthnBase64UrlEncode(in.mtcDebug()-&gt;mtcProof()-&gt;ByteSpan()));
++    }
++    if (in.mtcDebug()-&gt;hasRootHash()) {
++      mtc_debug_json-&gt;setRootHash(
++          WebAuthnBase64UrlEncode(in.mtcDebug()-&gt;rootHash()-&gt;ByteSpan()));
++    }
++    json-&gt;setMtcDebug(mtc_debug_json);
++  }
+   return json;
+ }
+ 
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output.idl b/third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output.idl
+new file mode 100644
+index 0000000000..8af2a4c9fe
+--- /dev/null
++++ b/third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output.idl
+@@ -0,0 +1,14 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// https://w3c.github.io/webauthn/#dictdef-mtcdebugextensionoutput
++dictionary MtcDebugExtensionOutput {
++  required ArrayBuffer pubKey;
++  DOMString deviceSerial;
++  unsigned long long notBefore;
++  unsigned long long notAfter;
++  unsigned long firmwareVersion;
++  ArrayBuffer mtcProof;
++  ArrayBuffer rootHash;
++};
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output_json.idl b/third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output_json.idl
+new file mode 100644
+index 0000000000..fdf13277eb
+--- /dev/null
++++ b/third_party/blink/renderer/modules/credentialmanagement/mtc_debug_extension_output_json.idl
+@@ -0,0 +1,14 @@
++// Copyright 2026 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// https://w3c.github.io/webauthn/#dictdef-mtcdebugextensionoutputjson
++dictionary MtcDebugExtensionOutputJSON {
++  required Base64URLString pubKey;
++  DOMString deviceSerial;
++  unsigned long long notBefore;
++  unsigned long long notAfter;
++  unsigned long firmwareVersion;
++  Base64URLString mtcProof;
++  Base64URLString rootHash;
++};
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc b/third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc
+index 794929577b..bc50055884 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc
++++ b/third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc
+@@ -91,6 +91,9 @@ void OnGetClientCapabilitiesComplete(
+       "extension:crossDeviceFallbackUrl",
+       RuntimeEnabledFeatures::WebAuthenticationCrossDeviceFallbackUrlEnabled(
+           resolver-&gt;GetExecutionContext()));
++  results.emplace_back(
++      "extension:mtcDebug",
++      RuntimeEnabledFeatures::WebAuthenticationMtcDebugEnabled());
+   if (RuntimeEnabledFeatures::WebAuthenticationRemoteClientDataJsonEnabled(
+           resolver-&gt;GetExecutionContext())) {
+     results.emplace_back("extension:remoteClientDataJSON", true);
+diff --git a/third_party/blink/renderer/modules/credentialmanagement/public_key_credential_unittest.cc b/third_party/blink/renderer/modules/credentialmanagement/public_key_credential_unittest.cc
+index 641ea7e943..100a5257fb 100644
+--- a/third_party/blink/renderer/modules/credentialmanagement/public_key_credential_unittest.cc
++++ b/third_party/blink/renderer/modules/credentialmanagement/public_key_credential_unittest.cc
+@@ -16,6 +16,8 @@
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_cmtg_key_outputs_js_on.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
++#include "third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output.h"
++#include "third_party/blink/renderer/bindings/modules/v8/v8_mtc_debug_extension_output_js_on.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs_js_on.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
+@@ -704,6 +706,16 @@ struct PRFEvalValues {
+   std::optional&lt;Vector&lt;uint8_t&gt;&gt; second;
+ };
+ 
++struct MtcDebugValues {
++  Vector&lt;uint8_t&gt; pub_key;
++  std::optional&lt;String&gt; device_serial;
++  std::optional&lt;uint64_t&gt; not_before;
++  std::optional&lt;uint64_t&gt; not_after;
++  std::optional&lt;uint32_t&gt; firmware_version;
++  std::optional&lt;Vector&lt;uint8_t&gt;&gt; mtc_proof;
++  std::optional&lt;Vector&lt;uint8_t&gt;&gt; root_hash;
++};
++
+ struct ExtensionsClientOutputsValues {
+   std::optional&lt;bool&gt; appid;
+   std::optional&lt;bool&gt; hmac_create_secret;
+@@ -718,6 +730,7 @@ struct ExtensionsClientOutputsValues {
+   std::optional&lt;Vector&lt;uint8_t&gt;&gt; cmtg_key_sig;
+   std::optional&lt;bool&gt; cross_device_fallback_url;
+   std::optional&lt;bool&gt; remote_client_data_json;
++  std::optional&lt;MtcDebugValues&gt; mtc_debug;
+ };
+ 
+ AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
+@@ -786,6 +799,29 @@ AuthenticationExtensionsClientOutputs* MakeExtensionsOutputs(
+   if (in.remote_client_data_json) {
+     extensions-&gt;setRemoteClientDataJSON(*in.remote_client_data_json);
+   }
++  if (in.mtc_debug) {
++    auto* mtc_debug = MtcDebugExtensionOutput::Create();
++    mtc_debug-&gt;setPubKey(DOMArrayBuffer::Create(in.mtc_debug-&gt;pub_key));
++    if (in.mtc_debug-&gt;device_serial) {
++      mtc_debug-&gt;setDeviceSerial(*in.mtc_debug-&gt;device_serial);
++    }
++    if (in.mtc_debug-&gt;not_before) {
++      mtc_debug-&gt;setNotBefore(*in.mtc_debug-&gt;not_before);
++    }
++    if (in.mtc_debug-&gt;not_after) {
++      mtc_debug-&gt;setNotAfter(*in.mtc_debug-&gt;not_after);
++    }
++    if (in.mtc_debug-&gt;firmware_version) {
++      mtc_debug-&gt;setFirmwareVersion(*in.mtc_debug-&gt;firmware_version);
++    }
++    if (in.mtc_debug-&gt;mtc_proof) {
++      mtc_debug-&gt;setMtcProof(DOMArrayBuffer::Create(*in.mtc_debug-&gt;mtc_proof));
++    }
++    if (in.mtc_debug-&gt;root_hash) {
++      mtc_debug-&gt;setRootHash(DOMArrayBuffer::Create(*in.mtc_debug-&gt;root_hash));
++    }
++    extensions-&gt;setMtcDebug(mtc_debug);
++  }
+   return extensions;
+ }
+ 
+@@ -931,6 +967,42 @@ void ExpectExtensionsJSONMatch(
+   } else {
+     EXPECT_FALSE(extensions.hasCmtgKey());
+   }
++  if (values.mtc_debug) {
++    ASSERT_TRUE(extensions.hasMtcDebug());
++    const auto* mtc_debug = extensions.mtcDebug();
++    ASSERT_NE(mtc_debug, nullptr);
++    EXPECT_EQ(mtc_debug-&gt;pubKey(),
++              WebAuthnBase64UrlEncode(values.mtc_debug-&gt;pub_key));
++    if (values.mtc_debug-&gt;device_serial) {
++      ASSERT_TRUE(mtc_debug-&gt;hasDeviceSerial());
++      EXPECT_EQ(mtc_debug-&gt;deviceSerial(), *values.mtc_debug-&gt;device_serial);
++    }
++    if (values.mtc_debug-&gt;not_before) {
++      ASSERT_TRUE(mtc_debug-&gt;hasNotBefore());
++      EXPECT_EQ(mtc_debug-&gt;notBefore(), *values.mtc_debug-&gt;not_before);
++    }
++    if (values.mtc_debug-&gt;not_after) {
++      ASSERT_TRUE(mtc_debug-&gt;hasNotAfter());
++      EXPECT_EQ(mtc_debug-&gt;notAfter(), *values.mtc_debug-&gt;not_after);
++    }
++    if (values.mtc_debug-&gt;firmware_version) {
++      ASSERT_TRUE(mtc_debug-&gt;hasFirmwareVersion());
++      EXPECT_EQ(mtc_debug-&gt;firmwareVersion(),
++                *values.mtc_debug-&gt;firmware_version);
++    }
++    if (values.mtc_debug-&gt;mtc_proof) {
++      ASSERT_TRUE(mtc_debug-&gt;hasMtcProof());
++      EXPECT_EQ(mtc_debug-&gt;mtcProof(),
++                WebAuthnBase64UrlEncode(*values.mtc_debug-&gt;mtc_proof));
++    }
++    if (values.mtc_debug-&gt;root_hash) {
++      ASSERT_TRUE(mtc_debug-&gt;hasRootHash());
++      EXPECT_EQ(mtc_debug-&gt;rootHash(),
++                WebAuthnBase64UrlEncode(*values.mtc_debug-&gt;root_hash));
++    }
++  } else {
++    EXPECT_FALSE(extensions.hasMtcDebug());
++  }
+ }
+ 
+ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
+@@ -967,6 +1039,17 @@ TEST(PublicKeyCredentialTest, AuthenticationExtensionsClientOutputsToJSON) {
+       {.prf_eval = PRFEvalValues{.enabled = false}},
+       {.cmtg_key_data = Vector&lt;uint8_t&gt;{'c', 'm', 't', 'g', 'k'},
+        .cmtg_key_sig = Vector&lt;uint8_t&gt;{'c', 'm', 't', 'g', 's'}},
++      {.mtc_debug =
++           MtcDebugValues{
++               .pub_key = Vector&lt;uint8_t&gt;{'p', 'u', 'b', 'k', 'e', 'y'},
++               .device_serial = String("TEST-SERIAL-1234"),
++               .not_before = 1776518400,
++               .not_after = 1784371200,
++               .firmware_version = 332805,
++               .mtc_proof = Vector&lt;uint8_t&gt;{'p', 'r', 'o', 'o', 'f'},
++               .root_hash = Vector&lt;uint8_t&gt;{'r', 'o', 'o', 't', '3', '2'}}},
++      {.mtc_debug =
++           MtcDebugValues{.pub_key = Vector&lt;uint8_t&gt;{'b', 'a', 't', 'c', 'h'}}},
+   };
+ 
+   for (const auto&amp; inputs : kTestCases) {
+diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
+index c1196207e6..55900228cb 100644
+--- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
++++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
+@@ -7402,6 +7402,11 @@
+       base_feature: "none",
+       public: true,
+     },
++    // https://w3c.github.io/webauthn/#sctn-mtc-debug-extension
++    {
++      name: "WebAuthenticationMtcDebug",
++      status: "experimental",
++    },
+     // Lets an authorized remote desktop client supply the clientDataJSON for a
+     // WebAuthn request. Can be enabled only in conjunction with
+     // the device::kWebAuthnRemoteClientDataJson base::Feature.</code></pre></div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./chromium_mtc_debug_pull_request.md" class="text-[var(--primary)] hover:underline">chromium_mtc_debug_pull_request.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>
