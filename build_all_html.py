@@ -425,6 +425,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "Pull request / Gerrit CL against Chromium HEAD (4f9f0d6afb) implementing the W3C WebAuthn Level 4 §10.2.1 mtcDebug registration extension, toJSON() Base64URL serialization, proof-less manifest verification fields, and dual-layer Enterprise Attestation (EP 1 or 2) privacy enforcement across Blink, Mojo IPC, content/browser, and device/fido.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "chromium_pqc_mtc_virtual_authenticator": {
+        "title": "Chromium Virtual Authenticator: Post-Quantum ML-DSA (-48, -49, -50) & WebAuthn Level 4 MTC Attestation with FIDO MDS Export",
+        "badges": [
+            ("Chromium HEAD (feat/pqc-mtc-attestation)", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("ML-DSA-44, 65, 87 (-48, -49, -50)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("W3C WebAuthn L4 mtc & mtcl", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("FIDO MDS3 & Yubico RP Integration", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Technical specification, implementation guide, and Relying Party integration reference for Post-Quantum ML-DSA batch attestation and Merkle Tree Certificate (MTC) attestation in Chromium's VirtualCtap2Device, including FIDO MDS3 metadata export for test RP servers such as java-webauthn-server.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chromium Virtual Authenticator: Post-Quantum ML-DSA (-48, -49, -50) &amp; WebAuthn Level 4 MTC Attestation with FIDO MDS Export</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Chromium HEAD (feat/pqc-mtc-attestation)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">ML-DSA-44, 65, 87 (-48, -49, -50)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">W3C WebAuthn L4 mtc &amp; mtcl</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">FIDO MDS3 &amp; Yubico RP Integration</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./chromium_pqc_mtc_virtual_authenticator.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      Chromium Virtual Authenticator: Post-Quantum ML-DSA (-48, -49, -50) &amp; WebAuthn Level 4 MTC Attestation with FIDO MDS Export
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Technical specification, implementation guide, and Relying Party integration reference for Post-Quantum ML-DSA batch attestation and Merkle Tree Certificate (MTC) attestation in Chromium's VirtualCtap2Device, including FIDO MDS3 metadata export for test RP servers such as java-webauthn-server.
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Architectural Strategy &amp; Branch Structure</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Public Key Reuse Architecture Across Batch &amp; MTC Formats</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Chromium Virtual Authenticator Implementation</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">FIDO Metadata Statement (MDS3) Specification &amp; Export</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Relying Party Integration Guide (<code>java-webauthn-server</code>)</div>
+        </a>
+        <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 6</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Conformance &amp; Test Suite Verification</div>
+        </a>
+        <a href="#section-7" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 7</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Transport Wire-Size Economics Across Formats</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Architectural Strategy &amp; Branch Structure</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#11-branch-scope-matrix" class="hover:underline">&sect;1.1 Branch Scope Matrix</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Public Key Reuse Architecture Across Batch &amp; MTC Formats</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-cose-key-representation-for-ml-dsa-draft-akp-format" class="hover:underline">&sect;2.1 COSE Key Representation for ML-DSA (Draft AKP Format)</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Chromium Virtual Authenticator Implementation</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#31-enabling-mtc-debug-in-devicefido" class="hover:underline">&sect;3.1 Enabling <code>mtc-debug</code> in <code>device/fido</code></a></div>
+            <div><a href="#32-dual-support-for-fmt-mtc-and-fmt-mtcl-attestation-statements" class="hover:underline">&sect;3.2 Dual Support for <code>fmt: "mtc"</code> and <code>fmt: "mtcl"</code> Attestation Statements</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. FIDO Metadata Statement (MDS3) Specification &amp; Export</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#41-fido-mds3-metadata-statement-pqc_virtual_authenticator_mdsjson" class="hover:underline">&sect;4.1 FIDO MDS3 Metadata Statement (<code>pqc_virtual_authenticator_mds.json</code>)</a></div>
+            <div><a href="#42-exported-artifacts-layout" class="hover:underline">&sect;4.2 Exported Artifacts Layout</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Relying Party Integration Guide (<code>java-webauthn-server</code>)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#51-configuring-java-webauthn-server-with-local-mds" class="hover:underline">&sect;5.1 Configuring <code>java-webauthn-server</code> with Local MDS</a></div>
+            <div><a href="#52-processing-mtcdebug-mtc-attestations-in-rp-handlers" class="hover:underline">&sect;5.2 Processing <code>mtcDebug</code> &amp; MTC Attestations in RP Handlers</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-6" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">6. Conformance &amp; Test Suite Verification</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-7" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">7. Transport Wire-Size Economics Across Formats</a>
+
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Architectural Strategy &amp; Branch Structure</h2>
+      </div>
+<p class="text-sm my-2">To maintain strict modularity, test isolation, and ease of upstream review on Chromium Gerrit, work is organized into three clean, layered git branches:</p>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">gitGraph
+   commit id: "4f9f0d6afb (origin/main)"
+   branch feat/webauthn-l4-mtc-debug
+   checkout feat/webauthn-l4-mtc-debug
+   commit id: "a489cfff2f: Implement WebAuthn L4 mtcDebug"
+   commit id: "decd73629a: Enforce EP 1/2 privacy gate"
+   checkout main
+   branch feat/pqc-virtual-authenticator
+   checkout feat/pqc-virtual-authenticator
+   commit id: "25d89cf446: Support ML-DSA batch attestation"
+   checkout main
+   branch feat/pqc-mtc-attestation
+   checkout feat/pqc-mtc-attestation
+   merge feat/pqc-virtual-authenticator id: "PQC Virtual Auth Base"
+   merge feat/webauthn-l4-mtc-debug id: "Merge WebAuthn L4 mtcDebug"
+   commit id: "MTC &amp; mtc-debug in VirtualCtap2Device"
+   commit id: "FIDO MDS3 Exporter &amp; java-webauthn-server integration"</pre></div>
+<h3 id="11-branch-scope-matrix" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">1.1 Branch Scope Matrix</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Branch Name</th>
+<th class="p-3 font-semibold align-bottom text-left">Core Capabilities</th>
+<th class="p-3 font-semibold align-bottom text-left">Affected Subsystems</th>
+<th class="p-3 font-semibold align-bottom text-left">Target Use Case</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>feat/webauthn-l4-mtc-debug</code></strong></td>
+<td class="p-3 align-top text-left">W3C WebAuthn L4 §10.2.1 <code>mtcDebug</code> extension; Blink WebIDL; Mojo IPC; EP 1/2 privacy gate.</td>
+<td class="p-3 align-top text-left"><code>third_party/blink</code>, <code>content/browser/webauth</code>, <code>device/fido</code></td>
+<td class="p-3 align-top text-left">Platform/client conformance testing of diagnostic MTC data.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>feat/pqc-virtual-authenticator</code></strong></td>
+<td class="p-3 align-top text-left">COSE algorithms <code>-48</code> (ML-DSA-44), <code>-49</code> (ML-DSA-65), <code>-50</code> (ML-DSA-87); self-signed X.509 batch certs in <code>packed</code> format.</td>
+<td class="p-3 align-top text-left"><code>net/cert/x509_util.cc</code>, <code>device/fido/virtual_*</code></td>
+<td class="p-3 align-top text-left">Classical X.509 post-quantum virtual authenticator testing.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>feat/pqc-mtc-attestation</code></strong></td>
+<td class="p-3 align-top text-left">Unified branch: WebAuthn L4 <code>fmt: "mtc"</code> &amp; <code>fmt: "mtcl"</code>; <code>mtc-debug</code> response synthesis; exact public key reuse; FIDO MDS3 exporter.</td>
+<td class="p-3 align-top text-left"><code>device/fido</code>, <code>device/BUILD.gn</code>, test suites</td>
+<td class="p-3 align-top text-left">End-to-end RP verification, test harness integration, and MDS testing.</td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Public Key Reuse Architecture Across Batch &amp; MTC Formats</h2>
+      </div>
+<p class="text-sm my-2">A core requirement of the Post-Quantum WebAuthn test suite is <strong>strict consistency</strong>: the active attestation public key used to verify the authenticator's signature MUST be identical across all three attestation representations:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Self-Signed X.509 Batch Certificate (<code>fmt: "packed"</code>, <code>x5c</code>):</strong> The Subject Public Key Info (SPKI) embedded in the DER certificate.</li>
+<li><strong>Compact WebAuthn Level 4 MTC (<code>fmt: "mtc"</code>, <code>mtcCert</code>):</strong> The public key resolved by the Relying Party using <code>(caId, serial)</code> from the FIDO MDS3 table (<code>MtcTrustAnchor.batchKeys</code>).</li>
+<li><strong>MTC Diagnostic Extension (<code>authenticatorData.extensions["mtc-debug"].pubKey</code>):</strong> The canonical CBOR-encoded <code>COSE_Key</code> delivered in-band for offline or automated conformance validation.</li>
+</ol>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TD
+    subgraph Authenticator["VirtualCtap2Device Internal State"]
+        PrivKey["Deterministic Attestation Private Key&lt;br/&gt;crypto::keypair::PrivateKey (ML-DSA-44 / 65 / 87)"]
+        PubKey["Derived Public Key&lt;br/&gt;crypto::keypair::PublicKey"]
+        CoseAKP["Canonical CBOR COSE_Key&lt;br/&gt;kty: AKP (7), alg: -48/-49/-50, -1: pubKeyBytes"]
+        PrivKey --&gt; PubKey --&gt; CoseAKP
+    end
+
+    subgraph Formats["Attestation &amp; Export Outputs"]
+        X509["1. X.509 Batch Certificate&lt;br/&gt;net::x509_util::CreateSelfSigned&lt;br/&gt;(Embedded in attStmt.x5c)"]
+        MtcDebug["2. mtc-debug Extension Output&lt;br/&gt;pubKey: CoseAKP&lt;br/&gt;rootHash + mtcProof"]
+        MtcStmt["3. WebAuthn L4 fmt: mtc / mtcl&lt;br/&gt;caId: kDeviceAaguid, serial: 1&lt;br/&gt;attStmt.sig verified by CoseAKP"]
+        MDS3["4. FIDO MDS3 Statement&lt;br/&gt;attestationRootCertificates: [X509]&lt;br/&gt;mtcTrustAnchors.batchKeys: [CoseAKP]"]
+    end
+
+    PubKey --&gt; X509
+    CoseAKP --&gt; MtcDebug
+    PrivKey -. signs .-&gt; MtcStmt
+    CoseAKP --&gt; MtcStmt
+    X509 --&gt; MDS3
+    CoseAKP --&gt; MDS3</pre></div>
+<h3 id="21-cose-key-representation-for-ml-dsa-draft-akp-format" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 COSE Key Representation for ML-DSA (Draft AKP Format)</h3>
+<p class="text-sm my-2">Following draft-ietf-cose-dilithium and CTAP 2.3 specifications, the ML-DSA attestation public key is encoded into a canonical CBOR map using the <strong>Asymmetric Key Package (<code>AKP</code>, key type <code>7</code>)</strong>:</p>
+<div class="overflow-x-auto py-1 text-sm my-2">$$\text{COSE\_Key} = \{ 1: 7, 3: \text{alg}, -1: \text{raw\_public\_key\_bytes} \}$$</div>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">COSE Label</th>
+<th class="p-3 font-semibold align-bottom text-left">Key</th>
+<th class="p-3 font-semibold align-bottom text-left">Type</th>
+<th class="p-3 font-semibold align-bottom text-left">Description</th>
+<th class="p-3 font-semibold align-bottom text-left">Values</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><code>kty</code></td>
+<td class="p-3 align-top text-left"><code>1</code></td>
+<td class="p-3 align-top text-left"><code>int</code></td>
+<td class="p-3 align-top text-left">Key Type</td>
+<td class="p-3 align-top text-left"><code>7</code> (<code>kAKP</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><code>alg</code></td>
+<td class="p-3 align-top text-left"><code>3</code></td>
+<td class="p-3 align-top text-left"><code>int</code></td>
+<td class="p-3 align-top text-left">Algorithm Identifier</td>
+<td class="p-3 align-top text-left"><code>-48</code> (ML-DSA-44), <code>-49</code> (ML-DSA-65), <code>-50</code> (ML-DSA-87)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><code>pubKey</code></td>
+<td class="p-3 align-top text-left"><code>-1</code></td>
+<td class="p-3 align-top text-left"><code>bstr</code></td>
+<td class="p-3 align-top text-left">Raw Public Key Bytes</td>
+<td class="p-3 align-top text-left">$1,312\text{ B}$ (<code>-48</code>), $1,952\text{ B}$ (<code>-49</code>), $2,592\text{ B}$ (<code>-50</code>)</td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Chromium Virtual Authenticator Implementation</h2>
+      </div>
+<h3 id="31-enabling-mtc-debug-in-devicefido" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.1 Enabling <code>mtc-debug</code> in <code>device/fido</code></h3>
+<p class="text-sm my-2">When a WebAuthn client requests diagnostic MTC data via <code>PublicKeyCredentialCreationOptions.extensions = { mtcDebug: true }</code>, the request is forwarded across CTAP2 CBOR as <code>"mtc-debug": true</code> in parameter <code>0x06</code> (<code>extensions</code>).</p>
+<p class="text-sm my-2">The virtual authenticator executes the following pipeline:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Extension Advertisement:</strong> <code>VirtualCtap2Device</code> includes <code>"mtc-debug"</code> in <code>authenticatorGetInfo</code> parameter <code>0x04</code> (<code>extensions</code>) when <code>config.mtc_debug_support</code> is enabled.</li>
+<li><strong>Request Parsing:</strong> <code>CtapMakeCredentialRequest::Parse</code> decodes <code>kExtensionMtcDebug</code> from the CBOR map:<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cpp</div><pre class="text-xs leading-relaxed"><code>} else if (extension_name == kExtensionMtcDebug) {
+  if (!extension.second.is_bool()) {
+    return std::nullopt;
+  }
+  request.mtc_debug = extension.second.GetBool();
+}</code></pre></div></li>
+<li><strong>Response Assembly:</strong> <code>VirtualCtap2Device::OnMakeCredential</code> synthesizes <code>MtcDebugResponse</code>:<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cpp</div><pre class="text-xs leading-relaxed"><code>auto attestation_private_key =
+    crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+        GetAttestationKey(attestation_alg));
+auto attestation_pub_key =
+    crypto::keypair::PublicKey::FromPrivateKey(*attestation_private_key);
+std::vector&lt;uint8_t&gt; attestation_cose_key =
+    crypto::PublicKeyToCoseKey(attestation_pub_key);
+
+if (request.mtc_debug &amp;&amp; config_.mtc_debug_support) {
+  mtc_debug_response.emplace(attestation_cose_key);
+  mtc_debug_response-&gt;not_before = 0;
+  mtc_debug_response-&gt;not_after = 253402300799ULL; // RFC 5280 non-expiring
+  mtc_debug_response-&gt;firmware_version = 1;
+
+  // Strict Enterprise Attestation (EP 1/2) Privacy Gate:
+  if (enterprise_attestation_requested) {
+    mtc_debug_response-&gt;device_serial = "VIRTUAL_CTAP2_PQC_001";
+  }
+
+  mtc_debug_response-&gt;root_hash = base::ToVector(test_root_hash);
+  mtc_debug_response-&gt;mtc_proof = test_mtc_inclusion_proof;
+}</code></pre></div></li>
+<li><strong>CTAP2 CBOR Serialization:</strong> <code>AsCTAPStyleCBORBytes</code> encodes <code>response.mtc_debug</code> into key <code>0x06</code> of the CTAP2 MakeCredential response map.</li>
+</ol>
+<h3 id="32-dual-support-for-fmt-mtc-and-fmt-mtcl-attestation-statements" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Dual Support for <code>fmt: "mtc"</code> and <code>fmt: "mtcl"</code> Attestation Statements</h3>
+<p class="text-sm my-2">Through <code>VirtualCtap2Device::Config::attestation_format</code>, test fixtures can switch the authenticator's attestation output between:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>"packed"</code> (Default):</strong> Classical X.509 batch certificates carrying self-signed ML-DSA certificates in <code>x5c</code>.</li>
+<li><strong><code>"mtc"</code> (Compact MDS/Log-Assisted MTC):</strong> The public key is omitted from <code>attStmt</code>. Relying Parties resolve <code>pubKey</code> out-of-band by <code>(caId, serial)</code>.</li>
+<li><strong><code>"mtcl"</code> (MTC Large):</strong> The canonical CBOR <code>COSE_Key</code> is transmitted inline in <code>attStmt.pubKey</code>.</li>
+</ul>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; Attestation Statement Structure for fmt: "mtc" and "mtcl"
+attStmt = {
+    alg: int,                        ; -48, -49, or -50
+    sig: bytes,                      ; Pure ML-DSA signature over authData || clientDataHash
+    ? pubKey: bytes,                 ; Present only in fmt: "mtcl"
+    mtcCert: {
+        caId: bytes,                 ; 16-byte AAGUID (01020304-0506-0708-0102-030405060708)
+        serial: uint,                ; uint64 (1)
+        notBefore: uint,             ; 0
+        notAfter: uint,              ; 253402300799 (9999-12-31T23:59:59Z)
+        ? firmwareVersion: uint,     ; 1
+        ? mtcProof: bytes            ; RFC 9162 / MTC inclusion proof
+    }
+}</code></pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">FIDO Metadata Statement (MDS3) Specification &amp; Export</h2>
+      </div>
+<p class="text-sm my-2">To allow Relying Parties like Yubico's <code>java-webauthn-server</code> to validate registrations without hardcoded mock credentials, Chromium exports a fully conformant <strong>FIDO MDS3 Metadata Statement</strong> and <strong>MDS BLOB Payload</strong>.</p>
+<h3 id="41-fido-mds3-metadata-statement-pqc_virtual_authenticator_mdsjson" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 FIDO MDS3 Metadata Statement (<code>pqc_virtual_authenticator_mds.json</code>)</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">json</div><pre class="text-xs leading-relaxed"><code>{
+  "legalHeader": "https://fidoalliance.org/metadata/metadata-statement-legal-header/",
+  "aaguid": "01020304-0506-0708-0102-030405060708",
+  "description": "Chromium Virtual CTAP2 Device (Post-Quantum ML-DSA &amp; MTC Batch Attestation)",
+  "authenticatorVersion": 1,
+  "protocolFamily": "fido2",
+  "schema": 3,
+  "upv": [
+    { "major": 1, "minor": 0 }
+  ],
+  "authenticationAlgorithms": [
+    "secp256r1_ecdsa_sha256_raw"
+  ],
+  "publicKeyAlgAndEncodings": [
+    -48,
+    -49,
+    -50,
+    -7
+  ],
+  "attestationTypes": [
+    "basic_full"
+  ],
+  "userVerificationDetails": [
+    [
+      { "userVerificationMethod": "presence_internal" }
+    ]
+  ],
+  "keyProtection": [
+    "hardware"
+  ],
+  "isKeyRestricted": true,
+  "isFreshUserVerificationRequired": false,
+  "matcherProtection": [
+    "on_chip"
+  ],
+  "attachmentHint": [
+    "external"
+  ],
+  "tcDisplay": [],
+  "attestationRootCertificates": [
+    "MII... (Base64 DER of batch_mldsa44.pem) ...",
+    "MII... (Base64 DER of batch_mldsa65.pem) ...",
+    "MII... (Base64 DER of batch_mldsa87.pem) ...",
+    "MII... (Base64 DER of batch_es256.pem) ..."
+  ],
+  "mtcTrustAnchors": [
+    {
+      "caId": "AQIDBAUGBwgBAgMEBQYHCA==",
+      "logNumber": 0,
+      "trustedSubtrees": [
+        {
+          "start": 0,
+          "end": 1,
+          "rootHash": "qZ3... (Base64 SHA-256 test root hash) ..."
+        }
+      ],
+      "batchKeys": {
+        "1": {
+          "algorithm": -48,
+          "publicKey": "oWNhbGnYMC... (Base64 canonical CBOR COSE_Key) ...",
+          "notBefore": 0,
+          "notAfter": 253402300799,
+          "firmwareVersion": 1
+        },
+        "2": {
+          "algorithm": -49,
+          "publicKey": "oWNhbGnYMS... (Base64 canonical CBOR COSE_Key) ...",
+          "notBefore": 0,
+          "notAfter": 253402300799,
+          "firmwareVersion": 1
+        },
+        "3": {
+          "algorithm": -50,
+          "publicKey": "oWNhbGnYMi... (Base64 canonical CBOR COSE_Key) ...",
+          "notBefore": 0,
+          "notAfter": 253402300799,
+          "firmwareVersion": 1
+        }
+      }
+    }
+  ]
+}</code></pre></div>
+<h3 id="42-exported-artifacts-layout" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.2 Exported Artifacts Layout</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>scratch/mds/
+├── pqc_virtual_authenticator_mds.json       # FIDO MDS3 Metadata Statement
+├── pqc_virtual_authenticator_blob.json      # Complete MetadataBLOBPayload wrapper
+├── batch_mldsa44.pem                        # PEM Root/Batch Cert (ML-DSA-44, alg: -48)
+├── batch_mldsa65.pem                        # PEM Root/Batch Cert (ML-DSA-65, alg: -49)
+├── batch_mldsa87.pem                        # PEM Root/Batch Cert (ML-DSA-87, alg: -50)
+├── batch_es256.pem                          # PEM Root/Batch Cert (ES256, alg: -7)
+├── batch_mldsa44_cose.cbor                  # Raw canonical CBOR COSE_Key
+├── batch_mldsa65_cose.cbor                  # Raw canonical CBOR COSE_Key
+└── batch_mldsa87_cose.cbor                  # Raw canonical CBOR COSE_Key</code></pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Relying Party Integration Guide (<code>java-webauthn-server</code>)</h2>
+      </div>
+<p class="text-sm my-2">Yubico's <code>java-webauthn-server</code> is the de facto reference implementation for Java RP servers. Integrating the Chromium Post-Quantum Virtual Authenticator with <code>java-webauthn-server</code> requires registering the exported MDS3 statement and adding an ML-DSA cryptographic provider.</p>
+<h3 id="51-configuring-java-webauthn-server-with-local-mds" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Configuring <code>java-webauthn-server</code> with Local MDS</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">java</div><pre class="text-xs leading-relaxed"><code>import com.yubico.fido.metadata.FidoMetadataService;
+import com.yubico.fido.metadata.InMemoryMetadataService;
+import com.yubico.fido.metadata.MetadataStatement;
+import com.yubico.webauthn.RelyingParty;
+import com.yubico.webauthn.data.RelyingPartyIdentity;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.security.Security;
+
+public class WebAuthnServerConfig {
+
+    public static RelyingParty configureRelyingParty() throws Exception {
+        // Register Bouncy Castle Post-Quantum Provider for ML-DSA support
+        Security.addProvider(new BouncyCastleProvider());
+        Security.addProvider(new BouncyCastlePQCProvider());
+
+        // Read exported MDS JSON from Chromium
+        File mdsFile = new File("/Users/jbradley/.gemini/antigravity/scratch/mds/pqc_virtual_authenticator_mds.json");
+        String mdsJson = Files.readString(mdsFile.toPath());
+        MetadataStatement statement = MetadataStatement.fromJson(mdsJson);
+
+        // Populate In-Memory FIDO Metadata Service
+        InMemoryMetadataService metadataService = new InMemoryMetadataService();
+        metadataService.addEntry(statement);
+
+        // Build RelyingParty instance
+        return RelyingParty.builder()
+            .identity(RelyingPartyIdentity.builder()
+                .id("acme.com")
+                .name("ACME Post-Quantum RP")
+                .build())
+            .credentialRepository(new TestCredentialRepository())
+            .metadataService(metadataService)
+            .allowUntrustedAttestation(false)
+            .build();
+    }
+}</code></pre></div>
+<h3 id="52-processing-mtcdebug-mtc-attestations-in-rp-handlers" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.2 Processing <code>mtcDebug</code> &amp; MTC Attestations in RP Handlers</h3>
+<p class="text-sm my-2">When registration completes, the RP inspects the registration output:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">java</div><pre class="text-xs leading-relaxed"><code>public RegistrationResult processRegistration(PublicKeyCredential&lt;AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs&gt; credential) {
+    // 1. Verify standard WebAuthn MakeCredential response
+    RegistrationResult result = relyingParty.finishRegistration(
+        FinishRegistrationOptions.builder()
+            .request(registrationRequest)
+            .response(credential)
+            .build()
+    );
+
+    // 2. Extract in-band diagnostic MTC data (if requested)
+    Optional&lt;MtcDebugExtensionOutput&gt; mtcDebug = credential.getClientExtensionResults().getMtcDebug();
+    if (mtcDebug.isPresent()) {
+        ByteArray pubKeyBytes = mtcDebug.get().getPubKey();
+        Optional&lt;String&gt; deviceSerial = mtcDebug.get().getDeviceSerial();
+        
+        System.out.printf("[MTC Diagnostic] Active Attestation Public Key: %s%n", pubKeyBytes.getBase64Url());
+        deviceSerial.ifPresent(serial -&gt; System.out.printf("[Enterprise Serial]: %s%n", serial));
+    }
+
+    return result;
+}</code></pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-6 -->
+    <!-- ===================================================================== -->
+    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Conformance &amp; Test Suite Verification</h2>
+      </div>
+<p class="text-sm my-2">Four dedicated unit tests in <code>device/fido/virtual_ctap2_device_unittest.cc</code> verify every dimension of the PQC and MTC virtual authenticator:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cpp</div><pre class="text-xs leading-relaxed"><code>TEST_F(VirtualCtap2DeviceTest, PostQuantumBatchAttestationIsValid) {
+  // Tests self-signed X.509 batch certificates for -48, -49, -50.
+  // Validates ASN.1 OIDs 2.16.840.1.101.3.4.3.{17,18,19} and signature verification.
+}
+
+TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcDebugExtension) {
+  // Tests mtc-debug extension request:
+  // - Verifies pubKey parses as canonical COSE_Key with matching alg.
+  // - Verifies notBefore=0, notAfter=253402300799, firmwareVersion=1.
+  // - Verifies deviceSerial is ABSENT when Enterprise Attestation is not requested.
+}
+
+TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcDebugEnterpriseAttestation) {
+  // Tests EP 1/2 privacy gating:
+  // - When enterprise attestation is requested for acme.com, deviceSerial is returned.
+}
+
+TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcAttestationFormats) {
+  // Tests attestation statement generation for fmt: "mtc" and fmt: "mtcl".
+  // Validates mtcCert dictionary (caId, serial, notBefore, notAfter).
+  // Validates that fmt: "mtcl" includes inline pubKey matching mtc-debug.
+}</code></pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-7 -->
+    <!-- ===================================================================== -->
+    <section id="section-7" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 7</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Transport Wire-Size Economics Across Formats</h2>
+      </div>
+<p class="text-sm my-2">The table below contrasts classical X.509 <code>packed</code> against <code>mtcl</code> and <code>mtc</code> across single-frame USB HID ($7,609\text{ B}$ limit):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Attestation Format</th>
+<th class="p-3 font-semibold align-bottom text-right"><code>ML-DSA-44</code> (<code>-48</code>)</th>
+<th class="p-3 font-semibold align-bottom text-right"><code>ML-DSA-65</code> (<code>-49</code>)</th>
+<th class="p-3 font-semibold align-bottom text-right"><code>ML-DSA-87</code> (<code>-50</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">Fits Single USB HID Frame?</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Classical X.509 <code>packed</code> (<code>x5c</code>)</strong></td>
+<td class="p-3 align-top text-right"><code>~7,924 B</code></td>
+<td class="p-3 align-top text-right"><code>~10,982 B</code></td>
+<td class="p-3 align-top text-right"><code>~14,898 B</code></td>
+<td class="p-3 align-top text-center">❌ <strong>None fit</strong> (Fragmentation required)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>fmt: "mtcl"</code> (Inline <code>pubKey</code> + Proof)</strong></td>
+<td class="p-3 align-top text-right"><strong><code>~5,490 B</code></strong></td>
+<td class="p-3 align-top text-right"><strong><code>~7,600 B</code></strong></td>
+<td class="p-3 align-top text-right"><code>~10,200 B</code></td>
+<td class="p-3 align-top text-center">✅ <strong><code>ML-DSA-44</code> &amp; <code>ML-DSA-65</code> fit</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>fmt: "mtc"</code> (MDS3 Resolved <code>pubKey</code>)</strong></td>
+<td class="p-3 align-top text-right"><strong><code>~4,165 B</code></strong></td>
+<td class="p-3 align-top text-right"><strong><code>~5,635 B</code></strong></td>
+<td class="p-3 align-top text-right"><strong><code>~7,595 B</code></strong></td>
+<td class="p-3 align-top text-center">✅ <strong>ALL 3 PQC ALGORITHMS FIT!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./chromium_pqc_mtc_virtual_authenticator.md" class="text-[var(--primary)] hover:underline">chromium_pqc_mtc_virtual_authenticator.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>
