@@ -200,19 +200,19 @@ index 70e98e0..fd42f74 100644
 +        4. Alternatively, if conveyed via an extension (such as {{AuthenticationExtensionsClientOutputs/mtcDebug}}), let |batchPubKey| be the public key decoded from `authenticatorData.extensions["mtc-debug"].pubKey`.
 +    6. Verify that |sig| is a valid signature over |nonce| with the key |batchPubKey| according to |alg|.
 +    7. Verify the key validity period:
-+        1. If |mtcCert| contains `notBefore` and `notAfter`, verify that <code>|notBefore| &le; now &le; |notAfter|</code>.
-+        2. Otherwise (if `mtcKeyRef` was used), verify that the current time falls within the validity interval published in the verified metadata or manifest entry for this `serial`.
++        1. If |mtcCert| (or `authenticatorData.extensions["mtc-debug"]` when `mtcKeyRef` is used) contains `notBefore` and `notAfter`, verify that <code>|notBefore| &le; now &le; |notAfter|</code>.
++        2. Otherwise (if `mtcKeyRef` was used without `mtcDebug`), verify that the current time falls within the validity interval published in the verified metadata or manifest entry for this `serial`.
 +    8. Verify revocation status:
 +        1. Verify that `serial` is not within any revoked serial range for `caId` in the Relying Party's metadata or manifest.
 +    9. Verify Merkle tree commitment:
-+        1. If |mtcCert| conforms to `mtcEntryDesc` and contains `mtcProof`:
++        1. If |mtcCert| (or `authenticatorData.extensions["mtc-debug"]` when `mtcKeyRef` is used) contains `mtcProof`:
 +            1. Compute `pubKeyHash = SHA-256(batchPubKey)`.
 +            2. Reconstruct the leaf entry structure (`FidoMtcLogEntry`) binding `caId`, `serial`, `notBefore`, `notAfter`, `authenticatorData.aaguid`, optional `firmwareVersion`, `pubKeyHash`, and any leaf extensions (such as the enterprise device serial number if committed in the leaf).
 +            3. Compute the leaf hash from the reconstructed entry according to [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]]: <code>SHA-256(0x00 || FidoMtcLogEntry)</code>.
 +            4. Evaluate the Merkle inclusion proof using the leaf hash and `mtcProof` to derive the calculated root hash.
-+            5. Verify that the calculated root hash matches an acceptable [=attestation trust path|trust anchor=] root hash established for `caId` (e.g., published in FIDO MDS3 `mtcTrustAnchors`).
-+        2. If |mtcCert| conforms to `mtcKeyRef` (proof-less mode):
-+            1. Verify that the [=[RP]=] has previously authenticated the complete manufacturer manifest table against the Root CA signature or published trust anchor root hash.
++            5. Verify that the calculated root hash matches an acceptable [=attestation trust path|trust anchor=] root hash established for `caId` (e.g., published in FIDO MDS3 `mtcTrustAnchors`, or `authenticatorData.extensions["mtc-debug"].rootHash` in offline conformance mode).
++        2. Otherwise (if |mtcCert| conforms to `mtcKeyRef` in proof-less mode without `mtcProof`):
++            1. Verify that the [=[RP]=] has previously authenticated the complete manufacturer manifest or MDS key table against the Root CA signature or published trust anchor root hash.
 +    10. If Enterprise Attestation was requested and active:
 +        1. Verify that the resolved device serial number matches an authorized device within the [=[RP]=]'s inventory.
 +    11. If successful, return implementation-specific values representing attestation type [=Basic=] (or [=AttCA=] in enterprise mode) and the attestation trust path.

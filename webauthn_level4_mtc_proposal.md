@@ -131,9 +131,9 @@ Given `(attStmt, authenticatorData, clientDataHash)`:
    - Let `pubKey` be the canonical CBOR `COSE_Key` obtained from the lookup.
 4. Verify `attStmt.sig` over $\text{payload}$ using `pubKey` and `attStmt.alg`.
 5. Verify tree commitment:
-   - If `attStmt.mtcCert` contains `mtcProof`: walk the sibling hashes from `SHA-256(pubKey)` up to the landmark `rootHash` published in MDS3.
-   - If `attStmt.mtcCert` is proof-less (`mtcKeyRef`): verify that the RP previously authenticated the complete manifest table against the Root CA signature over `rootHash`.
-6. Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$.
+   - If `attStmt.mtcCert` (or `authenticatorData.extensions["mtc-debug"]` when `mtcKeyRef` is used) contains `mtcProof`: walk the sibling hashes from `SHA-256(pubKey)` up to the landmark `rootHash` published in MDS3 (or `mtc-debug.rootHash` in offline conformance mode).
+   - Otherwise, if `attStmt.mtcCert` is proof-less (`mtcKeyRef` without `mtcProof`): verify that the RP previously authenticated the complete manifest or MDS key table against the Root CA signature over `rootHash`.
+6. Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$ (using `attStmt.mtcCert`, `mtc-debug`, or the verified manifest/MDS entry).
 7. Verify revocation: verify `serial` is not in `revokedSerials`.
 
 ---
