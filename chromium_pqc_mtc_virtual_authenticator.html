@@ -145,7 +145,7 @@
           <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Chromium Virtual Authenticator Implementation</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#31-enabling-mtc-debug-in-devicefido" class="hover:underline">&sect;3.1 Enabling <code>mtc-debug</code> in <code>device/fido</code></a></div>
-            <div><a href="#32-dual-support-for-fmt-mtc-and-fmt-mtcl-attestation-statements" class="hover:underline">&sect;3.2 Dual Support for <code>fmt: "mtc"</code> and <code>fmt: "mtcl"</code> Attestation Statements</a></div>
+            <div><a href="#32-webauthn-level-4-compact-mtc-attestation-statement-format-fmt-mtc" class="hover:underline">&sect;3.2 WebAuthn Level 4 Compact MTC Attestation Statement Format (<code>fmt: "mtc"</code>)</a></div>
           </div>
         </li>
           </ul>
@@ -235,7 +235,7 @@
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>feat/pqc-mtc-attestation</code></strong></td>
-<td class="p-3 align-top text-left">Unified branch: WebAuthn L4 <code>fmt: "mtc"</code> &amp; <code>fmt: "mtcl"</code>; <code>mtc-debug</code> response synthesis; exact public key reuse; FIDO MDS3 exporter.</td>
+<td class="p-3 align-top text-left">Unified branch: WebAuthn L4 <code>fmt: "mtc"</code>; <code>mtc-debug</code> response synthesis; exact public key reuse; FIDO MDS3 exporter.</td>
 <td class="p-3 align-top text-left"><code>device/fido</code>, <code>device/BUILD.gn</code>, test suites</td>
 <td class="p-3 align-top text-left">End-to-end RP verification, test harness integration, and MDS testing.</td>
 </tr>
@@ -250,7 +250,7 @@
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Public Key Reuse Architecture Across Batch &amp; MTC Formats</h2>
       </div>
-<p class="text-sm my-2">A core requirement of the Post-Quantum WebAuthn test suite is <strong>strict consistency</strong>: the active attestation public key used to verify the authenticator's signature MUST be identical across all three attestation representations:</p>
+<p class="text-sm my-2">A core requirement of the Post-Quantum WebAuthn test suite is <strong>strict consistency</strong>: the active attestation public key used to verify the authenticator's signature MUST be identical across all attestation representations:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Self-Signed X.509 Batch Certificate (<code>fmt: "packed"</code>, <code>x5c</code>):</strong> The Subject Public Key Info (SPKI) embedded in the DER certificate.</li>
 <li><strong>Compact WebAuthn Level 4 MTC (<code>fmt: "mtc"</code>, <code>mtcCert</code>):</strong> The public key resolved by the Relying Party using <code>(caId, serial)</code> from the FIDO MDS3 table (<code>MtcTrustAnchor.batchKeys</code>).</li>
@@ -267,7 +267,7 @@
     subgraph Formats["Attestation &amp; Export Outputs"]
         X509["1. X.509 Batch Certificate&lt;br/&gt;net::x509_util::CreateSelfSigned&lt;br/&gt;(Embedded in attStmt.x5c)"]
         MtcDebug["2. mtc-debug Extension Output&lt;br/&gt;pubKey: CoseAKP&lt;br/&gt;rootHash + mtcProof"]
-        MtcStmt["3. WebAuthn L4 fmt: mtc / mtcl&lt;br/&gt;caId: kDeviceAaguid, serial: 1&lt;br/&gt;attStmt.sig verified by CoseAKP"]
+        MtcStmt["3. WebAuthn L4 fmt: mtc&lt;br/&gt;caId: kDeviceAaguid, serial: 1&lt;br/&gt;attStmt.sig verified by CoseAKP"]
         MDS3["4. FIDO MDS3 Statement&lt;br/&gt;attestationRootCertificates: [X509]&lt;br/&gt;mtcTrustAnchors.batchKeys: [CoseAKP]"]
     end
 
@@ -356,18 +356,12 @@ if (request.mtc_debug &amp;&amp; config_.mtc_debug_support) {
 }</code></pre></div></li>
 <li><strong>CTAP2 CBOR Serialization:</strong> <code>AsCTAPStyleCBORBytes</code> encodes <code>response.mtc_debug</code> into key <code>0x06</code> of the CTAP2 MakeCredential response map.</li>
 </ol>
-<h3 id="32-dual-support-for-fmt-mtc-and-fmt-mtcl-attestation-statements" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Dual Support for <code>fmt: "mtc"</code> and <code>fmt: "mtcl"</code> Attestation Statements</h3>
-<p class="text-sm my-2">Through <code>VirtualCtap2Device::Config::attestation_format</code>, test fixtures can switch the authenticator's attestation output between:</p>
-<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><strong><code>"packed"</code> (Default):</strong> Classical X.509 batch certificates carrying self-signed ML-DSA certificates in <code>x5c</code>.</li>
-<li><strong><code>"mtc"</code> (Compact MDS/Log-Assisted MTC):</strong> The public key is omitted from <code>attStmt</code>. Relying Parties resolve <code>pubKey</code> out-of-band by <code>(caId, serial)</code>.</li>
-<li><strong><code>"mtcl"</code> (MTC Large):</strong> The canonical CBOR <code>COSE_Key</code> is transmitted inline in <code>attStmt.pubKey</code>.</li>
-</ul>
-<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; Attestation Statement Structure for fmt: "mtc" and "mtcl"
+<h3 id="32-webauthn-level-4-compact-mtc-attestation-statement-format-fmt-mtc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 WebAuthn Level 4 Compact MTC Attestation Statement Format (<code>fmt: "mtc"</code>)</h3>
+<p class="text-sm my-2">In accordance with the WebAuthn Level 4 MTC proposal, <strong>only <code>fmt: "mtc"</code> is supported</strong>. Format <code>"mtcl"</code> is omitted, guaranteeing maximum wire compression by omitting <code>pubKey</code> from the wire:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>; Attestation Statement Structure for fmt: "mtc" (Public key omitted on wire)
 attStmt = {
     alg: int,                        ; -48, -49, or -50
     sig: bytes,                      ; Pure ML-DSA signature over authData || clientDataHash
-    ? pubKey: bytes,                 ; Present only in fmt: "mtcl"
     mtcCert: {
         caId: bytes,                 ; 16-byte AAGUID (01020304-0506-0708-0102-030405060708)
         serial: uint,                ; uint64 (1)
@@ -377,6 +371,11 @@ attStmt = {
         ? mtcProof: bytes            ; RFC 9162 / MTC inclusion proof
     }
 }</code></pre></div>
+<p class="text-sm my-2">Through <code>VirtualCtap2Device::Config::attestation_format</code>, test fixtures can switch the authenticator's attestation output between:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>"packed"</code> (Default):</strong> Classical X.509 batch certificates carrying self-signed ML-DSA certificates in <code>x5c</code>.</li>
+<li><strong><code>"mtc"</code> (Compact MTC):</strong> The public key is omitted from <code>attStmt</code> on the wire and resolved by <code>(caId, serial)</code>.</li>
+</ul>
     </section>
 
     <!-- ===================================================================== -->
@@ -388,6 +387,7 @@ attStmt = {
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">FIDO Metadata Statement (MDS3) Specification &amp; Export</h2>
       </div>
 <p class="text-sm my-2">To allow Relying Parties like Yubico's <code>java-webauthn-server</code> to validate registrations without hardcoded mock credentials, Chromium exports a fully conformant <strong>FIDO MDS3 Metadata Statement</strong> and <strong>MDS BLOB Payload</strong>.</p>
+<p class="text-sm my-2">All supported authentication algorithms (<code>-48</code>, <code>-49</code>, <code>-50</code>, <code>-7</code>) are formally registered in <code>"authenticationAlgorithms"</code> and <code>"publicKeyAlgAndEncodings"</code>.</p>
 <h3 id="41-fido-mds3-metadata-statement-pqc_virtual_authenticator_mdsjson" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 FIDO MDS3 Metadata Statement (<code>pqc_virtual_authenticator_mds.json</code>)</h3>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">json</div><pre class="text-xs leading-relaxed"><code>{
   "legalHeader": "https://fidoalliance.org/metadata/metadata-statement-legal-header/",
@@ -400,7 +400,10 @@ attStmt = {
     { "major": 1, "minor": 0 }
   ],
   "authenticationAlgorithms": [
-    "secp256r1_ecdsa_sha256_raw"
+    "secp256r1_ecdsa_sha256_raw",
+    "ml_dsa_44",
+    "ml_dsa_65",
+    "ml_dsa_87"
   ],
   "publicKeyAlgAndEncodings": [
     -48,
@@ -466,6 +469,13 @@ attStmt = {
           "notBefore": 0,
           "notAfter": 253402300799,
           "firmwareVersion": 1
+        },
+        "4": {
+          "algorithm": -7,
+          "publicKey": "oWNhbGnYMi... (Base64 canonical CBOR COSE_Key) ...",
+          "notBefore": 0,
+          "notAfter": 253402300799,
+          "firmwareVersion": 1
         }
       }
     }
@@ -473,7 +483,7 @@ attStmt = {
 }</code></pre></div>
 <h3 id="42-exported-artifacts-layout" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.2 Exported Artifacts Layout</h3>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>scratch/mds/
-├── pqc_virtual_authenticator_mds.json       # FIDO MDS3 Metadata Statement
+├── pqc_virtual_authenticator_mds.json       # FIDO MDS3 Metadata Statement (All 4 algorithms)
 ├── pqc_virtual_authenticator_blob.json      # Complete MetadataBLOBPayload wrapper
 ├── batch_mldsa44.pem                        # PEM Root/Batch Cert (ML-DSA-44, alg: -48)
 ├── batch_mldsa65.pem                        # PEM Root/Batch Cert (ML-DSA-65, alg: -49)
@@ -481,7 +491,8 @@ attStmt = {
 ├── batch_es256.pem                          # PEM Root/Batch Cert (ES256, alg: -7)
 ├── batch_mldsa44_cose.cbor                  # Raw canonical CBOR COSE_Key
 ├── batch_mldsa65_cose.cbor                  # Raw canonical CBOR COSE_Key
-└── batch_mldsa87_cose.cbor                  # Raw canonical CBOR COSE_Key</code></pre></div>
+├── batch_mldsa87_cose.cbor                  # Raw canonical CBOR COSE_Key
+└── export_pqc_mds.py                        # Python validator &amp; inspector script</code></pre></div>
     </section>
 
     <!-- ===================================================================== -->
@@ -567,7 +578,7 @@ public class WebAuthnServerConfig {
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Conformance &amp; Test Suite Verification</h2>
       </div>
-<p class="text-sm my-2">Four dedicated unit tests in <code>device/fido/virtual_ctap2_device_unittest.cc</code> verify every dimension of the PQC and MTC virtual authenticator:</p>
+<p class="text-sm my-2">Five dedicated unit tests in <code>device/fido/virtual_ctap2_device_unittest.cc</code> verify every dimension of the PQC and MTC virtual authenticator:</p>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cpp</div><pre class="text-xs leading-relaxed"><code>TEST_F(VirtualCtap2DeviceTest, PostQuantumBatchAttestationIsValid) {
   // Tests self-signed X.509 batch certificates for -48, -49, -50.
   // Validates ASN.1 OIDs 2.16.840.1.101.3.4.3.{17,18,19} and signature verification.
@@ -586,9 +597,14 @@ TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcDebugEnterpriseAttestation) {
 }
 
 TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcAttestationFormats) {
-  // Tests attestation statement generation for fmt: "mtc" and fmt: "mtcl".
+  // Tests attestation statement generation for fmt: "mtc".
   // Validates mtcCert dictionary (caId, serial, notBefore, notAfter).
-  // Validates that fmt: "mtcl" includes inline pubKey matching mtc-debug.
+  // Confirms pubKey is omitted from attStmt on the wire per WebAuthn L4 MTC specification.
+}
+
+TEST_F(VirtualCtap2DeviceTest, PostQuantumExportMdsAndCertificates) {
+  // Automatically generates all 4 PEM batch certificates, canonical COSE keys,
+  // and FIDO MDS3 MetadataStatement JSON with all 4 authentication algorithms.
 }</code></pre></div>
     </section>
 
@@ -600,7 +616,7 @@ TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcAttestationFormats) {
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 7</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Transport Wire-Size Economics Across Formats</h2>
       </div>
-<p class="text-sm my-2">The table below contrasts classical X.509 <code>packed</code> against <code>mtcl</code> and <code>mtc</code> across single-frame USB HID ($7,609\text{ B}$ limit):</p>
+<p class="text-sm my-2">The table below contrasts classical X.509 <code>packed</code> against the compact <code>fmt: "mtc"</code> across single-frame USB HID ($7,609\text{ B}$ limit):</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
@@ -615,21 +631,14 @@ TEST_F(VirtualCtap2DeviceTest, PostQuantumMtcAttestationFormats) {
 <td class="p-3 align-top text-right"><code>~7,924 B</code></td>
 <td class="p-3 align-top text-right"><code>~10,982 B</code></td>
 <td class="p-3 align-top text-right"><code>~14,898 B</code></td>
-<td class="p-3 align-top text-center">❌ <strong>None fit</strong> (Fragmentation required)</td>
+<td class="p-3 align-top text-center">❌ <strong>None fit</strong> (CTAP2 fragmentation required)</td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong><code>fmt: "mtcl"</code> (Inline <code>pubKey</code> + Proof)</strong></td>
-<td class="p-3 align-top text-right"><strong><code>~5,490 B</code></strong></td>
-<td class="p-3 align-top text-right"><strong><code>~7,600 B</code></strong></td>
-<td class="p-3 align-top text-right"><code>~10,200 B</code></td>
-<td class="p-3 align-top text-center">✅ <strong><code>ML-DSA-44</code> &amp; <code>ML-DSA-65</code> fit</strong></td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong><code>fmt: "mtc"</code> (MDS3 Resolved <code>pubKey</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>fmt: "mtc"</code> (Public key resolved via MDS3/Log)</strong></td>
 <td class="p-3 align-top text-right"><strong><code>~4,165 B</code></strong></td>
 <td class="p-3 align-top text-right"><strong><code>~5,635 B</code></strong></td>
 <td class="p-3 align-top text-right"><strong><code>~7,595 B</code></strong></td>
-<td class="p-3 align-top text-center">✅ <strong>ALL 3 PQC ALGORITHMS FIT!</strong></td>
+<td class="p-3 align-top text-center">✅ <strong>ALL 3 PQC ALGORITHMS FIT SINGLE FRAME!</strong></td>
 </tr>
 </tbody></table></div>
     </section>
