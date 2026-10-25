@@ -54,19 +54,25 @@ In public FIDO MDS3, the Enterprise `MtcTrustAnchor` (e.g., `caId: "g5k_AQI"`) p
    - Add `.attestationFormats(List<String>)` to [`StartRegistrationOptions`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/StartRegistrationOptions.java) and a Relying Party default on [`RelyingParty`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/RelyingParty.java) / [`RelyingPartyV2`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/RelyingPartyV2.java) (e.g., `List.of("mtc", "packed")`).
    - Omit `attestationFormats` when `attestation == NONE`.
 
-2. **`mtcDebug` (`mtc-debug`) registration extension**:
+2. **`mtcDebug` (`mtc-debug`) registration extension** (WebAuthn Level 4 §10.2.1):
    - [`RegistrationExtensionInputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/RegistrationExtensionInputs.java): add `@JsonProperty("mtcDebug") Boolean mtcDebug`, builder method `.mtcDebug(boolean)` / `.mtcDebug()`, and include `"mtcDebug"` in `getExtensionIds()`.
    - [`Extensions`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/Extensions.java): add `Extensions.MtcDebug`:
-     - **Authenticator output (`authData.extensions["mtc-debug"]`):**
+     - **7-Field Registration Output (`authData.extensions["mtc-debug"]` & `clientExtensionResults.mtcDebug`):**
        ```java
        @Value
-       public static class MtcDebugAuthenticatorOutput {
-         ByteArray pubKey;               // Canonical CBOR COSE_Key
-         Optional<String> deviceSerial;  // Decoded from tstr or uint; present iff EP active
+       @Builder(toBuilder = true)
+       public static class MtcDebugRegistrationOutput {
+         ByteArray pubKey;               // Canonical CBOR COSE_Key (Base64URL in toJSON())
+         Optional<String> deviceSerial;  // Decoded from tstr/uint; strictly gated on EP 1/2
+         Optional<Long> notBefore;       // Unix epoch seconds (for proof-less mtcKeyRef)
+         Optional<Long> notAfter;        // Unix epoch seconds (for proof-less mtcKeyRef)
+         Optional<Long> firmwareVersion; // CTAP 2.3 parameter 0x0E (uint32)
+         Optional<ByteArray> mtcProof;   // RFC 9162 binary inclusion proof
+         Optional<ByteArray> rootHash;   // 32-byte Landmark / Trust Anchor root hash
        }
        ```
-     - **Client output (`clientExtensionResults.mtcDebug`):** matching structure with Base64URL `pubKey`, wired into [`AuthenticatorRegistrationExtensionOutputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/AuthenticatorRegistrationExtensionOutputs.java) and [`ClientRegistrationExtensionOutputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/ClientRegistrationExtensionOutputs.java).
-     - **Privacy gate validation (`FinishRegistrationSteps.Step17`):** if `authData.extensions["mtc-debug"]` contains `deviceSerial` when the RP did not request `AttestationConveyancePreference.ENTERPRISE`, fail validation.
+     - **Client output (`clientExtensionResults.mtcDebug`):** wired into [`AuthenticatorRegistrationExtensionOutputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/AuthenticatorRegistrationExtensionOutputs.java) and [`ClientRegistrationExtensionOutputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/ClientRegistrationExtensionOutputs.java).
+     - **Dual-layer privacy gate validation (`FinishRegistrationSteps.Step17`):** if either `authData.extensions["mtc-debug"]` or `clientExtensionResults.mtcDebug` contains `deviceSerial` when the RP did not request `AttestationConveyancePreference.ENTERPRISE`, fail validation immediately.
 
 ### 2.2 New Package `com.yubico.webauthn.attestation.mtc`
 
@@ -157,8 +163,8 @@ public class MtcAttestationInfo {
    4. Parse `pubKey` via `WebAuthnCodecs.importCosePublicKey(pubKey)`, verify `coseKey.alg == attStmt.alg`, and verify `attStmt.sig` over `authenticatorData || clientDataJsonHash` using `Crypto.verifySignature`.
    5. Check validity window `[notBefore, notAfter]` against `clock.instant()`, verify `!anchor.revokedSerials.contains(serial)`, and verify `logNumber` matches.
    6. **Verify Merkle Commitment:**
-      - **If `mtcProof` is present (`mtcEntryDesc`):** reconstruct `FidoMtcLogEntry` with `SHA-256(pubKey)`, `authData.aaguid`, and `mtcProof.extensions` (verifying that `mtcProof.extensions` matches `deviceSerial` when in Enterprise `mtc-debug` mode), compute the RFC 9162 root hash, and verify it equals `subtree.rootHash` (`ProofMode.INCLUSION_PROOF`).
-      - **If `mtcProof` is absent (`mtcKeyRef`):** require `keySource != MTC_DEBUG_EXTENSION` and `anchor.isKeyTableAuthenticated() == true` (`ProofMode.AUTHENTICATED_KEY_TABLE`).
+      - **If `mtcProof` is present (in `mtcCert` `mtcEntryDesc` or in `mtc-debug` alongside proof-less `mtcKeyRef`):** reconstruct `FidoMtcLogEntry` with `SHA-256(pubKey)`, `authData.aaguid`, optional `firmwareVersion`, and `mtcProof.extensions` (verifying that `mtcProof.extensions` matches `deviceSerial` when in Enterprise `mtc-debug` mode), compute the RFC 9162 root hash, and verify it equals `subtree.rootHash` (or `mtcDebug.rootHash` in standalone offline conformance mode) (`ProofMode.INCLUSION_PROOF`).
+      - **If `mtcProof` is absent (`mtcKeyRef` without `mtcDebug.mtcProof`):** require `keySource != MTC_DEBUG_EXTENSION` and `anchor.isKeyTableAuthenticated() == true` (`ProofMode.AUTHENTICATED_KEY_TABLE`).
    7. Set `attestationTrusted = true`, `attestationType = (deviceSerial.isPresent() ? AttestationType.ATTESTATION_CA : AttestationType.BASIC)`, and attach `MtcAttestationInfo` to `RegistrationResult`.
 
 ---
