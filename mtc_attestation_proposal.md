@@ -140,7 +140,7 @@ public class MtcAttestationInfo {
 
 2. **`MtcProof` & `FidoMtcLogEntry` & `MerkleInclusion`**:
    - `MtcProof`: parses TLS-serialized `extensions<0..2^16-1>`, `uint48 start`, `uint48 end`, `inclusion_proof<0..2^16-1>`, `signatures<0..2^24-1>`.
-   - `FidoMtcLogEntry`: deterministic serializer binding `(ca_id, serial, not_before, not_after, aaguid[16], fw_version, SHA-256(pubKey)[32], extensions)`.
+   - `FidoMtcLogEntry`: deterministic serializer binding `(ca_id, serial, not_before, not_after, aaguid[16], firmware_version, SHA-256(pubKey)[32], extensions)`. Note: Because `firmware_version` is committed into the leaf entry, deploying a new firmware version requires issuing a new attestation batch key and leaf entry even if the AAGUID remains stable.
    - `MerkleInclusion`: RFC 9162 §2.1.3.2 inclusion proof evaluator (`H(0x00 || leaf)` and `H(0x01 || left || right)`) over `(leafIndex - start, end - start)` against `MtcSubtree.rootHash`.
    - `MtcCheckpoint`: constructs the 85-byte `FidoMtcSubtreeCheckpoint` (`"FIDO-MTC-SUBTREE-CHECKPOINT-V1\0\0" || u16 len(caId) || caId || u16 logNumber || u48 start || u48 end || rootHash[32]`) and verifies `subtrees[].signature` against `attestationRootCertificates` (supporting `ML-DSA`, `ES256`/`ES384`, and `HSS-LMS` `alg: -46` OID `1.2.840.113549.1.9.16.3.17` via BouncyCastle).
 

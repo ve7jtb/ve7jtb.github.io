@@ -132,6 +132,10 @@ mtcEntryDesc = {
 }                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof
 ```
 
+> [!NOTE]
+> **Firmware Version and Batch Key Lifecycle:**
+> Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's AAGUID across minor firmware revisions may remain stable.
+
 ### 3.2 Format 2: Compact MDS-Assisted MTC Attestation Statement Format (`fmt: "mtc"`)
 
 - **Attestation statement format identifier:** `"mtc"`

@@ -254,6 +254,7 @@ mtcKeyRef = {
     caId: bytes,                      ; 1-4 byte compact CA Log Identifier
     serial: uint                      ; Log entry serial number for manifest lookup
 }</code></pre></div>
+<div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2"><strong>Firmware Version and Batch Key Lifecycle:</strong> Because <code>firmwareVersion</code> is cryptographically committed as an immutable field in the Merkle tree leaf entry (<code>FidoMtcLogEntry</code>), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's AAGUID across minor firmware revisions may remain stable.</p></div>
 <h4 id="relying-party-verification-procedure-for-fmt-mtc" class="text-base font-semibold text-[var(--foreground)]">Relying Party Verification Procedure for <code>fmt: "mtc"</code></h4>
 <p class="text-sm my-2">Given <code>(attStmt, authenticatorData, clientDataHash)</code>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
