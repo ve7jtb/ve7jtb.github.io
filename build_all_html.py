@@ -431,10 +431,21 @@ DOCUMENT_CONFIGS = {
         "badges": [
             ("Chromium HEAD (feat/pqc-mtc-attestation)", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
             ("ML-DSA-44, 65, 87 (-48, -49, -50)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("W3C WebAuthn L4 mtc & mtcl", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("W3C WebAuthn L4 fmt: \"mtc\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("FIDO MDS3 & Yubico RP Integration", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
         "desc": "Technical specification, implementation guide, and Relying Party integration reference for Post-Quantum ML-DSA batch attestation and Merkle Tree Certificate (MTC) attestation in Chromium's VirtualCtap2Device, including FIDO MDS3 metadata export for test RP servers such as java-webauthn-server.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "pqc_virtual_authenticator_proposal": {
+        "title": "RFC / Design Proposal: Post-Quantum Cryptography (PQC) Updates to Chromium Virtual Authenticator",
+        "badges": [
+            ("Chromium Virtual Authenticator", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("feat/pqc-virtual-authenticator", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("COSE -48, -49, -50 (ML-DSA)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Self-Signed X.509 Batch Certs", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "RFC and technical design proposal specifying support for COSE algorithms -48 (ML-DSA-44), -49 (ML-DSA-65), and -50 (ML-DSA-87) in Chromium's test authenticator framework (VirtualCtap2Device / VirtualFidoDevice), pure-signature EVP_DigestSignInit integration, and self-signed X.509 batch attestation certificates in net/cert/x509_util.cc.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }

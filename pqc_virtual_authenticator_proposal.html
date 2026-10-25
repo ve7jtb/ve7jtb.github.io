@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RFC / Design Proposal: Post-Quantum Cryptography (PQC) Updates to Chromium Virtual Authenticator</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Chromium Virtual Authenticator</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">feat/pqc-virtual-authenticator</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">COSE -48, -49, -50 (ML-DSA)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Self-Signed X.509 Batch Certs</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./pqc_virtual_authenticator_proposal.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      RFC / Design Proposal: Post-Quantum Cryptography (PQC) Updates to Chromium Virtual Authenticator
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      RFC and technical design proposal specifying support for COSE algorithms -48 (ML-DSA-44), -49 (ML-DSA-65), and -50 (ML-DSA-87) in Chromium's test authenticator framework (VirtualCtap2Device / VirtualFidoDevice), pure-signature EVP_DigestSignInit integration, and self-signed X.509 batch attestation certificates in net/cert/x509_util.cc.
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Executive Summary</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Background &amp; Problem Statement</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Architecture &amp; Technical Design</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Detailed Implementation Changes</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Branch &amp; Version Control Strategy</div>
+        </a>
+        <a href="#section-6" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 6</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Verification &amp; Test Plan</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. Executive Summary</a>
+
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Background &amp; Problem Statement</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-cose-algorithm-identifiers-for-ml-dsa" class="hover:underline">&sect;2.1 COSE Algorithm Identifiers for ML-DSA</a></div>
+            <div><a href="#22-prior-gaps-in-chromiums-test-authenticator" class="hover:underline">&sect;2.2 Prior Gaps in Chromium's Test Authenticator</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Architecture &amp; Technical Design</a>
+
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Detailed Implementation Changes</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#41-x509-certificate-generation-netcertx509_utilcc" class="hover:underline">&sect;4.1 X.509 Certificate Generation (<code>//net/cert/x509_util.cc</code>)</a></div>
+            <div><a href="#42-virtual-fido-device-core-devicefidovirtual_fido_device" class="hover:underline">&sect;4.2 Virtual FIDO Device Core (<code>//device/fido/virtual_fido_device.*</code>)</a></div>
+            <div><a href="#43-virtual-ctap2-protocol-implementation-devicefidovirtual_ctap2_device" class="hover:underline">&sect;4.3 Virtual CTAP2 Protocol Implementation (<code>//device/fido/virtual_ctap2_device.*</code>)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Branch &amp; Version Control Strategy</a>
+
+        </li>
+        <li>
+          <a href="#section-6" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">6. Verification &amp; Test Plan</a>
+
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Executive Summary</h2>
+      </div>
+<p class="text-sm my-2">As the cryptographic community transitions toward quantum-resistant algorithms (FIPS 204 / ML-DSA), the W3C WebAuthentication Working Group and the FIDO Alliance are drafting specifications to register and test Post-Quantum Cryptography (PQC) digital signature algorithms for WebAuthn credentials and CTAP2 authenticators.</p>
+<p class="text-sm my-2">This proposal specifies the design and implementation to enable full support for <strong>COSE Algorithms -48 (ML-DSA-44), -49 (ML-DSA-65), and -50 (ML-DSA-87)</strong> within Chromium's test authenticator framework (<code>VirtualCtap2Device</code> / <code>VirtualFidoDevice</code>), including <strong>self-signed batch attestation certificate generation</strong>.</p>
+<p class="text-sm my-2">This work is tracked in a dedicated local branch (<code>feat/pqc-virtual-authenticator</code>) separate from the WebAuthn Level 4 Make-Then-Confirm (<code>mtcDebug</code>) extension branch (<code>feat/webauthn-l4-mtc-debug</code>).</p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Background &amp; Problem Statement</h2>
+      </div>
+<h3 id="21-cose-algorithm-identifiers-for-ml-dsa" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 COSE Algorithm Identifiers for ML-DSA</h3>
+<p class="text-sm my-2">The IANA COSE Algorithms Registry defines the following identifiers for Module-Lattice-Based Digital Signature Algorithm (FIPS 204):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">COSE Algorithm</th>
+<th class="p-3 font-semibold align-bottom text-left">Constant</th>
+<th class="p-3 font-semibold align-bottom text-left">Parameter Set</th>
+<th class="p-3 font-semibold align-bottom text-left">Security Category</th>
+<th class="p-3 font-semibold align-bottom text-left">Public Key Size</th>
+<th class="p-3 font-semibold align-bottom text-left">Signature Size</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>-48</code></strong></td>
+<td class="p-3 align-top text-left"><code>kMlDsa44</code></td>
+<td class="p-3 align-top text-left">ML-DSA-44 (Dilithium2)</td>
+<td class="p-3 align-top text-left">NIST Level 2</td>
+<td class="p-3 align-top text-left">1,312 bytes</td>
+<td class="p-3 align-top text-left">2,420 bytes</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>-49</code></strong></td>
+<td class="p-3 align-top text-left"><code>kMlDsa65</code></td>
+<td class="p-3 align-top text-left">ML-DSA-65 (Dilithium3)</td>
+<td class="p-3 align-top text-left">NIST Level 3</td>
+<td class="p-3 align-top text-left">1,952 bytes</td>
+<td class="p-3 align-top text-left">3,309 bytes</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>-50</code></strong></td>
+<td class="p-3 align-top text-left"><code>kMlDsa87</code></td>
+<td class="p-3 align-top text-left">ML-DSA-87 (Dilithium5)</td>
+<td class="p-3 align-top text-left">NIST Level 5</td>
+<td class="p-3 align-top text-left">2,592 bytes</td>
+<td class="p-3 align-top text-left">4,627 bytes</td>
+</tr>
+</tbody></table></div>
+<h3 id="22-prior-gaps-in-chromiums-test-authenticator" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 Prior Gaps in Chromium's Test Authenticator</h3>
+<p class="text-sm my-2">While Chromium’s low-level crypto wrapper (<a href="./keypair.h" class="text-[var(--primary)] hover:underline"><code>crypto::keypair::PrivateKey</code></a>) already supports generating ML-DSA keys via BoringSSL:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Hardcoded Attestation Key</strong>: <code>VirtualFidoDevice</code> relied on a static ECDSA P-256 key (<code>kAttestationKey</code>).</li>
+<li><strong>Hardcoded Attestation Algorithm</strong>: In <code>VirtualCtap2Device::DoMakeCredential</code>, attestation signatures were hardcoded to <code>ECDSA_SHA256</code> with <code>"alg": -7</code>.</li>
+<li><strong>Inability to Generate ML-DSA X.509 Certificates</strong>: <code>net::x509_util::CreateSelfSignedCert</code> only supported RSA and ECDSA OIDs. Because ML-DSA is a pure signature scheme with internal hashing, attempting to pass an external digest (<code>EVP_sha256()</code>) caused BoringSSL's <code>EVP_DigestSignInit</code> to fail.</li>
+<li><strong>Default Advertised Algorithms</strong>: <code>VirtualCtap2Device::Config::advertised_algorithms</code> only advertised <code>kEs256</code> by default.</li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Architecture &amp; Technical Design</h2>
+      </div>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TD
+    RP["Relying Party (JS API)"] --&gt;|"navigator.credentials.create()&lt;br/&gt;pubKeyCredParams: [-48, -49, -50]"| Chrome["Chromium Browser"]
+    Chrome --&gt;|"authenticatorMakeCredential"| VirtualCtap["VirtualCtap2Device"]
+    
+    subgraph VirtualCtap2Device Subsystem
+        VirtualCtap --&gt;|"1. Generate Credential Key"| KeyGen["crypto::keypair::PrivateKey&lt;br/&gt;(ML-DSA-44/65/87)"]
+        VirtualCtap --&gt;|"2. Select Batch Attestation Key"| BatchKey["VirtualFidoDevice::GetAttestationKey(-48/-49/-50)"]
+        VirtualCtap --&gt;|"3. Sign authData || clientDataHash"| Signer["crypto::sign::Sign(MLDSA_*)"]
+        VirtualCtap --&gt;|"4. Generate X.509 Batch Cert"| X509["net::x509_util::CreateSelfSignedCert"]
+    end
+    
+    subgraph BoringSSL / Crypto Layer
+        X509 --&gt;|"id-ml-dsa OIDs"| OID["2.16.840.1.101.3.4.3.17/18/19"]
+        X509 --&gt;|"EVP_DigestSignInit(nullptr MD)"| PureSig["Internal-Hash Signature"]
+    end
+    
+    VirtualCtap --&gt;|"Packed Attestation Object&lt;br/&gt;alg: -48/-49/-50, sig, x5c"| Chrome
+    Chrome --&gt;|"PublicKeyCredential with PQC Attestation"| RP</pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Detailed Implementation Changes</h2>
+      </div>
+<h3 id="41-x509-certificate-generation-netcertx509_utilcc" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 X.509 Certificate Generation (<code>//net/cert/x509_util.cc</code>)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Register ML-DSA Object Identifiers (OIDs)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>id-ml-dsa-44</code>: <code>2.16.840.1.101.3.4.3.17</code> (<code>0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x03, 0x11</code>)</li>
+<li><code>id-ml-dsa-65</code>: <code>2.16.840.1.101.3.4.3.18</code> (<code>0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x03, 0x12</code>)</li>
+<li><code>id-ml-dsa-87</code>: <code>2.16.840.1.101.3.4.3.19</code> (<code>0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x03, 0x13</code>)</li>
+<li>RFC 5280 parameters for ML-DSA must be omitted (<code>null_param = false</code>).</li>
+</ul></li>
+<li><strong>Digest Handling for Pure Signatures</strong>: For <code>EVP_PKEY_ML_DSA_*</code>, set <code>md = nullptr</code> in <code>EVP_DigestSignInit(ctx.get(), nullptr, md, nullptr, issuer_key)</code>.</li>
+</ol>
+<h3 id="42-virtual-fido-device-core-devicefidovirtual_fido_device" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.2 Virtual FIDO Device Core (<code>//device/fido/virtual_fido_device.*</code>)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Parameterized Batch Attestation Keys</strong>: <code>VirtualFidoDevice::GetAttestationKey(CoseAlgorithmIdentifier algorithm)</code> generates and caches per-algorithm static test keys using <code>base::NoDestructor</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>kMlDsa44Key</code> via <code>crypto::keypair::PrivateKey::GenerateMldsa44()</code></li>
+<li><code>kMlDsa65Key</code> via <code>crypto::keypair::PrivateKey::GenerateMldsa65()</code></li>
+<li><code>kMlDsa87Key</code> via <code>crypto::keypair::PrivateKey::GenerateMldsa87()</code></li>
+<li><code>kAttestationKey</code> (ECDSA P-256) for <code>kEs256</code> and legacy fallbacks.</li>
+</ul></li>
+<li><strong>Parameterized Attestation Certificate Generation</strong>: <code>GenerateAttestationCertificate</code> forwards <code>algorithm</code> to select the corresponding private key and issue a certificate conforming to W3C WebAuthn §8.2 Packed Attestation requirements (subject <code>CN=Batch Certificate, OU=Authenticator Attestation, O=Chromium, C=US</code>).</li>
+</ol>
+<h3 id="43-virtual-ctap2-protocol-implementation-devicefidovirtual_ctap2_device" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.3 Virtual CTAP2 Protocol Implementation (<code>//device/fido/virtual_ctap2_device.*</code>)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Configuration</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>Config::advertised_algorithms</code> defaults to <code>{kEs256, kMlDsa44, kMlDsa65, kMlDsa87}</code>.</li>
+<li><code>Config::batch_attestation_algorithm</code> allows tests to explicitly choose the attestation key algorithm, or automatically defaults to matching the credential algorithm.</li>
+</ul></li>
+<li><strong>Signature Dispatch</strong>: <code>DoMakeCredential</code> maps the chosen attestation algorithm to <code>crypto::sign::SignatureKind</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>kMlDsa44</code> -&gt; <code>crypto::sign::SignatureKind::MLDSA_44</code></li>
+<li><code>kMlDsa65</code> -&gt; <code>crypto::sign::SignatureKind::MLDSA_65</code></li>
+<li><code>kMlDsa87</code> -&gt; <code>crypto::sign::SignatureKind::MLDSA_87</code></li>
+<li><code>kEs256</code> -&gt; <code>crypto::sign::SignatureKind::ECDSA_SHA256</code></li>
+</ul></li>
+<li><strong>Response Attestation Map</strong>: <code>ConstructMakeCredentialResponse</code> dynamically assigns <code>"alg": static_cast&lt;int64_t&gt;(attestation_algorithm)</code> instead of <code>-7</code>.</li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Branch &amp; Version Control Strategy</h2>
+      </div>
+<p class="text-sm my-2">To keep upstream contributions clean and modular:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><pre class="text-xs leading-relaxed"><code>origin/main
+   │
+   ├── feat/pqc-virtual-authenticator (THIS PROPOSAL)
+   │      - net/cert/x509_util.cc (ML-DSA OIDs &amp; pure signature support)
+   │      - device/fido/virtual_fido_device.* (PQC batch attestation keys)
+   │      - device/fido/virtual_ctap2_device.* (PQC packed attestation responses)
+   │      - device/fido/virtual_ctap2_device_unittest.cc (Unit tests)
+   │
+   └── feat/webauthn-l4-mtc-debug (GENERAL MTC EXTENSION PROPOSAL)
+          - WebAuthn Level 4 Make-Then-Confirm client extension
+          - IDL, Blink bindings, and Mojo IPC for mtcDebug</code></pre></div>
+<p class="text-sm my-2">Both branches remain completely decoupled and can be merged or cherry-picked independently.</p>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-6 -->
+    <!-- ===================================================================== -->
+    <section id="section-6" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Verification &amp; Test Plan</h2>
+      </div>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Automated Unit Testing</strong> (<code>device_unittests</code>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Add <code>TEST_F(VirtualCtap2DeviceTest, PostQuantumBatchAttestationIsValid)</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Issues <code>MakeCredential</code> requests with algorithms <code>-48</code>, <code>-49</code>, and <code>-50</code>.</li>
+<li>Validates that <code>"fmt": "packed"</code>.</li>
+<li>Validates that <code>"alg"</code> matches the requested PQC algorithm.</li>
+<li>Validates that <code>"x5c"</code> parses into a valid <code>net::X509Certificate</code>.</li>
+<li>Verifies certificate subject, validity dates, and basicConstraints.</li>
+</ul></li>
+</ul></li>
+<li><strong>End-to-End WPT (Web Platform Tests)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Verify browser-level WebAuthn APIs (<code>navigator.credentials.create({publicKey: {pubKeyCredParams: [{type: "public-key", alg: -48}]}})</code>).</li>
+</ul></li>
+</ol>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./pqc_virtual_authenticator_proposal.md" class="text-[var(--primary)] hover:underline">pqc_virtual_authenticator_proposal.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>
