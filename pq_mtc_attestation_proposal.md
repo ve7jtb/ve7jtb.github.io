@@ -126,7 +126,7 @@ mtcEntryDesc = {
     caId: bytes,              ; ASN.1 DER Binary TrustAnchorID (RFC 9879 / draft-ietf-plants-merkle-tree-certs §4)
     serial: uint,             ; uint64: (log_number << 48) | index
     notBefore: uint,          ; uint64 Unix epoch seconds
-    notAfter: uint,           ; uint64 Unix epoch seconds
+    notAfter: uint,           ; uint64 Unix epoch seconds; 253402300799 (9999-12-31T23:59:59Z per RFC 5280 §4.1.2.5) if non-expiring
     ? firmwareVersion: uint,  ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
 }                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof
@@ -179,7 +179,7 @@ The Merkle tree leaf input (hashed with RFC 9162 `0x00` leaf prefix: $H(\texttt{
 1. `ca_id`: Variable-length prefix + `caId` bytes (ASN.1 DER relative OID / `TrustAnchorID`).
 2. `serial`: 8-byte big-endian `uint64` (`(log_number << 48) | index`).
 3. `not_before`: 8-byte big-endian `uint64`.
-4. `not_after`: 8-byte big-endian `uint64`.
+4. `not_after`: 8-byte big-endian `uint64` (set to `253402300799` / `0x0000003AFF44417F`, corresponding to `9999-12-31T23:59:59Z` per RFC 5280 §4.1.2.5, when the attestation on the device never expires).
 5. `aaguid`: 16-byte `authenticatorData.attestedCredentialData.aaguid` (taken directly from `authData[37..53]`, avoiding duplicate transmission in `attStmt`).
 6. `fw_version`: Optional 8-byte big-endian `uint64` (`0` if absent).
 7. `pub_key_hash`: 32-byte `SHA-256(pubKey)` (where `pubKey` is the canonical CBOR-encoded `COSE_Key` of the attestation public key).
@@ -803,9 +803,9 @@ The Enterprise manifest **is** an `MtcTrustAnchor` (§6), with the same JSON lay
   "revokedSerials": [],
   "batchKeys": [
     { "serial": 1970324836974592, "alg": -48, "coseKey": "owEHAzgvIFkFIG0b...",
-      "notBefore": 1767225600, "notAfter": 2082758400, "deviceSerial": "123456" },
+      "notBefore": 1767225600, "notAfter": 253402300799, "deviceSerial": "123456" },
     { "serial": 1970324836974593, "alg": -48, "coseKey": "owEHAzgvIFkFIKx9...",
-      "notBefore": 1767225600, "notAfter": 2082758400, "deviceSerial": "123457" }
+      "notBefore": 1767225600, "notAfter": 253402300799, "deviceSerial": "123457" }
   ]
 }
 ```

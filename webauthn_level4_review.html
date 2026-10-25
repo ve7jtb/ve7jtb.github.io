@@ -8106,7 +8106,8 @@ mtcKeyRef = {
        <p>An unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.</p>
       <dt data-md>notAfter
       <dd data-md>
-       <p>An unsigned integer Unix timestamp representing the expiration time of the attestation key.</p>
+       <p>An unsigned integer Unix timestamp representing the expiration time of the attestation key. To indicate that the attestation key on the authenticator has no well-defined expiration date (i.e., never expires), <code>notAfter</code> MUST be set to <code>253402300799</code> (<code>0x3AFF44417F</code>), which corresponds to <code>99991231235959Z</code> (<code>9999-12-31T23:59:59Z</code>) per <a data-link-type="biblio" href="#biblio-rfc5280" title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</a> Section 4.1.2.5.</p>
+       <p class="note" role="note"><span class="marker">Note:</span> Using <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code>) aligns MTC leaf lifetime semantics with X.509 (<code>x5c</code>) and IEEE 802.1AR IDevID conventions while remaining well within the IEEE 754 exact integer range (<code>Number.MAX_SAFE_INTEGER = 9007199254740991</code>), preventing precision loss when serialized to JSON or processed in ECMAScript environments.</p>
       <dt data-md>firmwareVersion
       <dd data-md>
        <p>An optional unsigned integer representing the authenticator firmware version, formatted in accordance with parameter <code>0x0E</code> (<code>firmwareVersion</code>) in CTAP 2.3 <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a>.</p>
@@ -8214,6 +8215,25 @@ mtcKeyRef = {
       <li data-md>
        <p>If successful, return implementation-specific values representing attestation type <a data-link-type="dfn" href="#basic" id="ref-for-basic①③">Basic</a> (or <a data-link-type="dfn" href="#attca" id="ref-for-attca①①">AttCA</a> in enterprise mode) and the attestation trust path.</p>
      </ol>
+     <div class="example" id="example-mtc-attstmt"><a class="self-link" href="#example-mtc-attstmt"></a>
+      <p>An example <code>mtc</code> attestation statement using <code>ML-DSA-44</code> (<code>alg: -48</code>) for a hardware authenticator whose attestation never expires (<code>notAfter: 253402300799</code>, corresponding to <code>9999-12-31T23:59:59Z</code> per <a data-link-type="biblio" href="#biblio-rfc5280" title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</a> Section 4.1.2.5), represented in CBOR diagnostic notation:</p>
+<pre>{
+    "fmt": "mtc",
+    "attStmt": {
+        "alg": -48,
+        "sig": h'3a7f91c2... (2420-byte ML-DSA-44 signature)',
+        "mtcCert": {
+            "caId": h'83993f0101',
+            "serial": 1970324836974592,
+            "notBefore": 1767225600,
+            "notAfter": 253402300799,
+            "firmwareVersion": 332805,
+            "mtcProof": h'000000000000000000000200000040... (binary RFC 9162 inclusion proof)'
+        }
+    }
+}
+</pre>
+     </div>
    </dl>
    <h2 class="heading settled" data-level="9" id="sctn-extensions"><span class="secno">9. </span><span class="content"><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="webauthn-extensions">WebAuthn Extensions</dfn></span><a class="self-link" href="#sctn-extensions"></a></h2>
    <p>The mechanism for generating <a data-link-type="dfn" href="#public-key-credential" id="ref-for-public-key-credential⑤⑨">public key credentials</a>, as well as requesting and generating Authentication assertions, as
@@ -9294,7 +9314,7 @@ resulting in a signature mismatch at the <a data-link-type="dfn" href="#relying-
           <li data-md>
            <p>If known to the authenticator, set <code><var>output</var>["notBefore"]</code> to the earliest Unix timestamp at which the key is valid.</p>
           <li data-md>
-           <p>If known to the authenticator, set <code><var>output</var>["notAfter"]</code> to the Unix timestamp at which the key expires.</p>
+           <p>If known to the authenticator, set <code><var>output</var>["notAfter"]</code> to the Unix timestamp at which the key expires, or <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code> per <a data-link-type="biblio" href="#biblio-rfc5280" title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</a> Section 4.1.2.5) if the attestation on the device never expires.</p>
           <li data-md>
            <p>If the authenticator reports a firmware version in <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a> <code>authenticatorGetInfo</code> (parameter <code>0x0E</code>), set <code><var>output</var>["firmwareVersion"]</code> to that unsigned integer.</p>
           <li data-md>
@@ -9401,7 +9421,7 @@ MtcDebugAuthOutput = {
         <p>An OPTIONAL unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.</p>
        <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-notafter"><code>notAfter</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long-long" id="ref-for-idl-unsigned-long-long⑤">unsigned long long</a></span>
        <dd data-md>
-        <p>An OPTIONAL unsigned integer Unix timestamp representing the expiration time of the attestation key.</p>
+        <p>An OPTIONAL unsigned integer Unix timestamp representing the expiration time of the attestation key. When the attestation on the device has no well-defined expiration date (i.e., never expires), this value MUST be set to <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code> per <a data-link-type="biblio" href="#biblio-rfc5280" title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</a> Section 4.1.2.5).</p>
        <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="MtcDebugExtensionOutput" data-dfn-type="dict-member" data-export id="dom-mtcdebugextensionoutput-firmwareversion"><code>firmwareVersion</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#idl-unsigned-long" id="ref-for-idl-unsigned-long⑧">unsigned long</a></span>
        <dd data-md>
         <p>An OPTIONAL unsigned integer representing the authenticator firmware version, formatted in accordance with parameter <code>0x0E</code> (<code>firmwareVersion</code>) in CTAP 2.3 <code>authenticatorGetInfo</code> <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a>.</p>
@@ -9412,6 +9432,34 @@ MtcDebugAuthOutput = {
        <dd data-md>
         <p>An OPTIONAL 32-byte array containing the expected Landmark or Trust Anchor Merkle root hash.</p>
       </dl>
+     </div>
+     <div class="example" id="example-mtc-debug-extension"><a class="self-link" href="#example-mtc-debug-extension"></a>
+      <p>An example <code>mtc-debug</code> authenticator extension output in <code>authenticatorData.extensions</code> (CBOR diagnostic notation) and its corresponding <code class="idl"><a data-link-type="idl" href="#dom-publickeycredential-tojson">toJSON()</a></code> client extension output (<code>clientExtensionResults.mtcDebug</code>) for a non-expiring enterprise authenticator (<code>notAfter: 253402300799</code>):</p>
+<pre>; CBOR in authenticatorData.extensions["mtc-debug"]
+{
+    "mtc-debug": {
+        "pubKey": h'a4010703382f205905206d1b... (1322-byte COSE_Key)',
+        "deviceSerial": "SN-00142857",
+        "notBefore": 1767225600,
+        "notAfter": 253402300799,
+        "firmwareVersion": 332805,
+        "mtcProof": h'000000000000000000000200000040...',
+        "rootHash": h'96b61c12341cf0fc6d47cb90b3cd2b095c9a81fa68f14abe845a28a39ec8fd4d'
+    }
+}
+</pre>
+<pre class="highlight"><c- p>{</c->
+    <c- f>"mtcDebug"</c-><c- p>:</c-> <c- p>{</c->
+        <c- f>"pubKey"</c-><c- p>:</c-> <c- u>"pAEHAzgvIFkFIG0b..."</c-><c- p>,</c->
+        <c- f>"deviceSerial"</c-><c- p>:</c-> <c- u>"SN-00142857"</c-><c- p>,</c->
+        <c- f>"notBefore"</c-><c- p>:</c-> <c- mf>1767225600</c-><c- p>,</c->
+        <c- f>"notAfter"</c-><c- p>:</c-> <c- mf>253402300799</c-><c- p>,</c->
+        <c- f>"firmwareVersion"</c-><c- p>:</c-> <c- mf>332805</c-><c- p>,</c->
+        <c- f>"mtcProof"</c-><c- p>:</c-> <c- u>"AAAAAAAAAAAAAAACAAAAQA..."</c-><c- p>,</c->
+        <c- f>"rootHash"</c-><c- p>:</c-> <c- u>"lrYcEjQc8PxtR8uQs80rCVyagfpo8Uq-hFooo57I_U0"</c->
+    <c- p>}</c->
+<c- p>}</c->
+</pre>
      </div>
    </dl>
    <h2 class="heading settled" data-level="11" id="sctn-automation"><span class="secno">11. </span><span class="content">User Agent Automation</span><a class="self-link" href="#sctn-automation"></a></h2>

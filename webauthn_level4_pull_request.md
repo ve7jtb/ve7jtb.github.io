@@ -7,7 +7,7 @@ Pull request against the **W3C WebAuthentication Working Group [Level 4 Editor's
 > - **Target Repository:** [`w3c/webauthn`](https://github.com/w3c/webauthn/)
 > - **Base Branch:** `main` (commit `0c50bd0`, October 2026)
 > - **Feature Branch:** `feat/l4-mtc-attestation-and-mtc-debug`
-> - **Primary Spec Document Modified:** `index.bs` (+179 lines, -2 lines)
+> - **Primary Spec Document Modified:** `index.bs` (+279 lines, -2 lines)
 > - **Normative Additions:**
 >   1. **`fmt: "mtc"`** in §8 (Attestation Statement Formats): Compact Merkle Tree Certificate statement format.
 >   2. **`mtcDebug` (`mtc-debug`)** in §10 (Defined Extensions): Diagnostic registration extension for in-band active attestation public key and enterprise device serial access.
@@ -81,6 +81,12 @@ In October 2026, the CTAP2 Technical Working Group at Authenticate 2026 reviewed
 1. **Compact MTC is the Primary Format:** Merkle Tree Certificates that omit the multi-kilobyte public key from the wire and resolve it out-of-band via FIDO Metadata Service (MDS3) or vendor manifests fit comfortably within single-message transport limits ($3,832\text{–}7,470\text{ B}$ for `fmt: "mtc"`).
 2. **Identifier Standardization:** The format identifier is finalized as **`"mtc"`** to minimize wire overhead.
 3. **Diagnostic Extension (`mtcDebug`):** Automated test fixtures, certification suites, and offline developer tooling require in-band access to the active attestation public key to verify signatures without connecting to live cloud metadata infrastructure.
+
+### 2.4 Non-Expiring Device Attestation (`notAfter = 253402300799`)
+
+Hardware security keys are typically provisioned at manufacturing time with an attestation key that is valid for the lifetime of the physical device. When the attestation on the device has no well-defined expiration date (i.e., should never expire), this pull request specifies that `notAfter` **MUST** be set to **`253402300799`** (`0x3AFF44417F`), which is the Unix epoch timestamp (in seconds) corresponding to **`9999-12-31T23:59:59Z`** (`GeneralizedTime` `99991231235959Z` per **[RFC 5280 §4.1.2.5](https://www.rfc-editor.org/rfc/rfc5280#section-4.1.2.5)**):
+- **X.509 (`x5c`) & IEEE 802.1AR Alignment:** Matches the standard non-expiring certificate lifetime convention used across PKIX and FIDO `packed` X.509 attestation certificates.
+- **IEEE 754 / WebIDL Safe Integer Precision:** `253402300799` ($< 2^{38}$) fits well within ECMAScript `Number.MAX_SAFE_INTEGER` ($2^{53} - 1 = 9007199254740991$), ensuring bit-exact preservation across CBOR, WebIDL `unsigned long long`, and `PublicKeyCredential.toJSON()` when verifiers reconstruct the 8-byte big-endian `not_after` field in `FidoMtcLogEntry`.
 
 ---
 
@@ -157,13 +163,15 @@ index 70e98e0..fd42f74 100644
 +    :: An unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.
 +
 +    : notAfter
-+    :: An unsigned integer Unix timestamp representing the expiration time of the attestation key.
++    :: An unsigned integer Unix timestamp representing the expiration time of the attestation key. To indicate that the attestation key on the authenticator has no well-defined expiration date (i.e., never expires), `notAfter` MUST be set to `253402300799` (`0x3AFF44417F`), which corresponds to `99991231235959Z` (`9999-12-31T23:59:59Z`) per [[!RFC5280]] Section 4.1.2.5.
++
++        Note: Using `253402300799` (`9999-12-31T23:59:59Z`) aligns MTC leaf lifetime semantics with X.509 (`x5c`) and IEEE 802.1AR IDevID conventions while remaining well within the IEEE 754 exact integer range (`Number.MAX_SAFE_INTEGER = 9007199254740991`), preventing precision loss when serialized to JSON or processed in ECMAScript environments.
 +
 +    : firmwareVersion
 +    :: An optional unsigned integer representing the authenticator firmware version, formatted in accordance with parameter `0x0E` (`firmwareVersion`) in CTAP 2.3 [[!FIDO-CTAP]].
 +
 +        Note: Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's [=/AAGUID=] across minor firmware revisions may remain stable.
-
++
 +    : mtcProof
 +    :: An optional byte array containing the binary Merkle inclusion proof formatted in accordance with [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]].
 +
@@ -208,6 +216,28 @@ index 70e98e0..fd42f74 100644
 +    10. If Enterprise Attestation was requested and active:
 +        1. Verify that the resolved device serial number matches an authorized device within the [=[RP]=]'s inventory.
 +    11. If successful, return implementation-specific values representing attestation type [=Basic=] (or [=AttCA=] in enterprise mode) and the attestation trust path.
++
++    <div class="example" id="example-mtc-attstmt">
++        An example `mtc` attestation statement using `ML-DSA-44` (`alg: -48`) for a hardware authenticator whose attestation never expires (`notAfter: 253402300799`, corresponding to `9999-12-31T23:59:59Z` per [[!RFC5280]] Section 4.1.2.5), represented in CBOR diagnostic notation:
++
++        ```
++        {
++            "fmt": "mtc",
++            "attStmt": {
++                "alg": -48,
++                "sig": h'3a7f91c2... (2420-byte ML-DSA-44 signature)',
++                "mtcCert": {
++                    "caId": h'83993f0101',
++                    "serial": 1970324836974592,
++                    "notBefore": 1767225600,
++                    "notAfter": 253402300799,
++                    "firmwareVersion": 332805,
++                    "mtcProof": h'000000000000000000000200000040... (binary RFC 9162 inclusion proof)'
++                }
++            }
++        }
++        ```
++    </div>
 +
 +
  # <dfn>WebAuthn Extensions</dfn> # {#sctn-extensions}
@@ -262,7 +292,7 @@ index 70e98e0..fd42f74 100644
 +            1. The authenticator MUST NOT include `deviceSerial` if Enterprise Attestation was not granted.
 +        5. If the authenticator is configured to emit diagnostic manifest and inclusion proof data (e.g. to support autonomous offline verification in proof-less `mtcKeyRef` environments):
 +            1. If known to the authenticator, set <code>|output|["notBefore"]</code> to the earliest Unix timestamp at which the key is valid.
-+            2. If known to the authenticator, set <code>|output|["notAfter"]</code> to the Unix timestamp at which the key expires.
++            2. If known to the authenticator, set <code>|output|["notAfter"]</code> to the Unix timestamp at which the key expires, or `253402300799` (`9999-12-31T23:59:59Z` per [[!RFC5280]] Section 4.1.2.5) if the attestation on the device never expires.
 +            3. If the authenticator reports a firmware version in [[!FIDO-CTAP]] `authenticatorGetInfo` (parameter `0x0E`), set <code>|output|["firmwareVersion"]</code> to that unsigned integer.
 +            4. If the authenticator maintains the Merkle inclusion proof for `serial`, set <code>|output|["mtcProof"]</code> to the binary RFC 9162 inclusion proof byte array.
 +            5. If the authenticator maintains the trust anchor or landmark subtree root hash, set <code>|output|["rootHash"]</code> to that 32-byte root hash.
@@ -345,7 +375,7 @@ index 70e98e0..fd42f74 100644
 +        :: An OPTIONAL unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.
 +
 +        : <dfn>notAfter</dfn>
-+        :: An OPTIONAL unsigned integer Unix timestamp representing the expiration time of the attestation key.
++        :: An OPTIONAL unsigned integer Unix timestamp representing the expiration time of the attestation key. When the attestation on the device has no well-defined expiration date (i.e., never expires), this value MUST be set to `253402300799` (`9999-12-31T23:59:59Z` per [[!RFC5280]] Section 4.1.2.5).
 +
 +        : <dfn>firmwareVersion</dfn>
 +        :: An OPTIONAL unsigned integer representing the authenticator firmware version, formatted in accordance with parameter `0x0E` (`firmwareVersion`) in CTAP 2.3 `authenticatorGetInfo` [[!FIDO-CTAP]].
@@ -355,6 +385,39 @@ index 70e98e0..fd42f74 100644
 +
 +        : <dfn>rootHash</dfn>
 +        :: An OPTIONAL 32-byte array containing the expected Landmark or Trust Anchor Merkle root hash.
++    </div>
++
++    <div class="example" id="example-mtc-debug-extension">
++        An example `mtc-debug` authenticator extension output in `authenticatorData.extensions` (CBOR diagnostic notation) and its corresponding {{PublicKeyCredential/toJSON()}} client extension output (`clientExtensionResults.mtcDebug`) for a non-expiring enterprise authenticator (`notAfter: 253402300799`):
++
++        ```
++        ; CBOR in authenticatorData.extensions["mtc-debug"]
++        {
++            "mtc-debug": {
++                "pubKey": h'a4010703382f205905206d1b... (1322-byte COSE_Key)',
++                "deviceSerial": "SN-00142857",
++                "notBefore": 1767225600,
++                "notAfter": 253402300799,
++                "firmwareVersion": 332805,
++                "mtcProof": h'000000000000000000000200000040...',
++                "rootHash": h'96b61c12341cf0fc6d47cb90b3cd2b095c9a81fa68f14abe845a28a39ec8fd4d'
++            }
++        }
++        ```
++
++        ```json
++        {
++            "mtcDebug": {
++                "pubKey": "pAEHAzgvIFkFIG0b...",
++                "deviceSerial": "SN-00142857",
++                "notBefore": 1767225600,
++                "notAfter": 253402300799,
++                "firmwareVersion": 332805,
++                "mtcProof": "AAAAAAAAAAAAAAACAAAAQA...",
++                "rootHash": "lrYcEjQc8PxtR8uQs80rCVyagfpo8Uq-hFooo57I_U0"
++            }
++        }
++        ```
 +    </div>
  
  

@@ -457,7 +457,7 @@ mtcEntryDesc = {
     caId: bytes,              ; ASN.1 DER Binary TrustAnchorID (RFC 9879 / draft-ietf-plants-merkle-tree-certs §4)
     serial: uint,             ; uint64: (log_number &lt;&lt; 48) | index
     notBefore: uint,          ; uint64 Unix epoch seconds
-    notAfter: uint,           ; uint64 Unix epoch seconds
+    notAfter: uint,           ; uint64 Unix epoch seconds; 253402300799 (9999-12-31T23:59:59Z per RFC 5280 §4.1.2.5) if non-expiring
     ? firmwareVersion: uint,  ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
 }                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof</code></pre></div>
@@ -507,7 +507,7 @@ mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid whe
 <li><code>ca_id</code>: Variable-length prefix + <code>caId</code> bytes (ASN.1 DER relative OID / <code>TrustAnchorID</code>).</li>
 <li><code>serial</code>: 8-byte big-endian <code>uint64</code> (<code>(log_number &lt;&lt; 48) | index</code>).</li>
 <li><code>not_before</code>: 8-byte big-endian <code>uint64</code>.</li>
-<li><code>not_after</code>: 8-byte big-endian <code>uint64</code>.</li>
+<li><code>not_after</code>: 8-byte big-endian <code>uint64</code> (set to <code>253402300799</code> / <code>0x0000003AFF44417F</code>, corresponding to <code>9999-12-31T23:59:59Z</code> per RFC 5280 §4.1.2.5, when the attestation on the device never expires).</li>
 <li><code>aaguid</code>: 16-byte <code>authenticatorData.attestedCredentialData.aaguid</code> (taken directly from <code>authData[37..53]</code>, avoiding duplicate transmission in <code>attStmt</code>).</li>
 <li><code>fw_version</code>: Optional 8-byte big-endian <code>uint64</code> (<code>0</code> if absent).</li>
 <li><code>pub_key_hash</code>: 32-byte <code>SHA-256(pubKey)</code> (where <code>pubKey</code> is the canonical CBOR-encoded <code>COSE_Key</code> of the attestation public key).</li>
@@ -1410,9 +1410,9 @@ partial dictionary MetadataStatement {
   "revokedSerials": [],
   "batchKeys": [
     { "serial": 1970324836974592, "alg": -48, "coseKey": "owEHAzgvIFkFIG0b...",
-      "notBefore": 1767225600, "notAfter": 2082758400, "deviceSerial": "123456" },
+      "notBefore": 1767225600, "notAfter": 253402300799, "deviceSerial": "123456" },
     { "serial": 1970324836974593, "alg": -48, "coseKey": "owEHAzgvIFkFIKx9...",
-      "notBefore": 1767225600, "notAfter": 2082758400, "deviceSerial": "123457" }
+      "notBefore": 1767225600, "notAfter": 253402300799, "deviceSerial": "123457" }
   ]
 }</code></pre></div>
 <p class="text-sm my-2"><strong>Authenticating the manifest without a new signature:</strong> each <code>batchKeys</code> entry carries every field of <code>FidoMtcLogEntry</code> (§4.1). The <code>aaguid</code> is taken from the metadata entry, and <code>deviceSerial</code> is committed as the entry's <code>extensions</code>. When the RP loads the manifest, it can rebuild the Merkle tree from all entries and compare the result with the signed <code>subtrees[].rootHash</code>. This is a <strong>one-time check</strong>. After it passes, every per-registration proof is redundant.</p>

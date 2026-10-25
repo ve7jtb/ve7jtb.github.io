@@ -123,7 +123,7 @@ To guarantee that `deviceSerial` can **never** reach the renderer unless the bro
 | **`pubKey`** | `bstr` (Major 2)<br/>Canonical `COSE_Key` | `std::vector<uint8_t> pub_key` | `array<uint8> pub_key` | `required ArrayBuffer pubKey` | `required Base64URLString pubKey` | **Required** in all `mtc-debug` outputs |
 | **`deviceSerial`** | `tstr` (Major 3)<br/>UTF-8 string | `std::optional<std::string> device_serial` | `string? device_serial` | `DOMString deviceSerial` | `DOMString deviceSerial` | **Optional** — **Strictly gated on CTAP `ep = 1` or `2`**; cancels ceremony if present without EP 1/2 |
 | **`notBefore`** | `uint` (Major 0)<br/>Unix epoch seconds | `std::optional<uint64_t> not_before` | `uint64 not_before`<br/>`bool has_not_before` | `unsigned long long notBefore` | `unsigned long long notBefore` | **Optional** — Required when `mtcCert` uses proof-less `mtcKeyRef` |
-| **`notAfter`** | `uint` (Major 0)<br/>Unix epoch seconds | `std::optional<uint64_t> not_after` | `uint64 not_after`<br/>`bool has_not_after` | `unsigned long long notAfter` | `unsigned long long notAfter` | **Optional** — Required when `mtcCert` uses proof-less `mtcKeyRef` |
+| **`notAfter`** | `uint` (Major 0)<br/>Unix epoch seconds | `std::optional<uint64_t> not_after` | `uint64 not_after`<br/>`bool has_not_after` | `unsigned long long notAfter` | `unsigned long long notAfter` | **Optional** — Required when `mtcCert` uses proof-less `mtcKeyRef` (`253402300799` / `9999-12-31T23:59:59Z` per RFC 5280 §4.1.2.5 if non-expiring) |
 | **`firmwareVersion`** | `uint` (Major 0)<br/>CTAP 2.3 param `0x0E` | `std::optional<uint32_t> firmware_version` | `uint32 firmware_version`<br/>`bool has_firmware_version` | `unsigned long firmwareVersion` | `unsigned long firmwareVersion` | **Optional** — Matches CTAP `authenticatorGetInfo` `0x0E` (`uint32`) |
 | **`mtcProof`** | `bstr` (Major 2)<br/>RFC 9162 inclusion proof | `std::optional<std::vector<uint8_t>> mtc_proof` | `array<uint8>? mtc_proof` | `ArrayBuffer mtcProof` | `Base64URLString mtcProof` | **Optional** — Supplied in-band when `mtcCert` uses proof-less `mtcKeyRef` |
 | **`rootHash`** | `bstr` (Major 2)<br/>32-byte Merkle root | `std::optional<std::vector<uint8_t>> root_hash` | `array<uint8>? root_hash` | `ArrayBuffer rootHash` | `Base64URLString rootHash` | **Optional** — Expected 32-byte Landmark or Trust Anchor root hash |
@@ -1038,8 +1038,8 @@ index 641ea7e943..100a5257fb 100644
 +           MtcDebugValues{
 +               .pub_key = Vector<uint8_t>{'p', 'u', 'b', 'k', 'e', 'y'},
 +               .device_serial = String("TEST-SERIAL-1234"),
-+               .not_before = 1776518400,
-+               .not_after = 1784371200,
++               .not_before = 1767225600ULL,
++               .not_after = 253402300799ULL,
 +               .firmware_version = 332805,
 +               .mtc_proof = Vector<uint8_t>{'p', 'r', 'o', 'o', 'f'},
 +               .root_hash = Vector<uint8_t>{'r', 'o', 'o', 't', '3', '2'}}},

@@ -361,7 +361,7 @@ Base: origin/main (4f9f0d6afb) &lt;- Head: feat/webauthn-l4-mtc-debug (decd73629
 <td class="p-3 align-top text-left"><code>uint64 not_after</code><br/><code>bool has_not_after</code></td>
 <td class="p-3 align-top text-left"><code>unsigned long long notAfter</code></td>
 <td class="p-3 align-top text-left"><code>unsigned long long notAfter</code></td>
-<td class="p-3 align-top text-left"><strong>Optional</strong> — Required when <code>mtcCert</code> uses proof-less <code>mtcKeyRef</code></td>
+<td class="p-3 align-top text-left"><strong>Optional</strong> — Required when <code>mtcCert</code> uses proof-less <code>mtcKeyRef</code> (<code>253402300799</code> / <code>9999-12-31T23:59:59Z</code> per RFC 5280 §4.1.2.5 if non-expiring)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>firmwareVersion</code></strong></td>
@@ -1311,8 +1311,8 @@ index 641ea7e943..100a5257fb 100644
 +           MtcDebugValues{
 +               .pub_key = Vector&lt;uint8_t&gt;{'p', 'u', 'b', 'k', 'e', 'y'},
 +               .device_serial = String("TEST-SERIAL-1234"),
-+               .not_before = 1776518400,
-+               .not_after = 1784371200,
++               .not_before = 1767225600ULL,
++               .not_after = 253402300799ULL,
 +               .firmware_version = 332805,
 +               .mtc_proof = Vector&lt;uint8_t&gt;{'p', 'r', 'o', 'o', 'f'},
 +               .root_hash = Vector&lt;uint8_t&gt;{'r', 'o', 'o', 't', '3', '2'}}},

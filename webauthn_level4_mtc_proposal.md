@@ -79,7 +79,7 @@ mtcEntryDesc = {
     caId: bytes,                      ; 1-4 byte compact CA Log Identifier
     serial: uint,                     ; Log entry serial number = (logNumber << 48) | index
     notBefore: uint,                  ; Unix timestamp (seconds)
-    notAfter: uint,                   ; Unix timestamp (seconds)
+    notAfter: uint,                   ; Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
     ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
 }
@@ -90,9 +90,35 @@ mtcKeyRef = {
 }
 ```
 
+> [!IMPORTANT]
+> **Non-Expiring Device Attestation (`notAfter = 253402300799`):**  
+> When the attestation key provisioned on an authenticator has no well-defined expiration date (i.e., the hardware attestation should never expire), `notAfter` **MUST** be set to **`253402300799`** (`0x3AFF44417F`), which is the Unix epoch timestamp (in seconds) corresponding to **`9999-12-31T23:59:59Z`** (`GeneralizedTime` `99991231235959Z` per **[RFC 5280 §4.1.2.5](https://www.rfc-editor.org/rfc/rfc5280#section-4.1.2.5)** and IEEE 802.1AR IDevID).
+> - **Cross-Format Consistency:** Matches the `notAfter` lifetime convention already used in X.509 (`x5c`) batch and enterprise attestation certificates when an authenticator supports both `"packed"` and `"mtc"`.
+> - **ECMAScript / WebIDL Safe Integer Precision:** `253402300799` ($< 2^{38}$) fits well within IEEE 754 double-precision exact integers (`Number.MAX_SAFE_INTEGER = 9007199254740991`, $2^{53} - 1$), avoiding the silent rounding corruption that `UINT64_MAX` (`0xFFFFFFFFFFFFFFFF`) would suffer when serialized through WebIDL `unsigned long long` and `PublicKeyCredential.toJSON()` before reconstructing the 8-byte big-endian `not_after` field in `FidoMtcLogEntry`.
+
 > [!NOTE]
 > **Firmware Version and Batch Key Lifecycle:**
 > Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's AAGUID across minor firmware revisions may remain stable.
+
+#### Example: `fmt: "mtc"` Attestation Statement (Non-Expiring Hardware Attestation)
+
+```cbor-diag
+{
+  "fmt": "mtc",
+  "attStmt": {
+    "alg": -48,                                       / ML-DSA-44 /
+    "sig": h'3a7f91c2... (2420-byte signature)',
+    "mtcCert": {
+      "caId": h'83993f0101',                          / Compact CA Identifier /
+      "serial": 1970324836974592,                     / (7 << 48) | 0 /
+      "notBefore": 1767225600,                        / 2026-01-01T00:00:00Z /
+      "notAfter": 253402300799,                       / 9999-12-31T23:59:59Z (never expires, RFC 5280 §4.1.2.5) /
+      "firmwareVersion": 332805,                      / v5.20.5 (0x00051405) /
+      "mtcProof": h'000000000000000000000200000040...'
+    }
+  }
+}
+```
 
 #### Relying Party Verification Procedure for `fmt: "mtc"`
 Given `(attStmt, authenticatorData, clientDataHash)`:
@@ -143,7 +169,7 @@ dictionary MtcDebugExtensionOutput {
     required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
     DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
     unsigned long long   notBefore;       // Unix timestamp (seconds)
-    unsigned long long   notAfter;        // Unix timestamp (seconds)
+    unsigned long long   notAfter;        // Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
     unsigned long        firmwareVersion; // CTAP 2.3 parameter 0x0E
     ArrayBuffer          mtcProof;        // RFC 9162 Merkle inclusion proof
     ArrayBuffer          rootHash;        // 32-byte Landmark / Trust Anchor root hash
@@ -153,7 +179,7 @@ dictionary MtcDebugExtensionOutputJSON {
     required Base64URLString pubKey;          // Base64url-encoded COSE_Key
     DOMString                deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
     unsigned long long       notBefore;       // Unix timestamp (seconds)
-    unsigned long long       notAfter;        // Unix timestamp (seconds)
+    unsigned long long       notAfter;        // Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
     unsigned long            firmwareVersion; // CTAP 2.3 parameter 0x0E
     Base64URLString          mtcProof;        // Base64url-encoded RFC 9162 Merkle inclusion proof
     Base64URLString          rootHash;        // Base64url-encoded 32-byte root hash
@@ -177,7 +203,7 @@ MtcDebugExtensionOutput = {
     pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
     ? deviceSerial: tstr / uint,      ; OPTIONAL: Device serial number (Enterprise only)
     ? notBefore: uint,                ; OPTIONAL: Earliest Unix timestamp at which key is valid
-    ? notAfter: uint,                 ; OPTIONAL: Key expiration Unix timestamp
+    ? notAfter: uint,                 ; OPTIONAL: Key expiration Unix timestamp (253402300799 if non-expiring)
     ? firmwareVersion: uint,          ; OPTIONAL: Authenticator firmware version (CTAP 2.3 0x0E)
     ? mtcProof: bytes,                ; OPTIONAL: Binary RFC 9162 Merkle inclusion proof
     ? rootHash: bytes                 ; OPTIONAL: 32-byte expected Landmark/Trust Anchor root hash
@@ -196,11 +222,44 @@ MtcDebugExtensionOutput = {
    - Include the active attestation `pubKey` (batch key if non-enterprise, single-device key if enterprise).
    - If Enterprise Attestation is active (`0x0A = 1` or `2`), include `deviceSerial`.
    - **Privacy Gate:** If Enterprise Attestation is **not** active, the authenticator **MUST NOT** include `deviceSerial`.
-   - **Offline Manifest & Diagnostic Mode Support:** If configured for diagnostic output or autonomous offline verification in proof-less `mtcKeyRef` environments, include `notBefore`, `notAfter`, `firmwareVersion` (matching parameter `0x0E` in `authenticatorGetInfo`), `mtcProof`, and `rootHash`.
+   - **Offline Manifest & Diagnostic Mode Support:** If configured for diagnostic output or autonomous offline verification in proof-less `mtcKeyRef` environments, include `notBefore`, `notAfter` (`253402300799` / `9999-12-31T23:59:59Z` per RFC 5280 §4.1.2.5 when the device attestation never expires), `firmwareVersion` (matching parameter `0x0E` in `authenticatorGetInfo`), `mtcProof`, and `rootHash`.
 
 #### Relying Party / Verifier Processing:
 - Test fixtures and automated certification suites inspect `mtcDebug.pubKey` to perform immediate offline cryptographic verification of `attStmt.sig` without connecting to external MDS3 infrastructure.
 - In proof-less `mtcKeyRef` environments, verifiers use `notBefore`, `notAfter`, `firmwareVersion`, and `pubKey` from `mtcDebug` to reconstruct the leaf preimage, verify the inclusion proof against `rootHash`, and authenticate the device completely offline.
+
+### 3.4 Example: `mtc-debug` CBOR Authenticator Output and `toJSON()` Translation
+
+```cbor-diag
+/ Authenticator output in authenticatorData.extensions["mtc-debug"] /
+{
+  "mtc-debug": {
+    "pubKey": h'a4010703382f205905206d1b... (1322-byte COSE_Key)',
+    "deviceSerial": "SN-00142857",
+    "notBefore": 1767225600,
+    "notAfter": 253402300799,
+    "firmwareVersion": 332805,
+    "mtcProof": h'000000000000000000000200000040...',
+    "rootHash": h'96b61c12341cf0fc6d47cb90b3cd2b095c9a81fa68f14abe845a28a39ec8fd4d'
+  }
+}
+```
+
+```json
+{
+  "clientExtensionResults": {
+    "mtcDebug": {
+      "pubKey": "pAEHAzgvIFkFIG0b...",
+      "deviceSerial": "SN-00142857",
+      "notBefore": 1767225600,
+      "notAfter": 253402300799,
+      "firmwareVersion": 332805,
+      "mtcProof": "AAAAAAAAAAAAAAACAAAAQA...",
+      "rootHash": "lrYcEjQc8PxtR8uQs80rCVyagfpo8Uq-hFooo57I_U0"
+    }
+  }
+}
+```
 
 ---
 

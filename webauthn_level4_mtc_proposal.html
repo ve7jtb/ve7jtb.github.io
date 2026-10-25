@@ -149,6 +149,7 @@
             <div><a href="#31-webidl-definitions" class="hover:underline">&sect;3.1 WebIDL Definitions</a></div>
             <div><a href="#32-protocol-cddl" class="hover:underline">&sect;3.2 Protocol CDDL</a></div>
             <div><a href="#33-processing-rules" class="hover:underline">&sect;3.3 Processing Rules</a></div>
+            <div><a href="#34-example-mtc-debug-cbor-authenticator-output-and-tojson-translation" class="hover:underline">&sect;3.4 Example: <code>mtc-debug</code> CBOR Authenticator Output and <code>toJSON()</code> Translation</a></div>
           </div>
         </li>
         <li>
@@ -245,7 +246,7 @@ mtcEntryDesc = {
     caId: bytes,                      ; 1-4 byte compact CA Log Identifier
     serial: uint,                     ; Log entry serial number = (logNumber &lt;&lt; 48) | index
     notBefore: uint,                  ; Unix timestamp (seconds)
-    notAfter: uint,                   ; Unix timestamp (seconds)
+    notAfter: uint,                   ; Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
     ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
     ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
 }
@@ -254,7 +255,28 @@ mtcKeyRef = {
     caId: bytes,                      ; 1-4 byte compact CA Log Identifier
     serial: uint                      ; Log entry serial number for manifest lookup
 }</code></pre></div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Non-Expiring Device Attestation (<code>notAfter = 253402300799</code>):</strong> When the attestation key provisioned on an authenticator has no well-defined expiration date (i.e., the hardware attestation should never expire), <code>notAfter</code> <strong>MUST</strong> be set to <strong><code>253402300799</code></strong> (<code>0x3AFF44417F</code>), which is the Unix epoch timestamp (in seconds) corresponding to <strong><code>9999-12-31T23:59:59Z</code></strong> (<code>GeneralizedTime</code> <code>99991231235959Z</code> per <strong><a href="https://www.rfc-editor.org/rfc/rfc5280#section-4.1.2.5" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">RFC 5280 §4.1.2.5</a></strong> and IEEE 802.1AR IDevID).</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Cross-Format Consistency:</strong> Matches the <code>notAfter</code> lifetime convention already used in X.509 (<code>x5c</code>) batch and enterprise attestation certificates when an authenticator supports both <code>"packed"</code> and <code>"mtc"</code>.</li>
+<li><strong>ECMAScript / WebIDL Safe Integer Precision:</strong> <code>253402300799</code> ($&lt; 2^{38}$) fits well within IEEE 754 double-precision exact integers (<code>Number.MAX_SAFE_INTEGER = 9007199254740991</code>, $2^{53} - 1$), avoiding the silent rounding corruption that <code>UINT64_MAX</code> (<code>0xFFFFFFFFFFFFFFFF</code>) would suffer when serialized through WebIDL <code>unsigned long long</code> and <code>PublicKeyCredential.toJSON()</code> before reconstructing the 8-byte big-endian <code>not_after</code> field in <code>FidoMtcLogEntry</code>.</li>
+</ul></div>
 <div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2"><strong>Firmware Version and Batch Key Lifecycle:</strong> Because <code>firmwareVersion</code> is cryptographically committed as an immutable field in the Merkle tree leaf entry (<code>FidoMtcLogEntry</code>), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's AAGUID across minor firmware revisions may remain stable.</p></div>
+<h4 id="example-fmt-mtc-attestation-statement-non-expiring-hardware-attestation" class="text-base font-semibold text-[var(--foreground)]">Example: <code>fmt: "mtc"</code> Attestation Statement (Non-Expiring Hardware Attestation)</h4>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cbor-diag</div><pre class="text-xs leading-relaxed"><code>{
+  "fmt": "mtc",
+  "attStmt": {
+    "alg": -48,                                       / ML-DSA-44 /
+    "sig": h'3a7f91c2... (2420-byte signature)',
+    "mtcCert": {
+      "caId": h'83993f0101',                          / Compact CA Identifier /
+      "serial": 1970324836974592,                     / (7 &lt;&lt; 48) | 0 /
+      "notBefore": 1767225600,                        / 2026-01-01T00:00:00Z /
+      "notAfter": 253402300799,                       / 9999-12-31T23:59:59Z (never expires, RFC 5280 §4.1.2.5) /
+      "firmwareVersion": 332805,                      / v5.20.5 (0x00051405) /
+      "mtcProof": h'000000000000000000000200000040...'
+    }
+  }
+}</code></pre></div>
 <h4 id="relying-party-verification-procedure-for-fmt-mtc" class="text-base font-semibold text-[var(--foreground)]">Relying Party Verification Procedure for <code>fmt: "mtc"</code></h4>
 <p class="text-sm my-2">Given <code>(attStmt, authenticatorData, clientDataHash)</code>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
@@ -307,7 +329,7 @@ dictionary MtcDebugExtensionOutput {
     required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
     DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
     unsigned long long   notBefore;       // Unix timestamp (seconds)
-    unsigned long long   notAfter;        // Unix timestamp (seconds)
+    unsigned long long   notAfter;        // Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
     unsigned long        firmwareVersion; // CTAP 2.3 parameter 0x0E
     ArrayBuffer          mtcProof;        // RFC 9162 Merkle inclusion proof
     ArrayBuffer          rootHash;        // 32-byte Landmark / Trust Anchor root hash
@@ -317,7 +339,7 @@ dictionary MtcDebugExtensionOutputJSON {
     required Base64URLString pubKey;          // Base64url-encoded COSE_Key
     DOMString                deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
     unsigned long long       notBefore;       // Unix timestamp (seconds)
-    unsigned long long       notAfter;        // Unix timestamp (seconds)
+    unsigned long long       notAfter;        // Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
     unsigned long            firmwareVersion; // CTAP 2.3 parameter 0x0E
     Base64URLString          mtcProof;        // Base64url-encoded RFC 9162 Merkle inclusion proof
     Base64URLString          rootHash;        // Base64url-encoded 32-byte root hash
@@ -337,7 +359,7 @@ MtcDebugExtensionOutput = {
     pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
     ? deviceSerial: tstr / uint,      ; OPTIONAL: Device serial number (Enterprise only)
     ? notBefore: uint,                ; OPTIONAL: Earliest Unix timestamp at which key is valid
-    ? notAfter: uint,                 ; OPTIONAL: Key expiration Unix timestamp
+    ? notAfter: uint,                 ; OPTIONAL: Key expiration Unix timestamp (253402300799 if non-expiring)
     ? firmwareVersion: uint,          ; OPTIONAL: Authenticator firmware version (CTAP 2.3 0x0E)
     ? mtcProof: bytes,                ; OPTIONAL: Binary RFC 9162 Merkle inclusion proof
     ? rootHash: bytes                 ; OPTIONAL: 32-byte expected Landmark/Trust Anchor root hash
@@ -355,7 +377,7 @@ MtcDebugExtensionOutput = {
 <li>Include the active attestation <code>pubKey</code> (batch key if non-enterprise, single-device key if enterprise).</li>
 <li>If Enterprise Attestation is active (<code>0x0A = 1</code> or <code>2</code>), include <code>deviceSerial</code>.</li>
 <li><strong>Privacy Gate:</strong> If Enterprise Attestation is <strong>not</strong> active, the authenticator <strong>MUST NOT</strong> include <code>deviceSerial</code>.</li>
-<li><strong>Offline Manifest &amp; Diagnostic Mode Support:</strong> If configured for diagnostic output or autonomous offline verification in proof-less <code>mtcKeyRef</code> environments, include <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code> (matching parameter <code>0x0E</code> in <code>authenticatorGetInfo</code>), <code>mtcProof</code>, and <code>rootHash</code>.</li>
+<li><strong>Offline Manifest &amp; Diagnostic Mode Support:</strong> If configured for diagnostic output or autonomous offline verification in proof-less <code>mtcKeyRef</code> environments, include <code>notBefore</code>, <code>notAfter</code> (<code>253402300799</code> / <code>9999-12-31T23:59:59Z</code> per RFC 5280 §4.1.2.5 when the device attestation never expires), <code>firmwareVersion</code> (matching parameter <code>0x0E</code> in <code>authenticatorGetInfo</code>), <code>mtcProof</code>, and <code>rootHash</code>.</li>
 </ul></li>
 </ol>
 <h4 id="relying-party-verifier-processing" class="text-base font-semibold text-[var(--foreground)]">Relying Party / Verifier Processing:</h4>
@@ -363,6 +385,32 @@ MtcDebugExtensionOutput = {
 <li>Test fixtures and automated certification suites inspect <code>mtcDebug.pubKey</code> to perform immediate offline cryptographic verification of <code>attStmt.sig</code> without connecting to external MDS3 infrastructure.</li>
 <li>In proof-less <code>mtcKeyRef</code> environments, verifiers use <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, and <code>pubKey</code> from <code>mtcDebug</code> to reconstruct the leaf preimage, verify the inclusion proof against <code>rootHash</code>, and authenticate the device completely offline.</li>
 </ul>
+<h3 id="34-example-mtc-debug-cbor-authenticator-output-and-tojson-translation" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.4 Example: <code>mtc-debug</code> CBOR Authenticator Output and <code>toJSON()</code> Translation</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cbor-diag</div><pre class="text-xs leading-relaxed"><code>/ Authenticator output in authenticatorData.extensions["mtc-debug"] /
+{
+  "mtc-debug": {
+    "pubKey": h'a4010703382f205905206d1b... (1322-byte COSE_Key)',
+    "deviceSerial": "SN-00142857",
+    "notBefore": 1767225600,
+    "notAfter": 253402300799,
+    "firmwareVersion": 332805,
+    "mtcProof": h'000000000000000000000200000040...',
+    "rootHash": h'96b61c12341cf0fc6d47cb90b3cd2b095c9a81fa68f14abe845a28a39ec8fd4d'
+  }
+}</code></pre></div>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">json</div><pre class="text-xs leading-relaxed"><code>{
+  "clientExtensionResults": {
+    "mtcDebug": {
+      "pubKey": "pAEHAzgvIFkFIG0b...",
+      "deviceSerial": "SN-00142857",
+      "notBefore": 1767225600,
+      "notAfter": 253402300799,
+      "firmwareVersion": 332805,
+      "mtcProof": "AAAAAAAAAAAAAAACAAAAQA...",
+      "rootHash": "lrYcEjQc8PxtR8uQs80rCVyagfpo8Uq-hFooo57I_U0"
+    }
+  }
+}</code></pre></div>
     </section>
 
     <!-- ===================================================================== -->
