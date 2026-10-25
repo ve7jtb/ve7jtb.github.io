@@ -8067,14 +8067,22 @@ post-quantum attestation statements that fit within constrained authenticator tr
 mtcStmtFormat = {
                     alg: COSEAlgorithmIdentifier,
                     sig: bytes,
-                    chain: [ + bytes ],
-                    ? enterprise: enterpriseAttestationStmt
+                    mtcCert: mtcEntryDesc / mtcKeyRef
                 }
 
-enterpriseAttestationStmt = {
-    deviceSerialNumber: text,
-    * text => any
-}
+mtcEntryDesc = {
+                   caId: bytes,                      ; 1-4 byte compact CA Log Identifier
+                   serial: uint,                     ; Log entry serial number = (logNumber &lt;&lt; 48) | index
+                   notBefore: uint,                  ; Unix timestamp (seconds)
+                   notAfter: uint,                   ; Unix timestamp (seconds)
+                   ? fwVersion: uint,                ; Optional firmware version integer
+                   ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
+               }
+
+mtcKeyRef = {
+                caId: bytes,                      ; 1-4 byte compact CA Log Identifier
+                serial: uint                      ; Log entry serial number for manifest lookup
+            }
 </pre>
      <p>The semantics of the above fields are as follows:</p>
      <dl>
@@ -8084,12 +8092,27 @@ enterpriseAttestationStmt = {
       <dt data-md>sig
       <dd data-md>
        <p>A byte array containing the attestation signature over the attestation payload.</p>
-      <dt data-md>chain
+      <dt data-md>mtcCert
       <dd data-md>
-       <p>An array of byte arrays representing the Merkle tree certificate inclusion proof (audit path) from the leaf batch public key to the trust anchor root.</p>
-      <dt data-md>enterprise
+       <p>A map conforming to either <code>mtcEntryDesc</code> (carrying the log entry descriptors and optional Merkle inclusion proof) or <code>mtcKeyRef</code> (proof-less key reference for manifest-assisted lookups).</p>
+      <dt data-md>caId
       <dd data-md>
-       <p>An optional map containing enterprise attestation claims, present if and only if Enterprise Attestation was requested and granted.</p>
+       <p>A compact byte string identifying the MTC Certification Authority / log issuer.</p>
+      <dt data-md>serial
+      <dd data-md>
+       <p>An unsigned 64-bit integer representing the log entry serial number, formatted as <code>(logNumber &lt;&lt; 48) | index</code>.</p>
+      <dt data-md>notBefore
+      <dd data-md>
+       <p>An unsigned integer Unix timestamp representing the earliest time at which the attestation key is valid.</p>
+      <dt data-md>notAfter
+      <dd data-md>
+       <p>An unsigned integer Unix timestamp representing the expiration time of the attestation key.</p>
+      <dt data-md>fwVersion
+      <dd data-md>
+       <p>An optional integer representing the authenticator firmware version.</p>
+      <dt data-md>mtcProof
+      <dd data-md>
+       <p>An optional byte array containing the binary Merkle inclusion proof formatted in accordance with <span>[draft-ietf-plants-merkle-tree-certs]</span> and <a data-link-type="biblio" href="#biblio-rfc9162" title="Certificate Transparency Version 2.0">[RFC9162]</a>.</p>
      </dl>
     <dt data-md>Signing procedure
     <dd data-md>
@@ -8103,21 +8126,19 @@ enterpriseAttestationStmt = {
       <li data-md>
        <p>Sign <var>nonce</var> using the authenticator’s attestation private key according to <var>alg</var>, producing <var>sig</var>.</p>
       <li data-md>
-       <p>Let <var>chain</var> be the Merkle tree certificate inclusion path corresponding to the authenticator’s batch leaf public key.</p>
-      <li data-md>
-       <p>If Enterprise Attestation was requested and permitted for this Relying Party:</p>
+       <p>If the authenticator is configured for proof-less operation (manifest-assisted key lookup where the Relying Party caches the full key table):</p>
        <ol>
         <li data-md>
-         <p>Let <var>enterprise</var> be a map containing <code>deviceSerialNumber</code> set to the device serial number string.</p>
-        <li data-md>
-         <p>Set <var>attStmt</var> to the CBOR map <code>{ alg: alg, sig: sig, chain: chain, enterprise: enterprise }</code>.</p>
+         <p>Let <var>mtcCert</var> be a map conforming to <code>mtcKeyRef</code> containing <code>caId</code> and <code>serial</code>.</p>
        </ol>
       <li data-md>
-       <p>Otherwise:</p>
+       <p>Otherwise (standard operation with Merkle inclusion proof):</p>
        <ol>
         <li data-md>
-         <p>Set <var>attStmt</var> to the CBOR map <code>{ alg: alg, sig: sig, chain: chain }</code>.</p>
+         <p>Let <var>mtcCert</var> be a map conforming to <code>mtcEntryDesc</code> containing <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>fwVersion</code>, and <code>mtcProof</code> (the binary Merkle inclusion proof).</p>
        </ol>
+      <li data-md>
+       <p>Set <var>attStmt</var> to the CBOR map <code>{ alg: alg, sig: sig, mtcCert: mtcCert }</code>.</p>
      </ol>
     <dt data-md>Verification procedure
     <dd data-md>
@@ -8132,26 +8153,62 @@ enterpriseAttestationStmt = {
       <li data-md>
        <p>Perform SHA-256 hash of <var>nonceToHash</var> to produce <var>nonce</var>.</p>
       <li data-md>
-       <p>Resolve the batch attestation public key corresponding to the authenticator:</p>
+       <p>Resolve the active attestation public key <var>batchPubKey</var>:</p>
        <ol>
         <li data-md>
-         <p>If known from metadata (such as FIDO Metadata Service <a data-link-type="biblio" href="#biblio-fidometadataservice" title="FIDO Metadata Service">[FIDOMetadataService]</a>) or an out-of-band manufacturer manifest, obtain the batch public key <var>batchPubKey</var>.</p>
+         <p>Extract <code>caId</code> and <code>serial</code> from <code>attStmt.mtcCert</code>.</p>
         <li data-md>
-         <p>Otherwise, if conveyed via an extension (such as <code class="idl"><a data-link-type="idl" href="#dom-authenticationextensionsclientoutputs-mtcdebug" id="ref-for-dom-authenticationextensionsclientoutputs-mtcdebug">mtcDebug</a></code>), let <var>batchPubKey</var> be the provided public key.</p>
+         <p>In non-enterprise mode: query FIDO Metadata Service (MDS3) <a data-link-type="biblio" href="#biblio-fidometadataservice" title="FIDO Metadata Service">[FIDOMetadataService]</a> or the MTC log for <code>(caId, serial)</code> to obtain the canonical CBOR-encoded <code>COSE_Key</code> <var>batchPubKey</var>.</p>
+        <li data-md>
+         <p>In enterprise mode: query the manufacturer’s inventory manifest table for <code>(caId, serial)</code> to obtain <var>batchPubKey</var> and the associated device serial number.</p>
+        <li data-md>
+         <p>Alternatively, if conveyed via an extension (such as <code class="idl"><a data-link-type="idl" href="#dom-authenticationextensionsclientoutputs-mtcdebug" id="ref-for-dom-authenticationextensionsclientoutputs-mtcdebug">mtcDebug</a></code>), let <var>batchPubKey</var> be the public key decoded from <code>authenticatorData.extensions["mtc-debug"].pubKey</code>.</p>
        </ol>
       <li data-md>
        <p>Verify that <var>sig</var> is a valid signature over <var>nonce</var> with the key <var>batchPubKey</var> according to <var>alg</var>.</p>
       <li data-md>
-       <p>Recompute the Merkle tree root hash from <var>batchPubKey</var> and the sibling hashes in <var>chain</var> using the hash function specified by the MTC tree profile (e.g. SHA-256).</p>
-      <li data-md>
-       <p>Verify that the recomputed root hash matches an acceptable <a data-link-type="dfn" href="#attestation-trust-path" id="ref-for-attestation-trust-path①⓪">trust anchor</a> root hash established for the authenticator model (e.g., published in FIDO MDS).</p>
-      <li data-md>
-       <p>If the <code>enterprise</code> field is present:</p>
+       <p>Verify the key validity period:</p>
        <ol>
         <li data-md>
-         <p>Verify that the <a data-link-type="dfn" href="#relying-party" id="ref-for-relying-party③⓪③">Relying Party</a> requested Enterprise Attestation and is authorized to receive it.</p>
+         <p>If <var>mtcCert</var> contains <code>notBefore</code> and <code>notAfter</code>, verify that <code><var>notBefore</var> ≤ now ≤ <var>notAfter</var></code>.</p>
         <li data-md>
-         <p>Verify that <code>deviceSerialNumber</code> matches an authorized device within the <a data-link-type="dfn" href="#relying-party" id="ref-for-relying-party③⓪④">Relying Party</a>’s inventory.</p>
+         <p>Otherwise (if <code>mtcKeyRef</code> was used), verify that the current time falls within the validity interval published in the verified metadata or manifest entry for this <code>serial</code>.</p>
+       </ol>
+      <li data-md>
+       <p>Verify revocation status:</p>
+       <ol>
+        <li data-md>
+         <p>Verify that <code>serial</code> is not within any revoked serial range for <code>caId</code> in the Relying Party’s metadata or manifest.</p>
+       </ol>
+      <li data-md>
+       <p>Verify Merkle tree commitment:</p>
+       <ol>
+        <li data-md>
+         <p>If <var>mtcCert</var> conforms to <code>mtcEntryDesc</code> and contains <code>mtcProof</code>:</p>
+         <ol>
+          <li data-md>
+           <p>Compute <code>pubKeyHash = SHA-256(batchPubKey)</code>.</p>
+          <li data-md>
+           <p>Reconstruct the leaf entry structure (<code>FidoMtcLogEntry</code>) binding <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter</code>, <code>authenticatorData.aaguid</code>, optional <code>fwVersion</code>, <code>pubKeyHash</code>, and any leaf extensions (such as the enterprise device serial number if committed in the leaf).</p>
+          <li data-md>
+           <p>Compute the leaf hash from the reconstructed entry according to <span>[draft-ietf-plants-merkle-tree-certs]</span> and <a data-link-type="biblio" href="#biblio-rfc9162" title="Certificate Transparency Version 2.0">[RFC9162]</a>: <code>SHA-256(0x00 || FidoMtcLogEntry)</code>.</p>
+          <li data-md>
+           <p>Evaluate the Merkle inclusion proof using the leaf hash and <code>mtcProof</code> to derive the calculated root hash.</p>
+          <li data-md>
+           <p>Verify that the calculated root hash matches an acceptable <a data-link-type="dfn" href="#attestation-trust-path" id="ref-for-attestation-trust-path①⓪">trust anchor</a> root hash established for <code>caId</code> (e.g., published in FIDO MDS3 <code>mtcTrustAnchors</code>).</p>
+         </ol>
+        <li data-md>
+         <p>If <var>mtcCert</var> conforms to <code>mtcKeyRef</code> (proof-less mode):</p>
+         <ol>
+          <li data-md>
+           <p>Verify that the <a data-link-type="dfn" href="#relying-party" id="ref-for-relying-party③⓪③">Relying Party</a> has previously authenticated the complete manufacturer manifest table against the Root CA signature or published trust anchor root hash.</p>
+         </ol>
+       </ol>
+      <li data-md>
+       <p>If Enterprise Attestation was requested and active:</p>
+       <ol>
+        <li data-md>
+         <p>Verify that the resolved device serial number matches an authorized device within the <a data-link-type="dfn" href="#relying-party" id="ref-for-relying-party③⓪④">Relying Party</a>’s inventory.</p>
        </ol>
       <li data-md>
        <p>If successful, return implementation-specific values representing attestation type <a data-link-type="dfn" href="#basic" id="ref-for-basic①③">Basic</a> (or <a data-link-type="dfn" href="#attca" id="ref-for-attca①①">AttCA</a> in enterprise mode) and the attestation trust path.</p>
@@ -12814,6 +12871,8 @@ and <a href="https://www.w3.org/TR/2025/WD-webauthn-3-20250127/#sctn-getClientCa
    <dd>J. Schaad. <a href="https://www.rfc-editor.org/info/rfc9052/"><cite>CBOR Object Signing and Encryption (COSE): Structures and Process</cite></a>. August 2022. Internet Standard. URL: <a href="https://www.rfc-editor.org/info/rfc9052/">https://www.rfc-editor.org/info/rfc9052/</a>
    <dt id="biblio-rfc9053">[RFC9053]
    <dd>J. Schaad. <a href="https://www.rfc-editor.org/info/rfc9053/"><cite>CBOR Object Signing and Encryption (COSE): Initial Algorithms</cite></a>. August 2022. Informational. URL: <a href="https://www.rfc-editor.org/info/rfc9053/">https://www.rfc-editor.org/info/rfc9053/</a>
+   <dt id="biblio-rfc9162">[RFC9162]
+   <dd>B. Laurie; E. Messeri; R. Stradling. <a href="https://www.rfc-editor.org/info/rfc9162/"><cite>Certificate Transparency Version 2.0</cite></a>. December 2021. Experimental. URL: <a href="https://www.rfc-editor.org/info/rfc9162/">https://www.rfc-editor.org/info/rfc9162/</a>
    <dt id="biblio-sec1">[SEC1]
    <dd><a href="http://www.secg.org/sec1-v2.pdf"><cite>SEC1: Elliptic Curve Cryptography, Version 2.0</cite></a>. URL: <a href="http://www.secg.org/sec1-v2.pdf">http://www.secg.org/sec1-v2.pdf</a>
    <dt id="biblio-sp800-800-63r3">[SP800-800-63r3]
