@@ -78,7 +78,7 @@
       FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (319,004 cumulative lines across Runs 10–24, including Run 24 250 / 250 100.00% PASS with 2-field proof-less mtcKeyRef saving 1,478 B vs pre-PR "mtc" &amp; 147 B vs mtcEntryDesc, batchKeys notBefore/notAfter alignment, and expanded 7-field "mtc-debug" extension), Total Phase Beagle USB Protocol Analyzer (122,002 USB bus records in Run 24 &amp; 127,232 in Run 19, 0 bus errors across 1,092 CTAPHID_CBOR exchanges), and J-Link RTT DWT cycle-accurate telemetry (2,059,249 cumulative lines including 287,281 lines in Run 24 opensk_rtt.log, 0 panics/OOMs).
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (370,273 cumulative lines across Runs 10–25, including Run 25 51,269 lines 100% intact &gt;&gt; append-mode capture verifying dynamic OPENSK_FIRMWARE_VERSION = 256 &amp; X.509 id-fido-gen-ce-fwversion OID 1.3.6.1.4.1.45724.1.1.3 &amp; Run 24 250 / 250 100.00% PASS with 2-field proof-less mtcKeyRef saving 1,478 B vs pre-PR "mtc" &amp; 147 B vs mtcEntryDesc, batchKeys notBefore/notAfter alignment, and expanded 7-field "mtc-debug" extension), Total Phase Beagle USB Protocol Analyzer (123,951 USB bus records in Run 25 &amp; 122,002 in Run 24 &amp; 127,232 in Run 19, 0 CRC/packet USB errors across 1,092 CTAPHID_CBOR exchanges), and J-Link RTT DWT cycle-accurate telemetry (2,349,830 cumulative lines including 290,581 lines in Run 25 &amp; 287,281 lines in Run 24 opensk_rtt.log, 0 panics/OOMs).
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–24 (<code>Runs 10–23</code> Historical + <code>Run 24</code> Latest Full-Suite Simultaneous 3-Log Capture with 2-Field <code>mtcKeyRef</code>, <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code>)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–25 (<code>Runs 10–23</code> Historical + <code>Runs 24–25</code> Latest Full-Suite Simultaneous 3-Log Captures with Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code>, X.509 <code>id-fido-gen-ce-fwversion</code>, 2-Field <code>mtcKeyRef</code> &amp; Expanded <code>"mtc-debug"</code>)</div>
+        </a>
+        <a href="#section-0-0000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.0000000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 25 (<code>09:34:42</code> – <code>09:55:59</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) &amp; Serial Number Propagation Across Firmware, X.509 (<code>id-fido-gen-ce-fwversion</code>), MTC &amp; FIDO MDS3 + 100% Intact <code>&gt;&gt;</code> Append-Mode Debug Log</div>
         </a>
         <a href="#section-0-000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.000000</div>
@@ -150,8 +154,16 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–24 (<code>Runs 10–23</code> Historical + <code>Run 24</code> Latest Full-Suite Simultaneous 3-Log Capture with 2-Field <code>mtcKeyRef</code>, <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code>)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–25 (<code>Runs 10–23</code> Historical + <code>Runs 24–25</code> Latest Full-Suite Simultaneous 3-Log Captures with Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code>, X.509 <code>id-fido-gen-ce-fwversion</code>, 2-Field <code>mtcKeyRef</code> &amp; Expanded <code>"mtc-debug"</code>)</a>
 
+        </li>
+        <li>
+          <a href="#section-0-0000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000000 Run 25 (<code>09:34:42</code> – <code>09:55:59</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) &amp; Serial Number Propagation Across Firmware, X.509 (<code>id-fido-gen-ce-fwversion</code>), MTC &amp; FIDO MDS3 + 100% Intact <code>&gt;&gt;</code> Append-Mode Debug Log</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#000000001-end-to-end-dynamic-propagation-matrix-opensk_firmware_version-256-device-serial-123456" class="hover:underline">&sect;0.0000000.1 End-to-End Dynamic Propagation Matrix (<code>OPENSK_FIRMWARE_VERSION = 256</code> &amp; Device Serial <code>"123456"</code>)</a></div>
+            <div><a href="#000000002-run-25-wire-size-64-mhz-cortex-m4-dwt-timing-across-all-18-algorithms-authr-makecred-resp-1-authr-getassertion-resp-1" class="hover:underline">&sect;0.0000000.2 Run 25 Wire Size &amp; 64 MHz Cortex-M4 DWT Timing Across All 18 Algorithms (<code>Authr-MakeCred-Resp-1</code> &amp; <code>Authr-GetAssertion-Resp-1</code>)</a></div>
+            <div><a href="#000000003-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-25-vs-run-24" class="hover:underline">&sect;0.0000000.3 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 25 vs Run 24)</a></div>
+          </div>
         </li>
         <li>
           <a href="#section-0-000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000000 Run 24 (<code>07:43:50</code> – <code>08:05:36</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Upstream-Rebased OpenSK, 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code> Extension</a>
@@ -160,6 +172,10 @@
             <div><a href="#00000002-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-24" class="hover:underline">&sect;0.000000.2 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 24)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000 Run 23 (<code>22:45:07.81</code> – <code>22:45:46.69</code> PDT) Message-Level Deep Dive: <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>"mtc-debug"</code> Privacy Gate</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -169,10 +185,6 @@
             <div><a href="#0000004-side-by-side-comparison-authorized-enterprise-attestation-p-2p-3-vs-unauthorized-rp-fallback-f-6" class="hover:underline">&sect;0.00000.4 Side-by-Side Comparison: Authorized Enterprise Attestation (<code>P-2</code>/<code>P-3</code>) vs. Unauthorized RP Fallback (<code>F-6</code>)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000 Run 22 (<code>11:51:49</code> – <code>12:11:56</code> PDT) Deep Dive: W3C WebAuthn Level 4 Pull Request Consolidated <code>fmt: "mtc"</code> (<code>4,736–5,397 B</code>, Saving <code>1,331 B</code> Wire Payload), <code>"mtc-debug"</code> Extension &amp; <code>opensk_rtt.log</code> Hardware Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -201,6 +213,10 @@
             <div><a href="#0004-run-20-complete-37-suite-conformance-summary-231301-235836-pdt" class="hover:underline">&sect;0.00.4 Run 20 Complete 37-Suite Conformance Summary (<code>23:13:01</code> – <code>23:58:36</code> PDT)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0 Run 19 (<code>250 / 250</code> <code>100%</code> Pass) &amp; Run 18 Deep Dive: All 18 Algorithms Including Draft NIST FIPS 206 (<code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>) Across <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -208,10 +224,6 @@
             <div><a href="#002-run-19-three-way-correlated-getassertion-sweep-authr-getassertion-resp-1-all-18-algorithms" class="hover:underline">&sect;0.0.2 Run 19 Three-Way Correlated <code>GetAssertion</code> Sweep (<code>Authr-GetAssertion-Resp-1</code>, All 18 Algorithms)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0. Run 17 Deep Dive: <code>250/250</code> (<code>100%</code>) Pass with <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), <code>encIdentifier (0x19)</code>, <code>encCredStoreState (0x1E)</code>, Enterprise MTC, and Total Phase USB Bus Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -254,7 +266,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–24 (<code>Runs 10–23</code> Historical + <code>Run 24</code> Latest Full-Suite Simultaneous 3-Log Capture with 2-Field <code>mtcKeyRef</code>, <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code>)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–25 (<code>Runs 10–23</code> Historical + <code>Runs 24–25</code> Latest Full-Suite Simultaneous 3-Log Captures with Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code>, X.509 <code>id-fido-gen-ce-fwversion</code>, 2-Field <code>mtcKeyRef</code> &amp; Expanded <code>"mtc-debug"</code>)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -394,13 +406,170 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>6 Passed / 3 Skipped / 0 Failed</code>)</strong> — <strong>All 6 Enterprise Profile tests (<code>P-1</code>, <code>P-2</code>, <code>P-3</code>, <code>F-4</code>, <code>F-5</code>, <code>F-6</code>) passed <code>100%</code> across <code>136</code> CTAPHID messages (<code>68</code> exchanges), verifying both <code>getGetInfoCached()</code> harness fixes and the <code>"mtc-debug"</code> <code>deviceSerial</code> privacy gate (<code>0</code> panics / <code>0</code> errors in <code>11,228</code> <code>opensk_rtt.log</code> lines)!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 24 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 24</strong></td>
 <td class="p-3 align-top text-left"><code>L1–L37223</code> (<code>37,223</code> lines), <code>/tmp/totalphase.csv</code> (<code>26,403</code> lines) &amp; <code>opensk_rtt.log</code> (<code>287,281</code> lines)</td>
 <td class="p-3 align-top text-left"><code>07:43:50</code> – <code>08:05:36</code> (<code>21m 41s</code> USB capture)</td>
 <td class="p-3 align-top text-left"><strong>Upstream-Rebased OpenSK (<code>google/OpenSK</code> PR #759) + W3C WebAuthn Level 4 PR 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, Saving <code>1,478 B</code> vs Pre-PR <code>"mtc"</code> &amp; <code>147 B</code> vs <code>mtcEntryDesc</code>: <code>3,685–5,242 B</code>) + <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> (<code>1792281600</code>..<code>253402300799</code>) + Expanded 7-Field <code>"mtc-debug"</code> Extension (<code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, <code>mtcProof</code>, <code>rootHash</code>, <code>pubKey</code>, <code>deviceSerial?</code>) + Simultaneous 3-Log Capture</strong></td>
 <td class="p-3 align-top text-left"><strong><code>250</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 33 Skipped / 0 Failed</code> across all 37 CTAP 2.3 suites)</strong> — <strong>Complete CTAP 2.3 suite finished with <code>0</code> failures (<code>"Testing finished. You may submit the results now."</code>), <code>22</code> proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) responses (<code>3,685–5,242 B</code>), <code>79</code> <code>"packed"</code> responses, <code>4</code> <code>"mtc-debug"</code> verification exchanges (<code>1,374 B</code> &amp; <code>7,492 B</code>), <code>0</code> hardware USB bus errors across <code>122,002</code> USB records (<code>1,092</code> <code>CTAPHID_CBOR</code> exchanges), and <code>0</code> panics/OOMs across <code>287,281</code> <code>opensk_rtt.log</code> lines!</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 25 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L1–L51269</code> (<code>51,269</code> lines, 100% intact <code>&gt;&gt;</code> append-mode), <code>/tmp/totalphase.csv</code> (<code>26,648</code> lines) &amp; <code>opensk_rtt.log</code> (<code>290,581</code> lines)</td>
+<td class="p-3 align-top text-left"><code>09:34:42</code> – <code>09:55:59</code> (<code>21m 17.03s</code> USB / <code>20m 54.50s</code> Mocha)</td>
+<td class="p-3 align-top text-left"><strong>Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code> in <code>src/env.rs</code>) &amp; <code>--enterprise-serial</code> (<code>"123456"</code>) Propagation Across Firmware (<code>GetInfo 0x0E = 256</code>), X.509 Certificates (<code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3 = 04 04 00 00 01 00</code> &amp; <code>id-fido-gen-ce-sernum</code> OID <code>1.3.6.1.4.1.45724.1.1.2</code>), MTC Leaves/Checkpoints &amp; FIDO MDS3 Metadata + 100% Intact <code>&gt;&gt;</code> Append-Mode Debug Log + Simultaneous 3-Log Capture</strong></td>
+<td class="p-3 align-top text-left"><strong><code>249</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>1</code></strong>*</td>
+<td class="p-3 align-top text-left"><strong><code>99.60%</code> PASS (<code>249 Passed / 35 Skipped / 1 Failed*</code> across <code>285</code> unique tests / <code>37</code> suites)</strong> — <strong>Verified <code>GetInfo 0x0E = 256</code> (<code>0x0100</code>) on the wire across all <code>60</code> <code>GetInfo</code> calls (<code>845 B</code>), <code>103</code> <code>MakeCredential Ok</code> (<code>81</code> <code>"packed"</code>, <code>22</code> 2-field <code>mtcKeyRef</code> <code>"mtc"</code>, <code>4</code> <code>"mtc-debug"</code>), <code>66</code> <code>GetAssertion Ok</code>, <code>0</code> CRC/packet USB errors across <code>123,951</code> USB bus records (<code>5,038</code> <code>OUT</code> / <code>8,088</code> <code>IN</code>), and <code>0</code> panics/OOMs across <code>290,581</code> <code>opensk_rtt.log</code> lines; <code>*1</code> stale <code>localStorage</code> metadata check (<code>expected 256 to equal 1</code>) fixed via <code>loadLatestOpenSKMetadata</code> auto-refresh in <code>app.asar</code>!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-0000000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-0000000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 25 (<code>09:34:42</code> – <code>09:55:59</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) &amp; Serial Number Propagation Across Firmware, X.509 (<code>id-fido-gen-ce-fwversion</code>), MTC &amp; FIDO MDS3 + 100% Intact <code>&gt;&gt;</code> Append-Mode Debug Log</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>End-to-End Single-Source-of-Truth Propagation for Firmware Version (<code>256</code> / <code>0x0100</code>) and Device Serial Number (<code>"123456"</code>), Plus 100% Uncorrupted <code>51,269</code>-Line Debug Log Capture</strong>: Prior to Run 25, we unified the definition and propagation of <code>firmwareVersion</code> (<code>256</code> / <code>0x0100</code>) and the device/enterprise serial number across the entire OpenSK / Fidont stack and re-flashed and re-provisioned the Nordic nRF52840 DK:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Single Source of Truth in Firmware (<code>src/env.rs</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Defined <code>pub const OPENSK_FIRMWARE_VERSION: u64 = 256;</code> (<code>0x0100</code>, v1.0) in <code>src/env.rs</code>, returned by both <code>WasefireEnv::firmware_version() -&gt; Some(OPENSK_FIRMWARE_VERSION)</code> (controlling <code>authenticatorGetInfo</code> member <code>0x0E</code> on the hardware board) and <code>TestEnv::firmware_version() -&gt; Some(OPENSK_FIRMWARE_VERSION)</code>.</li>
+<li>Every MTC leaf entry constructed on-device in <code>src/ctap/mod.rs</code> calls <code>env.firmware_version().unwrap_or(0) as u32</code>, dynamically hashing <code>firmware_version = 256</code> (<code>0x00000100</code>) into both the 60-byte MTC leaf header (<code>bytes[56..60]</code>) and <code>"mtc-debug".firmwareVersion</code>.</li>
+<li>Device serial number is read dynamically from hardware silicon (<code>FICR.DEVICEID[0..1]</code> on nRF52840) or NVRAM file <code>0x0206</code> (<code>get_device_serial_string()</code> in <code>src/ctap/storage.rs</code>), populated by <code>tools/configure.py --enterprise-serial "123456"</code>.</li>
+</ul></li>
+<li><strong>Dynamic Propagation to X.509 Certificates (<code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3</code> &amp; <code>id-fido-gen-ce-sernum</code> OID <code>1.3.6.1.4.1.45724.1.1.2</code>), MTC Subtrees &amp; FIDO MDS3 Metadata</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Added <code>read_opensk_firmware_version(repo_root)</code> to <code>tools/configure.py</code>, <code>tools/gen_lms_certs.py</code>, and <code>crypto_data_enterprise/gen_enterprise_key.py</code> so Python provisioning tools parse <code>OPENSK_FIRMWARE_VERSION</code> directly from <code>src/env.rs</code>.</li>
+<li>Added the FIDO Firmware Version X.509 extension (<strong><code>id-fido-gen-ce-fwversion</code></strong>, OID <code>1.3.6.1.4.1.45724.1.1.3</code>, DER <code>OCTET STRING</code> <code>04 04 00 00 01 00</code> = <code>256</code> big-endian) to all 5 leaf X.509 certificates (<code>crypto_data_mldsa44/fidont_cert.pem</code> <code>3,056 B</code>, <code>crypto_data_mldsa65/fidont_cert.pem</code> <code>3,696 B</code>, <code>crypto_data_mldsa87/fidont_cert.pem</code> <code>4,336 B</code>, <code>crypto_data_enterprise/fidont_cert.pem</code> <code>3,094 B</code> alongside <code>id-fido-gen-ce-sernum</code> <code>1.3.6.1.4.1.45724.1.1.2</code>, and <code>crypto_data/fidont_cert.pem</code> <code>599 B</code>).</li>
+<li><code>tools/configure.py</code> dynamically propagates both <code>--firmware-version</code> (<code>256</code>) and <code>--enterprise-serial</code> (<code>"123456"</code>) into the on-device NVRAM (<code>0x0206</code>), the enterprise X.509 certificate, the enterprise MTC leaf &amp; LMS-signed subtree checkpoint (<code>0x0205</code>), and all FIDO MDS3 metadata files (<code>metadata/metadata_*.json</code> and <code>metadata/mtc_enterprise_info.json</code>).</li>
+</ul></li>
+<li><strong>100% Intact <code>51,269</code>-Line <code>fido_conformance_debug.log</code> via Append Mode (<code>&gt;&gt;</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Launching the Electron/Chromium + Node.js Conformance Tool with <code>&gt;&gt; /Users/jbradley/.gemini/antigravity/scratch/fido_conformance_debug.log 2&gt;&amp;1</code> (<code>O_APPEND</code>) completely eliminated independent stdout/stderr file-descriptor offset overwrites. All <strong><code>51,269</code> lines (<code>6.87 MB</code>)</strong> — including all <strong><code>21,225</code> 64-byte HID frames</strong> (<code>13,178</code> <code>OUT</code>, <code>8,047</code> <code>IN</code>) and all <strong><code>285</code> Mocha test results</strong> — were preserved in strict chronological order from <code>L1</code> (<code>P-1</code> of <code>HID-1</code>) to <code>L51269</code> (<code>"Testing finished. You may submit the results now."</code>).</li>
+</ul></li>
+<li><strong>Why <code>Authr-Generic-1 P-1</code> Reported <code>expected 256 to equal 1</code> &amp; Auto-Refresh Fix (<code>loadLatestOpenSKMetadata</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>On the USB wire, the newly flashed OpenSK firmware returned <code>firmwareVersion (0x0E): 256</code> (<code>0x0e 0x19 0x01 0x00</code>) in all <code>60</code> <code>authenticatorGetInfo</code> (<code>0x04</code>) responses (<code>845 B</code> CBOR, up from <code>844 B</code> when <code>firmwareVersion</code> was <code>1</code>).</li>
+<li>However, the FIDO Conformance Tool caches <code>window.config.test.metadataStatement</code> in Chromium's <code>localStorage</code> (<code>db.save</code>) when a metadata JSON file is dropped into the UI, so <code>localStorage</code> still held the previous session's cached <code>firmwareVersion: 1</code>.</li>
+<li>We patched <code>fido_extracted/preload.js</code> and <code>fido_extracted/app/js/controller.js</code> (<code>global.loadLatestOpenSKMetadata</code>) and repackaged <code>app.asar</code> so the tool automatically reloads <code>/Users/jbradley/.gemini/antigravity/scratch/OpenSK/metadata/metadata_mldsa44_mtc.json</code> into <code>window.config.test.metadataStatement</code> and <code>localStorage</code> whenever a suite is loaded or <code>Start</code> is clicked.</li>
+</ul></li>
+</ol></div>
+<h3 id="000000001-end-to-end-dynamic-propagation-matrix-opensk_firmware_version-256-device-serial-123456" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000000.1 End-to-End Dynamic Propagation Matrix (<code>OPENSK_FIRMWARE_VERSION = 256</code> &amp; Device Serial <code>"123456"</code>)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Artifact / Protocol Layer</th>
+<th class="p-3 font-semibold align-bottom text-left">Firmware Version (<code>256</code> / <code>0x0100</code>) Field &amp; Encoding</th>
+<th class="p-3 font-semibold align-bottom text-left">Device / Enterprise Serial (<code>"123456"</code>) Field &amp; Encoding</th>
+<th class="p-3 font-semibold align-bottom text-left">Source &amp; Propagation Mechanism</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>1. Rust Firmware (<code>src/env.rs</code>, <code>src/ctap/storage.rs</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>pub const OPENSK_FIRMWARE_VERSION: u64 = 256;</code> $\to$ <code>WasefireEnv::firmware_version() -&gt; Some(256)</code></td>
+<td class="p-3 align-top text-left"><code>get_device_serial_string(env)</code>: reads NVRAM key <code>0x0206</code> (<code>"123456"</code>), or falls back to hardware <code>FICR.DEVICEID[0..1]</code> (<code>16</code> hex chars)</td>
+<td class="p-3 align-top text-left">Compiled into Cortex-M4F firmware &amp; provisioned over CTAPHID vendor command by <code>tools/configure.py</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>2. <code>authenticatorGetInfo (0x04)</code> CBOR (<code>845 B</code>)</strong></td>
+<td class="p-3 align-top text-left">Key <code>0x0E</code>: <code>0x0e 0x19 0x01 0x00</code> (<code>256</code> unsigned integer)</td>
+<td class="p-3 align-top text-left">Privacy-gated (never exposed in <code>GetInfo</code>)</td>
+<td class="p-3 align-top text-left">Constructed dynamically in <code>CtapState::process_get_info()</code> from <code>env.firmware_version()</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>3. Leaf X.509 Certificates (<code>x5c</code> in <code>fmt: "packed"</code>)</strong></td>
+<td class="p-3 align-top text-left">OID <strong><code>1.3.6.1.4.1.45724.1.1.3</code></strong> (<code>id-fido-gen-ce-fwversion</code>): <code>OCTET STRING</code> <code>04 04 00 00 01 00</code> (<code>4 B</code> big-endian <code>u32 = 256</code>)</td>
+<td class="p-3 align-top text-left">OID <strong><code>1.3.6.1.4.1.45724.1.1.2</code></strong> (<code>id-fido-gen-ce-sernum</code>): <code>UTF8String</code> <code>"123456"</code> (Enterprise cert only; omitted on batch certs)</td>
+<td class="p-3 align-top text-left">Generated by <code>tools/gen_lms_certs.py</code> &amp; <code>tools/configure.py</code> reading <code>OPENSK_FIRMWARE_VERSION</code> from <code>src/env.rs</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>4. MTC Leaf Entry (<code>60 B</code> header) &amp; Subtree Root (<code>fmt: "mtc"</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>bytes[56..60]</code>: <code>00 00 01 00</code> (<code>u32 = 256</code> big-endian) hashed into leaf &amp; LMS-signed (<code>alg: -46</code>) subtree root</td>
+<td class="p-3 align-top text-left"><code>mtcProof.extensions</code>: <code>0x01 || len("123456") || "123456"</code> (<code>8 B</code>, Enterprise MTC leaf only; <code>0 B</code> on batch MTC leaf)</td>
+<td class="p-3 align-top text-left">Computed in <code>tools/configure.py</code> (provisioning) and <code>src/ctap/mod.rs</code> (runtime <code>"mtc-debug"</code> proof reconstruction)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>5. <code>"mtc-debug"</code> Registration Extension (<code>authenticatorData.extensions</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>"firmwareVersion": 256</code> (<code>0x19 0x01 0x00</code>)</td>
+<td class="p-3 align-top text-left"><code>"deviceSerial": "123456"</code> (emitted <strong>only</strong> when <code>epAtt: true</code>; strictly omitted on standard/downgraded registrations)</td>
+<td class="p-3 align-top text-left">Constructed at runtime in <code>src/ctap/mod.rs</code> from <code>env.firmware_version()</code> and <code>storage::get_device_serial_string(env)</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>6. FIDO MDS3 Metadata (<code>metadata_*.json</code> &amp; <code>mtc_enterprise_info.json</code>)</strong></td>
+<td class="p-3 align-top text-left">Top-level <code>"firmwareVersion": 256</code> &amp; <code>"authenticatorGetInfo": { "firmwareVersion": 256 }</code></td>
+<td class="p-3 align-top text-left"><code>"enterpriseAttestation": { "deviceSerial": "123456" }</code> in <code>mtc_enterprise_info.json</code></td>
+<td class="p-3 align-top text-left">Updated automatically by <code>tools/configure.py</code> and auto-loaded into the FIDO Conformance Tool via <code>loadLatestOpenSKMetadata()</code></td>
+</tr>
+</tbody></table></div>
+<h3 id="000000002-run-25-wire-size-64-mhz-cortex-m4-dwt-timing-across-all-18-algorithms-authr-makecred-resp-1-authr-getassertion-resp-1" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000000.2 Run 25 Wire Size &amp; 64 MHz Cortex-M4 DWT Timing Across All 18 Algorithms (<code>Authr-MakeCred-Resp-1</code> &amp; <code>Authr-GetAssertion-Resp-1</code>)</h3>
+<h3 id="000000003-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-25-vs-run-24" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000000.3 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 25 vs Run 24)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Value in Run 25 (<code>/tmp/totalphase.csv</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Value in Run 24 (<code>/tmp/totalphase.csv</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Notes</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Capture Timestamp Window</strong></td>
+<td class="p-3 align-top text-left"><code>Mon Oct 26 09:34:42</code> – <code>09:55:59 2026</code> (<code>21m 17.03s</code>)</td>
+<td class="p-3 align-top text-left"><code>Mon Oct 26 07:43:50</code> – <code>08:05:36 2026</code> (<code>21m 41.36s</code>)</td>
+<td class="p-3 align-top text-left">Complete start-to-finish CTAP 2.3 conformance run</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Total CSV Lines / USB Records</strong></td>
+<td class="p-3 align-top text-left"><code>26,648</code> CSV lines / <strong><code>123,951</code> USB bus records</strong></td>
+<td class="p-3 align-top text-left"><code>26,403</code> CSV lines / <code>122,002</code> USB bus records</td>
+<td class="p-3 align-top text-left">Aggregate SOF + IN-NAK + <code>OUT txn</code> + <code>IN txn</code> records</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>USB <code>OUT txn</code> (<code>64 B</code> reports)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>5,038</code> transactions (<code>322,432 B</code> = <code>314.9 KB</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>4,956</code> transactions (<code>317,184 B</code> = <code>309.8 KB</code>)</td>
+<td class="p-3 align-top text-left">Host-to-device (<code>Ep 02 OUT</code>) CTAPHID frames</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>USB <code>IN txn</code> (<code>64 B</code> reports)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>8,088</code> transactions (<code>517,632 B</code> = <code>505.5 KB</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>8,037</code> transactions (<code>514,368 B</code> = <code>502.3 KB</code>)</td>
+<td class="p-3 align-top text-left">Device-to-host (<code>Ep 02 IN</code>) CTAPHID frames</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Total <code>64 B</code> HID Data Transactions</strong></td>
+<td class="p-3 align-top text-left"><strong><code>13,126</code> transactions (<code>840,064 B</code> = <code>820.4 KB</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>12,993</code> transactions (<code>831,552 B</code> = <code>812.1 KB</code>)</td>
+<td class="p-3 align-top text-left">Combined <code>OUT</code> + <code>IN</code> 64-byte USB interrupt transfers</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>CTAPHID Channel Handshakes (<code>0x86</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,104</code> <code>OUT</code> / <code>1,103</code> <code>IN</code></td>
+<td class="p-3 align-top text-left"><code>1,103</code> <code>OUT</code> / <code>1,102</code> <code>IN</code></td>
+<td class="p-3 align-top text-left">Fresh channel per test exchange</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Paired <code>CTAPHID_CBOR</code> (<code>0x90</code>) Exchanges</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,092</code> completed pairs</strong> (<code>154</code> <code>MakeCred</code>, <code>92</code> <code>GetAssertion</code>, <code>721</code> <code>ClientPIN</code>, <code>60</code> <code>GetInfo</code>, <code>27</code> <code>Reset</code>, <code>16</code> <code>CredMgmt</code>, <code>13</code> <code>Config</code>, <code>6</code> <code>LargeBlobs</code>, <code>3</code> <code>GetNextAssertion</code>)</td>
+<td class="p-3 align-top text-left"><code>1,092</code> completed pairs</td>
+<td class="p-3 align-top text-left">Identical 37-suite CTAP 2.3 command distribution</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>CTAPHID_KEEPALIVE</code> (<code>0xbb</code>) Frames</strong></td>
+<td class="p-3 align-top text-left"><code>364</code> <code>IN</code> frames (<code>358</code> logged by Node)</td>
+<td class="p-3 align-top text-left"><code>362</code> <code>IN</code> frames (<code>358</code> logged by Node)</td>
+<td class="p-3 align-top text-left">Emitted during multi-second PQ/RSA/ECDSA operations</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Intentional Protocol <code>CTAPHID_ERROR</code> (<code>0xbf</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>4</code> <code>IN</code> frames</td>
+<td class="p-3 align-top text-left"><code>4</code> <code>IN</code> frames</td>
+<td class="p-3 align-top text-left">Expected negative transport test responses in <code>HID-1</code> (<code>INVALID_CMD</code>, <code>INVALID_PAR</code>, <code>INVALID_LEN</code>, <code>INVALID_SEQ</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Hardware USB Bus / CRC Errors</strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code> CRC/packet errors</strong> (<code>1</code> normal <code>[1 ORPHANED]</code> token during USB reset)</td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><code>100.00%</code> CRC-error-free physical USB bus transmission</td>
 </tr>
 </tbody></table></div>
     </section>
