@@ -247,16 +247,16 @@
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Run 26: 252 / 252 (100.00% PASS)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             18 Algorithms (incl. FN-DSA-512 &amp; FN-DSA-1024)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            W3C WebAuthn L4 PR: fmt: "mtc" &amp; "mtc-debug"
+            Stateless ML-DSA-87 &amp; ES384 Root CAs
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            HSS/LMS Hierarchy &amp; PQ MTC (-1,331 B Wire)
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            perCredMgmtRO &amp; Enterprise Attestation
+            Dual P0.11/P0.08 UP &amp; Auto Power-Cycle
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
@@ -265,11 +265,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. <code>"mtc-debug"</code>), <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
+            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CA Hierarchy, All 8 Extensions (incl. <code>"mtc-debug"</code>), <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation, Dual Hardware/VCOM User Presence &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–25, covering the upstream-rebased OpenSK firmware with dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) and device serial (<code>&quot;123456&quot;</code>) propagation across firmware (<code>GetInfo 0x0E = 256</code>), X.509 certificates (<code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3</code> &amp; <code>id-fido-gen-ce-sernum</code> OID <code>1.3.6.1.4.1.45724.1.1.2</code>), MTC leaves/checkpoints &amp; FIDO MDS3 metadata, the W3C WebAuthn Level 4 Pull Request 2-field proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, saving <code>1,478 B</code> vs pre-PR <code>&quot;mtc&quot;</code> and <code>147 B</code> vs <code>mtcEntryDesc</code>: <code>3,685–5,242 B</code>), FIDO MDS3 <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> alignment (<code>1792281600</code>..<code>253402300799</code>), the expanded 7-field <code>&quot;mtc-debug&quot;</code> registration extension, all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, RFC 8554 &cap; NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, <code>1,296 B</code> sig), Total Phase Beagle USB Protocol Analyzer timing (<code>123,951</code> USB bus records in Run 25 &amp; <code>122,002</code> in Run 24 &amp; <code>127,232</code> in Run 19, <code>0</code> CRC/packet errors across <code>1,092</code> <code>CTAPHID_CBOR</code> exchanges), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>2,349,830</code> cumulative RTT lines across <code>opensk_rtt.log</code> &amp; <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 17–26), highlighted by <strong>Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>18m 27.46s</code>)</strong> with stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, 2-field proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, cutting Enterprise <code>MakeCredential</code> with <code>&quot;mtc-debug&quot;</code> to <code>4,448 B</code> / <code>76</code> HID frames — <code>3,161 B</code> below the <code>7,609 B</code> CTAPHID limit), real Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence (compiled without <code>up-always-true</code>, <code>179</code> UP checks), and <code>3 / 3</code> zero-dialog automated <code>probe-rs</code> MCU power cycles. <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -292,9 +292,20 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-00000000"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Latest — Run 26: 252 / 252 100.00% PASS, Attestation Deep Dive, Stateless ML-DSA-87 &amp; ES384 Root CAs, Real UP &amp; Auto Power-Cycle)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS in <code>18m 27.46s</code>): Attestation Deep Dive (<code>Authr-MakeCred-Resp-1</code> &amp; <code>4,448 B</code> Enterprise <code>fmt: &quot;mtc&quot;</code>), Dual <code>P0.11</code>/<code>P0.08</code> UP &amp; <code>3 / 3</code> Zero-Dialog MCU Resets
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Complete unattended 100% pass compiled without <code>up-always-true</code>: verifies all 18 algorithms in <code>Authr-MakeCred-Resp-1</code> (<code>6/6</code> PASS: 7 <code>&quot;packed&quot;</code> with <code>600 B</code> <code>ES256</code> batch cert signed by <code>ES384</code> Root CA + 11 <code>&quot;mtc&quot;</code> with <code>19 B</code> 2-field <code>mtcKeyRef</code>), <code>EntepriseAttestation.js</code> (<code>6/6</code> PASS: <code>P-2</code>/<code>P-3</code> reduced from <code>7,492 B</code> to <code>4,448 B</code> / <code>76f</code> with <code>ML-DSA-87</code> Root CA subtree checkpoint verification &amp; <code>F-6</code> privacy gate), <code>179</code> real UP triggers over J-Link VCOM <code>P0.08</code>, and <code>3 / 3</code> first-attempt automated <code>probe-rs</code> resets.
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-0000000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000 (Latest — Run 25: Dynamic OPENSK_FIRMWARE_VERSION = 256, X.509 id-fido-gen-ce-fwversion, 100% Intact &gt;&gt; Debug Log &amp; TotalPhase USB)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000 (Run 25: Dynamic OPENSK_FIRMWARE_VERSION = 256, X.509 id-fido-gen-ce-fwversion, 100% Intact &gt;&gt; Debug Log &amp; TotalPhase USB)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
               End-to-End Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) &amp; Serial Propagation (<code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3</code>), 100% Intact <code>51,269</code>-Line <code>&gt;&gt;</code> Debug Log &amp; 3-Log Telemetry
             </h3>
@@ -384,10 +395,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.2–0.3</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Multi-Log USB Bus Telemetry &amp; Runs 10–19 Comparison
+              Multi-Log USB Bus Telemetry &amp; Runs 17–26 Comparison
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Correlating <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> (<code>4,945</code> OUT / <code>8,827</code> IN packets, <code>0</code> USB errors), and <code>fidont_rtt.log</code> across Runs 10, 11, 16, 17, 18, and 19.
+              Correlating <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code>, and <code>opensk_rtt.log</code> / <code>fidont_rtt.log</code> across the last 10 conformance runs (Runs 17–26).
             </p>
           </a>
 

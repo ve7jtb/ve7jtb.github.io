@@ -339,18 +339,19 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else ("abstract" if "abstract" in title.lower() else slug(title)),
     },
     "fido_ctap23_conformance_report": {
-        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. \"mtc-debug\"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation & Consolidated Post-Quantum fmt: \"mtc\"",
+        "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CA Hierarchy, All 8 Extensions (incl. \"mtc-debug\"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation, Dual Hardware/VCOM User Presence & Consolidated Post-Quantum fmt: \"mtc\"",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("W3C WebAuthn L4 PR: fmt: \"mtc\" & \"mtc-debug\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Run 26: 252 / 252 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("18 Algorithms (incl. FN-DSA-512 & 1024)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("HSS/LMS Hierarchy & PQ MTC (-1,331 B Wire)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("perCredMgmtRO & Enterprise Attestation", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Stateless ML-DSA-87 & ES384 Root CAs", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Dual P0.11/P0.08 UP & Auto Power-Cycle", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (370,273 cumulative lines across Runs 10–25, including Run 25 51,269 lines 100% intact >> append-mode capture verifying dynamic OPENSK_FIRMWARE_VERSION = 256 & X.509 id-fido-gen-ce-fwversion OID 1.3.6.1.4.1.45724.1.1.3 & Run 24 250 / 250 100.00% PASS with 2-field proof-less mtcKeyRef saving 1,478 B vs pre-PR \"mtc\" & 147 B vs mtcEntryDesc, batchKeys notBefore/notAfter alignment, and expanded 7-field \"mtc-debug\" extension), Total Phase Beagle USB Protocol Analyzer (123,951 USB bus records in Run 25 & 122,002 in Run 24 & 127,232 in Run 19, 0 CRC/packet USB errors across 1,092 CTAPHID_CBOR exchanges), and J-Link RTT DWT cycle-accurate telemetry (2,349,830 cumulative lines including 290,581 lines in Run 25 & 287,281 lines in Run 24 opensk_rtt.log, 0 panics/OOMs).",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 17–26), including Run 26 (252 / 252 100.00% PASS, 31 Skipped, 0 Failed in 18m 27.46s across 49,932 debug log lines & 269,469 RTT lines) with stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CAs, 2-field proof-less mtcKeyRef ({ caId, serial }, cutting Enterprise MakeCredential with \"mtc-debug\" to 4,448 B / 76 frames), real Hardware Button (P0.11) & J-Link VCOM (P0.08) User Presence (compiled without up-always-true, 179 UP checks), and 3 / 3 zero-dialog automated probe-rs MCU power cycles.",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-0-0000000" if "0.0000000" in title else
+            "section-0-00000000" if "0.00000000" in title else
+            ("section-0-0000000" if "0.0000000" in title else
             ("section-0-000000" if "0.000000" in title else
             ("section-0-00000" if "0.00000" in title else
             ("section-0-0000" if "0.0000" in title else
@@ -359,7 +360,7 @@ DOCUMENT_CONFIGS = {
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title))))))))))
+            (f"section-{num}" if num else slug(title)))))))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {

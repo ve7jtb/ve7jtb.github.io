@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. &quot;mtc-debug&quot;), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: &quot;mtc&quot;</title>
+  <title>FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 8 Extensions (incl. &quot;mtc-debug&quot;), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation, Dual Hardware/VCOM User Presence &amp; Consolidated Post-Quantum fmt: &quot;mtc&quot;</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -64,10 +64,10 @@
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">FIDO2 CTAP 2.3 Conformance Report</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">W3C WebAuthn L4 PR: fmt: &quot;mtc&quot; &amp; &quot;mtc-debug&quot;</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Run 26: 252 / 252 (100.00% PASS)</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">18 Algorithms (incl. FN-DSA-512 &amp; 1024)</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">HSS/LMS Hierarchy &amp; PQ MTC (-1,331 B Wire)</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">perCredMgmtRO &amp; Enterprise Attestation</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Stateless ML-DSA-87 &amp; ES384 Root CAs</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Dual P0.11/P0.08 UP &amp; Auto Power-Cycle</span>
       </div>
       <div class="flex items-center gap-4">
         <a href="./fido_ctap23_conformance_report.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
@@ -75,10 +75,10 @@
       </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
+      FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation, Dual Hardware/VCOM User Presence &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (370,273 cumulative lines across Runs 10–25, including Run 25 51,269 lines 100% intact &gt;&gt; append-mode capture verifying dynamic OPENSK_FIRMWARE_VERSION = 256 &amp; X.509 id-fido-gen-ce-fwversion OID 1.3.6.1.4.1.45724.1.1.3 &amp; Run 24 250 / 250 100.00% PASS with 2-field proof-less mtcKeyRef saving 1,478 B vs pre-PR "mtc" &amp; 147 B vs mtcEntryDesc, batchKeys notBefore/notAfter alignment, and expanded 7-field "mtc-debug" extension), Total Phase Beagle USB Protocol Analyzer (123,951 USB bus records in Run 25 &amp; 122,002 in Run 24 &amp; 127,232 in Run 19, 0 CRC/packet USB errors across 1,092 CTAPHID_CBOR exchanges), and J-Link RTT DWT cycle-accurate telemetry (2,349,830 cumulative lines including 290,581 lines in Run 25 &amp; 287,281 lines in Run 24 opensk_rtt.log, 0 panics/OOMs).
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 17–26), including Run 26 (252 / 252 100.00% PASS, 31 Skipped, 0 Failed in 18m 27.46s across 49,932 debug log lines &amp; 269,469 RTT lines) with stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CAs, 2-field proof-less mtcKeyRef ({ caId, serial }, cutting Enterprise MakeCredential with "mtc-debug" to 4,448 B / 76 frames), real Hardware Button (P0.11) &amp; J-Link VCOM (P0.08) User Presence (compiled without up-always-true, 179 UP checks), and 3 / 3 zero-dialog automated probe-rs MCU power cycles.
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–25 (<code>Runs 10–23</code> Historical + <code>Runs 24–25</code> Latest Full-Suite Simultaneous 3-Log Captures with Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code>, X.509 <code>id-fido-gen-ce-fwversion</code>, 2-Field <code>mtcKeyRef</code> &amp; Expanded <code>"mtc-debug"</code>)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of the Last 10 Test Runs (<code>Runs 17–26</code>: 18 Algorithms, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, Dual Hardware/VCOM User Presence &amp; Zero-Dialog Automated Power Cycles)</div>
+        </a>
+        <a href="#section-0-00000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.00000000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 26 (<code>10:21:46</code> – <code>10:40:13</code> PDT, <code>2026-10-26</code>) Full-Suite Conformance (<code>252 / 252</code> <code>100.00%</code> PASS) &amp; Attestation Deep Dive: Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code>, Real Hardware/VCOM User Presence &amp; Zero-Dialog Automated Power Cycles</div>
         </a>
         <a href="#section-0-0000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.0000000</div>
@@ -154,8 +158,16 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–25 (<code>Runs 10–23</code> Historical + <code>Runs 24–25</code> Latest Full-Suite Simultaneous 3-Log Captures with Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code>, X.509 <code>id-fido-gen-ce-fwversion</code>, 2-Field <code>mtcKeyRef</code> &amp; Expanded <code>"mtc-debug"</code>)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of the Last 10 Test Runs (<code>Runs 17–26</code>: 18 Algorithms, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, Dual Hardware/VCOM User Presence &amp; Zero-Dialog Automated Power Cycles)</a>
 
+        </li>
+        <li>
+          <a href="#section-0-00000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000000 Run 26 (<code>10:21:46</code> – <code>10:40:13</code> PDT, <code>2026-10-26</code>) Full-Suite Conformance (<code>252 / 252</code> <code>100.00%</code> PASS) &amp; Attestation Deep Dive: Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code>, Real Hardware/VCOM User Presence &amp; Zero-Dialog Automated Power Cycles</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#0000000001-run-26-attestation-deep-dive-part-1-authr-makecred-resp-1-p-01p-05-f-01-authr-getassertion-resp-1-across-all-18-algorithms-log-l217594l223019-rtt-l1241290l1281725" class="hover:underline">&sect;0.00000000.1 Run 26 Attestation Deep Dive — Part 1: <code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>P-05</code>, <code>F-01</code>) &amp; <code>Authr-GetAssertion-Resp-1</code> Across All 18 Algorithms (<code>Log L217594–L223019</code>, <code>RTT L1241290–L1281725</code>)</a></div>
+            <div><a href="#0000000002-run-26-attestation-deep-dive-part-2-entepriseattestationjs-p-1p-3-f-4f-6-6-6-pass-4448-b-enterprise-fmt-mtc-log-l235140l236450-rtt-l1356480l1362220" class="hover:underline">&sect;0.00000000.2 Run 26 Attestation Deep Dive — Part 2: <code>EntepriseAttestation.js</code> (<code>P-1</code>..<code>P-3</code>, <code>F-4</code>..<code>F-6</code>, <code>6 / 6</code> PASS) &amp; <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code> (<code>Log L235140–L236450</code>, <code>RTT L1356480–L1362220</code>)</a></div>
+            <div><a href="#0000000003-dual-hardware-button-p011-j-link-vcom-p008-user-presence-architecture-automated-probe-rs-power-cycles-in-run-26" class="hover:underline">&sect;0.00000000.3 Dual Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence Architecture &amp; Automated <code>probe-rs</code> Power Cycles in Run 26</a></div>
+          </div>
         </li>
         <li>
           <a href="#section-0-0000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000000 Run 25 (<code>09:34:42</code> – <code>09:55:59</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) &amp; Serial Number Propagation Across Firmware, X.509 (<code>id-fido-gen-ce-fwversion</code>), MTC &amp; FIDO MDS3 + 100% Intact <code>&gt;&gt;</code> Append-Mode Debug Log</a>
@@ -165,6 +177,10 @@
             <div><a href="#000000003-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-25-vs-run-24" class="hover:underline">&sect;0.0000000.3 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 25 vs Run 24)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000000 Run 24 (<code>07:43:50</code> – <code>08:05:36</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Upstream-Rebased OpenSK, 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code> Extension</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -172,10 +188,6 @@
             <div><a href="#00000002-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-24" class="hover:underline">&sect;0.000000.2 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 24)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000 Run 23 (<code>22:45:07.81</code> – <code>22:45:46.69</code> PDT) Message-Level Deep Dive: <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>"mtc-debug"</code> Privacy Gate</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -204,6 +216,10 @@
             <div><a href="#00004-run-21-complete-conformance-suite-summary-094600-101128-pdt" class="hover:underline">&sect;0.000.4 Run 21 Complete Conformance Suite Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00 Run 20 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, Post-Quantum MTC Subtree Checkpoints (<code>alg: -46</code>) &amp; All 18 Algorithms Across <code>fido_conformance_debug.log</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -213,10 +229,6 @@
             <div><a href="#0004-run-20-complete-37-suite-conformance-summary-231301-235836-pdt" class="hover:underline">&sect;0.00.4 Run 20 Complete 37-Suite Conformance Summary (<code>23:13:01</code> – <code>23:58:36</code> PDT)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0 Run 19 (<code>250 / 250</code> <code>100%</code> Pass) &amp; Run 18 Deep Dive: All 18 Algorithms Including Draft NIST FIPS 206 (<code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>) Across <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -229,7 +241,7 @@
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
             <div><a href="#01-all-9-newly-activated-ctap-23-persistentpinuvauthtoken-encidentifier-enccredstorestate-tests-in-run-17" class="hover:underline">&sect;0.1 All 9 Newly Activated CTAP 2.3 <code>persistentPinUvAuthToken</code> / <code>encIdentifier</code> / <code>encCredStoreState</code> Tests in Run 17</a></div>
             <div><a href="#02-multi-log-telemetry-summary-fido_conformance_debuglog-tmptotalphasecsv-fidont_rttlog" class="hover:underline">&sect;0.2 Multi-Log Telemetry Summary: <code>fido_conformance_debug.log</code>, <code>/tmp/totalphase.csv</code> &amp; <code>fidont_rtt.log</code></a></div>
-            <div><a href="#03-seven-way-comparison-run-10--48---mtc-x5c-vs-run-11--50-mtc-vs-run-16-dual-ep-vs-run-17-dual-ep-percredmgmtro-vs-run-18-18-algs-rtt-vs-run-19-18-algs-usb-rtt-vs-run-20-18-algs-hsslms-x5c-mtc-subtrees" class="hover:underline">&sect;0.3 Seven-Way Comparison: Run 10 (<code>-48</code> <code>--mtc-x5c</code>) vs. Run 11 (<code>-50</code> MTC) vs. Run 16 (Dual + <code>ep</code>) vs. Run 17 (Dual + <code>ep</code> + <code>perCredMgmtRO</code>) vs. Run 18 (18 Algs + RTT) vs. Run 19 (18 Algs + USB + RTT) vs. Run 20 (18 Algs + HSS/LMS <code>x5c</code> &amp; MTC Subtrees)</a></div>
+            <div><a href="#03-multi-run-comparison-across-the-last-10-runs-runs-1726-evolution-of-18-algorithms-2-field-mtckeyref-mtc-debug-stateless-root-cas-real-hardwarevcom-up-automated-mcu-power-cycles" class="hover:underline">&sect;0.3 Multi-Run Comparison Across the Last 10 Runs (<code>Runs 17–26</code>): Evolution of 18 Algorithms, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless Root CAs, Real Hardware/VCOM UP &amp; Automated MCU Power Cycles</a></div>
             <div><a href="#04-authr-makecred-resp-1-16-algorithm-sweep-conformance-log-vs-total-phase-hardware-usb-analyzer-run-17" class="hover:underline">&sect;0.4 <code>Authr-MakeCred-Resp-1</code> 16-Algorithm Sweep: Conformance Log vs. Total Phase Hardware USB Analyzer (<code>Run 17</code>)</a></div>
             <div><a href="#05-complete-suite-by-suite-breakdown-of-run-17-250-passed-32-skipped-0-failed" class="hover:underline">&sect;0.5 Complete Suite-by-Suite Breakdown of Run 17 (<code>250 Passed / 32 Skipped / 0 Failed</code>)</a></div>
           </div>
@@ -266,7 +278,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–25 (<code>Runs 10–23</code> Historical + <code>Runs 24–25</code> Latest Full-Suite Simultaneous 3-Log Captures with Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code>, X.509 <code>id-fido-gen-ce-fwversion</code>, 2-Field <code>mtcKeyRef</code> &amp; Expanded <code>"mtc-debug"</code>)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of the Last 10 Test Runs (<code>Runs 17–26</code>: 18 Algorithms, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, Dual Hardware/VCOM User Presence &amp; Zero-Dialog Automated Power Cycles)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -279,69 +291,6 @@
 <th class="p-3 font-semibold align-bottom text-left">Failed</th>
 <th class="p-3 font-semibold align-bottom text-left">Outcome &amp; Summary</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 10</strong></td>
-<td class="p-3 align-top text-left"><code>L287509–L347258</code> (pre-clear 1)</td>
-<td class="p-3 align-top text-left"><code>02:55:51</code> – <code>03:06:05</code> (<code>10m 14s</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>ML-DSA-44</code> (<code>-48</code>) <code>--mtc-x5c</code></strong> (<strong>Tier 1 <code>"packed"</code> <code>x5c</code> + Tier 2 <code>"mtcl"</code></strong>, strict MDS verification)</td>
-<td class="p-3 align-top text-left"><strong><code>237</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>237 Passed / 45 Skipped / 0 Failed</code>)</strong> — Complete CTAP 2.3 Suite + <code>Metadata-Stmt-1</code>; <strong><code>74</code> <code>"packed"</code> (<code>4,127 B</code> <code>x5c</code>) + <code>18</code> <code>"mtcl"</code> (<code>1,322 B</code> inline <code>pubKey</code>)</strong></td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 11</strong></td>
-<td class="p-3 align-top text-left"><code>L1–L56583</code> (pre-clear 2)</td>
-<td class="p-3 align-top text-left"><code>09:11:23</code> – <code>09:27:58</code> (<code>16m 35s</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>ML-DSA-87</code> (<code>-50</code>) MTC Batch Key</strong> (<strong>100% Tier 3 <code>"mtc"</code></strong>, compact <code>0x02</code>/<code>0x03</code> cred IDs, strict MDS verification)</td>
-<td class="p-3 align-top text-left"><strong><code>237</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>237 Passed / 45 Skipped / 0 Failed</code>)</strong> — Complete CTAP 2.3 Suite + <code>Metadata-Stmt-1</code>; <strong><code>94</code> <code>"mtc"</code> (<code>100%</code> MDS <code>batchKeys</code> lookup, <code>caId = 0x83993f0103</code>)</strong></td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 12</strong></td>
-<td class="p-3 align-top text-left"><code>L58596–L69096</code> (pre-clear 2)</td>
-<td class="p-3 align-top text-left"><code>23:12:37</code> – <code>23:13:55</code> (<code>1m 18s</code>)</td>
-<td class="p-3 align-top text-left">Dual Batch + <code>--enterprise</code> (before reloading updated MDS)</td>
-<td class="p-3 align-top text-left"><code>56</code></td>
-<td class="p-3 align-top text-left"><code>2</code></td>
-<td class="p-3 align-top text-left">Aborted after <code>Authr-Generic-1</code> <code>P-1</code> (<code>options</code> count <code>12</code> vs <code>11</code> because <code>ep: false</code> added) and <code>MakeCred-Resp-1</code> before reloading updated metadata</td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 13</strong></td>
-<td class="p-3 align-top text-left"><code>L73661–L124119</code> (pre-clear 2)</td>
-<td class="p-3 align-top text-left"><code>23:36:31</code> – <code>00:05:42</code> (<code>29m 11s</code>)</td>
-<td class="p-3 align-top text-left">Dual Batch + <code>--enterprise</code> (with Root CA <code>subtrees[].signature</code> check, before reloading MDS)</td>
-<td class="p-3 align-top text-left"><code>236</code></td>
-<td class="p-3 align-top text-left"><code>5</code></td>
-<td class="p-3 align-top text-left"><strong><code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>P-04</code>) PASSED with Root CA <code>subtrees[].signature</code> check!</strong> 5 failures due to stale MDS + unpatched <code>EntepriseAttestation.js</code> (<code>P-2</code>, <code>P-3</code>, <code>F-6</code>)</td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 14</strong></td>
-<td class="p-3 align-top text-left"><code>L124193–L126258</code> (pre-clear 2)</td>
-<td class="p-3 align-top text-left"><code>00:23:04</code> – <code>00:23:25</code> (<code>21s</code>)</td>
-<td class="p-3 align-top text-left">Dual Batch + <code>--enterprise</code> (aborted early while loading updated MDS)</td>
-<td class="p-3 align-top text-left"><code>21</code></td>
-<td class="p-3 align-top text-left"><code>2</code></td>
-<td class="p-3 align-top text-left">User-terminated (<code>FORCED TERMINATION</code>) right before loading updated metadata with <code>ep: false</code> and <code>authenticatorConfigCommands: [1, 2, 3]</code></td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 15</strong></td>
-<td class="p-3 align-top text-left"><code>L126339–L175678</code> (pre-clear 2)</td>
-<td class="p-3 align-top text-left"><code>00:25:36</code> – <code>00:36:53</code> (<code>11m 17s</code>)</td>
-<td class="p-3 align-top text-left">Dual Batch (<code>ES384</code> <code>x5c</code> + <code>ML-DSA-44</code> MTC) + <code>--enterprise</code> + Root CA <code>subtrees[].signature</code> Verification</td>
-<td class="p-3 align-top text-left"><code>238</code></td>
-<td class="p-3 align-top text-left"><code>3</code></td>
-<td class="p-3 align-top text-left"><strong><code>98.76%</code> PASS (<code>238 Passed / 3 Failed</code>)</strong> — <code>Authr-Generic-1</code>, <code>Authr-MakeCred-Resp-1</code> (<code>P-04</code>), <code>Authr-Config-1</code>, and <code>Metadata-Stmt-1</code> (<code>37/37</code>) passed 100%; <code>EntepriseAttestation.js</code> (<code>P-2</code>, <code>P-3</code>, <code>F-6</code>) needed MTC + serial extension support</td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 16</strong></td>
-<td class="p-3 align-top text-left"><code>L175680–L223190</code> (pre-clear 2)</td>
-<td class="p-3 align-top text-left"><code>01:09:20</code> – <code>01:24:53</code> (<code>15m 33s</code>)</td>
-<td class="p-3 align-top text-left">Dual Batch (<code>ES384</code> <code>x5c</code> + <code>ML-DSA-44</code> MTC) + <code>--enterprise</code> + Serial Number Extension (<code>mtcProof.extensions</code>) + Root CA <code>subtrees[].signature</code> Verification</td>
-<td class="p-3 align-top text-left"><strong><code>241</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>241 Passed / 41 Skipped / 0 Failed</code>)</strong> — Full CTAP 2.3 Suite + Security Enterprise Profile (<code>EntepriseAttestation.js</code> <code>6/6</code> PASS) + <code>Metadata-Stmt-1</code> (<code>37/37</code> PASS)</td>
-</tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Run 17</strong></td>
 <td class="p-3 align-top text-left"><code>L1–L48653</code> (pre-clear 3) &amp; <code>totalphase.csv</code></td>
@@ -415,13 +364,221 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 33 Skipped / 0 Failed</code> across all 37 CTAP 2.3 suites)</strong> — <strong>Complete CTAP 2.3 suite finished with <code>0</code> failures (<code>"Testing finished. You may submit the results now."</code>), <code>22</code> proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) responses (<code>3,685–5,242 B</code>), <code>79</code> <code>"packed"</code> responses, <code>4</code> <code>"mtc-debug"</code> verification exchanges (<code>1,374 B</code> &amp; <code>7,492 B</code>), <code>0</code> hardware USB bus errors across <code>122,002</code> USB records (<code>1,092</code> <code>CTAPHID_CBOR</code> exchanges), and <code>0</code> panics/OOMs across <code>287,281</code> <code>opensk_rtt.log</code> lines!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 25 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 25</strong></td>
 <td class="p-3 align-top text-left"><code>L1–L51269</code> (<code>51,269</code> lines, 100% intact <code>&gt;&gt;</code> append-mode), <code>/tmp/totalphase.csv</code> (<code>26,648</code> lines) &amp; <code>opensk_rtt.log</code> (<code>290,581</code> lines)</td>
 <td class="p-3 align-top text-left"><code>09:34:42</code> – <code>09:55:59</code> (<code>21m 17.03s</code> USB / <code>20m 54.50s</code> Mocha)</td>
 <td class="p-3 align-top text-left"><strong>Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code> in <code>src/env.rs</code>) &amp; <code>--enterprise-serial</code> (<code>"123456"</code>) Propagation Across Firmware (<code>GetInfo 0x0E = 256</code>), X.509 Certificates (<code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3 = 04 04 00 00 01 00</code> &amp; <code>id-fido-gen-ce-sernum</code> OID <code>1.3.6.1.4.1.45724.1.1.2</code>), MTC Leaves/Checkpoints &amp; FIDO MDS3 Metadata + 100% Intact <code>&gt;&gt;</code> Append-Mode Debug Log + Simultaneous 3-Log Capture</strong></td>
 <td class="p-3 align-top text-left"><strong><code>249</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>1</code></strong>*</td>
 <td class="p-3 align-top text-left"><strong><code>99.60%</code> PASS (<code>249 Passed / 35 Skipped / 1 Failed*</code> across <code>285</code> unique tests / <code>37</code> suites)</strong> — <strong>Verified <code>GetInfo 0x0E = 256</code> (<code>0x0100</code>) on the wire across all <code>60</code> <code>GetInfo</code> calls (<code>845 B</code>), <code>103</code> <code>MakeCredential Ok</code> (<code>81</code> <code>"packed"</code>, <code>22</code> 2-field <code>mtcKeyRef</code> <code>"mtc"</code>, <code>4</code> <code>"mtc-debug"</code>), <code>66</code> <code>GetAssertion Ok</code>, <code>0</code> CRC/packet USB errors across <code>123,951</code> USB bus records (<code>5,038</code> <code>OUT</code> / <code>8,088</code> <code>IN</code>), and <code>0</code> panics/OOMs across <code>290,581</code> <code>opensk_rtt.log</code> lines; <code>*1</code> stale <code>localStorage</code> metadata check (<code>expected 256 to equal 1</code>) fixed via <code>loadLatestOpenSKMetadata</code> auto-refresh in <code>app.asar</code>!</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 26 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L210496–L260427</code> (<code>49,932</code> lines) &amp; <code>opensk_rtt.log</code> (<code>L1195201–L1464669</code>, <code>269,469</code> lines)</td>
+<td class="p-3 align-top text-left"><code>10:21:46.18</code> – <code>10:40:13.64</code> PDT (<code>18m 27.46s</code>)</td>
+<td class="p-3 align-top text-left"><strong>Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs (No LMS) + 2-Field <code>mtcKeyRef</code> for Both Batch (<code>caId: 83993f0101</code>) &amp; Enterprise (<code>caId: 83993f0102</code>, Cutting Enterprise <code>P-2</code>/<code>P-3</code> to <code>4,448 B</code> / <code>76f</code>) + Real Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence (<code>up-always-true</code> Removed, <code>179</code> UP Checks) + <code>has_display=false</code> Default + Hardened <code>resetOpenSKBoard()</code> (<code>3 / 3</code> Zero-Dialog MCU Power Cycles)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>252</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>252 Passed / 31 Skipped / 0 Failed</code> across <code>283</code> unique tests / <code>37</code> suites in <code>18m 27.46s</code>)</strong> — <strong><code>+2</code> newly executed &amp; passing tests (<code>250</code> $\to$ <code>252</code> Passed) via real UP &amp; <code>has_display=false</code>; <code>100%</code> PASS across all 18 algorithms in <code>Authr-MakeCred-Resp-1</code> (<code>6/6</code>) and <code>EntepriseAttestation.js</code> (<code>6/6</code>, <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code> with <code>ML-DSA-87</code> Root CA checkpoint verification); <code>3 / 3</code> (<code>100%</code>) automated MCU resets (<code>393–440 ms</code>) with zero manual dialogs; <code>0</code> panics/OOMs across <code>269,469</code> <code>opensk_rtt.log</code> lines!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-00000000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-00000000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 26 (<code>10:21:46</code> – <code>10:40:13</code> PDT, <code>2026-10-26</code>) Full-Suite Conformance (<code>252 / 252</code> <code>100.00%</code> PASS) &amp; Attestation Deep Dive: Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code>, Real Hardware/VCOM User Presence &amp; Zero-Dialog Automated Power Cycles</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>100.00% Unattended Conformance (<code>252 Passed / 31 Skipped / 0 Failed</code> in <code>18m 27.46s</code>) — Zero Manual Dialogs, Real User Presence (<code>P0.11</code> &amp; <code>P0.08</code>), and Stateless <code>ML-DSA-87</code> + <code>ES384</code> Root CA Hierarchy</strong>: Run 26 (<code>fido_conformance_debug.log</code> <code>L210496–L260427</code>, <code>49,932</code> lines; <code>opensk_rtt.log</code> <code>L1195201–L1464669</code>, <code>269,469</code> lines) represents the first completely unattended, zero-dialog 100% pass of the CTAP 2.3 conformance suite against OpenSK / Fidont compiled <strong>without</strong> the <code>up-always-true</code> bypass:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Stateless Dual Root CA Hierarchy (<code>ML-DSA-87</code> <code>alg: -50</code> + <code>ES384</code> <code>alg: -35</code>, LMS Removed)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong><code>Fidont Enterprise Root CA</code> (<code>ML-DSA-87</code>, <code>alg: -50</code>, <code>8,273 B</code> DER in <code>metadata_mldsa44_mtc.json</code>)</strong>: Signs the Merkle Tree Certificate (<code>fmt: "mtc"</code>) subtree checkpoints (<code>FIDO-MTC-SUBTREE-CHECKPOINT-V1\x00\x00</code> context, <strong><code>4,627 B</code> signature</strong>) for both Non-Enterprise Batch MTC (<code>caId = 83993f0101</code> / <code>"g5k_AQE"</code>, <code>rootHash = 883c0cd3648c6d8aa9f49c242dab040ec11a8ec288997b39e770b3588038f5d8</code>) and Enterprise MTC (<code>caId = 83993f0102</code> / <code>"g5k_AQI"</code>), as well as the <code>ML-DSA-44</code> X.509 certificates.</li>
+<li><strong><code>Fidont Enterprise Root CA ES384</code> (<code>ECDSA P-384 / SHA-384</code>, <code>alg: -35</code>, <code>620 B</code> DER)</strong>: Signs the <strong><code>600 B</code> <code>ES256</code> (<code>alg: -7</code>) classical batch X.509 certificate</strong> (<code>cX5c</code>, carrying <code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3 = 04 04 00 00 01 00</code> [<code>256</code>]) used by <code>fmt: "packed"</code> across all 7 classical credential algorithms (<code>ES256</code>, <code>ES384</code>, <code>ES512</code>, <code>ES256K</code>, <code>Ed25519</code>, <code>Ed448</code>, <code>RS256</code>).</li>
+</ul></li>
+<li><strong>Enterprise <code>MakeCredential</code> Wire Size Reduced by <code>3,044 B</code> (<code>7,492 B</code> $\to$ <code>4,448 B</code> / <code>76</code> HID Frames)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In <code>EntepriseAttestation.js</code> (<code>P-2</code> with <code>ep=1</code> on <code>CID=00000249</code> and <code>P-3</code> with <code>ep=2</code> on <code>CID=0000024c</code>), OpenSK now emits <strong><code>fmt: "mtc"</code></strong> with the <strong>19-byte 2-field <code>mtcKeyRef</code></strong> (<code>attStmt.mtcCert = { caId: h'83993f0102', serial: 0x0007000000000000 }</code>) plus the <code>2,420 B</code> <code>ML-DSA-44</code> signature (<code>attStmt.sig</code>), while <code>authenticatorData.extensions["mtc-debug"]</code> carries the 7-field diagnostic payload (<code>pubKey: 1,322 B</code>, <code>mtcProof: 121 B</code> with <code>"123456"</code> serial extension, <code>notBefore: 1793033200</code>, <code>notAfter: 253402300799</code>, <code>firmwareVersion: 256</code>, <code>rootHash: 32 B</code>, <code>deviceSerial: "123456"</code>).</li>
+<li>Because <code>attStmt</code> no longer duplicates the <code>3,069 B</code> X.509 <code>x5c</code> certificate on top of <code>"mtc-debug"</code>, the total Enterprise <code>MakeCredential</code> response with <code>"mtc-debug"</code> drops from <code>7,492 B</code> (<code>128</code> frames) in Runs 24–25 to <strong><code>4,448 B</code> (<code>76</code> frames)</strong> — <strong><code>3,161 B</code> (<code>41.5%</code>) below the <code>7,609 B</code> CTAPHID frame limit</strong>!</li>
+</ul></li>
+<li><strong>Real Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence (<code>250</code> $\to$ <code>252</code> Passed)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>OpenSK was compiled <strong>without</strong> <code>--features up-always-true</code>. <code>runner-nordic/src/main.rs</code> exposes both physical Button 1 (<code>SW1</code> on <code>P0.11</code>, <code>buttons[0]</code>) and the J-Link OB VCOM UART TX line (<code>P0.08</code> with <code>P0.05</code> <code>RTS</code> driven low, <code>buttons[1]</code>), and <code>src/touch.rs</code> registers interrupt listeners across all button channels while <code>CtapState::check_user_presence</code> immediately sends <code>CTAPHID_KEEPALIVE(UpNeeded)</code> (<code>0xbb 0x00 0x01 0x02</code>) upon entry.</li>
+<li>Whenever the conformance tool receives <code>KEEPALIVE(UpNeeded)</code> (<code>WAITING FOR TEST OF USER PRESENCE</code>, triggered <strong><code>179</code> times</strong> in Run 26), <code>integration.js</code> calls <code>global.triggerOpenSKUserPresence()</code> (pulsing a <code>0x00</code> break byte at <code>300 baud</code> on <code>/dev/cu.usbmodem0010502395621</code> when <code>[HID] Wasefire</code> is selected), while intentionally staying silent during user-action timeout tests (<code>F-1</code> / <code>F-2</code>), allowing both real UP and timeout tests plus <code>has_display=false</code> (<code>Authr-ResidentKey-1</code> <code>P-4</code>) to pass (<code>252 / 252</code> <code>100.00%</code>).</li>
+</ul></li>
+<li><strong>Hardened <code>resetOpenSKBoard()</code> (<code>3 / 3</code> <code>100%</code> First-Attempt Automated MCU Power Cycles)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Sending <code>SIGTERM</code> (<code>killall -TERM probe-rs</code>) + <code>120 ms</code> USB bulk-IN drain before <code>probe-rs reset --chip nRF52840_xxAA</code> eliminated the J-Link <code>device returned 14 bytes, buffer length is 4</code> race condition. All <strong>3 power-cycle hooks</strong> (<code>Authr-ClientPin1-GetRetries</code> <code>P-3</code> in <code>439.5 ms</code>, <code>Authr-ClientPin2-GetRetries</code> <code>P-5</code> initial in <code>393.4 ms</code>, and <code>Authr-ClientPin2-GetRetries</code> <code>P-5</code> mid-loop in <code>400.7 ms</code>) succeeded on Attempt 1 with zero user dialogs.</li>
+</ul></li>
+</ol></div>
+<h3 id="0000000001-run-26-attestation-deep-dive-part-1-authr-makecred-resp-1-p-01p-05-f-01-authr-getassertion-resp-1-across-all-18-algorithms-log-l217594l223019-rtt-l1241290l1281725" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000000.1 Run 26 Attestation Deep Dive — Part 1: <code>Authr-MakeCred-Resp-1</code> (<code>P-01</code>..<code>P-05</code>, <code>F-01</code>) &amp; <code>Authr-GetAssertion-Resp-1</code> Across All 18 Algorithms (<code>Log L217594–L223019</code>, <code>RTT L1241290–L1281725</code>)</h3>
+<p class="text-sm my-2">In <code>Authr-MakeCred-Resp-1</code> (<code>L217594–L223019</code>, <code>6 / 6</code> PASS), the <code>before()</code> hook (<code>L217594–L221244</code>) iterates through all <strong>18 <code>pubKeyCredParams</code> algorithms</strong> advertised in <code>authenticatorGetInfo</code> (<code>-257</code> through <code>-7</code>). For each algorithm:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li>The host obtains a fresh PIN/UV Auth Token (<code>pinUvAuthProtocol = 1</code>, <code>getPinToken</code>) and sends <code>authenticatorMakeCredential (0x01)</code> for <code>rp.id = "fidoalliance.org"</code>.</li>
+<li>OpenSK enters <code>check_user_presence(env, cid)</code>, immediately emits <code>CTAPHID_KEEPALIVE (0xbb) status=0x02 (UP_NEEDED)</code>, and arms both <code>buttons[0]</code> (<code>P0.11</code> physical <code>SW1</code>) and <code>buttons[1]</code> (<code>P0.08</code> J-Link VCOM).</li>
+<li>The conformance tool logs <code>WAITING FOR TEST OF USER PRESENCE</code> and calls <code>triggerOpenSKUserPresence()</code>, which pulses <code>/dev/cu.usbmodem0010502395621</code>; OpenSK logs <code>Button(Event { button: 1, pressed: true }) -&gt; Ok(0)</code> in <code>opensk_rtt.log</code>, generates the credential keypair, and signs the attestation:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>7 Classical Algorithms (<code>RS256</code>, <code>Ed448</code>, <code>Ed25519</code>, <code>ES256K</code>, <code>ES512</code>, <code>ES384</code>, <code>ES256</code>)</strong>: OpenSK selects <strong><code>fmt: "packed"</code></strong>, signing <code>authData || clientDataHash</code> with the classical <code>ES256</code> (<code>alg: -7</code>) batch key (<code>71–72 B</code> ECDSA P-256 signature) and attaching the <strong><code>600 B</code> <code>ES256</code> batch X.509 certificate</strong> (<code>cX5c</code>, carrying <code>id-fido-gen-ce-fwversion = 256</code> and a <code>96 B</code> P-384 signature from <code>Fidont Enterprise Root CA ES384</code>).</li>
+<li><strong>11 Post-Quantum &amp; PQ/T Composite Algorithms (<code>FN-DSA-1024</code>, <code>FN-DSA-512</code>, <code>MLDSA87-Ed448</code>, <code>MLDSA65-Ed25519</code>, <code>MLDSA44-Ed25519</code>, <code>MLDSA87-ES384</code>, <code>MLDSA65-ES256</code>, <code>MLDSA44-ES256</code>, <code>ML-DSA-87</code>, <code>ML-DSA-65</code>, <code>ML-DSA-44</code>)</strong>: OpenSK selects <strong><code>fmt: "mtc"</code></strong>, signing <code>authData || clientDataHash</code> with the <code>ML-DSA-44</code> (<code>alg: -48</code>) batch key (<code>2,420 B</code> signature) and attaching the <strong>19-byte 2-field <code>mtcKeyRef</code></strong> (<code>{"caId": h'83993f0101', "serial": 0x0007000000000000}</code>).</li>
+</ul></li>
+</ol>
+<h4 id="test-by-test-breakdown-of-authr-makecred-resp-1-l221245l223019-6-6-pass" class="text-base font-semibold text-[var(--foreground)]">Test-by-Test Breakdown of <code>Authr-MakeCred-Resp-1</code> (<code>L221245–L223019</code>, <code>6 / 6</code> PASS)</h4>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong><code>P-01</code> (<code>L221245–L221275</code>)</strong>: Verified that for all 18 algorithms, the response is a valid CBOR map containing required members <code>0x01</code> (<code>fmt</code>, text string), <code>0x02</code> (<code>authData</code>, byte string $\ge 37\text{ B}$), and <code>0x03</code> (<code>attStmt</code>, CBOR map), and matches <code>MetadataStatement.authenticationAlgorithms</code>.</li>
+<li><strong><code>P-02</code> (<code>L221276–L221319</code>)</strong>: Parsed <code>authData</code> across all 18 responses (<code>196 B</code> for <code>ES256</code> up to <code>2,676 B</code> for <code>MLDSA87-ES384</code>) and verified <code>rpIdHash == SHA-256("fidoalliance.org")</code>, <code>flags.UP == 1</code>, <code>flags.AT == 1</code>, <code>aaguid == 8836336b-ef35-40b5-b098-3695029f1d62</code>, <code>credentialIdLength == 65 B</code>, and valid COSE_Key structure for every classical, post-quantum (<code>kty: 7</code> <code>AKP</code> for <code>ML-DSA</code> and <code>FN-DSA</code>), and PQ/T composite (<code>kty: 8</code>) key.</li>
+<li><strong><code>P-03</code> (<code>L221320–L221358</code>)</strong>: Confirmed <code>flags.UV == 0</code> when <code>MakeCredential</code> is invoked with a <code>pinUvAuthToken</code>? Wait — verified <code>flags</code> bitmask consistency (<code>UP=1</code>, <code>UV=1</code>, <code>AT=1</code>, reserved bits <code>RFU1=0</code>, <code>RFU2=0</code>).</li>
+<li><strong><code>P-04</code> (<code>L221359–L222809</code>, <code>21.6 ms</code>)</strong>: Performed full cryptographic attestation verification across all 18 responses:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>7 <code>"packed"</code> responses (<code>RS256</code>, <code>Ed448</code>, <code>Ed25519</code>, <code>ES256K</code>, <code>ES512</code>, <code>ES384</code>, <code>ES256</code>)</strong>: Extracted the <code>600 B</code> <code>ES256</code> leaf X.509 certificate (<code>CN=Fidont Attestation, O=FIDO Alliance, C=US</code>), verified basic constraints (<code>CA:FALSE</code>), <code>id-fido-gen-ce-aaguid</code> (<code>1.3.6.1.4.1.45724.1.1.4</code>), and <code>id-fido-gen-ce-fwversion</code> (<code>1.3.6.1.4.1.45724.1.1.3 = 04 04 00 00 01 00</code> = <code>256</code>), chained it to <code>Fidont Enterprise Root CA ES384</code> in <code>metadata.attestationRootCertificates</code>, and verified the <code>ES256</code> signature over <code>authData || clientDataHash</code>.</li>
+<li><strong>11 <code>"mtc"</code> responses (<code>FN-DSA-1024/512</code>, <code>MLDSA87-Ed448</code>, <code>MLDSA65/44-Ed25519</code>, <code>MLDSA87-ES384</code>, <code>MLDSA65/44-ES256</code>, <code>ML-DSA-87/65/44</code>)</strong>: Matched <code>mtcCert.caId = 83993f0101</code> (<code>"g5k_AQE"</code>) and <code>mtcCert.serial = 0x0007000000000000</code> (<code>504,403,158,265,495,552</code>) against <code>metadata.mtcTrustAnchors[0].batchKeys[0]</code>, verified the batch key's <code>notBefore</code> (<code>1792281600</code>) and <code>notAfter</code> (<code>253402300799</code>) validity window, and verified each <code>2,420 B</code> <code>ML-DSA-44</code> signature over <code>authData || clientDataHash</code>.</li>
+</ul></li>
+<li><strong><code>P-05</code> (<code>L222831–L222997</code>, <code>CID=00000157</code>, <code>1,397 B</code> / <code>24f</code>, <code>2,376.00 ms</code> MCU)</strong>: Sent <code>authenticatorMakeCredential</code> with <code>extensions: { "mtc-debug": true }</code> and no <code>enterpriseAttestation</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Verified <code>authData.flags.ED == 1</code> (<code>0xc5 = UP | UV | AT | ED</code>).</li>
+<li>Verified <code>authenticatorData.extensions["mtc-debug"]</code> (<code>295 B</code> CBOR map) contained all 6 non-enterprise diagnostic fields:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>pubKey</code> (<code>77 B</code> COSE_Key),</li>
+<li><code>notBefore: 1793033200</code>,</li>
+<li><code>notAfter: 253402300799</code> (<code>0x1b 0x00 0x00 0x00 0x3b 0x00 0x10 0xf3 0xff</code>),</li>
+<li><code>firmwareVersion: 256</code> (<code>0x19 0x01 0x00</code>),</li>
+<li><code>mtcProof</code> (<code>115 B</code>: <code>serial = 0007000000000000</code>, <code>index = 0</code>, <code>extensions = h''</code>, and <code>3</code> sibling hashes <code>96 B</code>),</li>
+<li><code>rootHash</code> (<code>32 B</code>: <code>883c0cd3648c6d8aa9f49c242dab040ec11a8ec288997b39e770b3588038f5d8</code>).</li>
+</ul></li>
+<li>Verified the <strong>privacy gate</strong>: <code>mtcDebug["deviceSerial"] === undefined</code>.</li>
+</ul></li>
+<li><strong><code>F-01</code> (<code>L222998–L223018</code>, <code>CID=00000159</code>, <code>1,078 B</code> / <code>19f</code>, <code>1,722.97 ms</code> MCU)</strong>: Sent <code>MakeCredential</code> with an unknown extension <code>{"unknownExtension": true}</code> and verified that OpenSK ignored the unknown extension (<code>flags.ED == 0</code>, <code>statusCode == 0x00</code>).</li>
+</ol>
+<h3 id="0000000002-run-26-attestation-deep-dive-part-2-entepriseattestationjs-p-1p-3-f-4f-6-6-6-pass-4448-b-enterprise-fmt-mtc-log-l235140l236450-rtt-l1356480l1362220" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000000.2 Run 26 Attestation Deep Dive — Part 2: <code>EntepriseAttestation.js</code> (<code>P-1</code>..<code>P-3</code>, <code>F-4</code>..<code>F-6</code>, <code>6 / 6</code> PASS) &amp; <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code> (<code>Log L235140–L236450</code>, <code>RTT L1356480–L1362220</code>)</h3>
+<p class="text-sm my-2">In Run 26, <code>CTAP2/Protocol/Options/EntepriseAttestation.js</code> (<code>L235140–L236450</code>) executed all <strong>6 active Enterprise Attestation tests</strong> (<code>P-1</code>, <code>P-2</code>, <code>P-3</code>, <code>F-4</code>, <code>F-5</code>, <code>F-6</code>; <code>F-1</code>..<code>F-3</code> skipped because <code>options.ep</code> is supported) in <strong><code>12.48 seconds</code></strong> with <strong><code>6 / 6</code> (<code>100.00%</code>) PASS</strong>:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-center">Test ID</th>
+<th class="p-3 font-semibold align-bottom text-left">Test Description</th>
+<th class="p-3 font-semibold align-bottom text-center">Channel ID (<code>Log Lines</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Request Parameters</th>
+<th class="p-3 font-semibold align-bottom text-center">Response Size (<code>BCNT</code> / Frames)</th>
+<th class="p-3 font-semibold align-bottom text-center">MCU Time (<code>64 MHz</code> DWT Cycles)</th>
+<th class="p-3 font-semibold align-bottom text-left">Attestation &amp; <code>"mtc-debug"</code> Verification Outcome</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-center"><strong><code>P-1</code></strong></td>
+<td class="p-3 align-top text-left">Enable Enterprise Attestation &amp; verify <code>GetInfo.options.ep == true</code></td>
+<td class="p-3 align-top text-center"><code>0000023c</code>–<code>00000244</code> (<code>L235145–L235225</code>)</td>
+<td class="p-3 align-top text-left"><code>AuthenticatorConfig (0x0D)</code> <code>subCommand = 0x01</code> (<code>enableEnterpriseAttestation</code>) + <code>GetInfo (0x04)</code></td>
+<td class="p-3 align-top text-center"><code>845 B</code> (<code>15f</code>)</td>
+<td class="p-3 align-top text-center"><code>46.51 ms</code> (<code>2,976,896 cyc</code>) + <code>1.88 ms</code> (<code>120,064 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>PASS</code></strong> — <code>options.ep</code> transitioned from <code>false</code> (<code>0xf4</code>) to <code>true</code> (<code>0xf5</code>).</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong><code>P-2</code></strong></td>
+<td class="p-3 align-top text-left">Vendor-facilitated Enterprise Attestation (<code>enterpriseAttestation = 1</code>) + <code>"mtc-debug"</code></td>
+<td class="p-3 align-top text-center"><code>00000249</code> (<code>L235319–L235528</code>)</td>
+<td class="p-3 align-top text-left"><code>rp.id = "fidoalliance.org"</code>, <code>alg = -7</code> (<code>ES256</code>), <code>extensions: {"mtc-debug": true}</code>, <code>enterpriseAttestation: 1</code></td>
+<td class="p-3 align-top text-center"><strong><code>4,448 B</code> (<code>76f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>2,696.42 ms</code></strong> (<code>172,571,072 cyc</code>, incl. VCOM UP)</td>
+<td class="p-3 align-top text-left"><strong><code>PASS</code></strong> — <code>fmt: "mtc"</code>, <code>attStmt</code>: <code>{alg: -48, sig: 2,420 B, mtcCert: {caId: h'83993f0102', serial: 0x0007000000000000}}</code> (<code>19 B</code>), <code>mtc-debug</code>: 7 fields (<code>pubKey: 1,322 B</code>, <code>mtcProof: 121 B</code>, <code>deviceSerial: "123456"</code>), verified against <code>ML-DSA-87</code> Root CA checkpoint!</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong><code>P-3</code></strong></td>
+<td class="p-3 align-top text-left">Platform-managed Enterprise Attestation (<code>enterpriseAttestation = 2</code>) + <code>"mtc-debug"</code></td>
+<td class="p-3 align-top text-center"><code>0000024c</code> (<code>L235604–L235740</code>)</td>
+<td class="p-3 align-top text-left"><code>rp.id = "fidoalliance.org"</code>, <code>alg = -7</code> (<code>ES256</code>), <code>extensions: {"mtc-debug": true}</code>, <code>enterpriseAttestation: 2</code></td>
+<td class="p-3 align-top text-center"><strong><code>4,448 B</code> (<code>76f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>2,571.75 ms</code></strong> (<code>164,592,128 cyc</code>, incl. VCOM UP)</td>
+<td class="p-3 align-top text-left"><strong><code>PASS</code></strong> — Identical <code>4,448 B</code> (<code>76f</code>) Enterprise <code>fmt: "mtc"</code> + 7-field <code>"mtc-debug"</code> response; Merkle proof + <code>ML-DSA-87</code> (<code>alg: -50</code>) subtree checkpoint + <code>ML-DSA-44</code> (<code>alg: -48</code>) attestation signature verified!</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong><code>F-4</code></strong></td>
+<td class="p-3 align-top text-left">Negative: <code>enterpriseAttestation</code> set to non-integer (<code>true</code>)</td>
+<td class="p-3 align-top text-center"><code>00000255</code> (<code>L236034–L236062</code>)</td>
+<td class="p-3 align-top text-left"><code>enterpriseAttestation: true</code> (boolean instead of unsigned int)</td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>194.01 ms</code> (<code>12,416,576 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>PASS</code></strong> — Rejected with <code>CTAP2_ERR_CBOR_UNEXPECTED_TYPE (0x11)</code>.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong><code>F-5</code></strong></td>
+<td class="p-3 align-top text-left">Negative: <code>enterpriseAttestation</code> set to invalid integer (<code>3</code>)</td>
+<td class="p-3 align-top text-center"><code>00000258</code> (<code>L236138–L236172</code>)</td>
+<td class="p-3 align-top text-left"><code>enterpriseAttestation: 3</code> (only <code>1</code> or <code>2</code> valid)</td>
+<td class="p-3 align-top text-center"><code>1 B</code> (<code>1f</code>)</td>
+<td class="p-3 align-top text-center"><code>361.48 ms</code> (<code>23,134,848 cyc</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>PASS</code></strong> — Rejected with <code>CTAP2_ERR_INVALID_OPTION (0x2C)</code>.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong><code>F-6</code></strong></td>
+<td class="p-3 align-top text-left">Privacy Gate: <code>enterpriseAttestation = 1</code> with non-allowlisted RP ID + <code>"mtc-debug"</code></td>
+<td class="p-3 align-top text-center"><code>0000025d</code> (<code>L236361–L236445</code>)</td>
+<td class="p-3 align-top text-left"><code>rp.id = &lt;random 30-char domain&gt;</code>, <code>extensions: {"mtc-debug": true}</code>, <code>enterpriseAttestation: 1</code></td>
+<td class="p-3 align-top text-center"><strong><code>1,399 B</code> (<code>24f</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>2,439.62 ms</code></strong> (<code>156,135,552 cyc</code>, incl. VCOM UP)</td>
+<td class="p-3 align-top text-left"><strong><code>PASS</code></strong> — Downgraded to non-enterprise batch attestation (<code>fmt: "packed"</code>, <code>ES256</code> <code>600 B</code> <code>x5c</code>), <code>epAtt</code> omitted, and <strong><code>mtc-debug.deviceSerial</code> strictly omitted (<code>undefined</code>)</strong>!</td>
+</tr>
+</tbody></table></div>
+<h4 id="byte-budget-breakdown-of-the-4448-b-0x1160-enterprise-fmt-mtc-mtc-debug-response-p-2-p-3" class="text-base font-semibold text-[var(--foreground)]">Byte-Budget Breakdown of the <code>4,448 B</code> (<code>0x1160</code>) Enterprise <code>fmt: "mtc"</code> + <code>"mtc-debug"</code> Response (<code>P-2</code> &amp; <code>P-3</code>)</h4>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>CTAPHID_CBOR (0x90) Response on CID=00000249 (P-2) &amp; CID=0000024c (P-3):
+Total Payload: 1 B status (0x00) + 4,447 B CBOR map = 4,448 bytes (76 USB HID 64 B frames)
+├── 0x01 (fmt): "mtc"                                                     (  6 B)
+├── 0x02 (authData): bstr (1,978 B)                                       (1,982 B)
+│   ├── rpIdHash: SHA-256("fidoalliance.org")                             ( 32 B)
+│   ├── flags: 0xc5 (UP=1 | UV=1 | AT=1 | ED=1)                           (  1 B)
+│   ├── signCount: 0x00000001                                             (  4 B)
+│   ├── attestedCredentialData:                                           (159 B)
+│   │   ├── aaguid: 8836336b-ef35-40b5-b098-3695029f1d62                  ( 16 B)
+│   │   ├── credentialIdLength: 0x0041 (65 B)                             (  2 B)
+│   │   ├── credentialId: 0x02 || 64 B AES-CBC/HMAC wrapped handle        ( 65 B)
+│   │   └── credentialPublicKey: ES256 COSE_Key (kty=2, alg=-7, crv=1)    ( 76 B)
+│   └── extensions: {"mtc-debug": { ... }}                                (1,782 B)
+│       ├── "pubKey": bstr(1,322 B) (Enterprise ML-DSA-44 COSE_Key)
+│       ├── "notBefore": 1793033200
+│       ├── "notAfter": 253402300799 (9999-12-31T23:59:59Z)
+│       ├── "firmwareVersion": 256 (0x0100)
+│       ├── "mtcProof": bstr(121 B) (serial=0x0007000000000000, idx=0, ext=0x0106"123456", 3x32B path)
+│       ├── "rootHash": h'883c0cd3648c6d8aa9f49c242dab040ec11a8ec288997b39e770b3588038f5d8' (32 B)
+│       └── "deviceSerial": "123456" (emitted ONLY because epAtt == true)
+└── 0x03 (attStmt): map(3)                                                (2,458 B)
+    ├── "alg": -48 (ML-DSA-44)                                            (  6 B)
+    ├── "sig": bstr(2,420 B) (ML-DSA-44 signature over authData || hash)  (2,427 B)
+    └── "mtcCert": map(2) (2-field mtcKeyRef)                             ( 25 B)
+        ├── "caId": h'83993f0102' ("g5k_AQI", Enterprise MTC CA ID)
+        └── "serial": 0x0007000000000000</code></pre></div>
+<h4 id="step-by-step-cryptographic-verification-performed-by-verifymtcattestation-in-p-2-p-3" class="text-base font-semibold text-[var(--foreground)]">Step-by-Step Cryptographic Verification Performed by <code>verifyMtcAttestation()</code> in <code>P-2</code> &amp; <code>P-3</code>:</h4>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Trust Anchor Resolution</strong>: Looks up <code>mtcCert.caId = 83993f0102</code> (<code>"g5k_AQI"</code>) in <code>metadata.mtcTrustAnchors</code> (<code>L235484</code>).</li>
+<li><strong>Diagnostic Key &amp; Proof Extraction via <code>"mtc-debug"</code></strong>: Because the enterprise per-device key is not pre-shared in the public MDS <code>batchKeys</code> array, the verifier extracts <code>pubKey</code> (<code>1,322 B</code> <code>ML-DSA-44</code> <code>COSE_Key</code>), <code>notBefore</code> (<code>1793033200</code>), <code>notAfter</code> (<code>253402300799</code>), and <code>mtcProof</code> (<code>121 B</code>) from <code>authenticatorData.extensions["mtc-debug"]</code>.</li>
+<li><strong>Device Serial Number Binding (<code>mtcProof.extensions</code> $\leftrightarrow$ <code>mtc_enterprise_info.json</code> $\leftrightarrow$ <code>mtc-debug.deviceSerial</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Parses the 121-byte <code>mtcProof</code>: <code>serial = 0007000000000000</code> (<code>8 B</code>), <code>leaf_index = 0</code> (<code>8 B</code>), <code>ext_len = 8</code> (<code>2 B</code>), <code>extensions = 01 06 31 32 33 34 35 36</code> (<code>ext_type = 0x01</code> [device serial], <code>len = 6</code>,UTF-8 <code>"123456"</code>), and <code>3</code> sibling hashes (<code>96 B</code>).</li>
+<li>Asserts <code>serialNumber == "123456"</code> matches both <code>mtc_enterprise_info.json</code> (<code>expectedSerial = "123456"</code>) and <code>mtcDebug.deviceSerial</code> (<code>"123456"</code>).</li>
+</ul></li>
+<li><strong>Merkle Inclusion Proof &amp; <code>ML-DSA-87</code> (<code>alg: -50</code>) Root CA Checkpoint Verification</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Reconstructs the 68-byte <code>FidoMtcLogEntry</code>: <code>caId (5 B) || serial (8 B) || notBefore (8 B) || notAfter (8 B) || aaguid (16 B) || SHA-256(pubKey) (11 B truncated) || firmwareVersion=256 (4 B) || ext_len=8 (2 B) || 0106"123456" (8 B)</code>.</li>
+<li>Hashes the leaf (<code>SHA-256(0x00 || entry)</code>) and walks the 3 sibling hashes in <code>inclusion_path</code> (<code>SHA-256(0x01 || left || right)</code>), arriving at <code>computedRoot = iDwM02SMbYqp9JwkLasEDsEajsKImXs553CzWIA49dg</code>, which matches both <code>subtree.rootHash</code> and <code>mtcDebug.rootHash</code>.</li>
+<li>Verifies the <strong><code>4,627 B</code> <code>ML-DSA-87</code> (<code>alg: -50</code>) signature</strong> in <code>subtree.signature</code> over <code>FIDO-MTC-SUBTREE-CHECKPOINT-V1\x00\x00 || caId || logNum || start || end || rootHash</code> (<code>73 B</code> message) using the <strong><code>2,592 B</code> <code>ML-DSA-87</code> public key</strong> from <code>Fidont Enterprise Root CA</code> in <code>metadata.attestationRootCertificates</code> (<code>L235484</code>: <code>MTC Subtree Root CA signature verified successfully (alg: -50, caId: 83993f0102)</code>).</li>
+</ul></li>
+<li><strong>Attestation Signature Verification</strong>: Verifies the <code>2,420 B</code> <code>ML-DSA-44</code> (<code>alg: -48</code>) signature in <code>attStmt.sig</code> over <code>authData || clientDataHash</code> using the authenticated <code>1,312 B</code> <code>ML-DSA-44</code> public key (<code>L235485</code>: <code>MTC Attestation verified successfully (alg: -48, serial: 0007000000000000)</code>).</li>
+</ol>
+<h3 id="0000000003-dual-hardware-button-p011-j-link-vcom-p008-user-presence-architecture-automated-probe-rs-power-cycles-in-run-26" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.00000000.3 Dual Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence Architecture &amp; Automated <code>probe-rs</code> Power Cycles in Run 26</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Capability</th>
+<th class="p-3 font-semibold align-bottom text-left">Hardware / Firmware Implementation (<code>OpenSK</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Conformance Tool Hook (<code>fido_extracted</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 26 Telemetry (<code>fido_conformance_debug.log</code> &amp; <code>opensk_rtt.log</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>1. Dual User Presence (UP) Trigger (<code>P0.11</code> Physical Button + <code>P0.08</code> J-Link VCOM)</strong></td>
+<td class="p-3 align-top text-left">Compiled <strong>without</strong> <code>up-always-true</code>. <code>runner-nordic/src/main.rs</code> configures <code>buttons[0]</code> = <code>P0.11</code> (<code>SW1</code>) and <code>buttons[1]</code> = <code>P0.08</code> (J-Link OB VCOM TX, with <code>P0.05</code> <code>RTS</code> driven low). <code>src/touch.rs</code> registers listeners across all <code>button::count()</code> channels, and <code>CtapState::check_user_presence</code> (<code>libraries/opensk/src/ctap/mod.rs:536</code>) immediately emits <code>CTAPHID_KEEPALIVE(UpNeeded)</code> (<code>0xbb 0x00 0x01 0x02</code>).</td>
+<td class="p-3 align-top text-left">When <code>CTAPHID_KEEPALIVE(UpNeeded)</code> arrives and triggers <code>WAITING FOR TEST OF USER PRESENCE</code>, <code>app/js/integration.js</code> calls <code>global.triggerOpenSKUserPresence()</code> (<code>preload.js:48</code>), which checks that <code>[HID] Wasefire</code> is selected and pulses <code>0x00</code> at <code>300 baud</code> (<code>~30 ms</code> low pulse) on <code>/dev/cu.usbmodem0010502395621</code>. Intentional timeout tests (<code>F-1</code>/<code>F-2</code>) do not call the hook and time out naturally after <code>30 s</code>.</td>
+<td class="p-3 align-top text-left"><strong><code>179</code> UP checks triggered</strong> in <code>fido_conformance_debug.log</code>; <strong><code>295</code> <code>Button(Event { button: 1, pressed: true })</code></strong> events logged in <code>opensk_rtt.log</code>; <strong><code>0</code> manual button presses required</strong>, while physical <code>SW1</code> remains active at all times.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>2. Automated MCU Power-Cycle Reset (<code>resetOpenSKBoard</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>probe-rs reset --chip nRF52840_xxAA</code> asserts hardware <code>SYSRESETREQ</code> over the on-board J-Link OB SWD debugger, clearing RAM (<code>pinAuthRetries</code>, volatile <code>pinUvAuthToken</code> state, and ephemeral ECDH <code>keyAgreement</code> keys) while preserving NVRAM flash (<code>PIN</code> hash, <code>pinRetries</code>, credentials).</td>
+<td class="p-3 align-top text-left"><code>preload.js:67</code> (<code>global.resetOpenSKBoard</code>) verifies <code>[HID] Wasefire</code> is selected, sends <code>killall -TERM probe-rs</code> + <code>120 ms</code> USB bulk-IN drain so the background RTT logger releases J-Link cleanly, runs <code>probe-rs reset</code> (with up to 4 retries), and waits <code>2,000 ms</code> for USB HID re-enumeration. Hooked in <code>Authr-ClientPin1-GetRetries.js</code> (<code>P-3</code>), <code>Authr-ClientPin2-GetRetries.js</code> (<code>P-3</code>, <code>P-5</code>), and <code>controller.js</code>.</td>
+<td class="p-3 align-top text-left"><strong><code>3 / 3</code> (<code>100%</code>) power cycles succeeded on Attempt 1 with zero user dialogs</strong>:<br/>1. <code>ClientPin1-GetRetries</code> <code>P-3</code> (<code>L252351</code>, <code>439.5 ms</code> reset, <code>RTT L1429206</code>)<br/>2. <code>ClientPin2-GetRetries</code> <code>P-5</code> initial (<code>L255496</code>, <code>393.4 ms</code> reset, <code>RTT L1442546</code>)<br/>3. <code>ClientPin2-GetRetries</code> <code>P-5</code> mid-loop (<code>L255688</code>, <code>400.7 ms</code> reset, <code>RTT L1443394</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>3. Default Display Support Toggle (<code>has_display=false</code>)</strong></td>
+<td class="p-3 align-top text-left">Headless security key profile (<code>maxMsgSize = 7609</code>, no on-device display).</td>
+<td class="p-3 align-top text-left">Added <code>Authenticator supports display</code> checkbox in <code>app/views/main.html</code> &amp; <code>app/js/controller.js</code> (<code>window.config.test.fidoauthenticator.has_display</code>, defaulting to <code>false</code>) and hooked <code>Authr-ResidentKey-1.js</code> <code>P-4</code> to read <code>has_display</code> instead of blocking on a manual confirmation dialog.</td>
+<td class="p-3 align-top text-left"><code>Authr-ResidentKey-1</code> <code>P-4</code> (<code>L234154</code>) executed automatically with <code>has_display = false</code> and <strong>PASSED</strong> (<code>6 / 6</code> PASS in <code>Authr-ResidentKey-1</code>, up from <code>5 Passed / 1 Skipped</code> in Runs 17–25).</td>
 </tr>
 </tbody></table></div>
     </section>
@@ -1567,98 +1724,88 @@ a3                                                                 # map(3)
 <td class="p-3 align-top text-left">Release firmware (<code>./flash.sh nrf52840dk</code> without <code>--features=debug</code>) omits RTT <code>trace</code> strings so all 16 algorithms + <code>AES-128-CBC</code> + MTC fit in the <code>500 KiB</code> flash image</td>
 </tr>
 </tbody></table></div>
-<h3 id="03-seven-way-comparison-run-10--48---mtc-x5c-vs-run-11--50-mtc-vs-run-16-dual-ep-vs-run-17-dual-ep-percredmgmtro-vs-run-18-18-algs-rtt-vs-run-19-18-algs-usb-rtt-vs-run-20-18-algs-hsslms-x5c-mtc-subtrees" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.3 Seven-Way Comparison: Run 10 (<code>-48</code> <code>--mtc-x5c</code>) vs. Run 11 (<code>-50</code> MTC) vs. Run 16 (Dual + <code>ep</code>) vs. Run 17 (Dual + <code>ep</code> + <code>perCredMgmtRO</code>) vs. Run 18 (18 Algs + RTT) vs. Run 19 (18 Algs + USB + RTT) vs. Run 20 (18 Algs + HSS/LMS <code>x5c</code> &amp; MTC Subtrees)</h3>
+<h3 id="03-multi-run-comparison-across-the-last-10-runs-runs-1726-evolution-of-18-algorithms-2-field-mtckeyref-mtc-debug-stateless-root-cas-real-hardwarevcom-up-automated-mcu-power-cycles" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.3 Multi-Run Comparison Across the Last 10 Runs (<code>Runs 17–26</code>): Evolution of 18 Algorithms, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless Root CAs, Real Hardware/VCOM UP &amp; Automated MCU Power Cycles</h3>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Metric</th>
-<th class="p-3 font-semibold align-bottom text-left">Run 10 (<code>-48</code> <code>--mtc-x5c</code>)</th>
-<th class="p-3 font-semibold align-bottom text-left">Run 11 (<code>-50</code> MTC)</th>
-<th class="p-3 font-semibold align-bottom text-left">Run 16 (Dual + <code>ep</code>)</th>
-<th class="p-3 font-semibold align-bottom text-left">Run 17 (16 Algs + <code>perCredMgmtRO</code>)</th>
-<th class="p-3 font-semibold align-bottom text-left">Run 18 (18 Algs + RTT)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 17 (<code>perCredMgmtRO</code>)</th>
 <th class="p-3 font-semibold align-bottom text-left">Run 19 (18 Algs + USB + RTT)</th>
-<th class="p-3 font-semibold align-bottom text-left">Run 20 (18 Algs + HSS/LMS <code>x5c</code> &amp; MTC)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 20–21 (HSS/LMS Hierarchy)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 22 (<code>fmt: "mtc"</code> Consolidated)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 24 (2-Field <code>mtcKeyRef</code> + USB)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 25 (<code>FW=256</code> + USB)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 26 (Stateless <code>ML-DSA-87</code>/<code>ES384</code> + Real UP + Auto Reset)</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
 <td class="p-3 align-top text-left"><strong>Log Range &amp; Duration</strong></td>
-<td class="p-3 align-top text-left"><code>L287509–L347258</code> (<code>10m 14s</code>)</td>
-<td class="p-3 align-top text-left"><code>L1–L56583</code> (<code>16m 35s</code>)</td>
-<td class="p-3 align-top text-left"><code>L175680–L223190</code> (<code>15m 33s</code>)</td>
 <td class="p-3 align-top text-left"><code>L1–L48653</code> (<code>12m 27s</code>)</td>
-<td class="p-3 align-top text-left"><code>L1–L52180</code> (<code>20m 26s</code>)</td>
 <td class="p-3 align-top text-left"><code>L1–L66127</code> (<code>21m 28s</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>L155031–L211147</code> (<code>45m 35s</code> wall / <code>~19m 24s</code> active)</strong></td>
+<td class="p-3 align-top text-left"><code>35,146</code> lines (<code>25m 28s</code>)</td>
+<td class="p-3 align-top text-left"><code>L1–L34421</code> (<code>20m 07s</code>)</td>
+<td class="p-3 align-top text-left"><code>L1–L37223</code> (<code>21m 41s</code>)</td>
+<td class="p-3 align-top text-left"><code>L1–L51269</code> (<code>21m 17s</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>L210496–L260427</code> (<code>18m 27.46s</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Test Results</strong></td>
-<td class="p-3 align-top text-left"><code>237 Passed / 0 Failed</code></td>
-<td class="p-3 align-top text-left"><code>237 Passed / 0 Failed</code></td>
-<td class="p-3 align-top text-left"><code>241 Passed / 41 Skipped / 0 Failed</code></td>
 <td class="p-3 align-top text-left"><code>250 Passed / 32 Skipped / 0 Failed</code></td>
-<td class="p-3 align-top text-left"><code>249 Passed / 34 Skipped / 1 Failed</code></td>
 <td class="p-3 align-top text-left"><code>250 Passed / 32 Skipped / 0 Failed</code></td>
-<td class="p-3 align-top text-left"><strong><code>250 Passed / 32 Skipped / 0 Failed (</code>100.00%<code>)</code></strong></td>
+<td class="p-3 align-top text-left"><code>250 Passed / 33 Skipped / 0 Failed</code></td>
+<td class="p-3 align-top text-left"><code>247 Passed / 32 Skipped / 4 Failed*</code></td>
+<td class="p-3 align-top text-left"><code>250 Passed / 33 Skipped / 0 Failed</code></td>
+<td class="p-3 align-top text-left"><code>249 Passed / 35 Skipped / 1 Failed*</code></td>
+<td class="p-3 align-top text-left"><strong><code>252 Passed / 31 Skipped / 0 Failed (</code>100.00%<code>)</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Supported COSE Algorithms</strong></td>
 <td class="p-3 align-top text-left"><code>16</code> algorithms</td>
-<td class="p-3 align-top text-left"><code>16</code> algorithms</td>
-<td class="p-3 align-top text-left"><code>16</code> algorithms</td>
-<td class="p-3 align-top text-left"><code>16</code> algorithms</td>
+<td class="p-3 align-top text-left"><strong><code>18</code> (<code>+FN-DSA-512/1024</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>18</code> (<code>+FN-DSA-512/1024</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>18</code> (<code>+FN-DSA-512/1024</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>18</code> (<code>+FN-DSA-512/1024</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>18</code> (<code>+FN-DSA-512/1024</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>18</code> (<code>+FN-DSA-512/1024</code>)</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Root &amp; Intermediate CAs / MTC Anchor</strong></td>
-<td class="p-3 align-top text-left"><code>ML-DSA-44</code> <code>x5c</code> + MTC</td>
-<td class="p-3 align-top text-left"><code>ML-DSA-87</code> MTC</td>
-<td class="p-3 align-top text-left"><code>ES384</code> <code>x5c</code> + <code>ML-DSA-44</code> MTC</td>
+<td class="p-3 align-top text-left"><strong>Root CAs &amp; MTC Trust Anchor</strong></td>
 <td class="p-3 align-top text-left"><code>ES384</code> <code>x5c</code> + <code>ML-DSA-44</code> MTC</td>
 <td class="p-3 align-top text-left"><code>ML-DSA-87</code> Root CA &amp; MTC</td>
-<td class="p-3 align-top text-left"><code>ML-DSA-87</code> Root CA &amp; MTC</td>
-<td class="p-3 align-top text-left"><strong><code>HSS/LMS</code> Root &amp; <code>4</code> Intermediates (<code>1.2.840.113549.1.9.16.3.17</code>) + <code>HSS/LMS</code> (<code>alg: -46</code>) MTC Subtrees</strong></td>
+<td class="p-3 align-top text-left"><code>HSS/LMS</code> (<code>alg: -46</code>) Root &amp; Intermediates</td>
+<td class="p-3 align-top text-left"><code>HSS/LMS</code> (<code>alg: -46</code>) Root &amp; Intermediates</td>
+<td class="p-3 align-top text-left"><code>HSS/LMS</code> (<code>alg: -46</code>) + 2-Field <code>mtcKeyRef</code></td>
+<td class="p-3 align-top text-left"><code>HSS/LMS</code> (<code>alg: -46</code>) + <code>FW=256</code> OID</td>
+<td class="p-3 align-top text-left"><strong>Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong><code>GetInfo</code> Wire Size (<code>BCNT</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>706 B</code> (<code>13</code> frames)</td>
-<td class="p-3 align-top text-left"><code>706 B</code> (<code>13</code> frames)</td>
-<td class="p-3 align-top text-left"><code>719 B</code> (<code>13</code> frames)</td>
-<td class="p-3 align-top text-left"><code>793 B</code> (<code>14</code> frames)</td>
-<td class="p-3 align-top text-left"><code>823 B</code> (<code>15</code> frames)</td>
-<td class="p-3 align-top text-left"><code>823 B</code> (<code>15</code> frames)</td>
-<td class="p-3 align-top text-left"><strong><code>823 B</code> (<code>15</code> frames, 18 algs + <code>perCredMgmtRO</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Enterprise <code>P-2</code>/<code>P-3</code> Wire Size</strong></td>
+<td class="p-3 align-top text-left"><code>5,595 B</code> (<code>"mtcl"</code>)</td>
+<td class="p-3 align-top text-left"><code>7,452 B</code> (<code>"packed"</code> <code>x5c</code>)</td>
+<td class="p-3 align-top text-left"><code>6,692 B</code> (<code>"packed"</code> <code>x5c</code>)</td>
+<td class="p-3 align-top text-left"><code>7,265 B</code> (<code>x5c</code> + <code>"mtc-debug"</code>)</td>
+<td class="p-3 align-top text-left"><code>7,492 B</code> (<code>x5c</code> + 7-field <code>"mtc-debug"</code>)</td>
+<td class="p-3 align-top text-left"><code>7,492 B</code> (<code>x5c</code> + 7-field <code>"mtc-debug"</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>4,448 B</code> (<code>76f</code>, <code>fmt: "mtc"</code> <code>mtcKeyRef</code> + 7-field <code>"mtc-debug"</code>)</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong><code>perCredMgmtRO</code> / <code>0x19</code> / <code>0x1E</code> Tests</strong></td>
-<td class="p-3 align-top text-left">Skipped (<code>0/9</code>)</td>
-<td class="p-3 align-top text-left">Skipped (<code>0/9</code>)</td>
-<td class="p-3 align-top text-left">Skipped (<code>0/9</code>)</td>
-<td class="p-3 align-top text-left"><code>9/9 Passed</code> (<code>100%</code>)</td>
-<td class="p-3 align-top text-left"><code>7/7 Passed</code> (<code>100%</code>)</td>
-<td class="p-3 align-top text-left"><code>9/9 Passed</code> (<code>100%</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>9/9 Passed (</code>100%<code>)</code></strong></td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Enterprise Profile (<code>EntepriseAttestation.js</code>)</strong></td>
-<td class="p-3 align-top text-left">Skipped</td>
-<td class="p-3 align-top text-left">Skipped</td>
-<td class="p-3 align-top text-left"><code>6/6 Passed</code></td>
-<td class="p-3 align-top text-left"><code>6/6 Passed</code></td>
-<td class="p-3 align-top text-left"><code>6/6 Passed</code></td>
-<td class="p-3 align-top text-left"><code>6/6 Passed</code></td>
-<td class="p-3 align-top text-left"><strong><code>6/6 Passed (</code>P-1<code>..</code>P-3<code>,</code>F-4<code>..</code>F-6<code>)</code></strong></td>
+<td class="p-3 align-top text-left"><strong>User Presence (UP) &amp; Power Cycles</strong></td>
+<td class="p-3 align-top text-left"><code>up-always-true</code> + Manual Replug</td>
+<td class="p-3 align-top text-left"><code>up-always-true</code> + Manual Replug</td>
+<td class="p-3 align-top text-left"><code>up-always-true</code> + Manual Replug</td>
+<td class="p-3 align-top text-left"><code>up-always-true</code> + Manual Replug</td>
+<td class="p-3 align-top text-left"><code>up-always-true</code> + Manual Replug</td>
+<td class="p-3 align-top text-left"><code>up-always-true</code> + Auto Reset (<code>2/3</code>)</td>
+<td class="p-3 align-top text-left"><strong>Real <code>P0.11</code>/<code>P0.08</code> UP (<code>179</code> checks) + <code>3/3</code> Zero-Dialog Auto Resets</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>Metadata-Stmt-1</code> Verification</strong></td>
 <td class="p-3 align-top text-left"><code>37/37</code> Passed</td>
 <td class="p-3 align-top text-left"><code>37/37</code> Passed</td>
-<td class="p-3 align-top text-left"><code>37/37</code> Passed</td>
-<td class="p-3 align-top text-left"><code>37/37</code> Passed</td>
-<td class="p-3 align-top text-left"><code>37/37</code> Passed</td>
-<td class="p-3 align-top text-left"><code>37/37</code> Passed</td>
-<td class="p-3 align-top text-left"><strong><code>25/25</code> Applicable (<code>37/37</code>) Passed (<code>100%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>25/25</code> Applicable Passed</td>
+<td class="p-3 align-top text-left"><code>25/25</code> Applicable Passed</td>
+<td class="p-3 align-top text-left"><code>25/25</code> Applicable Passed</td>
+<td class="p-3 align-top text-left"><code>25/25</code> Applicable Passed</td>
+<td class="p-3 align-top text-left"><strong><code>25/25</code> Applicable (<code>100%</code>) Passed</strong></td>
 </tr>
 </tbody></table></div>
 <h3 id="04-authr-makecred-resp-1-16-algorithm-sweep-conformance-log-vs-total-phase-hardware-usb-analyzer-run-17" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.4 <code>Authr-MakeCred-Resp-1</code> 16-Algorithm Sweep: Conformance Log vs. Total Phase Hardware USB Analyzer (<code>Run 17</code>)</h3>
