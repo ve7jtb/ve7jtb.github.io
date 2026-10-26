@@ -129,8 +129,8 @@ To guarantee that `deviceSerial` can **never** reach the renderer unless the bro
 | **`rootHash`** | `bstr` (Major 2)<br/>32-byte Merkle root | `std::optional<std::vector<uint8_t>> root_hash` | `array<uint8>? root_hash` | `ArrayBuffer rootHash` | `Base64URLString rootHash` | **Optional** — Expected 32-byte Landmark or Trust Anchor root hash |
 
 > [!IMPORTANT]
-> **Why `firmwareVersion` Uses `uint32_t` / `unsigned long`:**  
-> In CTAP 2.3 §6.4 (`authenticatorGetInfo`), parameter `0x0E` (`firmwareVersion`) is defined as an unsigned integer (`uint`) fitting in a 32-bit unsigned value (e.g., `0x00051405` = `332805` for v5.20.5). In `device_response_converter.cc`, Chromium validates `fw_it->second.is_unsigned()` and converts it safely via `base::checked_cast<uint32_t>(fw_it->second.GetUnsigned())`. Even if an authenticator's AAGUID remains stable across minor firmware updates, any change to `firmwareVersion` alters the hashed `FidoMtcLogEntry` leaf pre-image and therefore requires a new batch key entry in the MTC log.
+> **Why `firmwareVersion` Uses `uint32_t` / `unsigned long` & Manifest Trade-Offs:**  
+> In CTAP 2.3 §6.4 (`authenticatorGetInfo`), parameter `0x0E` (`firmwareVersion`) is defined as an unsigned integer (`uint`) fitting in a 32-bit unsigned value (e.g., `0x00051405` = `332805` for v5.20.5). In `device_response_converter.cc`, Chromium validates `fw_it->second.is_unsigned()` and converts it safely via `base::checked_cast<uint32_t>(fw_it->second.GetUnsigned())`. If a manufacturer omits `firmwareVersion` from the MTC manifest, a single root hash (`rootHash`) and batch key can be used across firmware releases; if `firmwareVersion` is included, any change to `firmwareVersion` alters the hashed `FidoMtcLogEntry` leaf pre-image and requires a new batch key entry and a new subtree checkpoint or `caId` in the MTC manifest (which is more secure, as it cryptographically binds the firmware version to the batch key even when the AAGUID remains stable across minor revisions).
 
 ---
 
