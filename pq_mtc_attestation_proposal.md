@@ -133,8 +133,10 @@ mtcEntryDesc = {
 ```
 
 > [!NOTE]
-> **Firmware Version and Batch Key Lifecycle:**
-> Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's AAGUID across minor firmware revisions may remain stable.
+> **Manufacturer Considerations for `firmwareVersion` in the MTC Manifest:**  
+> Manufacturers should weigh operational simplicity against cryptographic assurance when deciding whether to include `firmwareVersion` in the MTC leaf entry (`FidoMtcLogEntry`) and manifest:
+> - **Omitting `firmwareVersion` (`fw_version = 0`):** Allows a single Merkle tree root (`rootHash`) and batch key to be used across multiple firmware releases without generating a new subtree checkpoint or `caId` when minor firmware updates are released under a stable AAGUID.
+> - **Including `firmwareVersion` *(Recommended)*:** Because `firmwareVersion` is cryptographically committed as an immutable field in `FidoMtcLogEntry`, each new firmware version requires a new attestation batch key and leaf `serial`, which in turn requires generating a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS / the manufacturer manifest. However, binding `firmwareVersion` to the batch key is **more secure**: it cryptographically binds the exact firmware revision to the attestation signature and allows Relying Parties to selectively revoke a vulnerable firmware build via `revokedSerials` without invalidating patched authenticators that share the same AAGUID.
 
 ### 3.2 Format 2: Compact MDS-Assisted MTC Attestation Statement Format (`fmt: "mtc"`)
 

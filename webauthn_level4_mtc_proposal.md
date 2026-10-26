@@ -97,8 +97,10 @@ mtcKeyRef = {
 > - **ECMAScript / WebIDL Safe Integer Precision:** `253402300799` ($< 2^{38}$) fits well within IEEE 754 double-precision exact integers (`Number.MAX_SAFE_INTEGER = 9007199254740991`, $2^{53} - 1$), avoiding the silent rounding corruption that `UINT64_MAX` (`0xFFFFFFFFFFFFFFFF`) would suffer when serialized through WebIDL `unsigned long long` and `PublicKeyCredential.toJSON()` before reconstructing the 8-byte big-endian `not_after` field in `FidoMtcLogEntry`.
 
 > [!NOTE]
-> **Firmware Version and Batch Key Lifecycle:**
-> Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's AAGUID across minor firmware revisions may remain stable.
+> **Manufacturer Considerations for `firmwareVersion` in the MTC Manifest:**  
+> Manufacturers should weigh operational simplicity against cryptographic assurance when deciding whether to populate `firmwareVersion` in the MTC leaf (`FidoMtcLogEntry`) and manifest:
+> - **Omitting `firmwareVersion`:** Allows a single Merkle tree `rootHash` and batch key to be used across multiple firmware releases, avoiding the need to issue a new batch key or publish a new checkpoint or `caId` when minor firmware revisions are released under a stable AAGUID.
+> - **Including `firmwareVersion` *(Recommended)*:** Because `firmwareVersion` is cryptographically committed as an immutable field in `FidoMtcLogEntry`, deploying a new firmware version requires issuing a new attestation batch key and leaf `serial`, which in turn requires generating a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS3 or the manufacturer manifest. However, binding `firmwareVersion` to the batch key is **more secure**: it cryptographically attests the exact firmware version that generated a credential and allows Relying Parties to selectively revoke or flag a vulnerable firmware build via `revokedSerials` without distrusting patched authenticators that share the same AAGUID.
 
 #### Example: `fmt: "mtc"` Attestation Statement (Non-Expiring Hardware Attestation)
 

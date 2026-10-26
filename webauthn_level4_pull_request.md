@@ -88,6 +88,15 @@ Hardware security keys are typically provisioned at manufacturing time with an a
 - **X.509 (`x5c`) & IEEE 802.1AR Alignment:** Matches the standard non-expiring certificate lifetime convention used across PKIX and FIDO `packed` X.509 attestation certificates.
 - **IEEE 754 / WebIDL Safe Integer Precision:** `253402300799` ($< 2^{38}$) fits well within ECMAScript `Number.MAX_SAFE_INTEGER` ($2^{53} - 1 = 9007199254740991$), ensuring bit-exact preservation across CBOR, WebIDL `unsigned long long`, and `PublicKeyCredential.toJSON()` when verifiers reconstruct the 8-byte big-endian `not_after` field in `FidoMtcLogEntry`.
 
+### 2.5 Manufacturer Considerations for `firmwareVersion` in the MTC Manifest
+
+Manufacturers must weigh operational simplicity against cryptographic granularity when deciding whether to include `firmwareVersion` (CTAP 2.3 `authenticatorGetInfo` parameter `0x0E`) in the MTC leaf entry (`FidoMtcLogEntry`) and manifest:
+
+| Approach | Operational Impact on Root / Manifest | Security & Revocation Properties |
+| :--- | :--- | :--- |
+| **Omit `firmwareVersion`** (`fw_version = 0`) | **Single Root Across Firmware Releases:** A single Merkle tree `rootHash` and batch key can be reused across multiple minor firmware revisions without issuing a new checkpoint or `caId`. | **Lower Granularity:** Relying Parties cannot cryptographically distinguish via WebAuthn attestation between credentials created on an older, vulnerable firmware build versus a patched firmware release sharing the same `AAGUID`. |
+| **Include `firmwareVersion`** *(Recommended)* | **New Checkpoint or `caId` per Release:** Because `firmwareVersion` is hashed into the immutable leaf pre-image, each firmware release requires a new batch key and leaf `serial`, and thus a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS / the enterprise manifest. | **Higher Security (Cryptographic FW Binding):** Binds the exact firmware version to the batch key. Relying Parties can selectively revoke or require step-up remediation for a vulnerable firmware version's `serial` range while continuing to trust patched authenticators with the same `AAGUID`. |
+
 ---
 
 ## 3. Exact Unified Diff Against `index.bs` (HEAD `0c50bd0`)
@@ -170,7 +179,7 @@ index 70e98e0..fd42f74 100644
 +    : firmwareVersion
 +    :: An optional unsigned integer representing the authenticator firmware version, formatted in accordance with parameter `0x0E` (`firmwareVersion`) in CTAP 2.3 [[!FIDO-CTAP]].
 +
-+        Note: Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's [=/AAGUID=] across minor firmware revisions may remain stable.
++        Note: Manufacturers should carefully consider the operational and security trade-offs of including `firmwareVersion` in the MTC leaf entry (`FidoMtcLogEntry`) and manifest. If `firmwareVersion` is omitted, a single Merkle tree root hash (`rootHash`) and batch key can be reused across multiple firmware releases, avoiding the need to issue a new batch key or publish a new log checkpoint or `caId` when minor firmware updates are released under a stable [=/AAGUID=]. Conversely, if `firmwareVersion` is included in the leaf entry and manifest, each new firmware release requires a new attestation batch key and leaf entry, which in turn requires generating and publishing a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS or the manufacturer manifest. However, binding `firmwareVersion` to the batch key is more secure: it cryptographically proves the exact firmware revision that generated the credential and enables Relying Parties to selectively revoke or distrust a vulnerable firmware build via its `serial` range without invalidating patched authenticators that share the same [=/AAGUID=].
 +
 +    : mtcProof
 +    :: An optional byte array containing the binary Merkle inclusion proof formatted in accordance with [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]].

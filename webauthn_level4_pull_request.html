@@ -134,6 +134,7 @@
             <div><a href="#22-collapse-of-classical-x509-packed-attestation" class="hover:underline">&sect;2.2 Collapse of Classical X.509 <code>packed</code> Attestation</a></div>
             <div><a href="#23-authenticate-2026-ctap2-twg-consensus" class="hover:underline">&sect;2.3 Authenticate 2026 CTAP2 TWG Consensus</a></div>
             <div><a href="#24-non-expiring-device-attestation-notafter-253402300799" class="hover:underline">&sect;2.4 Non-Expiring Device Attestation (<code>notAfter = 253402300799</code>)</a></div>
+            <div><a href="#25-manufacturer-considerations-for-firmwareversion-in-the-mtc-manifest" class="hover:underline">&sect;2.5 Manufacturer Considerations for <code>firmwareVersion</code> in the MTC Manifest</a></div>
           </div>
         </li>
           </ul>
@@ -243,6 +244,26 @@ Closes: #2512</code></pre></div>
 <li><strong>X.509 (<code>x5c</code>) &amp; IEEE 802.1AR Alignment:</strong> Matches the standard non-expiring certificate lifetime convention used across PKIX and FIDO <code>packed</code> X.509 attestation certificates.</li>
 <li><strong>IEEE 754 / WebIDL Safe Integer Precision:</strong> <code>253402300799</code> ($&lt; 2^{38}$) fits well within ECMAScript <code>Number.MAX_SAFE_INTEGER</code> ($2^{53} - 1 = 9007199254740991$), ensuring bit-exact preservation across CBOR, WebIDL <code>unsigned long long</code>, and <code>PublicKeyCredential.toJSON()</code> when verifiers reconstruct the 8-byte big-endian <code>not_after</code> field in <code>FidoMtcLogEntry</code>.</li>
 </ul>
+<h3 id="25-manufacturer-considerations-for-firmwareversion-in-the-mtc-manifest" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.5 Manufacturer Considerations for <code>firmwareVersion</code> in the MTC Manifest</h3>
+<p class="text-sm my-2">Manufacturers must weigh operational simplicity against cryptographic granularity when deciding whether to include <code>firmwareVersion</code> (CTAP 2.3 <code>authenticatorGetInfo</code> parameter <code>0x0E</code>) in the MTC leaf entry (<code>FidoMtcLogEntry</code>) and manifest:</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Approach</th>
+<th class="p-3 font-semibold align-bottom text-left">Operational Impact on Root / Manifest</th>
+<th class="p-3 font-semibold align-bottom text-left">Security &amp; Revocation Properties</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Omit <code>firmwareVersion</code></strong> (<code>fw_version = 0</code>)</td>
+<td class="p-3 align-top text-left"><strong>Single Root Across Firmware Releases:</strong> A single Merkle tree <code>rootHash</code> and batch key can be reused across multiple minor firmware revisions without issuing a new checkpoint or <code>caId</code>.</td>
+<td class="p-3 align-top text-left"><strong>Lower Granularity:</strong> Relying Parties cannot cryptographically distinguish via WebAuthn attestation between credentials created on an older, vulnerable firmware build versus a patched firmware release sharing the same <code>AAGUID</code>.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Include <code>firmwareVersion</code></strong> <em>(Recommended)</em></td>
+<td class="p-3 align-top text-left"><strong>New Checkpoint or <code>caId</code> per Release:</strong> Because <code>firmwareVersion</code> is hashed into the immutable leaf pre-image, each firmware release requires a new batch key and leaf <code>serial</code>, and thus a new signed subtree checkpoint (<code>rootHash</code>) or <code>caId</code> in FIDO MDS / the enterprise manifest.</td>
+<td class="p-3 align-top text-left"><strong>Higher Security (Cryptographic FW Binding):</strong> Binds the exact firmware version to the batch key. Relying Parties can selectively revoke or require step-up remediation for a vulnerable firmware version's <code>serial</code> range while continuing to trust patched authenticators with the same <code>AAGUID</code>.</td>
+</tr>
+</tbody></table></div>
     </section>
 
     <!-- ===================================================================== -->
@@ -330,7 +351,7 @@ index 70e98e0..fd42f74 100644
 +    : firmwareVersion
 +    :: An optional unsigned integer representing the authenticator firmware version, formatted in accordance with parameter `0x0E` (`firmwareVersion`) in CTAP 2.3 [[!FIDO-CTAP]].
 +
-+        Note: Because `firmwareVersion` is cryptographically committed as an immutable field in the Merkle tree leaf entry (`FidoMtcLogEntry`), deploying a new firmware version requires issuing a new attestation batch key and corresponding leaf entry, even though the authenticator's [=/AAGUID=] across minor firmware revisions may remain stable.
++        Note: Manufacturers should carefully consider the operational and security trade-offs of including `firmwareVersion` in the MTC leaf entry (`FidoMtcLogEntry`) and manifest. If `firmwareVersion` is omitted, a single Merkle tree root hash (`rootHash`) and batch key can be reused across multiple firmware releases, avoiding the need to issue a new batch key or publish a new log checkpoint or `caId` when minor firmware updates are released under a stable [=/AAGUID=]. Conversely, if `firmwareVersion` is included in the leaf entry and manifest, each new firmware release requires a new attestation batch key and leaf entry, which in turn requires generating and publishing a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS or the manufacturer manifest. However, binding `firmwareVersion` to the batch key is more secure: it cryptographically proves the exact firmware revision that generated the credential and enables Relying Parties to selectively revoke or distrust a vulnerable firmware build via its `serial` range without invalidating patched authenticators that share the same [=/AAGUID=].
 +
 +    : mtcProof
 +    :: An optional byte array containing the binary Merkle inclusion proof formatted in accordance with [[!draft-ietf-plants-merkle-tree-certs]] and [[!RFC9162]].
