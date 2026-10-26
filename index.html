@@ -269,7 +269,7 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–22, covering the W3C WebAuthn Level 4 Pull Request consolidated <code>fmt: "mtc"</code> (omitting inline <code>pubKey</code> to save <code>1,331 B</code> per <code>MakeCredential</code> response: <code>4,736–5,397 B</code>) and the opt-in <code>"mtc-debug"</code> registration extension, all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, automated <code>scripts/generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, OID <code>1.2.840.113549.1.9.16.3.17</code>, <code>1,296 B</code> sig), Total Phase Beagle USB Protocol Analyzer timing (<code>127,232</code> USB bus records, <code>0</code> bus errors), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>1,760,740</code> cumulative RTT lines across <code>opensk_rtt.log</code> &amp; <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across Test Runs 10–24, covering the upstream-rebased OpenSK firmware with the W3C WebAuthn Level 4 Pull Request 2-field proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, saving <code>1,478 B</code> vs pre-PR <code>"mtc"</code> and <code>147 B</code> vs <code>mtcEntryDesc</code>: <code>3,685–5,242 B</code>), FIDO MDS3 <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> alignment (<code>1792281600</code>..<code>253402300799</code>), the expanded 7-field <code>"mtc-debug"</code> registration extension, all 18 classical, post-quantum (<code>ML-DSA-44/65/87</code>, Draft NIST FIPS 206 <code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>), and composite algorithms, RFC 8554 &cap; NIST SP 800-208 HSS/LMS Root &amp; Pre-Published Intermediate CAs (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>, <code>1,296 B</code> sig), Total Phase Beagle USB Protocol Analyzer timing (<code>122,002</code> USB bus records in Run 24 &amp; <code>127,232</code> in Run 19, <code>0</code> bus errors across <code>1,092</code> <code>CTAPHID_CBOR</code> exchanges), and <code>64 MHz</code> Cortex-M4F DWT cycle counts (<code>2,059,249</code> cumulative RTT lines across <code>opensk_rtt.log</code> &amp; <code>fidont_rtt.log</code>). <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
         </p>
       </div>
 
@@ -292,9 +292,20 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./fido_ctap23_conformance_report.html#section-0-000000"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000 (Latest — Run 24: 250 / 250 100% PASS, 2-Field Proof-Less mtcKeyRef, TotalPhase USB &amp; Expanded &quot;mtc-debug&quot;)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Full-Suite Simultaneous 3-Log Capture (<code>250 / 250</code> <code>100.00%</code> PASS): 2-Field Proof-Less <code>mtcKeyRef</code> (<code>3,685–5,242 B</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded 7-Field <code>&quot;mtc-debug&quot;</code>
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Complete <code>1,092</code>-exchange CTAP 2.3 conformance run captured across <code>fido_conformance_debug.log</code> (<code>37,223</code> lines), <code>/tmp/totalphase.csv</code> (<code>26,403</code> CSV lines, <code>122,002</code> USB bus records, <code>4,956</code> <code>OUT txn</code> / <code>8,037</code> <code>IN txn</code>, <code>0</code> hardware USB errors), and <code>opensk_rtt.log</code> (<code>287,281</code> lines, <code>0</code> panics/OOMs): all <code>22</code> <code>fmt: &quot;mtc&quot;</code> responses use the 19-byte 2-field <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, saving <code>1,478 B</code> vs pre-PR <code>&quot;mtc&quot;</code>), and all <code>4</code> <code>&quot;mtc-debug&quot;</code> tests pass <code>100%</code>.
+            </p>
+          </a>
+
           <a href="./fido_ctap23_conformance_report.html#section-0-00000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Latest — Run 23: EntepriseAttestation.js 6 / 6 100% PASS &amp; &quot;mtc-debug&quot; Privacy Gate Deep Dive)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Run 23: EntepriseAttestation.js 6 / 6 100% PASS &amp; &quot;mtc-debug&quot; Privacy Gate Deep Dive)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
               Message-Level Deep Dive of <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>&quot;mtc-debug&quot;</code> Privacy Gate
             </h3>

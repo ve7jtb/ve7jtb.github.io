@@ -78,7 +78,7 @@
       FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (281,781 cumulative lines across Runs 10–23, including Run 23 6 / 6 100.00% PASS on EntepriseAttestation.js &amp; the "mtc-debug" privacy gate, Run 22 verifying the W3C WebAuthn L4 PR consolidated fmt: "mtc" with 1,331 B smaller wire responses, and Run 21 250 / 250 100.00% PASS), Total Phase Beagle USB Protocol Analyzer (127,232 USB bus records, 0 bus errors), and J-Link RTT DWT cycle-accurate telemetry (1,771,968 cumulative lines including 11,228 lines in Run 23 and 292,093 lines in Run 22 opensk_rtt.log, 0 panics/OOMs).
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the FIDO Conformance Debug Log (319,004 cumulative lines across Runs 10–24, including Run 24 250 / 250 100.00% PASS with 2-field proof-less mtcKeyRef saving 1,478 B vs pre-PR "mtc" &amp; 147 B vs mtcEntryDesc, batchKeys notBefore/notAfter alignment, and expanded 7-field "mtc-debug" extension), Total Phase Beagle USB Protocol Analyzer (122,002 USB bus records in Run 24 &amp; 127,232 in Run 19, 0 bus errors across 1,092 CTAPHID_CBOR exchanges), and J-Link RTT DWT cycle-accurate telemetry (2,059,249 cumulative lines including 287,281 lines in Run 24 opensk_rtt.log, 0 panics/OOMs).
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–23 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Full Suite W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> + <code>Run 23</code> Latest <code>EntepriseAttestation</code> &amp; <code>"mtc-debug"</code> Privacy Gate Deep Dive)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of Test Runs 10–24 (<code>Runs 10–23</code> Historical + <code>Run 24</code> Latest Full-Suite Simultaneous 3-Log Capture with 2-Field <code>mtcKeyRef</code>, <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code>)</div>
+        </a>
+        <a href="#section-0-000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.000000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 24 (<code>07:43:50</code> – <code>08:05:36</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Upstream-Rebased OpenSK, 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code> Extension</div>
         </a>
         <a href="#section-0-00000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.00000</div>
@@ -146,8 +150,15 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–23 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Full Suite W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> + <code>Run 23</code> Latest <code>EntepriseAttestation</code> &amp; <code>"mtc-debug"</code> Privacy Gate Deep Dive)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of Test Runs 10–24 (<code>Runs 10–23</code> Historical + <code>Run 24</code> Latest Full-Suite Simultaneous 3-Log Capture with 2-Field <code>mtcKeyRef</code>, <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code>)</a>
 
+        </li>
+        <li>
+          <a href="#section-0-000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000000 Run 24 (<code>07:43:50</code> – <code>08:05:36</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Upstream-Rebased OpenSK, 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code> Extension</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#00000001-run-24-wire-size-64-mhz-cortex-m4-dwt-timing-across-all-18-algorithms-authr-makecred-resp-1-authr-getassertion-resp-1" class="hover:underline">&sect;0.000000.1 Run 24 Wire Size &amp; 64 MHz Cortex-M4 DWT Timing Across All 18 Algorithms (<code>Authr-MakeCred-Resp-1</code> &amp; <code>Authr-GetAssertion-Resp-1</code>)</a></div>
+            <div><a href="#00000002-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-24" class="hover:underline">&sect;0.000000.2 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 24)</a></div>
+          </div>
         </li>
         <li>
           <a href="#section-0-00000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000 Run 23 (<code>22:45:07.81</code> – <code>22:45:46.69</code> PDT) Message-Level Deep Dive: <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>"mtc-debug"</code> Privacy Gate</a>
@@ -190,10 +201,6 @@
             <div><a href="#0004-run-20-complete-37-suite-conformance-summary-231301-235836-pdt" class="hover:underline">&sect;0.00.4 Run 20 Complete 37-Suite Conformance Summary (<code>23:13:01</code> – <code>23:58:36</code> PDT)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0 Run 19 (<code>250 / 250</code> <code>100%</code> Pass) &amp; Run 18 Deep Dive: All 18 Algorithms Including Draft NIST FIPS 206 (<code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>) Across <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -201,6 +208,10 @@
             <div><a href="#002-run-19-three-way-correlated-getassertion-sweep-authr-getassertion-resp-1-all-18-algorithms" class="hover:underline">&sect;0.0.2 Run 19 Three-Way Correlated <code>GetAssertion</code> Sweep (<code>Authr-GetAssertion-Resp-1</code>, All 18 Algorithms)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0. Run 17 Deep Dive: <code>250/250</code> (<code>100%</code>) Pass with <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), <code>encIdentifier (0x19)</code>, <code>encCredStoreState (0x1E)</code>, Enterprise MTC, and Total Phase USB Bus Telemetry</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -243,7 +254,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–23 (<code>Runs 10–21</code> Historical + <code>Run 22</code> Full Suite W3C WebAuthn Level 4 PR Consolidated <code>fmt: "mtc"</code> + <code>Run 23</code> Latest <code>EntepriseAttestation</code> &amp; <code>"mtc-debug"</code> Privacy Gate Deep Dive)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of Test Runs 10–24 (<code>Runs 10–23</code> Historical + <code>Run 24</code> Latest Full-Suite Simultaneous 3-Log Capture with 2-Field <code>mtcKeyRef</code>, <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code>)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -374,13 +385,102 @@
 <td class="p-3 align-top text-left"><strong><code>98.41%</code> PASS (<code>247 Passed / 32 Skipped / 4 Failed</code> across <code>283</code> unique tests)</strong> — <strong><code>100%</code> PASS on consolidated <code>fmt: "mtc"</code> (<code>Authr-MakeCred-Resp-1</code> <code>P-01</code>..<code>P-04</code>, <code>F-01</code> in <code>0.165s</code>) &amp; <code>Metadata-Stmt-1</code> (<code>25/25</code>), <code>0</code> panics / <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines across <code>292,093</code> <code>opensk_rtt.log</code> lines; <code>*4</code> test-harness <code>getGetInfoCached()</code> JS <code>TypeError</code>s in newly added <code>mtc-debug</code> tests fixed &amp; repackaged in <code>app.asar</code>!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 23 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 23</strong></td>
 <td class="p-3 align-top text-left"><code>L1–L1067</code> (<code>1,067</code> lines, post-clear) &amp; <code>opensk_rtt.log</code> (<code>L1–L11228</code>, <code>11,228</code> lines)</td>
 <td class="p-3 align-top text-left"><code>22:45:07.81</code> – <code>22:45:46.69</code> (<code>38.88s</code>)</td>
 <td class="p-3 align-top text-left"><strong>Repackaged Self-Contained <code>app.asar</code> (<code>getGetInfoCached()</code> Fix) + <code>CTAP2/Protocol/Options/EntepriseAttestation.js</code> (<code>P-1</code>..<code>P-3</code>, <code>F-1</code>..<code>F-6</code>) + LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) + <code>"mtc-debug"</code> Privacy-Gate Verification (<code>deviceSerial</code> Emitted on <code>epAtt: true</code>, Omitted on Unauthorized RP Downgrade)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>6</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>6 Passed / 3 Skipped / 0 Failed</code>)</strong> — <strong>All 6 Enterprise Profile tests (<code>P-1</code>, <code>P-2</code>, <code>P-3</code>, <code>F-4</code>, <code>F-5</code>, <code>F-6</code>) passed <code>100%</code> across <code>136</code> CTAPHID messages (<code>68</code> exchanges), verifying both <code>getGetInfoCached()</code> harness fixes and the <code>"mtc-debug"</code> <code>deviceSerial</code> privacy gate (<code>0</code> panics / <code>0</code> errors in <code>11,228</code> <code>opensk_rtt.log</code> lines)!</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 24 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L1–L37223</code> (<code>37,223</code> lines), <code>/tmp/totalphase.csv</code> (<code>26,403</code> lines) &amp; <code>opensk_rtt.log</code> (<code>287,281</code> lines)</td>
+<td class="p-3 align-top text-left"><code>07:43:50</code> – <code>08:05:36</code> (<code>21m 41s</code> USB capture)</td>
+<td class="p-3 align-top text-left"><strong>Upstream-Rebased OpenSK (<code>google/OpenSK</code> PR #759) + W3C WebAuthn Level 4 PR 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, Saving <code>1,478 B</code> vs Pre-PR <code>"mtc"</code> &amp; <code>147 B</code> vs <code>mtcEntryDesc</code>: <code>3,685–5,242 B</code>) + <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> (<code>1792281600</code>..<code>253402300799</code>) + Expanded 7-Field <code>"mtc-debug"</code> Extension (<code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, <code>mtcProof</code>, <code>rootHash</code>, <code>pubKey</code>, <code>deviceSerial?</code>) + Simultaneous 3-Log Capture</strong></td>
+<td class="p-3 align-top text-left"><strong><code>250</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>250 Passed / 33 Skipped / 0 Failed</code> across all 37 CTAP 2.3 suites)</strong> — <strong>Complete CTAP 2.3 suite finished with <code>0</code> failures (<code>"Testing finished. You may submit the results now."</code>), <code>22</code> proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) responses (<code>3,685–5,242 B</code>), <code>79</code> <code>"packed"</code> responses, <code>4</code> <code>"mtc-debug"</code> verification exchanges (<code>1,374 B</code> &amp; <code>7,492 B</code>), <code>0</code> hardware USB bus errors across <code>122,002</code> USB records (<code>1,092</code> <code>CTAPHID_CBOR</code> exchanges), and <code>0</code> panics/OOMs across <code>287,281</code> <code>opensk_rtt.log</code> lines!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-000000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-000000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 24 (<code>07:43:50</code> – <code>08:05:36</code> PDT, <code>2026-10-26</code>) Full-Suite Simultaneous 3-Log Capture: Upstream-Rebased OpenSK, 2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded <code>"mtc-debug"</code> Extension</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>100.00% Pass (<code>250 Passed / 33 Skipped / 0 Failed</code>) Across All 37 CTAP 2.3 Suites with Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) &amp; Simultaneous 3-Log Telemetry</strong>: In Run 24 (<code>2026-10-26</code>, <code>07:43:50</code> – <code>08:05:36 PDT</code>, <code>21m 41.36s</code> USB capture), after merging upstream <code>google/OpenSK</code> (<code>PR #759</code>), aligning the sample FIDO MDS3 metadata (<code>metadata_mldsa44_mtc.json</code>, <code>metadata_mldsa65_mtc.json</code>, <code>metadata_mldsa87_mtc.json</code>, <code>metadata_mldsa_all_mtc.json</code>, <code>mtc_batch_trust_anchor.json</code>, and <code>mtc_enterprise_info.json</code>) with <code>notBefore: 1792281600</code> (<code>2026-10-18T00:00:00Z</code>) and <code>notAfter: 253402300799</code> (<code>9999-12-31T23:59:59Z</code>) inside <code>mtcTrustAnchors[].batchKeys[]</code>, and adding 8-byte CBOR <code>uint64</code> (<code>additionalInfo = 27</code>) support to <code>vanillacbor.js</code>, we executed the complete CTAP 2.3 conformance suite while simultaneously capturing all three diagnostic layers:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>2-Field Proof-Less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) on the Wire (<code>22 / 22</code> <code>fmt: "mtc"</code> <code>MakeCredential</code> Responses)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Every <code>fmt: "mtc"</code> <code>MakeCredential</code> response across all 11 post-quantum and PQ/T composite algorithms (<code>ML-DSA-44/65/87</code>, <code>MLDSA44-ES256</code>, <code>MLDSA65-ES256</code>, <code>MLDSA87-ES384</code>, <code>MLDSA44-Ed25519</code>, <code>MLDSA65-Ed25519</code>, <code>MLDSA87-Ed448</code>, <code>FN-DSA-512</code>, <code>FN-DSA-1024</code>) carried only the <strong>19-byte 2-field <code>mtcKeyRef</code> map</strong> (<code>{"caId": h'83993f0101', "serial": 0x0007000000000000}</code>), omitting both the <code>1,322 B</code> inline <code>pubKey</code> and the <code>147 B</code> inclusion proof + validity timestamps (<code>notBefore</code>, <code>notAfter</code>, <code>mtcProof</code>).</li>
+<li>Compared to Run 22 (<code>mtcEntryDesc</code>), this saves an additional <strong><code>147 bytes</code> (<code>2–3</code> USB HID frames)</strong> per <code>MakeCredential</code> response, and <strong><code>1,478 bytes</code> (<code>25</code> USB HID frames)</strong> total compared to pre-PR <code>"mtc"</code> (<code>4,100 B</code> vs <code>5,578 B</code> for <code>ML-DSA-44</code>!).</li>
+</ul></li>
+<li><strong>Expanded 6-Field / 7-Field <code>"mtc-debug"</code> Registration Extension (<code>4 / 4</code> <code>100%</code> PASS)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>In <code>Authr-MakeCred-Resp-1</code> (<code>P-05</code>, <code>CID=000002e5</code>, <code>1,374 B</code> / <code>24</code> frames) and <code>EntepriseAttestation.js</code> (<code>F-6</code> unauthorized RP downgrade, <code>CID=000003eb</code>, <code>1,374 B</code> / <code>24</code> frames), <code>authenticatorData.extensions["mtc-debug"]</code> emitted the 6-field self-contained diagnostic map <code>{ pubKey (77 B), notBefore: 1792281600, notAfter: 253402300799, firmwareVersion: 256, mtcProof (115 B), rootHash (32 B) }</code> with <code>deviceSerial</code> strictly omitted.</li>
+<li>In <code>EntepriseAttestation.js</code> (<code>P-2</code> with <code>epAtt=1</code> on <code>CID=000003d7</code> and <code>P-3</code> with <code>epAtt=2</code> on <code>CID=000003da</code>, <strong><code>7,492 B</code> / <code>128</code> frames</strong> — <code>117 B</code> under the <code>7,609 B</code> CTAPHID limit), <code>authenticatorData.extensions["mtc-debug"]</code> emitted all 7 fields including <code>pubKey</code> (<code>1,322 B</code> <code>ML-DSA-44</code>), <code>mtcProof</code> (<code>121 B</code> with <code>"123456"</code> extension), and <code>deviceSerial: "123456"</code>.</li>
+</ul></li>
+<li><strong>Zero Hardware USB Bus Errors &amp; Zero Firmware Panics</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>/tmp/totalphase.csv</code> recorded <strong><code>122,002</code> USB bus records</strong> (<code>4,956</code> <code>OUT txn</code> = <code>309.8 KB</code>, <code>8,037</code> <code>IN txn</code> = <code>502.3 KB</code>, <code>1,092</code> paired <code>CTAPHID_CBOR</code> exchanges, <code>1,102</code> <code>CTAPHID_INIT</code> handshakes, <code>358</code> <code>CTAPHID_KEEPALIVE</code> heartbeats) with <strong><code>0</code> hardware packet/CRC errors</strong>.</li>
+<li><code>opensk_rtt.log</code> recorded <strong><code>287,281</code> lines (<code>30.9 MB</code>)</strong> across <strong><code>1,040</code> CTAP2 command dispatches</strong> (<code>101</code> <code>MakeCredential Ok</code>, <code>68</code> <code>GetAssertion Ok</code>, <code>695</code> <code>ClientPIN Ok</code>, <code>61</code> <code>GetInfo Ok</code>, <code>27</code> <code>Reset Ok</code>, <code>14</code> <code>CredentialManagement Ok</code>, <code>12</code> <code>AuthenticatorConfig Ok</code>, <code>5</code> <code>LargeBlobs Ok</code>, <code>3</code> <code>GetNextAssertion Ok</code>) with <strong><code>0</code> panics, <code>0</code> HardFaults, <code>0</code> OOMs, and <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> events</strong>.</li>
+</ul></li>
+</ol></div>
+<h3 id="00000001-run-24-wire-size-64-mhz-cortex-m4-dwt-timing-across-all-18-algorithms-authr-makecred-resp-1-authr-getassertion-resp-1" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000000.1 Run 24 Wire Size &amp; 64 MHz Cortex-M4 DWT Timing Across All 18 Algorithms (<code>Authr-MakeCred-Resp-1</code> &amp; <code>Authr-GetAssertion-Resp-1</code>)</h3>
+<h3 id="00000002-total-phase-beagle-usb-protocol-analyzer-summary-tmptotalphasecsv-run-24" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000000.2 Total Phase Beagle USB Protocol Analyzer Summary (<code>/tmp/totalphase.csv</code>, Run 24)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Value in Run 24 (<code>/tmp/totalphase.csv</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Notes</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Capture Timestamp Window</strong></td>
+<td class="p-3 align-top text-left"><code>Mon Oct 26 07:43:50</code> – <code>08:05:36 2026</code> (<code>21m 41.36s</code>)</td>
+<td class="p-3 align-top text-left">Complete start-to-finish CTAP 2.3 conformance run</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Total CSV Lines / USB Records</strong></td>
+<td class="p-3 align-top text-left"><code>26,403</code> CSV lines / <strong><code>122,002</code> USB bus records</strong></td>
+<td class="p-3 align-top text-left">Aggregate SOF + IN-NAK + <code>OUT txn</code> + <code>IN txn</code> records</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>USB <code>OUT txn</code> (<code>64 B</code> reports)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>4,956</code> transactions (<code>317,184 B</code> = <code>309.8 KB</code>)</strong></td>
+<td class="p-3 align-top text-left">Host-to-device (<code>Ep 02 OUT</code>) CTAPHID frames</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>USB <code>IN txn</code> (<code>64 B</code> reports)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>8,037</code> transactions (<code>514,368 B</code> = <code>502.3 KB</code>)</strong></td>
+<td class="p-3 align-top text-left">Device-to-host (<code>Ep 02 IN</code>) CTAPHID frames</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>CTAPHID Channel Handshakes (<code>0x86</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,103</code> <code>OUT</code> / <code>1,102</code> <code>IN</code></td>
+<td class="p-3 align-top text-left">Fresh channel per test exchange</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Paired <code>CTAPHID_CBOR</code> (<code>0x90</code>) Exchanges</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,092</code> completed pairs</strong> (<code>1,094</code> <code>OUT</code> / <code>1,092</code> <code>IN</code>)</td>
+<td class="p-3 align-top text-left"><code>154</code> <code>MakeCred</code>, <code>92</code> <code>GetAssertion</code>, <code>721</code> <code>ClientPIN</code>, <code>60</code> <code>GetInfo</code>, <code>27</code> <code>Reset</code>, <code>16</code> <code>CredMgmt</code>, <code>13</code> <code>Config</code>, <code>6</code> <code>LargeBlobs</code>, <code>3</code> <code>GetNextAssertion</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>CTAPHID_KEEPALIVE</code> (<code>0xbb</code>) Frames</strong></td>
+<td class="p-3 align-top text-left"><code>362</code> <code>IN</code> frames (<code>status=1</code> processing / <code>status=2</code> UP needed)</td>
+<td class="p-3 align-top text-left">Emitted during multi-second PQ/RSA/ECDSA operations</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Intentional Protocol <code>CTAPHID_ERROR</code> (<code>0xbf</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>4</code> <code>IN</code> frames</td>
+<td class="p-3 align-top text-left">Expected negative transport test responses in <code>HID-1</code> (<code>INVALID_CMD</code>, <code>INVALID_PAR</code>, <code>INVALID_LEN</code>, <code>INVALID_SEQ</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Hardware USB Bus / CRC Errors</strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><code>100.00%</code> error-free physical USB bus transmission</td>
 </tr>
 </tbody></table></div>
     </section>

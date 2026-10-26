@@ -290,10 +290,10 @@ mtcKeyRef = {
 </ul></li>
 <li>Verify <code>attStmt.sig</code> over $\text{payload}$ using <code>pubKey</code> and <code>attStmt.alg</code>.</li>
 <li>Verify tree commitment:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>If <code>attStmt.mtcCert</code> contains <code>mtcProof</code>: walk the sibling hashes from <code>SHA-256(pubKey)</code> up to the landmark <code>rootHash</code> published in MDS3.</li>
-<li>If <code>attStmt.mtcCert</code> is proof-less (<code>mtcKeyRef</code>): verify that the RP previously authenticated the complete manifest table against the Root CA signature over <code>rootHash</code>.</li>
+<li>If <code>attStmt.mtcCert</code> (or <code>authenticatorData.extensions["mtc-debug"]</code> when <code>mtcKeyRef</code> is used) contains <code>mtcProof</code>: walk the sibling hashes from <code>SHA-256(pubKey)</code> up to the landmark <code>rootHash</code> published in MDS3 (or <code>mtc-debug.rootHash</code> in offline conformance mode).</li>
+<li>Otherwise, if <code>attStmt.mtcCert</code> is proof-less (<code>mtcKeyRef</code> without <code>mtcProof</code>): verify that the RP previously authenticated the complete manifest or MDS key table against the Root CA signature over <code>rootHash</code>.</li>
 </ul></li>
-<li>Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$.</li>
+<li>Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$ (using <code>attStmt.mtcCert</code>, <code>mtc-debug</code>, or the verified manifest/MDS entry).</li>
 <li>Verify revocation: verify <code>serial</code> is not in <code>revokedSerials</code>.</li>
 </ol>
     </section>

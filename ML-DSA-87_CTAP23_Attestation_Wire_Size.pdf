@@ -1,0 +1,278 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R /F4 7 0 R /F5 8 0 R >> >> /Contents 9 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+8 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Bold /Encoding /WinAnsiEncoding >>
+endobj
+9 0 obj
+<< /Length 12472 >>
+stream
+0.937 0.965 1.000 rg
+0.749 0.859 0.996 RG
+0.60 w
+38.00 748.00 138.00 14.00 re B
+BT /F2 7.50 Tf 0.114 0.306 0.847 rg 44.00 752.00 Td (FIDO2 CTAP 2.3 & WebAuthn L3) Tj ET
+0.937 0.965 1.000 rg
+0.749 0.859 0.996 RG
+0.60 w
+182.00 748.00 124.50 14.00 re B
+BT /F2 7.50 Tf 0.114 0.306 0.847 rg 188.00 752.00 Td (ML-DSA-87 \(COSE alg: -50\)) Tj ET
+0.937 0.965 1.000 rg
+0.749 0.859 0.996 RG
+0.60 w
+312.50 748.00 133.50 14.00 re B
+BT /F2 7.50 Tf 0.114 0.306 0.847 rg 318.50 752.00 Td (RFC 8554 LM-OTS \(w=4, p=67\)) Tj ET
+0.937 0.965 1.000 rg
+0.749 0.859 0.996 RG
+0.60 w
+452.00 748.00 102.00 14.00 re B
+BT /F2 7.50 Tf 0.114 0.306 0.847 rg 458.00 752.00 Td (Google Longfellow ZK) Tj ET
+BT /F2 13.50 Tf 0.060 0.090 0.160 rg 38.00 730.00 Td (CTAP 2.3 Wire Size Analysis: Attestation over an ML-DSA-87 Credential) Tj ET
+BT /F1 8.80 Tf 0.200 0.250 0.330 rg 38.00 715.00 Td (Because the authenticator signs authData || clientDataHash using LM-OTS \(w = 4, p = 67\), the attestation statement) Tj ET
+BT /F1 8.80 Tf 0.200 0.250 0.330 rg 38.00 703.00 Td (\(attStmt\) size itself does not change at all when upgrading the credential from ML-DSA-65 \(alg: -49, 1,952 B public key\)) Tj ET
+BT /F2 8.80 Tf 0.060 0.090 0.160 rg 38.00 691.00 Td (to ML-DSA-87 \(alg: -50, 2,592 B public key\). Only authData grows by +640 bytes.) Tj ET
+0.145 0.388 0.922 RG
+1.40 w
+38.00 683.00 m 574.00 683.00 l S
+BT /F2 10.50 Tf 0.118 0.227 0.541 rg 38.00 665.00 Td (1. authData \(0x02\) Breakdown with an ML-DSA-87 Credential: 2,689 Bytes) Tj ET
+0.945 0.961 0.976 rg
+0.796 0.835 0.882 RG
+0.60 w
+38.00 639.00 536.00 20.00 re B
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 645.50 Td (authData Component) Tj ET
+212.00 659.00 m 212.00 639.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 223.65 645.50 Td (Byte Size) Tj ET
+274.00 659.00 m 274.00 639.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 280.00 645.50 Td (Details) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 621.50 536.00 17.50 re S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 44.00 627.00 Td (rpIdHash) Tj ET
+212.00 639.00 m 212.00 621.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 233.60 627.00 Td (32 B) Tj ET
+274.00 639.00 m 274.00 621.50 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 280.00 627.00 Td (SHA-256 of Relying Party ID) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 604.00 536.00 17.50 re S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 44.00 609.50 Td (flags) Tj ET
+212.00 621.50 m 212.00 604.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 235.95 609.50 Td (1 B) Tj ET
+274.00 621.50 m 274.00 604.00 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 280.00 609.50 Td (UP, UV, AT=1, ED) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 586.50 536.00 17.50 re S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 44.00 592.00 Td (signCount) Tj ET
+212.00 604.00 m 212.00 586.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 235.95 592.00 Td (4 B) Tj ET
+274.00 604.00 m 274.00 586.50 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 280.00 592.00 Td (32-bit signature counter) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 569.00 536.00 17.50 re S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 44.00 574.50 Td (aaguid) Tj ET
+212.00 586.50 m 212.00 569.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 233.60 574.50 Td (16 B) Tj ET
+274.00 586.50 m 274.00 569.00 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 280.00 574.50 Td (Authenticator model identifier \(16 bytes\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 551.50 536.00 17.50 re S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 44.00 557.00 Td (credentialIdLength + credentialId) Tj ET
+212.00 569.00 m 212.00 551.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 233.60 557.00 Td (34 B) Tj ET
+274.00 569.00 m 274.00 551.50 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 280.00 557.00 Td (2 B length + 32 B credential ID \(or 18 B if using a 16-byte ID\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 534.00 536.00 17.50 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 539.50 Td (credentialPublicKey \(COSE_Key\)) Tj ET
+212.00 551.50 m 212.00 534.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 226.55 539.50 Td (2,602 B) Tj ET
+274.00 551.50 m 274.00 534.00 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 280.00 539.50 Td (10 B canonical CBOR COSE_Key \(kty: 7, alg: -50\) + 2,592 B ML-DSA-87 PK) Tj ET
+0.937 0.965 1.000 rg
+0.796 0.835 0.882 RG
+38.00 516.50 536.00 17.50 re B
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 522.00 Td (Total authData Payload) Tj ET
+212.00 534.00 m 212.00 516.50 l S
+BT /F5 8.20 Tf 0.060 0.090 0.160 rg 226.55 522.00 Td (2,689 B) Tj ET
+274.00 534.00 m 274.00 516.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 280.00 522.00 Td (Plus 4 B outer CBOR key/length header = 2,693 B on wire) Tj ET
+BT /F3 8.00 Tf 0.280 0.330 0.410 rg 38.00 504.50 Td (In-circuit SHA-256 impact: authData \(2,689 B\) || clientDataHash \(32 B\) + 52 B LM-OTS header = 2,773 bytes = 44 SHA-256 blocks) Tj ET
+BT /F3 8.00 Tf 0.280 0.330 0.410 rg 38.00 494.50 Td (\(up by just +11 blocks from ML-DSA-65's 33 blocks\).) Tj ET
+BT /F2 10.50 Tf 0.118 0.227 0.541 rg 38.00 476.50 Td (2. Authenticator Attestation Statement \(attStmt, 0x03\) Breakdown) Tj ET
+BT /F1 8.40 Tf 0.200 0.250 0.330 rg 38.00 464.50 Td (The attStmt emitted by the authenticator over the CTAP 2.3 bus is identical in size for both ML-DSA-65 and ML-DSA-87:) Tj ET
+0.945 0.961 0.976 rg
+0.796 0.835 0.882 RG
+0.60 w
+38.00 438.50 536.00 20.00 re B
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 445.00 Td (attStmt Field) Tj ET
+196.00 458.50 m 196.00 438.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 202.00 445.00 Td (Consumer 31-Level \(14 Nodes\)) Tj ET
+322.00 458.50 m 322.00 438.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 329.10 445.00 Td (Consumer 31-Level \(All 31\)) Tj ET
+448.00 458.50 m 448.00 438.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 454.00 445.00 Td (Enterprise 25-Level \(No ZK\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 415.50 536.00 23.00 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 426.50 Td (LM-OTS Signature \(w=4, p=67\)) Tj ET
+196.00 438.50 m 196.00 415.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 245.35 428.00 Td (2,180 B) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 208.30 418.50 Td (\(4B type + 32B C + 67x32B\)) Tj ET
+322.00 438.50 m 322.00 415.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 368.55 426.50 Td (2,180 B) Tj ET
+448.00 438.50 m 448.00 415.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 494.55 426.50 Td (2,180 B) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 392.50 536.00 23.00 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 403.50 Td (Merkle Path Nodes) Tj ET
+196.00 415.50 m 196.00 392.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 249.25 405.00 Td (448 B) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 212.20 395.50 Td (\(14 x 32 B device nodes\)) Tj ET
+322.00 415.50 m 322.00 392.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 375.25 405.00 Td (992 B) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 344.05 395.50 Td (\(31 x 32 B full path\)) Tj ET
+448.00 415.50 m 448.00 392.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 501.25 405.00 Td (800 B) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 470.05 395.50 Td (\(25 x 32 B full path\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 369.50 536.00 23.00 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 380.50 Td (Routing & Domain IDs) Tj ET
+196.00 392.50 m 196.00 369.50 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 251.20 382.00 Td (68 B) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 200.00 372.50 Td (\(batchRootId 32B + q 4B + I 32B\)) Tj ET
+322.00 392.50 m 322.00 369.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 375.60 380.50 Td (68 B) Tj ET
+448.00 392.50 m 448.00 369.50 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 501.60 380.50 Td (68 B) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 352.00 536.00 17.50 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 357.50 Td (CBOR Map Framing \(fmt+attStmt\)) Tj ET
+196.00 369.50 m 196.00 352.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 247.25 357.50 Td (~44 B) Tj ET
+322.00 369.50 m 322.00 352.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 373.25 357.50 Td (~44 B) Tj ET
+448.00 369.50 m 448.00 352.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 499.25 357.50 Td (~44 B) Tj ET
+0.937 0.965 1.000 rg
+0.796 0.835 0.882 RG
+38.00 333.00 536.00 19.00 re B
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 340.00 Td (Total attStmt + fmt on Wire) Tj ET
+196.00 352.00 m 196.00 333.00 l S
+BT /F5 8.20 Tf 0.060 0.090 0.160 rg 216.70 340.00 Td (2,740 B \(~2.68 KB\)) Tj ET
+322.00 352.00 m 322.00 333.00 l S
+BT /F5 8.20 Tf 0.060 0.090 0.160 rg 342.70 340.00 Td (3,284 B \(~3.21 KB\)) Tj ET
+448.00 352.00 m 448.00 333.00 l S
+BT /F5 8.20 Tf 0.060 0.090 0.160 rg 468.70 340.00 Td (3,092 B \(~3.02 KB\)) Tj ET
+BT /F2 10.50 Tf 0.118 0.227 0.541 rg 38.00 315.00 Td (3. Total CTAP 2.3 Wire Size \(authData + attStmt + fmt\) vs. the 7,609 B USB HID Limit) Tj ET
+0.945 0.961 0.976 rg
+0.796 0.835 0.882 RG
+0.60 w
+38.00 289.00 536.00 20.00 re B
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 295.50 Td (Deployment Mode \(ML-DSA-87\)) Tj ET
+232.00 309.00 m 232.00 289.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 248.80 295.50 Td (authData) Tj ET
+300.00 309.00 m 300.00 289.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 309.05 295.50 Td (attStmt + fmt) Tj ET
+374.00 309.00 m 374.00 289.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 383.15 295.50 Td (Total Wire Response) Tj ET
+474.00 309.00 m 474.00 289.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 483.15 295.50 Td (Headroom \(<7,609 B\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 265.00 536.00 24.00 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 278.50 Td (1. Consumer 31-Level) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 44.00 269.00 Td (\(14 Dynamic Nodes from Key\)) Tj ET
+232.00 289.00 m 232.00 265.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 249.55 277.00 Td (2,693 B) Tj ET
+300.00 289.00 m 300.00 265.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 320.55 277.00 Td (2,740 B) Tj ET
+374.00 289.00 m 374.00 265.00 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 386.20 277.00 Td (5,433 B \(~5.31 KB\)) Tj ET
+474.00 289.00 m 474.00 265.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 492.80 278.50 Td (2,176 B to spare) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 494.75 269.00 Td (\(92 HID frames\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 241.00 536.00 24.00 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 254.50 Td (2. Consumer 31-Level Self-Contained) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 44.00 245.00 Td (\(All 31 Nodes from Key\)) Tj ET
+232.00 265.00 m 232.00 241.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 249.55 253.00 Td (2,693 B) Tj ET
+300.00 265.00 m 300.00 241.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 320.55 253.00 Td (3,284 B) Tj ET
+374.00 265.00 m 374.00 241.00 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 386.20 253.00 Td (5,977 B \(~5.84 KB\)) Tj ET
+474.00 265.00 m 474.00 241.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 492.80 254.50 Td (1,632 B to spare) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 492.80 245.00 Td (\(101 HID frames\)) Tj ET
+1.000 1.000 1.000 rg
+0.796 0.835 0.882 RG
+38.00 217.00 536.00 24.00 re S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 44.00 230.50 Td (3. Enterprise Direct 25-Level) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 44.00 221.00 Td (\(All 25 Nodes from Key, No ZK\)) Tj ET
+232.00 241.00 m 232.00 217.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 249.55 229.00 Td (2,693 B) Tj ET
+300.00 241.00 m 300.00 217.00 l S
+BT /F4 8.20 Tf 0.060 0.090 0.160 rg 320.55 229.00 Td (3,092 B) Tj ET
+374.00 241.00 m 374.00 217.00 l S
+BT /F1 8.20 Tf 0.060 0.090 0.160 rg 386.20 229.00 Td (5,785 B \(~5.65 KB\)) Tj ET
+474.00 241.00 m 474.00 217.00 l S
+BT /F2 8.20 Tf 0.060 0.090 0.160 rg 492.80 230.50 Td (1,824 B to spare) Tj ET
+BT /F1 7.30 Tf 0.280 0.330 0.410 rg 494.75 221.00 Td (\(98 HID frames\)) Tj ET
+0.973 0.980 0.988 rg
+0.580 0.639 0.722 RG
+0.70 w
+38.00 135.00 536.00 68.00 re B
+0.145 0.388 0.922 rg
+38.00 135.00 3.50 68.00 re f
+BT /F2 9.80 Tf 0.118 0.227 0.541 rg 50.00 189.00 Td (Key Takeaway) Tj ET
+BT /F1 8.40 Tf 0.060 0.090 0.160 rg 50.00 175.00 Td (- The attestation portion itself \(attStmt\) is ~2.68 KB to ~3.21 KB on the wire, and the complete CTAP 2.3) Tj ET
+BT /F2 8.40 Tf 0.060 0.090 0.160 rg 57.00 164.00 Td (makeCredential response including the 2,592 B ML-DSA-87 public key is ~5.31 KB to ~5.84 KB.) Tj ET
+BT /F1 8.40 Tf 0.060 0.090 0.160 rg 50.00 152.00 Td (- Every deployment mode fits comfortably inside a single 7,609-byte USB CTAPHID message with 1.6 KB to 2.1 KB) Tj ET
+BT /F1 8.40 Tf 0.060 0.090 0.160 rg 57.00 141.00 Td (of headroom to spare \(whereas standard X.509 'packed' attestation with ML-DSA-87 requires ~13-18 KB and overflows\).) Tj ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000287 00000 n 
+0000000384 00000 n 
+0000000486 00000 n 
+0000000591 00000 n 
+0000000686 00000 n 
+0000000786 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+13311
+%%EOF
