@@ -282,10 +282,10 @@ def parse_blocks(lines):
 # ---------------------------------------------------------------- page specs -
 DOCUMENT_CONFIGS = {
     "pq_mtc_attestation_proposal": {
-        "title": "Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc and mtcl)",
+        "title": "Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (mtc) and the mtcDebug Extension",
         "badges": [
             ("W3C WebAuthn & CTAP 2.3+", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("fmt: \"mtc\" & \"mtcl\"", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("fmt: \"mtc\" & mtcDebug", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("IETF PLANTS Merkle Tree Certs", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("ML-DSA & OpenID Federation 1.1", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],

@@ -4,7 +4,7 @@ Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/do
 
 > [!NOTE]
 > **Specification Update (Authenticate 2026 CTAP2 TWG Consensus):**
-> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was established as the single operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging) and avoid redundant transmission of multi-kilobyte public keys on the wire, `mtcl` (MTC Large with inline public key) has been removed and the specification standardizes:
+> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was established as the single operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging) and avoid redundant transmission of multi-kilobyte public keys on the wire, this specification standardizes:
 > - **`fmt: "mtc"`** *(formerly `mtc-mds`)*: The compact Merkle Tree Certificate attestation statement format. The multi-kilobyte post-quantum public key is omitted from the wire payload and resolved out-of-band via FIDO MDS3 (`MtcTrustAnchor.batchKeys`) or the manufacturer's manifest.
 > - **`mtcDebug` (`mtc-debug`)**: The WebAuthn Level 4 diagnostic registration extension (§8.7) enabling test fixtures, conformance suites, and offline verifiers to retrieve the active attestation public key, inclusion proof, root hash, validity timestamps, firmware version, and (when Enterprise Attestation is granted) device serial number in-band.
 

@@ -114,7 +114,7 @@
           <a href="#sec-pq-mtc" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">PQ Specification</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ WebAuthn MTC (mtc &amp; mtcl)</div>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ WebAuthn MTC (fmt: "mtc")</div>
               <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">draft-ietf-plants-merkle-tree-certs, 7,609B USB HID ceiling &amp; Enterprise manifest lookup.</p>
             </div>
           </a>
@@ -548,7 +548,7 @@
       </div>
     </section>
 
-    <!-- Section 5: PQ MTC Attestation (mtc & mtcl) -->
+    <!-- Section 5: PQ MTC Attestation (fmt: "mtc" & mtcDebug) -->
     <section id="sec-pq-mtc" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
@@ -559,7 +559,7 @@
             W3C WebAuthn &amp; FIDO2 CTAP 2.3+
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            fmt: "mtc" &amp; "mtcl"
+            fmt: "mtc" &amp; mtcDebug
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             Merkle Tree Certificates &amp; ML-DSA
@@ -571,11 +571,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./pq_mtc_attestation_proposal.html" class="hover:underline">
-            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code> and <code>mtcl</code>)
+            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code>) and the <code>mtcDebug</code> Extension
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Defines two complementary Post-Quantum WebAuthn attestation statement formats—<strong><code>mtc</code></strong> (compact MDS/Log-assisted public key lookup) and <strong><code>mtcl</code></strong> (inline <code>COSE_Key</code> + <code>MTCProof</code>, MTC Large)—based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup, C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
+          Defines the compact Post-Quantum WebAuthn attestation statement format <strong><code>mtc</code></strong> (MDS/manifest-assisted public key lookup with optional inclusion proof <code>mtcEntryDesc</code> or proof-less <code>mtcKeyRef</code>) and the <strong><code>mtcDebug</code></strong> (<code>mtc-debug</code>) diagnostic extension based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup, C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
         </p>
       </div>
 
@@ -602,10 +602,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–5</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Normative <code>mtc</code> &amp; <code>mtcl</code> Formats, Leaf Structure &amp; RP Verification
+              Normative <code>mtc</code> Format, Leaf Structure &amp; RP Verification
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> and <code>mtclStmtFormat</code>, deterministic <code>FidoMtcLogEntry</code> serialization, and unified RP verification.
+              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> (<code>mtcEntryDesc</code> and <code>mtcKeyRef</code>), deterministic <code>FidoMtcLogEntry</code> serialization, and RP verification.
             </p>
           </a>
 
