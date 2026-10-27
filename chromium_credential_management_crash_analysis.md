@@ -4,7 +4,18 @@
 **Author:** John Bradley  
 **Subsystem:** `//chrome/browser/ui/webui/settings`, `//chrome/browser/resources/settings/privacy_page/security`  
 **Target:** Chromium HEAD (`158.0.8121.0`+) / Gerrit CL  
+**GitHub Fork Branch:** [`fix/security-key-credential-management`](https://github.com/ve7jtb/chromium/tree/fix/security-key-credential-management)  
+**GitHub Commit:** [`ae57490d57`](https://github.com/ve7jtb/chromium/commit/ae57490d570348684d3e65c346a974183f291e60)  
 **Status:** Diagnosed & Fixed  
+
+> [!NOTE]
+> **Repository & Branch Details:**
+> - **Fork Repository:** [`ve7jtb/chromium`](https://github.com/ve7jtb/chromium)
+> - **Branch:** [`fix/security-key-credential-management`](https://github.com/ve7jtb/chromium/tree/fix/security-key-credential-management)
+> - **Commit:** [`ae57490d570348684d3e65c346a974183f291e60`](https://github.com/ve7jtb/chromium/commit/ae57490d570348684d3e65c346a974183f291e60)
+> - **Commit Message:** *"Guard security key credential management against overlapping requests"*
+> - **Upstream Base:** `origin/main` (`4f9f0d6afb`)
+> - **Files Modified:** `chrome/browser/ui/webui/settings/settings_security_key_handler.cc`, `chrome/browser/resources/settings/privacy_page/security/security_keys_credential_management_dialog.ts`
 
 ---
 
@@ -189,6 +200,8 @@ sequenceDiagram
 ---
 
 ## 5. Implementation Changes
+
+The complete implementation is committed on branch [`fix/security-key-credential-management`](https://github.com/ve7jtb/chromium/tree/fix/security-key-credential-management) ([commit `ae57490d57`](https://github.com/ve7jtb/chromium/commit/ae57490d570348684d3e65c346a974183f291e60)).
 
 ### 5.1 C++ Backend: Guard Against Non-Ready Re-Entrancy
 

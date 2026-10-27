@@ -1038,6 +1038,11 @@ def build_index():
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
           <span>View Markdown Source (<code>.md</code>)</span>
         </a>
+        <a href="https://github.com/ve7jtb/chromium/tree/fix/security-key-credential-management" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>GitHub Branch (<code>fix/security-key-credential-management</code>)</span>
+          <span>&rarr;</span>
+        </a>
       </div>
 
       <!-- Deep Links -->
