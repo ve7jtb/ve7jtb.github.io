@@ -36,6 +36,9 @@
     code, pre {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen p-6 md:p-12 leading-relaxed">
@@ -56,16 +59,134 @@
             Working drafts, cryptographic analyses, and protocol proposals across FIDO2 / CTAP, W3C WebAuthn, IETF CFRG / JOSE / COSE, Post-Quantum Cryptography, and Decentralized / Verifiable Digital Identity.
           </p>
         </div>
-        <a href="https://github.com/ve7jtb" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>GitHub (@ve7jtb)</span>
-          <span>&rarr;</span>
-        </a>
+        <div class="flex items-center gap-3">
+          <a href="https://github.com/ve7jtb" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+            <span>GitHub (@ve7jtb)</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Navigation Directory -->
+      <div class="mt-8 pt-6 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-4">
+          Quick Specification &amp; Report Directory
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <!-- Item 1 -->
+          <a href="#sec-mtc-dummies" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Architecture Primer</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">MTC for Dummies</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Merkle Tree COSE (fmt: "mtc") explainer, chainsawing X.509, append-only trees &amp; revocation.</p>
+            </div>
+          </a>
+
+          <!-- Item 2 -->
+          <a href="#sec-fido-conformance" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">100% PASS Telemetry</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Run 26)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">252/252 PASS across 18 algorithms (ML-DSA, FN-DSA), stateless Root CAs &amp; hardware UP.</p>
+            </div>
+          </a>
+
+          <!-- Item 3 -->
+          <a href="#sec-webauthn-l4" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">W3C Specification</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">WebAuthn Level 4 Spec Review</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Full Bikeshed HTML copy, fmt: "mtc" normative statement, mtcDebug extension &amp; W3C PR.</p>
+            </div>
+          </a>
+
+          <!-- Item 4 -->
+          <a href="#sec-lmots-longfellow" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">PQ Attestation</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">LM-OTS &amp; Google Longfellow</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">128B core state LM-OTS on SEs, 47-layer GKR SIMD circuit &amp; Direct RFC 8554 LMS.</p>
+            </div>
+          </a>
+
+          <!-- Item 5 -->
+          <a href="#sec-pq-mtc" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">PQ Specification</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ WebAuthn MTC (mtc &amp; mtcl)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">draft-ietf-plants-merkle-tree-certs, 7,609B USB HID ceiling &amp; Enterprise manifest lookup.</p>
+            </div>
+          </a>
+
+          <!-- Item 6 -->
+          <a href="#sec-enterprise-comparison" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Architectural Report</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">Enterprise MTC vs. Direct LM-OTS</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Comparison across 7,609B HID budget, manifest distribution, and RP verification complexity.</p>
+            </div>
+          </a>
+
+          <!-- Item 7 -->
+          <a href="#sec-chromium-pr" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Chromium PR</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">Chromium HEAD mtcDebug PR</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">MtcDebugExtensionOutput, Base64URL toJSON(), and dual-layer EP 1/2 privacy gate.</p>
+            </div>
+          </a>
+
+          <!-- Item 8 -->
+          <a href="#sec-chromium-virtual-authenticator" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Chromium &amp; MDS3</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">Chromium Virtual Authenticator</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">ML-DSA -48/-49/-50, W3C L4 MTC attestation, exact key reuse &amp; FIDO MDS3 exporter.</p>
+            </div>
+          </a>
+
+          <!-- Item 9 -->
+          <a href="#sec-chromium-pqc-rfc" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Design Proposal</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQC Virtual Authenticator RFC</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Design for pure-signature EVP_DigestSignInit, net/cert/x509_util, and test coverage.</p>
+            </div>
+          </a>
+
+          <!-- Item 10 -->
+          <a href="#sec-chromium-crash-fix" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">Crash Triage &amp; Fix</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">Credential Management Crash Fix</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Disassembly of SIGABRT CHECK_EQ, WebUI debounce guard, and C++ handler re-entrancy fix.</p>
+            </div>
+          </a>
+
+          <!-- Item 11 -->
+          <a href="#sec-java-webauthn" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Relying Party Engine</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">java-webauthn-server MTC Proposal</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Consolidated fmt: "mtc" &amp; mtc-debug, resolving batch keys via MDS3 and enterprise manifests.</p>
+            </div>
+          </a>
+
+          <!-- Item 12 -->
+          <a href="#sec-ctap23-pin-protocol" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">CTAP 2.3+ Protocol</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">Post-Quantum PIN Protocols 3 &amp; 4</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">RFC 9180 HPKE, Hierarchical PPUAT derivation, downgrade integrity &amp; encrypted extensions.</p>
+            </div>
+          </a>
+        </div>
       </div>
     </header>
 
-    <!-- Featured Explainer: MTC (Merkle Tree COSE) for Dummies -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <!-- Section 1: MTC (Merkle Tree COSE) for Dummies -->
+    <section id="sec-mtc-dummies" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
@@ -98,7 +219,7 @@
         </p>
       </div>
 
-      <!-- Primary Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <a href="./mtc_for_dummies.html"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
@@ -111,7 +232,7 @@
         </a>
       </div>
 
-      <!-- Deep-Link Cards into Report Sections -->
+      <!-- Deep Links -->
       <div class="pt-4 border-t border-[var(--border)]">
         <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
           Guide Sections &amp; Direct Deep Links
@@ -153,100 +274,14 @@
       </div>
     </section>
 
-    <!-- Featured Specification Report: LM-OTS + Google Longfellow Multi-Batch Attestation -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <!-- Section 2: Conformance & Telemetry Report -->
+    <section id="sec-fido-conformance" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
-            Featured Specification Report
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            FIDO2 CTAP 2.3 &amp; W3C WebAuthn L3
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            fmt: "longfellow-lmots-zk"
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            RFC 8554 LM-OTS &amp; Google Longfellow (GF(2^k))
-          </span>
-        </div>
-        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
-      </div>
-
-      <div class="space-y-3">
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
-          <a href="./lmots_longfellow_attestation_proposal.html" class="hover:underline">
-            Multi-Batch Post-Quantum FIDO Attestation via LM-OTS &amp; Google Longfellow (<code>longfellow-lmots-zk</code> and Direct Enterprise LMS)
-          </a>
-        </h2>
-        <p class="text-sm text-[var(--muted-foreground)]">
-          Defines a post-quantum FIDO2/WebAuthn attestation architecture combining a <strong>128-byte core state RFC 8554 LM-OTS</strong> engine on resource-constrained Secure Elements with <strong>Google Longfellow</strong> (GKR layered sumcheck + Ligero over binary extension fields <code>GF(2^k)</code>) on participating host platforms. Covers black-box manufacturer subtree profiles (incremental BDS vs. read-only top-7 flash cache), <code>authenticatorGetInfo</code> capability signaling, platform-side <code>fmt</code> rewriting, multi-batch AAGUID routing, 47-layer GKR SIMD circuit optimization, and a <strong>Standard RFC 8554 HSS/LMS Enterprise Direct Attestation profile</strong> (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, 60 B public key, <code>3,008 B</code> <code>W=4</code> / <code>1,952 B</code> <code>W=8</code> <code>attStmt</code>, <code>80 &mu;s</code> RP verification, and Section 6.3 comparison against Enterprise MTC across ML-DSA and FN-DSA).
-        </p>
-      </div>
-
-      <!-- Primary Action Buttons -->
-      <div class="flex flex-wrap items-center gap-3 pt-1">
-        <a href="./lmots_longfellow_attestation_proposal.html"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Full HTML Report</span>
-          <span>&rarr;</span>
-        </a>
-        <a href="./lmots_longfellow_attestation_proposal.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>View Markdown Source (<code>.md</code>)</span>
-        </a>
-      </div>
-
-      <!-- Deep-Link Cards into Report Sections -->
-      <div class="pt-4 border-t border-[var(--border)]">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
-          Report Sections &amp; Direct Deep Links
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./lmots_longfellow_attestation_proposal.html#section-1"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              128-Byte Core State, Black-Box Manufacturer Profiles &amp; CTAP 2.3 Pipeline
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              On-key NVM layout, black-box manufacturer subtree profiles (Profile 1 BDS in <code>~6.2 ms</code> vs. Profile 2 Read-Only Top-7 cache with zero mutable tree flash wear), <code>authenticatorGetInfo</code> signaling, on-the-fly path derivation (eliminating host SQLite/RocksDB databases), and platform <code>fmt</code> rewriting.
-            </p>
-          </a>
-
-          <a href="./lmots_longfellow_attestation_proposal.html#section-3"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–5</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Multi-Batch AAGUID Routing &amp; 47-Layer GKR SIMD Longfellow Circuit (31-Level Tree)
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              WebAuthn Level 3 <code>attStmt.batchRootId</code> FIDO MDS resolution (<code>131,072</code> keys/batch, <code>16,384</code> registrations/key), 33-block SHA-256 pre-padding, <code>GF(2^k)</code> Winternitz multiplexing, and 67-wide GKR SIMD batching compressing <code>~1,100</code> SHA-256 blocks into 47 sequential layers (<code>310–345 KB</code> proof).
-            </p>
-          </a>
-
-          <a href="./lmots_longfellow_attestation_proposal.html#section-6"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Standard RFC 8554 HSS/LMS Enterprise Direct Profile &amp; Wire Comparison vs. Enterprise MTC
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Fully compliant RFC 8554 single-tree profile (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, standard 16 B tree ID <code>I</code>, 60 B public key, standard leaf/internal prefix hashing) supporting <code>33.5M</code> signatures per batch with <code>3,008 B</code> (<code>W=4</code>) or <code>1,952 B</code> (<code>W=8</code>) <code>attStmt</code> and <code>80 &mu;s</code> RP verification. Section 6.3 evaluates wire payloads with individual device serial numbers against Enterprise MTC (<code>fmt: "mtcl"</code> / <code>fmt: "mtc"</code>) across all 3 ML-DSA parameter sets (<code>ML-DSA-44/65/87</code>: <code>6,857–10,344 B</code>) and 2 FN-DSA parameter sets (<code>FN-DSA-512/1024</code>: <code>4,499–5,861 B</code>).
-            </p>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Conformance & Hardware Telemetry Report: Fidont CTAP 2.3 -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white">
             Conformance &amp; Hardware Telemetry Report
           </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             Run 26: 252 / 252 (100.00% PASS)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
@@ -254,9 +289,6 @@
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             Stateless ML-DSA-87 &amp; ES384 Root CAs
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Dual P0.11/P0.08 UP &amp; Auto Power-Cycle
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
@@ -269,11 +301,11 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 17–26), highlighted by <strong>Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>18m 27.46s</code>)</strong> with stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, 2-field proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, cutting Enterprise <code>MakeCredential</code> with <code>&quot;mtc-debug&quot;</code> to <code>4,448 B</code> / <code>76</code> HID frames — <code>3,161 B</code> below the <code>7,609 B</code> CTAPHID limit), real Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence (compiled without <code>up-always-true</code>, <code>179</code> UP checks), and <code>3 / 3</code> zero-dialog automated <code>probe-rs</code> MCU power cycles. <em>Fidont authenticator simulator platform performance numbers are for relative comparison as implemented with amateur optimization by me:)</em>
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 17–26), highlighted by <strong>Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>18m 27.46s</code>)</strong> with stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, 2-field proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, cutting Enterprise <code>MakeCredential</code> with <code>"mtc-debug"</code> to <code>4,448 B</code> / <code>76</code> HID frames — <code>3,161 B</code> below the <code>7,609 B</code> CTAPHID limit), real Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence (compiled without <code>up-always-true</code>, <code>179</code> UP checks), and <code>3 / 3</code> zero-dialog automated <code>probe-rs</code> MCU power cycles.
         </p>
       </div>
 
-      <!-- Primary Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <a href="./fido_ctap23_conformance_report.html"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
@@ -286,7 +318,7 @@
         </a>
       </div>
 
-      <!-- Deep-Link Cards into Report Sections -->
+      <!-- Deep Links -->
       <div class="pt-4 border-t border-[var(--border)]">
         <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
           Report Sections &amp; Direct Deep Links
@@ -294,327 +326,42 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <a href="./fido_ctap23_conformance_report.html#section-0-00000000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Latest — Run 26: 252 / 252 100.00% PASS, Attestation Deep Dive, Stateless ML-DSA-87 &amp; ES384 Root CAs, Real UP &amp; Auto Power-Cycle)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Latest — Run 26: 252 / 252 100.00% PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS in <code>18m 27.46s</code>): Attestation Deep Dive (<code>Authr-MakeCred-Resp-1</code> &amp; <code>4,448 B</code> Enterprise <code>fmt: &quot;mtc&quot;</code>), Dual <code>P0.11</code>/<code>P0.08</code> UP &amp; <code>3 / 3</code> Zero-Dialog MCU Resets
+              Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS in <code>18m 27.46s</code>): Attestation Deep Dive (<code>Authr-MakeCred-Resp-1</code> &amp; <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code>), Dual <code>P0.11</code>/<code>P0.08</code> UP &amp; <code>3 / 3</code> Zero-Dialog MCU Resets
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Complete unattended 100% pass compiled without <code>up-always-true</code>: verifies all 18 algorithms in <code>Authr-MakeCred-Resp-1</code> (<code>6/6</code> PASS: 7 <code>&quot;packed&quot;</code> with <code>600 B</code> <code>ES256</code> batch cert signed by <code>ES384</code> Root CA + 11 <code>&quot;mtc&quot;</code> with <code>19 B</code> 2-field <code>mtcKeyRef</code>), <code>EntepriseAttestation.js</code> (<code>6/6</code> PASS: <code>P-2</code>/<code>P-3</code> reduced from <code>7,492 B</code> to <code>4,448 B</code> / <code>76f</code> with <code>ML-DSA-87</code> Root CA subtree checkpoint verification &amp; <code>F-6</code> privacy gate), <code>179</code> real UP triggers over J-Link VCOM <code>P0.08</code>, and <code>3 / 3</code> first-attempt automated <code>probe-rs</code> resets.
+              Detailed wire trace analysis of Test 108 (<code>Authr-MakeCred-Resp-1</code>), zero-dialog MCU reboot cycles via <code>probe-rs reset</code>, and hardware verification of all 18 credential key algorithms.
             </p>
           </a>
 
           <a href="./fido_ctap23_conformance_report.html#section-0-0000000"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000 (Run 25: Dynamic OPENSK_FIRMWARE_VERSION = 256, X.509 id-fido-gen-ce-fwversion, 100% Intact &gt;&gt; Debug Log &amp; TotalPhase USB)</div>
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000 (Run 25)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              End-to-End Dynamic <code>OPENSK_FIRMWARE_VERSION = 256</code> (<code>0x0100</code>) &amp; Serial Propagation (<code>id-fido-gen-ce-fwversion</code> OID <code>1.3.6.1.4.1.45724.1.1.3</code>), 100% Intact <code>51,269</code>-Line <code>&gt;&gt;</code> Debug Log &amp; 3-Log Telemetry
+              Run 25: 18 Algorithms &amp; Draft NIST FIPS 206 FN-DSA
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Complete <code>1,092</code>-exchange CTAP 2.3 conformance run captured across <code>fido_conformance_debug.log</code> (<code>51,269</code> lines, <code>100%</code> intact <code>&gt;&gt;</code> append-mode capture with <code>21,225</code> HID frames), <code>/tmp/totalphase.csv</code> (<code>26,648</code> CSV lines, <code>123,951</code> USB bus records, <code>5,038</code> <code>OUT txn</code> / <code>8,088</code> <code>IN txn</code>, <code>0</code> CRC/packet USB errors), and <code>opensk_rtt.log</code> (<code>290,581</code> lines, <code>0</code> panics/OOMs), verifying <code>GetInfo 0x0E = 256</code> across all <code>60</code> <code>GetInfo</code> calls, <code>103</code> <code>MakeCredential Ok</code> (<code>81</code> <code>&quot;packed&quot;</code>, <code>22</code> 2-field <code>mtcKeyRef</code> <code>&quot;mtc&quot;</code>, <code>4</code> <code>&quot;mtc-debug&quot;</code>), and auto-refreshing <code>localStorage</code> metadata via <code>loadLatestOpenSKMetadata</code>.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-000000"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000 (Run 24: 250 / 250 100% PASS, 2-Field Proof-Less mtcKeyRef, TotalPhase USB &amp; Expanded &quot;mtc-debug&quot;)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Full-Suite Simultaneous 3-Log Capture (<code>250 / 250</code> <code>100.00%</code> PASS): 2-Field Proof-Less <code>mtcKeyRef</code> (<code>3,685–5,242 B</code>), <code>batchKeys</code> <code>notBefore</code>/<code>notAfter</code> &amp; Expanded 7-Field <code>&quot;mtc-debug&quot;</code>
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Complete <code>1,092</code>-exchange CTAP 2.3 conformance run captured across <code>fido_conformance_debug.log</code> (<code>37,223</code> lines), <code>/tmp/totalphase.csv</code> (<code>26,403</code> CSV lines, <code>122,002</code> USB bus records, <code>4,956</code> <code>OUT txn</code> / <code>8,037</code> <code>IN txn</code>, <code>0</code> hardware USB errors), and <code>opensk_rtt.log</code> (<code>287,281</code> lines, <code>0</code> panics/OOMs): all <code>22</code> <code>fmt: &quot;mtc&quot;</code> responses use the 19-byte 2-field <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, saving <code>1,478 B</code> vs pre-PR <code>&quot;mtc&quot;</code>), and all <code>4</code> <code>&quot;mtc-debug&quot;</code> tests pass <code>100%</code>.
+              First hardware verification of draft NIST FIPS 206 <code>FN-DSA-512</code> and <code>FN-DSA-1024</code> on an embedded Cortex-M4 microcontroller.
             </p>
           </a>
 
           <a href="./fido_ctap23_conformance_report.html#section-0-00000"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Run 23: EntepriseAttestation.js 6 / 6 100% PASS &amp; &quot;mtc-debug&quot; Privacy Gate Deep Dive)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Message-Level Deep Dive of <code>EntepriseAttestation.js</code> (<code>6 / 6</code> <code>100.00%</code> PASS), LMS-Signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> (<code>3,069 B</code>) &amp; <code>&quot;mtc-debug&quot;</code> Privacy Gate
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Complete <code>136</code>-message (<code>68</code>-exchange) CTAPHID &amp; <code>opensk_rtt.log</code> trace verifying <code>100%</code> pass across all 6 Enterprise Profile tests (<code>P-1..P-3</code>, <code>F-4..F-6</code>) after repackaging <code>app.asar</code> with <code>getGetInfoCached()</code>: authorized RPs receive <code>7,265 B</code> responses with <code>3,069 B</code> LMS-signed <code>ML-DSA-44</code> Enterprise <code>x5c</code> and <code>mtc-debug.deviceSerial = &quot;123456&quot;</code>, while unauthorized RPs (<code>F-6</code>) are downgraded to <code>1,153 B</code> classical batch attestation with <code>deviceSerial</code> strictly omitted.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-0000"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000 (Run 22: W3C WebAuthn L4 PR Consolidated fmt: &quot;mtc&quot; Saving 1,331 B &amp; &quot;mtc-debug&quot; Extension)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              W3C WebAuthn Level 4 PR Verification: Consolidated <code>fmt: &quot;mtc&quot;</code> (Omitting Inline <code>pubKey</code>, <code>4,736–5,397 B</code>), <code>&quot;mtc-debug&quot;</code> Extension &amp; <code>opensk_rtt.log</code> Telemetry
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              <code>100%</code> pass on consolidated <code>fmt: &quot;mtc&quot;</code> (<code>Authr-MakeCred-Resp-1</code> <code>P-01..P-04</code>, <code>F-01</code> in <code>0.165s</code> across all 18 algorithms) and <code>Metadata-Stmt-1</code> (<code>25/25</code>), reducing every 2-step PQ/composite <code>MakeCredential</code> response by <code>1,331 B</code> (<code>21</code> fewer 64 B USB HID frames, cutting total run time by <code>5m 21s</code> to <code>20m 06.79s</code>) with <code>0</code> panics/errors across <code>292,093</code> <code>opensk_rtt.log</code> lines, plus root-cause &amp; fix of the 4 <code>getGetInfoCached()</code> test-harness checks.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-000"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000 (Run 21: 250 / 250 Pass with Automated LMS PKI Provisioning &amp; Compact fmt: &quot;mtc&quot;)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Automated <code>generate_lms_pki.py</code> RFC 8554 &cap; NIST SP 800-208 Provisioning (<code>LMS_SHA256_M32_H5</code> + <code>LMOTS_SHA256_N32_W8</code>), Compact <code>fmt: &quot;mtc&quot;</code> &amp; <code>opensk_rtt.log</code> Telemetry: <code>250 / 250</code> (<code>100.00%</code>) Pass
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              <code>250 / 250</code> (<code>100.00%</code>) pass across all active CTAP 2.3 suites (<code>25m 27.56s</code>) verifying deterministic LMS Root &amp; 4 Pre-Published Intermediate CAs (<code>g5k_AQE</code>..<code>g5k_AQQ</code>, <code>1,296 B</code> sig), LMS-signed <code>ML-DSA-44/65/87</code> Batch &amp; Enterprise X.509 <code>x5c</code> (<code>6,692–7,172 B</code>), compact <code>fmt: "mtc"</code> (<code>6,067–6,728 B</code>), and <code>304,967</code> lines of single-instance <code>probe-rs</code> RTT telemetry (<code>0</code> panics, <code>0</code> <code>[WARN]</code>/<code>[ERROR]</code> lines).
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-00"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00 (Run 20: 250 / 250 Pass with HSS/LMS Hierarchy &amp; MTC Subtree Checkpoints)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy (<code>1.2.840.113549.1.9.16.3.17</code>), HSS/LMS (<code>alg: -46</code>) MTC Subtree Checkpoints &amp; All 18 Algorithms: <code>250 / 250</code> (<code>100.00%</code>) Pass
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              <code>250 / 250</code> (<code>100.00%</code>) pass across all 37 CTAP 2.3 suites verifying pre-published HSS/LMS Root &amp; Intermediate CAs chaining to <code>ML-DSA-44</code> leaf <code>x5c</code> (<code>6,693–7,173 B</code>), HSS/LMS-signed (<code>alg: -46</code>) Merkle Tree Certificate subtree checkpoints across <code>&quot;mtc&quot;</code> and <code>&quot;mtcl&quot;</code>, Enterprise Attestation (<code>6/6</code>), and all 18 algorithms with <code>64 MHz</code> DWT cycle telemetry.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-0"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0 (Run 19: 250 / 250 Pass — Simultaneous 3-Log Capture)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              18-Algorithm Hardware Conformance: <code>250 / 250</code> (<code>100.00%</code>) Pass with Draft NIST FIPS 206 <code>FN-DSA-512</code> (<code>alg: -60</code>) &amp; <code>FN-DSA-1024</code> (<code>alg: -61</code>) + TotalPhase USB + <code>fidont_rtt.log</code> DWT Cycle Telemetry
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              <code>250 / 250</code> (<code>100.00%</code>) pass across all 18 algorithms on the <code>64 MHz</code> Cortex-M4F with <code>0</code> USB bus errors across <code>127,232</code> USB records and <code>0</code> panics/OOMs across <code>304,330</code> RTT lines: <code>FN-DSA-512</code> signs in <code>957.77 ms</code> CPU (<code>61.30M</code> cycles, <code>666 B</code> sig, <code>376.05 ms</code> USB <code>IN</code>) and <code>FN-DSA-1024</code> signs in <code>2,049.19 ms</code> CPU (<code>131.15M</code> cycles, <code>1,280 B</code> sig, <code>548.07 ms</code> USB <code>IN</code>).
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-1"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.1</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Run 23)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              All 9 Newly Activated <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>) Tests
+              Run 23: Enterprise Attestation (6/6 PASS) &amp; <code>mtc-debug</code> Gate
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Hardware verification of <code>encIdentifier</code> (<code>0x19</code>), <code>encCredStoreState</code> (<code>0x1E</code>) rotation on <code>rk: true</code> and <code>Reset</code>, <code>pcmr</code> (<code>0x40</code>) token rotation on <code>changePIN</code>, and read-only Credential Management enumeration.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-2"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.2–0.3</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Multi-Log USB Bus Telemetry &amp; Runs 17–26 Comparison
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Correlating <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code>, and <code>opensk_rtt.log</code> / <code>fidont_rtt.log</code> across the last 10 conformance runs (Runs 17–26).
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-0-4"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 0.4–0.5</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              16-Algorithm USB Bus Timing Sweep &amp; Suite Breakdown
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Microsecond-accurate MCU compute time vs. USB <code>IN</code> transfer time across classical, post-quantum (<code>ML-DSA-44/65/87</code>), and composite algorithms, plus all 17 CTAP 2.3 test suites.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-1"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Detailed Analysis of <code>Authr-ClientPin2-PinPolicy</code> <code>F-2</code> &amp; <code>F-3</code> Logic
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Specification and implementation analysis of CTAP 2.3 §6.5.5.5 64-byte PIN padding, <code>CTAP2_ERR_PIN_POLICY_VIOLATION (0x37)</code>, and <code>ClientPin2-PinPolicy</code> test construction.
+              Verification of Enterprise Attestation (EP 1 and 2) privacy gates and strict <code>deviceSerial</code> elision on standard makeCredential.
             </p>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Featured Specification Report: PQ MTC Attestation -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
-            Featured Specification Report
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            W3C WebAuthn &amp; FIDO2 CTAP 2.3+
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            fmt: "mtc" &amp; "mtcl"
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Merkle Tree Certificates &amp; ML-DSA
-          </span>
-        </div>
-        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
-      </div>
-
-      <div class="space-y-3">
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
-          <a href="./pq_mtc_attestation_proposal.html" class="hover:underline">
-            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code> and <code>mtcl</code>)
-          </a>
-        </h2>
-        <p class="text-sm text-[var(--muted-foreground)]">
-          Defines two complementary Post-Quantum WebAuthn attestation statement formats—<strong><code>mtc</code></strong> (compact MDS/Log-assisted public key lookup, formerly <code>mtc-mds</code>) and <strong><code>mtcl</code></strong> (inline <code>COSE_Key</code> + <code>MTCProof</code>, MTC Large)—based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client (CTAP 2.1 / Windows 10 PIN protocol 1) detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup (bringing <code>ML-DSA-87</code> to <code>7,319 B</code>), C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
-        </p>
-      </div>
-
-      <!-- Primary Action Buttons -->
-      <div class="flex flex-wrap items-center gap-3 pt-1">
-        <a href="./pq_mtc_attestation_proposal.html"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Full HTML Report</span>
-          <span>&rarr;</span>
-        </a>
-        <a href="./pq_mtc_attestation_proposal.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>View Markdown Source (<code>.md</code>)</span>
-        </a>
-      </div>
-
-      <!-- Deep-Link Cards into Report Sections -->
-      <div class="pt-4 border-t border-[var(--border)]">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
-          Report Sections &amp; Direct Deep Links
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./pq_mtc_attestation_proposal.html#section-1"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–5</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Normative <code>mtc</code> &amp; <code>mtcl</code> Formats, Leaf Structure &amp; RP Verification
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> (7.9–22.9 KB) exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> and <code>mtclStmtFormat</code>, deterministic <code>FidoMtcLogEntry</code> serialization, WebAuthn Level 3 §7.1 AAGUID preservation (AAGUID is retained on <code>attestation: "none"</code>), and unified RP verification.
-            </p>
-          </a>
-
-          <a href="./pq_mtc_attestation_proposal.html#section-6"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 6–7</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              FIDO MDS3 <code>mtcTrustAnchors</code>, 3-Tier Cascade &amp; Legacy Client Detection
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              WebIDL extensions for FIDO Metadata Statements (<code>MtcTrustAnchor</code>, <code>MtcSubtree</code>, <code>MtcBatchKeyEntry</code>), shared vs. separate <code>caId</code> models, <code>authenticatorGetInfo</code> <code>attestationFormats</code> (<code>0x16</code>), the 3-tier <code>"packed" &rarr; "mtcl" &rarr; "mtc"</code> cascade, and Section 7.5 legacy client detection (CTAP 2.1 / Windows 10 PIN protocol 1) with backwards-compatible attestation defaults (<code>"none"</code> or P-256 batch).
-            </p>
-          </a>
-
-          <a href="./pq_mtc_attestation_proposal.html#section-8"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 8</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Enterprise Attestation (<code>0x0A</code>), Manifest-Assisted <code>mtc</code>, 100k–5M Scaling &amp; WebAuthn L4 <code>mtc-debug</code>
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Dual-key provisioning (<code>AttestationId::Batch</code> vs. individual <code>AttestationId::Enterprise</code>), Root CA subtree checkpoints, leaf-committed and manifest device serial number binding, and Section 8.6 unified <code>(caId, serial)</code> key lookup via manufacturer manifests. Removes proof overhead in Enterprise <code>mtc</code> (<code>3,832–7,319 B</code>), enabling Category 5 <code>ML-DSA-87</code> to fit under the 7,609-byte HID ceiling without fragmentation, plus Section 8.7 WebAuthn Level 4 <code>mtc-debug</code> diagnostic extension for test fixtures and conformance tooling.
-            </p>
-          </a>
-
-          <a href="./pq_mtc_attestation_proposal.html#section-9"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 9–10</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              C509 &amp; OpenID Federation 1.1 MTC Trust Chains
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              CBOR-encoded X.509 (<code>C509</code>) evaluation and OpenID Federation 1.1 <code>fido_authenticator</code> metadata &amp; MTC-backed <code>trust_chain</code> (85%–89% reduction per hop).
-            </p>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Comparison Report: Enterprise Attestation Compact MTC vs LM-OTS -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
-            Architectural Comparison Report
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Enterprise Attestation (0x0A)
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            MTC vs. RFC 8554 LM-OTS
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            7,609 B USB HID Wire Limits
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            RP Validation Complexity
-          </span>
-        </div>
-        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
-      </div>
-
-      <div class="space-y-3">
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
-          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html" class="hover:underline">
-            Post-Quantum Enterprise Attestation: Compact MTC vs. Direct LM-OTS (RFC 8554) Comparison Report
-          </a>
-        </h2>
-        <p class="text-sm text-[var(--muted-foreground)]">
-          Rigorous technical and operational comparison between <strong>MDS/Manifest-Assisted Compact MDS/Manifest-Assisted Merkle Tree Certificates (<code>fmt: "mtc"</code>, formerly <code>mtc-mds</code>)</strong> and <strong>Standard RFC 8554 / NIST SP 800-208 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS)</strong>. Evaluates 5-algorithm end-to-end wire budgets against the 7,609-byte USB HID limit (showing why Category 5 <code>ML-DSA-87</code> has a 2,944 B margin under LM-OTS but only 290 B under proof-less MTC), manifest distribution logistics (13–260 MB key tables), and Relying Party verification complexity (5 branching paths in MTC vs. a single 80-microsecond stateless algebraic path in LM-OTS).
-        </p>
-      </div>
-
-      <!-- Primary Action Buttons -->
-      <div class="flex flex-wrap items-center gap-3 pt-1">
-        <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Comparison Report</span>
-          <span>&rarr;</span>
-        </a>
-        <a href="./enterprise_attestation_mtc_vs_lmots_comparison.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>View Markdown Source (<code>.md</code>)</span>
-        </a>
-      </div>
-
-      <!-- Deep-Link Cards into Report Sections -->
-      <div class="pt-4 border-t border-[var(--border)]">
-        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
-          Report Sections &amp; Direct Deep Links
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html#section-1"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Anatomy &amp; Extraction of Compact <code>mtc</code>
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              CDDL syntax (<code>mtcEntryDesc</code> vs. <code>mtcKeyRef</code>), non-enterprise public MDS BLOB lookups vs. enterprise out-of-band manifest distribution, and unified <code>(caId, serial)</code> key addressing.
-            </p>
-          </a>
-
-          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html#section-2"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              5-Algorithm Wire Size Analysis (7,609 B HID)
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Wire size matrix across <code>ML-DSA-44/65/87</code> and <code>FN-DSA-512/1024</code>. Explains why <code>ML-DSA-87</code> fails with proof (7,888 B) and leaves only 290 B margin proof-less, vs. 2,944 B safety margin under LM-OTS.
-            </p>
-          </a>
-
-          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html#section-3"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–5</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              RP Validation Complexity &amp; Decision Matrix
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              5 branching validation paths and out-of-band manifest desync risks in <code>mtc</code> vs. single, deterministic, 80-microsecond stateless RFC 8554 hash verification requiring only a 60-byte root key.
-            </p>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Specification Proposal: W3C WebAuthn Level 4 MTC & mtcDebug Extension -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <!-- Section 3: W3C WebAuthn Level 4 Proposal, PR & Full Review -->
+    <section id="sec-webauthn-l4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
@@ -643,11 +390,11 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> statement format to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>. Includes the complete compiled <strong><a href="./webauthn_level4_review.html" class="text-[var(--primary)] hover:underline font-semibold">WebAuthn Level 4 Spec Review Copy (HTML)</a></strong>.
+          Targeting the <strong>W3C WebAuthentication Working Group</strong> (Level 4 Editor's Draft). Formally proposes adding the compact <strong><code>mtc</code></strong> statement format to WebAuthn §8, standardizing the <strong><code>mtcDebug</code></strong> registration extension in §10 for automated test fixtures and diagnostic verification, and aligning with the <strong>Authenticate 2026 CTAP2 Technical Working Group consensus</strong>. Includes the complete compiled <strong><a href="./webauthn_level4_review.html" class="text-[var(--primary)] hover:underline font-semibold">WebAuthn Level 4 Spec Review Copy (HTML)</a></strong> and companion pull request.
         </p>
       </div>
 
-      <!-- Primary Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <a href="./webauthn_level4_review.html"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition shadow-sm">
@@ -659,14 +406,9 @@
           <span>View W3C Pull Request (HEAD 0c50bd0)</span>
           <span>&rarr;</span>
         </a>
-        <a href="./chromium_mtc_debug_pull_request.html"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 transition shadow-sm">
-          <span>View Chromium Pull Request (HEAD 4f9f0d6afb)</span>
-          <span>&rarr;</span>
-        </a>
-        <a href="./chromium_mtc_debug_pull_request.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-          <span>Chromium PR (.md)</span>
+        <a href="./webauthn_level4_pull_request.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>W3C PR (<code>.md</code>)</span>
         </a>
         <a href="./webauthn_level4_mtc_proposal.html"
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
@@ -675,20 +417,6 @@
         <a href="./webauthn_level4_mtc_proposal.md"
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
           <span>Markdown Source</span>
-        </a>
-        <a href="./mtc_attestation_proposal.html"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-          <span>java-webauthn-server MTC Proposal (HTML)</span>
-          <span>&rarr;</span>
-        </a>
-        <a href="./mtc_attestation_proposal.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-          <span>java-webauthn-server (.md)</span>
-        </a>
-        <a href="https://github.com/w3c/webauthn/" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition text-[var(--muted-foreground)]">
-          <span>W3C WebAuthn Repo</span>
-          <span class="text-xs">&nearr;</span>
         </a>
       </div>
 
@@ -702,7 +430,7 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Post-Quantum USB HID Ceiling ($7,609\text{ B}$)
+              Post-Quantum USB HID Ceiling (7,609 B)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
               Why classical X.509 <code>packed</code> attestation with ML-DSA CAs (7.9–22.9 KB) exceeds the USB HID single-message ceiling, and how MTC solves post-quantum scaling.
@@ -734,8 +462,255 @@
       </div>
     </section>
 
-    <!-- Featured Pull Request: Chromium HEAD mtcDebug Extension & EP 1/2 Privacy Gate -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <!-- Section 4: LM-OTS + Google Longfellow Specification -->
+    <section id="sec-lmots-longfellow" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Featured Specification Report
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            FIDO2 CTAP 2.3 &amp; W3C WebAuthn L3
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            fmt: "longfellow-lmots-zk"
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            RFC 8554 LM-OTS &amp; Google Longfellow (GF(2^k))
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./lmots_longfellow_attestation_proposal.html" class="hover:underline">
+            Multi-Batch Post-Quantum FIDO Attestation via LM-OTS &amp; Google Longfellow (<code>longfellow-lmots-zk</code> and Direct Enterprise LMS)
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Defines a post-quantum FIDO2/WebAuthn attestation architecture combining a <strong>128-byte core state RFC 8554 LM-OTS</strong> engine on resource-constrained Secure Elements with <strong>Google Longfellow</strong> (GKR layered sumcheck + Ligero over binary extension fields <code>GF(2^k)</code>) on participating host platforms. Covers black-box manufacturer subtree profiles (incremental BDS vs. read-only top-7 flash cache), <code>authenticatorGetInfo</code> capability signaling, platform-side <code>fmt</code> rewriting, multi-batch AAGUID routing, 47-layer GKR SIMD circuit optimization, and a <strong>Standard RFC 8554 HSS/LMS Enterprise Direct Attestation profile</strong> (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, 60 B public key, <code>3,008 B</code> <code>W=4</code> / <code>1,952 B</code> <code>W=8</code> <code>attStmt</code>, <code>80 &mu;s</code> RP verification, and Section 6.3 comparison against Enterprise MTC across ML-DSA and FN-DSA).
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./lmots_longfellow_attestation_proposal.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full HTML Report</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./lmots_longfellow_attestation_proposal.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./lmots_longfellow_attestation_proposal.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              128-Byte Core State, Black-Box Manufacturer Profiles &amp; CTAP 2.3 Pipeline
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              On-key NVM layout, black-box manufacturer subtree profiles (Profile 1 BDS in ~6.2 ms vs. Profile 2 Read-Only Top-7 cache with zero mutable tree flash wear), <code>authenticatorGetInfo</code> signaling, on-the-fly path derivation, and platform <code>fmt</code> rewriting.
+            </p>
+          </a>
+
+          <a href="./lmots_longfellow_attestation_proposal.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Multi-Batch AAGUID Routing &amp; 47-Layer GKR SIMD Longfellow Circuit
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              WebAuthn Level 3 <code>attStmt.batchRootId</code> FIDO MDS resolution (131,072 keys/batch), 33-block SHA-256 pre-padding, and 67-wide GKR SIMD batching compressing ~1,100 SHA-256 blocks into 47 sequential layers (310–345 KB proof).
+            </p>
+          </a>
+
+          <a href="./lmots_longfellow_attestation_proposal.html#section-6"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 6</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Standard RFC 8554 HSS/LMS Enterprise Direct Profile &amp; Wire Comparison vs. Enterprise MTC
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Fully compliant RFC 8554 single-tree profile (<code>LMS_SHA256_M32_H25</code>, <code>L=1</code>, standard 16 B tree ID <code>I</code>, 60 B public key) supporting 33.5M signatures per batch with 3,008 B (W=4) or 1,952 B (W=8) <code>attStmt</code> and 80 &mu;s RP verification.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: PQ MTC Attestation (mtc & mtcl) -->
+    <section id="sec-pq-mtc" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Featured Specification Report
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            W3C WebAuthn &amp; FIDO2 CTAP 2.3+
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            fmt: "mtc" &amp; "mtcl"
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Merkle Tree Certificates &amp; ML-DSA
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./pq_mtc_attestation_proposal.html" class="hover:underline">
+            Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (<code>mtc</code> and <code>mtcl</code>)
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Defines two complementary Post-Quantum WebAuthn attestation statement formats—<strong><code>mtc</code></strong> (compact MDS/Log-assisted public key lookup) and <strong><code>mtcl</code></strong> (inline <code>COSE_Key</code> + <code>MTCProof</code>, MTC Large)—based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup, C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./pq_mtc_attestation_proposal.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full HTML Report</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./pq_mtc_attestation_proposal.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./pq_mtc_attestation_proposal.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Normative <code>mtc</code> &amp; <code>mtcl</code> Formats, Leaf Structure &amp; RP Verification
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> and <code>mtclStmtFormat</code>, deterministic <code>FidoMtcLogEntry</code> serialization, and unified RP verification.
+            </p>
+          </a>
+
+          <a href="./pq_mtc_attestation_proposal.html#section-6"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 6–7</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              FIDO MDS3 <code>mtcTrustAnchors</code>, 3-Tier Cascade &amp; Legacy Client Detection
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              WebIDL extensions for FIDO Metadata Statements, shared vs. separate <code>caId</code> models, <code>authenticatorGetInfo</code> <code>attestationFormats</code>, and Section 7.5 legacy client detection with backwards-compatible defaults.
+            </p>
+          </a>
+
+          <a href="./pq_mtc_attestation_proposal.html#section-8"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 8</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Enterprise Attestation (<code>0x0A</code>), Manifest-Assisted <code>mtc</code>, 100k–5M Scaling &amp; WebAuthn L4 <code>mtc-debug</code>
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Dual-key provisioning (<code>AttestationId::Batch</code> vs. individual <code>AttestationId::Enterprise</code>), Root CA subtree checkpoints, leaf-committed and manifest device serial number binding, and Section 8.6 unified <code>(caId, serial)</code> key lookup via manufacturer manifests.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Enterprise Attestation MTC vs LM-OTS Comparison -->
+    <section id="sec-enterprise-comparison" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Architectural Comparison Report
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Enterprise Attestation (0x0A)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            MTC vs. RFC 8554 LM-OTS
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            7,609 B Wire Analysis
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html" class="hover:underline">
+            Post-Quantum Enterprise Attestation: Compact MTC vs. Direct LM-OTS (RFC 8554) Comparison Report
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Comprehensive technical comparison between MDS/Manifest-Assisted Merkle Tree Certificates (<code>fmt: "mtc"</code>) and Standard RFC 8554 Leighton-Micali One-Time Signatures (Direct Enterprise HSS/LMS) across wire payload budgets, manifest distribution logistics, and Relying Party verification complexity.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full Comparison Report</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./enterprise_attestation_mtc_vs_lmots_comparison.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Protocol Mechanics &amp; Wire Payload Analysis
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Wire size breakdown of Enterprise <code>mtc</code> (3,832–7,319 B) vs. Direct LMS (1,952–3,008 B), both comfortably fitting within the 7,609 B USB HID budget.
+            </p>
+          </a>
+
+          <a href="./enterprise_attestation_mtc_vs_lmots_comparison.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              RP Validation Complexity &amp; Decision Matrix
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              5 branching validation paths and out-of-band manifest desync risks in <code>mtc</code> vs. single, deterministic, 80-microsecond stateless RFC 8554 hash verification requiring only a 60-byte root key.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Chromium HEAD mtcDebug Pull Request -->
+    <section id="sec-chromium-pr" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
@@ -765,7 +740,7 @@
         </p>
       </div>
 
-      <!-- Primary Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <a href="./chromium_mtc_debug_pull_request.html"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
@@ -783,7 +758,7 @@
         </a>
       </div>
 
-      <!-- Deep-Link Cards into Report Sections -->
+      <!-- Deep Links -->
       <div class="pt-4 border-t border-[var(--border)]">
         <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
           PR Sections &amp; Direct Deep Links
@@ -802,47 +777,44 @@
 
           <a href="./chromium_mtc_debug_pull_request.html#section-3"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–4</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              <code>EP</code> 1/2 Privacy Gate &amp; CBOR-to-JSON Mapping
+              Dual-Layer EP 1/2 Privacy Gate Architecture
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Dual-layer enforcement in <code>make_credential_request_handler.cc</code> and <code>authenticator_common_impl.cc</code> rejecting unsolicited <code>deviceSerial</code>, plus full CBOR/Mojo/WebIDL/JSON type matrix.
+              Defense-in-depth privacy validation in both device layer (<code>device/fido</code>) and browser coordinator (<code>AuthenticatorCommonImpl</code>), aborting illicit serial leakages.
             </p>
           </a>
 
-          <a href="./chromium_mtc_debug_pull_request.html#section-6"
+          <a href="./chromium_mtc_debug_pull_request.html#section-4"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 5–6</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              27-File Breakdown &amp; Complete Unified Diff
+              Complete Unified Git Diff (27 Files)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Full <code>+474 / -5</code> unified diff against <code>origin/main</code> (<code>4f9f0d6afb</code>) including WebIDL dictionaries, <code>json.cc</code>, and <code>public_key_credential_unittest.cc</code>.
+              Full syntax-highlighted git diff covering WebIDL definitions, toJSON() serializers, Mojo bindings, FIDO parsers, and browser unit tests.
             </p>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Featured Implementation: Chromium Virtual Authenticator PQC ML-DSA & MTC Attestation -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <!-- Section 8: Chromium Virtual Authenticator (PQC & MTC) -->
+    <section id="sec-chromium-virtual-authenticator" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
-            Chromium Virtual Authenticator
-          </span>
-          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Branch: feat/pqc-mtc-attestation
+            Chromium Architecture &amp; Guide
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             ML-DSA-44, 65, 87 (-48, -49, -50)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            fmt: "mtc" &amp; "mtcl"
+            W3C WebAuthn L4 fmt: "mtc"
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            FIDO MDS3 Export
+            FIDO MDS3 &amp; Yubico RP Integration
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
@@ -859,11 +831,11 @@
         </p>
       </div>
 
-      <!-- Primary Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <a href="./chromium_pqc_mtc_virtual_authenticator.html"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Virtual Authenticator Proposal &amp; RP Guide</span>
+          <span>Read Full HTML Report</span>
           <span>&rarr;</span>
         </a>
         <a href="./chromium_pqc_mtc_virtual_authenticator.md"
@@ -875,19 +847,9 @@
           <span>PQC Batch RFC (Branch 2)</span>
           <span>&rarr;</span>
         </a>
-        <a href="./chromium_mtc_debug_pull_request.html"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>WebAuthn L4 mtcDebug PR</span>
-          <span>&rarr;</span>
-        </a>
-        <a href="./chromium_credential_management_crash_analysis.html"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 hover:opacity-90 transition">
-          <span>Crash Bug Report &amp; Fix</span>
-          <span>&rarr;</span>
-        </a>
       </div>
 
-      <!-- Deep-Link Cards into Report Sections -->
+      <!-- Deep Links -->
       <div class="pt-4 border-t border-[var(--border)]">
         <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
           Key Architecture &amp; Integration Sections
@@ -929,8 +891,271 @@
       </div>
     </section>
 
-    <!-- Featured Specification Report: CTAP 2.3+ PQ PIN/UV Auth Protocol 3 -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+    <!-- Section 9: PQC Virtual Authenticator RFC / Design Proposal -->
+    <section id="sec-chromium-pqc-rfc" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-600 text-white">
+            Chromium Design RFC
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            feat/pqc-virtual-authenticator
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            COSE -48, -49, -50 (ML-DSA)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Pure-Signature EVP_DigestSignInit
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./pqc_virtual_authenticator_proposal.html" class="hover:underline">
+            RFC / Design Proposal: Post-Quantum Cryptography (PQC) Updates to Chromium Virtual Authenticator
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          RFC and technical design proposal specifying support for COSE algorithms <code>-48</code> (<code>ML-DSA-44</code>), <code>-49</code> (<code>ML-DSA-65</code>), and <code>-50</code> (<code>ML-DSA-87</code>) in Chromium's test authenticator framework (<code>VirtualCtap2Device</code> / <code>VirtualFidoDevice</code>), pure-signature <code>EVP_DigestSignInit</code> integration (omitting hash functions per FIPS 204), and self-signed X.509 batch attestation certificate generation in <code>net/cert/x509_util.cc</code>.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./pqc_virtual_authenticator_proposal.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full Design RFC (HTML)</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./pqc_virtual_authenticator_proposal.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+        <a href="./chromium_pqc_mtc_virtual_authenticator.html"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>Virtual Authenticator Architecture Guide</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          RFC Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a href="./pqc_virtual_authenticator_proposal.html#section-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Problem Statement &amp; PQC Attestation Gaps
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Identifies lack of ML-DSA batch attestation support in <code>VirtualFidoDevice</code> and BoringSSL signature requirements.
+            </p>
+          </a>
+
+          <a href="./pqc_virtual_authenticator_proposal.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Pure-Signature EVP Architecture
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Transitioning <code>net/cert/x509_util.cc</code> to pass <code>nullptr</code> for digest type to <code>EVP_DigestSignInit</code> for pure ML-DSA.
+            </p>
+          </a>
+
+          <a href="./pqc_virtual_authenticator_proposal.html#section-4"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Detailed Implementation Changes
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Code diffs across <code>virtual_ctap2_device.cc</code>, <code>virtual_fido_device.cc</code>, WebIDL dictionaries, and unit test coverage.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 10: Chromium Credential Management Crash Bug Report & Fix -->
+    <section id="sec-chromium-crash-fix" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-600 text-white">
+            Chromium Bug Report &amp; Fix
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            SIGABRT / CHECK_EQ
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            SecurityKeysCredentialHandler
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            chrome://settings/securityKeys
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./chromium_credential_management_crash_analysis.html" class="hover:underline">
+            Chromium Security Keys Credential Management: SIGABRT Crash Analysis and Re-Entrancy Fix
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Root-cause diagnostic analysis, stack trace disassembly, and two-layer fix (WebUI debounce + C++ re-entrancy protection) for a fatal <code>SIGABRT</code> crash in <code>SecurityKeysCredentialHandler::HandleDelete</code> during FIDO credential management deletion in Chromium's Settings page (<code>chrome://settings/securityKeys</code>).
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./chromium_credential_management_crash_analysis.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-600 text-white hover:bg-rose-500 shadow-sm transition">
+          <span>Read Full Crash Analysis &amp; Fix (HTML)</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./chromium_credential_management_crash_analysis.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Analysis Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a href="./chromium_credential_management_crash_analysis.html#section-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Crash Diagnostics &amp; Disassembly
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Disassembly of <code>SecurityKeysCredentialHandler::HandleDelete</code> at offset +1332 showing fatal <code>CHECK_EQ(State::kReady, state_)</code> abort.
+            </p>
+          </a>
+
+          <a href="./chromium_credential_management_crash_analysis.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Root Cause Analysis
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              WebUI confirmation button failed to debounce during in-flight deletion, causing duplicate IPC while <code>state_ == State::kDeletingCredentials</code>.
+            </p>
+          </a>
+
+          <a href="./chromium_credential_management_crash_analysis.html#section-4"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 4–5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Two-Layer Fix &amp; Implementation
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              TypeScript <code>confirmButtonDisabled_</code> debouncing in the WebUI dialog and C++ early-return state guards in <code>settings_security_key_handler.cc</code>.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 11: Yubico java-webauthn-server MTC Proposal -->
+    <section id="sec-java-webauthn" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Relying Party Engine Proposal
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Yubico java-webauthn-server
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            fmt: "mtc" (No Inline pubKey)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            MDS3 &amp; Vendor Manifests
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./mtc_attestation_proposal.html" class="hover:underline">
+            Proposal: Consolidated <code>fmt: "mtc"</code> &amp; <code>mtc-debug</code> Support in <code>java-webauthn-server</code>
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          Architecture and implementation proposal for adding consolidated Merkle Tree Certificate attestation (<code>fmt: "mtc"</code>) and the <code>mtc-debug</code> registration extension to Yubico <code>java-webauthn-server</code>, resolving batch keys from FIDO MDS3 and enterprise keys from vendor manifests or <code>mtc-debug</code> authenticated against the MDS subtree <code>rootHash</code>.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./mtc_attestation_proposal.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full Java RP Proposal (HTML)</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./mtc_attestation_proposal.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Proposal Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a href="./mtc_attestation_proposal.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Key &amp; Trust Resolution Architecture
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Unified resolution for batch attestation (MDS3 lookup by AAGUID) and enterprise attestation (vendor manifest &amp; rootHash validation).
+            </p>
+          </a>
+
+          <a href="./mtc_attestation_proposal.html#section-2"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 2–3</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Server Core &amp; Attestation Modules
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              <code>MtcAttestationStatementSupport</code> class, Jackson CBOR mapping, and Bouncy Castle <code>ML-DSA</code> signature verification.
+            </p>
+          </a>
+
+          <a href="./mtc_attestation_proposal.html#section-5"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              End-to-End Test Suite
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              JUnit 5 test fixtures verifying ML-DSA-44, 65, and 87 test vectors from Chromium's VirtualCtap2Device.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 12: CTAP 2.3+ Post-Quantum PIN/UV Protocol 3 & 4 -->
+    <section id="sec-ctap23-pin-protocol" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
@@ -940,7 +1165,7 @@
             FIDO2 CTAP 2.3+
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            pinUvAuthProtocol = 3
+            pinUvAuthProtocol = 3 &amp; 4
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             Post-Quantum HPKE &amp; ARKG
@@ -956,15 +1181,15 @@
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Defines a Post-Quantum <strong>PIN/UV Auth Protocol 3 (<code>pinUvAuthProtocol = 3</code>)</strong> for FIDO2 CTAP 2.3+ based on <strong>RFC 9180 HPKE</strong> (<code>X-Wing</code>, <code>MLKEM768-P256</code>, and <code>ML-KEM-1024</code>), addressing Harvest-Now-Decrypt-Later (HNDL) quantum threats and active bus MITM attacks while maintaining strict Relying Party unlinkability, zero extra Authenticator NVRAM, and 0-RTT key agreement caching.
+          Defines a Post-Quantum <strong>PIN/UV Auth Protocol 3 (<code>pinUvAuthProtocol = 3</code>)</strong> for FIDO2 CTAP 2.3+ based on <strong>RFC 9180 HPKE</strong> (<code>X-Wing</code>, <code>MLKEM768-P256</code>, and <code>ML-KEM-1024</code>), addressing Harvest-Now-Decrypt-Later (HNDL) quantum threats and active bus MITM attacks while maintaining strict Relying Party unlinkability, zero extra Authenticator NVRAM, and 0-RTT key agreement caching. Includes companion proposals for <strong>HPKE Stateful AEAD (<code>0x0002</code>)</strong> and <strong>HPKE Export-Only (<code>0xFFFF</code>)</strong>.
         </p>
       </div>
 
-      <!-- Primary Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <a href="./ctap23_hierarchical_ppuat_spec.html"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Full HTML Report</span>
+          <span>Read Full Architecture Spec (HTML)</span>
           <span>&rarr;</span>
         </a>
         <a href="./ctap23_hierarchical_ppuat_spec.md"
@@ -972,26 +1197,18 @@
           <span>View Markdown Source (<code>.md</code>)</span>
         </a>
         <a href="./ctap23_pin_protocol_3_hpke_stateful_aead_proposal.html"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Protocol 3: HPKE Stateful AEAD (<code>0x0002</code>) Proposal</span>
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>Protocol 3 Proposal (AEAD 0x0002)</span>
           <span>&rarr;</span>
-        </a>
-        <a href="./ctap23_pin_protocol_3_hpke_stateful_aead_proposal.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>Protocol 3 (<code>.md</code>)</span>
         </a>
         <a href="./ctap23_pin_protocol_4_hpke_export_only_proposal.html"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
-          <span>Read Protocol 4: HPKE Export-Only (<code>0xFFFF</code>) Proposal</span>
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>Protocol 4 Proposal (Export-Only 0xFFFF)</span>
           <span>&rarr;</span>
-        </a>
-        <a href="./ctap23_pin_protocol_4_hpke_export_only_proposal.md"
-           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
-          <span>Protocol 4 (<code>.md</code>)</span>
         </a>
       </div>
 
-      <!-- Deep-Link Cards into the 4 Report Sections -->
+      <!-- Deep Links -->
       <div class="pt-4 border-t border-[var(--border)]">
         <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
           Report Sections &amp; Direct Deep Links
@@ -1001,10 +1218,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Core PIN Protocol <code>keyAgreement</code> Issues &amp; Post-Quantum HPKE Architecture
+              Core PIN Protocol Issues &amp; Post-Quantum HPKE Architecture
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              HNDL and active MITM vulnerabilities in CTAP 2.0–2.3 Protocols 1 &amp; 2, mapping §6.5.4 to RFC 9180 HPKE with KEM agility (<code>0x2A: pinUvAuthKems</code>), 0-RTT caching of <code>pk_batch</code> against <code>PPUAT_v3</code>, <code>ML-KEM</code> <span class="font-mono">t&#770;</span>-blinding PQ-PAKE &amp; the 8-try <code>pinRetries</code> state machine for unattested/open-source authenticators (Section 1.5), and the Multi-Tier Trust Hierarchy (Section 1.6: Enterprise Host Authentication, Batch Key Pinning, Factory Pairing PINs, Same-Batch Evil-Twin detection, and Asymmetric vs. Symmetric <code>PPUAT_v3</code> channel modes).
+              HNDL and active MITM vulnerabilities in CTAP 2.0–2.3 Protocols 1 &amp; 2, mapping §6.5.4 to RFC 9180 HPKE with KEM agility, and 0-RTT caching of <code>pk_batch</code> against <code>PPUAT_v3</code>.
             </p>
           </a>
 
@@ -1015,7 +1232,7 @@
               Downgrade Issues &amp; <code>authenticatorGetInfo</code> Integrity
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Defending against KEM stripping, <code>maxMsgSize</code> squeezing, UV-to-PIN modality downgrades, and back-to-back protocol-translating relay MITMs without leaking fingerprinting bits into <code>authenticatorData</code>. Introduces 4-byte vendor root indexing (<code>0x2B: batchAttestKid</code>), client-reconstructed factory attestations (<code>ReconstructedAttestation_v1</code>), and 20-year security analysis of <code>FN-DSA</code> vs. stateful hash-based <code>LMS</code>.
+              Defending against KEM stripping, UV-to-PIN modality downgrades, and back-to-back protocol-translating relay MITMs without leaking fingerprinting bits into <code>authenticatorData</code>.
             </p>
           </a>
 
@@ -1023,10 +1240,10 @@
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
             <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              PPUAT Domain Separation Between PIN Protocols 2 and 3
+              PPUAT Domain Separation Between Protocols 2 and 3
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              One-way hierarchical derivation tree (<code>PPUAT_v3 &rarr; PPUAT_v2 &rarr; K_id, K_css</code>) requiring only a single 32-byte NVRAM root secret while creating a 2<sup>128</sup> quantum preimage firewall between legacy P-256 Protocol 2 hosts and Protocol 3 HPKE <code>mode_psk</code> sessions, with 100% single-response wire compatibility for <code>encIdentifier</code> (<code>0x19</code>) and <code>encCredStoreState</code> (<code>0x1E</code>).
+              One-way hierarchical derivation tree (<code>PPUAT_v3 &rarr; PPUAT_v2 &rarr; K_id, K_css</code>) requiring only a single 32-byte NVRAM root secret while creating a 2<sup>128</sup> quantum preimage firewall.
             </p>
           </a>
 
@@ -1037,14 +1254,14 @@
               Extensions Using Encryption (<code>hmac-secret</code>, <code>largeBlobKey</code>, <code>credBlob</code>, &amp; <code>sign</code>)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Token-bound <code>1: keyAgreement</code> elision in <code>hmac-secret</code> / <code>hmac-secret-mc</code> (saving 1.1–1.5 KB), encrypting <code>largeBlobKey</code> (<code>0x07</code>), deprecating <code>credBlob</code> (§12.5, originally designed for unreleased Kerberos KDC certificate hash pinning), and securing the WebAuthn <code>sign</code> (<code>previewSign5</code>) extension + ARKG on both the CTAP bus and end-to-end (<code>RP &lt;-&gt; Authenticator</code> via hybrid HPKE <code>mode_psk</code>).
+              Token-bound <code>1: keyAgreement</code> elision in <code>hmac-secret</code> (saving 1.1–1.5 KB), encrypting <code>largeBlobKey</code>, and securing the WebAuthn <code>sign</code> extension + ARKG.
             </p>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Related Specifications & References -->
+    <!-- Related Specifications & Normative References -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
       <h2 class="text-lg font-bold text-[var(--foreground)]">
         Related Specifications &amp; Normative References
@@ -1086,6 +1303,10 @@
     </section>
 
   </div>
+
+  <footer class="max-w-5xl mx-auto mt-12 mb-8 text-center text-xs text-[var(--muted-foreground)]">
+    &copy; 2026 John Bradley (ve7jtb). Hosted on <a href="https://github.com/ve7jtb/ve7jtb.github.io" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">GitHub Pages</a>.
+  </footer>
 
 </body>
 </html>

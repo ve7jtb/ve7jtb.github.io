@@ -725,13 +725,19 @@ def build_page(doc_name):
 
 
 def main():
-    targets = sys.argv[1:] if len(sys.argv) > 1 else list(DOCUMENT_CONFIGS.keys())
+    targets = sys.argv[1:] if len(sys.argv) > 1 else list(DOCUMENT_CONFIGS.keys()) + ["index"]
     for doc in targets:
         if doc.endswith(".md"):
             doc = doc[:-3]
         if doc.endswith(".html"):
             doc = doc[:-5]
-        if doc in DOCUMENT_CONFIGS:
+        if doc == "index":
+            try:
+                import build_index
+                build_index.build_index()
+            except Exception as e:
+                print(f"Error rebuilding index: {e}")
+        elif doc in DOCUMENT_CONFIGS:
             build_page(doc)
         else:
             print(f"Unknown document: {doc}")
