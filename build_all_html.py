@@ -450,6 +450,17 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "RFC and technical design proposal specifying support for COSE algorithms -48 (ML-DSA-44), -49 (ML-DSA-65), and -50 (ML-DSA-87) in Chromium's test authenticator framework (VirtualCtap2Device / VirtualFidoDevice), pure-signature EVP_DigestSignInit integration, and self-signed X.509 batch attestation certificates in net/cert/x509_util.cc.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "chromium_credential_management_crash_analysis": {
+        "title": "Chromium Security Keys Credential Management: SIGABRT Crash Analysis and Re-Entrancy Fix",
+        "badges": [
+            ("Chromium Bug Report & Fix", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("SIGABRT / CHECK_EQ", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("SecurityKeysCredentialHandler", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("chrome://settings/securityKeys", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Root-cause diagnostic analysis, stack trace disassembly, and two-layer fix (WebUI debounce + C++ re-entrancy protection) for a fatal SIGABRT crash in SecurityKeysCredentialHandler::HandleDelete during FIDO credential management deletion.",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 
