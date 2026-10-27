@@ -1,0 +1,123 @@
+[1027/225426.447522:ERROR:electron/shell/common/mac/codesign_util.cc:79] task_name_for_pid: (os/kern) failure (5)
+
+
+  
+
+        Authr-AuthenticatorConfig-AuthenticatorConfig
+
+        Test authenticatorConfig(0x0D) command
+
+    
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+    - P-1
+
+        If authenticator supports enteprise attestation, send authenticatorConfig(0x0D) with enableEnterpriseAttestation(0x01), and check that GetInfo.options.ep is set to true.
+
+    
+    - P-2
+
+        If authenticator supports alwaysUv: Collect GetInfo.options.alwaysUv value. Send authenticatorConfig(0x0D) with toggleAlwaysUv(0x02),
+        and check that:
+            a) If authenticator supports alwaysUv, check that GetInfo.options.alwaysUv is opposite value
+            b) Or if alwaysUv was true, and authenticator does not support disabling alwaysUv, check that authenticator returns CTAP2_ERR_OPERATION_DENIED(0x27)
+            
+    
+    - P-3
+
+        If authenticator supports setMinPINLength: Send authenticatorConfig(0x0D) with setMinPINLength(0x03),
+        with newMinPINLength(0x01) larger than current character limit, and see that:
+            a) Authenticator succeeds.
+            b) getInfo.forcePINChange is true.
+
+    
+    - P-4
+
+        If authenticator supports setMinPINLength, and minPinLength extension:
+        
+        Send authenticatorConfig(0x0D) with setMinPINLength(0x03),
+        with minPinLengthRPIDs(0x02) with max available RPIDs set to random domains, and see that authenticator succeeds.
+
+    
+
+
+  0 passing (6ms)
+  4 pending
+
+FINAL {"suites":1,"tests":4,"passes":0,"pending":4,"failures":0,"start":"2026-10-27T22:54:26.666Z","end":"2026-10-27T22:54:26.672Z","duration":6}

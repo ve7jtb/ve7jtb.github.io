@@ -1,0 +1,276 @@
+[1027/225425.830317:ERROR:electron/shell/common/mac/codesign_util.cc:79] task_name_for_pid: (os/kern) failure (5)
+
+
+  
+
+        Authr-ClientPin2-GetKeyAgreement
+
+        Test authenticatorClientPin(0x06), of version 0x02 support of getKeyAgreement(0x02) command
+
+    
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+    - P-1
+
+        Send a valid CTAP2 authenticatorClientPin(0x01) message with getKeyAgreement(0x02) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and:
+            (a) check that authenticatorClientPin_Response contains "keyAgreement" field, and its of type MAP
+            (b) in COSE "keyAgreement" field:
+                (1) check that public key is EC2(kty(1) is set to 2) 
+                (2) check that key crv(-1) curve field that is set to P256(1)
+                (3) check that key alg(3) is set to ECDH-ES+HKDF-256(-25)
+                (4) check that key contains x(-2) is of type BYTE STRING, and is 32bytes long 
+                (5) check that key contains y(-3) is of type BYTE STRING, and is 32bytes long 
+                (6) check that key does NOT contains ANY other coefficients
+
+    
+
+  
+
+        Authr-ClientPin2-NewPin
+
+        Test authenticatorClientPin(0x06), of version 0x02 support of setPIN(0x03), changePIN(0x04) and getPinToken(0x05) commands
+
+    
+    - P-1
+
+        Generate a shared key by deriving sharedSecret from previously obtained keyAgreement, and set new random clientPin
+
+    
+    - P-2
+
+        Change current pincode to the new pincode
+
+    
+
+  
+
+        Authr-ClientPin2-GetPinToken
+
+        Test authenticatorClientPin(0x06), of version 0x02 support of getPinToken(0x05) commands
+
+    
+    - P-1
+
+        Get a valid pinAuth token
+
+    
+    - P-2
+
+        Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+    - P-3
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+
+  
+
+        Authr-ClientPin2-GetPinUvAuthTokenUsingPinWithPermissions
+
+        Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingPinWithPermissions(0x09) commands
+
+    
+    - P-1
+
+        Get a valid pinUVAuthToken with permissions
+
+    
+    - P-2
+
+        Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+    - P-3
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+
+  
+
+        Authr-ClientPin2-GetPinUvAuthTokenUsingUvWithPermissions
+
+        Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingUvWithPermissions(0x06) commands
+
+    
+    - P-1
+
+        Get a valid pinUVAuthToken with permissions
+
+    
+    - P-2
+
+        Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+    - P-3
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+
+  
+
+        Authr-ClientPin2-Policy
+
+        Check authenticator correctly implementing PinProtocol security policies
+
+    
+    - P-1
+
+        Try setting new pin, that is of size between minPINLength+1 and 63 characters, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00)
+
+    
+    - F-1
+
+        Try setting new pin, that is less than 4 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)
+
+    
+    - F-2
+
+        Try setting new pin, that is bigger than 63 bytes, and check that Authenticator returns an error
+
+    
+    - F-3
+
+        Try setting new pin, that is exactly 64 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)
+
+    
+    - F-4
+
+        Try setting new pin, that consists of Unicode codepoints of size minPINLength - 1, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)
+
+    
+
+  
+
+        Authr-ClientPin2-GetRetries
+
+        Test authenticatorClientPin(0x06), of version 0x02 support of getPINRetries(0x01) command
+
+    
+    - P-1
+
+        Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and:
+            (a) check that authenticatorClientPin_Response contains "retries" field
+            (b) authenticatorClientPin_Response.retries is of type NUMBER
+            (c) authenticatorClientPin_Response.retries is 8 or less!
+
+    
+    - P-2
+        
+        Send two CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check that each request fails with error CTAP2_ERR_PIN_INVALID(0x31).
+        
+        Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, and check that retries have decreased by two.
+        
+        Register a valid authenticatorMakeCred(0x01) using the valid PIN. Check that retries counter is reset and back to the original retries counter.
+
+    
+    - P-3
+        
+        Send three CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check and check that for the last one authenticator returns CTAP2_ERR_PIN_AUTH_BLOCKED(0x34).
+
+    
+    - P-4
+
+        Keep sending getPinToken subCommand with invalid pin until retries counter reaches 0.
+
+        Send CTAP2 authenticatorClientPin(0x01) message with getPinToken(0x01) subCommand, that contains valid pinCode, and check that authenticator returns error CTAP2_ERR_PIN_BLOCKED(0x32)
+
+    
+
+
+  0 passing (15ms)
+  21 pending
+
+FINAL {"suites":7,"tests":21,"passes":0,"pending":21,"failures":0,"start":"2026-10-27T22:54:26.057Z","end":"2026-10-27T22:54:26.072Z","duration":15}

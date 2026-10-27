@@ -1,0 +1,1221 @@
+[1027/225421.086349:ERROR:electron/shell/common/mac/codesign_util.cc:79] task_name_for_pid: (os/kern) failure (5)
+
+
+  
+
+        Authr-MakeCred-Resp-1
+
+        Test registration response, and "packed" attestation
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '90113958097989c96577ce063810a6ebdd2c87af635896ba1b39c1735a72d594',
+      '-3': '5c796f3167c4881e42235846e61c70459f595f176de061f2892f19e45a4d8473'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 144,  17,  57,  88,   9, 121, 137, 201, 101, 119, 206,
+      6,  56,  16, 166, 235, 221,  44, 135, 175,  99,  88, 150,
+    186,  27,  57, 193, 115,  90, 114, 213, 148,  34,  88,  32,
+     92, 121, 111,  49, 103, 196, 136,  30,  66,  35,  88,  70,
+    230,  28, 112,  69, 159,  89,  95,  23, 109, 224,  97, 242,
+    137,  47,  25, 228,  90,  77, 132, 115
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a501020338182001215820f9c0802a2dd977b93f00c2a417b0e2ce7d9cf31c0862f82ad21614a6c6ff26ff2258207ef7aebe1e850445500686581a686ece92e5aa9f91cd427532faa7694138a8ae0450c32915a919eba921a231419fd2078ff1055840ed75438788e6fa3797253328e1254dd3b3a8dc17fa32c1a44a883d1736865d0d61e97a325cd55393455cb0de8bb13558b3494ad9127962fab3d89276cb7f1266 {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'f9c0802a2dd977b93f00c2a417b0e2ce7d9cf31c0862f82ad21614a6c6ff26ff',
+    '-3': '7ef7aebe1e850445500686581a686ece92e5aa9f91cd427532faa7694138a8ae'
+  },
+  '4': 'c32915a919eba921a231419fd2078ff1',
+  '5': 'ed75438788e6fa3797253328e1254dd3b3a8dc17fa32c1a44a883d1736865d0d61e97a325cd55393455cb0de8bb13558b3494ad9127962fab3d89276cb7f1266'
+}
+(node:41833) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `Electron --trace-deprecation ...` to show where the warning was created)
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {},
+  cborResponseStruct: {},
+  cborBuffer: Uint8Array(1) [ 160 ],
+  response: {}
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '90113958097989c96577ce063810a6ebdd2c87af635896ba1b39c1735a72d594',
+      '-3': '5c796f3167c4881e42235846e61c70459f595f176de061f2892f19e45a4d8473'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 144,  17,  57,  88,   9, 121, 137, 201, 101, 119, 206,
+      6,  56,  16, 166, 235, 221,  44, 135, 175,  99,  88, 150,
+    186,  27,  57, 193, 115,  90, 114, 213, 148,  34,  88,  32,
+     92, 121, 111,  49, 103, 196, 136,  30,  66,  35,  88,  70,
+    230,  28, 112,  69, 159,  89,  95,  23, 109, 224,  97, 242,
+    137,  47,  25, 228,  90,  77, 132, 115
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820dcf3a554562938ab06894bd476118486825a765fd5101ffd1041a42f83f37a38225820ae875a59f60338b9582a8f768558fa3e00c600c0d2ebb8812611d22acb878a5c065037613322118550d4ec9b669c1d1a388c {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'dcf3a554562938ab06894bd476118486825a765fd5101ffd1041a42f83f37a38',
+    '-3': 'ae875a59f60338b9582a8f768558fa3e00c600c0d2ebb8812611d22acb878a5c'
+  },
+  '6': '37613322118550d4ec9b669c1d1a388c'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '01734e988fe3399b17528ded3318f4bd7a4f457ade2d0092eb7b608f2321bac1'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+        1, 115,  78, 152, 143, 227,  57, 155,
+       23,  82, 141, 237,  51,  24, 244, 189,
+      122,  79,  69, 122, 222,  45,   0, 146,
+      235, 123,  96, 143,  35,  33, 186, 193
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,   1, 115,  78, 152,
+    143, 227,  57, 155,  23,  82, 141, 237,
+     51,  24, 244, 189, 122,  79,  69, 122,
+    222,  45,   0, 146, 235, 123,  96, 143,
+     35,  33, 186, 193
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+        1, 115,  78, 152, 143, 227,  57, 155,
+       23,  82, 141, 237,  51,  24, 244, 189,
+      122,  79,  69, 122, 222,  45,   0, 146,
+      235, 123,  96, 143,  35,  33, 186, 193
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    209, 133, 220, 250, 176,  24,  83,
+    136, 159, 176,  75, 170, 202, 119,
+    146,  73, 241,  79, 140, 106, 179,
+     85, 169, 161, 171, 244, 229,  49,
+    112, 113, 254,  78
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'mangofig.tf'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      242, 136,  73,  37,   1, 167, 138,
+      177, 237, 251, 171, 141, 204, 122,
+      158, 132,  15, 184, 239, 160, 191,
+      196, 205, 242, 152, 238, 166,  17,
+      243, 242,  65, 141
+    ],
+    name: 'shenika.olin@birdpassonfruit.by',
+    displayName: 'Shenika Olin'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': undefined,
+  '8': Uint8Array(16) [
+    149, 203, 217, 146, 241,
+    111, 142,  94, 114, 213,
+     91,  49,  26, 143,  88,
+    165
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a6015820d185dcfab01853889fb04baaca779249f14f8c6ab355a9a1abf4e5317071fe4e02a26269646b6d616e676f6669672e7466646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820f288492501a78ab1edfbab8dcc7a9e840fb8efa0bfc4cdf298eea611f3f2418d646e616d65781f7368656e696b612e6f6c696e4062697264706173736f6e66727569742e62796b646973706c61794e616d656c5368656e696b61204f6c696e0481a263616c672664747970656a7075626c69632d6b6579085095cbd992f16f8e5e72d55b311a8f58a50901 {
+  '1': 'd185dcfab01853889fb04baaca779249f14f8c6ab355a9a1abf4e5317071fe4e',
+  '2': {
+    id: 'mangofig.tf',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'f288492501a78ab1edfbab8dcc7a9e840fb8efa0bfc4cdf298eea611f3f2418d',
+    name: 'shenika.olin@birdpassonfruit.by',
+    displayName: 'Shenika Olin'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '8': '95cbd992f16f8e5e72d55b311a8f58a5',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 0,
+  type: 'MakeCredential',
+  cborResponse: {
+    '1': 'packed',
+    '2': 'bdfa0d2ea578147b96aa6ca271b95ec57578a57c63100d86f5920dad91c2a17b4500000001010203040506070801020304050607080020b75b435968e1755f5c27afaf0bdbc1df05ede6340b9fbff8f38652d074a5eab1a5010203262001215820595e6e63654e69e54b270a4cf531257b0ad012f2d538452098cf006725f146e62258205f0624873edddc005d3d80b99cab98aaa0eab034f2669eea33fe9307a3696d3c',
+    '3': {
+      alg: -7,
+      sig: '304502203ddba783e3c80be5728b76ee41ee74e972f1e5b5847e251034614c64247b2acd022100c4bbd2039f7217bd9002a485e5a15adf96a53088887ebb395639d68eb54399f2',
+      x5c: [Array]
+    }
+  },
+  cborResponseStruct: {
+    '1': 'packed',
+    '2': Uint8Array(164) [
+      189, 250,  13,  46, 165, 120,  20, 123, 150, 170, 108, 162,
+      113, 185,  94, 197, 117, 120, 165, 124,  99,  16,  13, 134,
+      245, 146,  13, 173, 145, 194, 161, 123,  69,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 183,  91,  67,  89, 104,
+      225, 117,  95,  92,  39, 175, 175,  11, 219, 193, 223,   5,
+      237, 230,  52,  11, 159, 191, 248, 243, 134,  82, 208, 116,
+      165, 234, 177, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32,  89,  94, 110,
+      ... 64 more items
+    ],
+    '3': { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  },
+  cborBuffer: Uint8Array(791) [
+    163,   1, 102, 112,  97,  99, 107, 101, 100,   2,  88, 164,
+    189, 250,  13,  46, 165, 120,  20, 123, 150, 170, 108, 162,
+    113, 185,  94, 197, 117, 120, 165, 124,  99,  16,  13, 134,
+    245, 146,  13, 173, 145, 194, 161, 123,  69,   0,   0,   0,
+      1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+      4,   5,   6,   7,   8,   0,  32, 183,  91,  67,  89, 104,
+    225, 117,  95,  92,  39, 175, 175,  11, 219, 193, 223,   5,
+    237, 230,  52,  11, 159, 191, 248, 243, 134,  82, 208, 116,
+    165, 234, 177, 165,
+    ... 691 more items
+  ],
+  response: {
+    fmt: 'packed',
+    authData: Uint8Array(164) [
+      189, 250,  13,  46, 165, 120,  20, 123, 150, 170, 108, 162,
+      113, 185,  94, 197, 117, 120, 165, 124,  99,  16,  13, 134,
+      245, 146,  13, 173, 145, 194, 161, 123,  69,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 183,  91,  67,  89, 104,
+      225, 117,  95,  92,  39, 175, 175,  11, 219, 193, 223,   5,
+      237, 230,  52,  11, 159, 191, 248, 243, 134,  82, 208, 116,
+      165, 234, 177, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32,  89,  94, 110,
+      ... 64 more items
+    ],
+    attStmt: { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  }
+}
+    ✓ P-01
+
+        Send a valid CTAP2 authenticatorMakeCredential(0x01) message, wait for the response, and check that: 
+            (a) Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code 
+            (b) Response structure can be successfully parsed 
+            (c) Response.fmt is of type String 
+            (d) Response.fmt is set to either "packed", "tpm", "android-key" or "android-safetynet"
+
+    
+    ✓ P-02
+
+        Using previously received response, check that: 
+            (a) response.authData is of type BYTE ARRAY 
+            (b) check that authData is at least (32 + 1 + 4 + 16 + 2 + 16 + 42) bytes long. 
+            (c) parse response.authData 
+            (d) check that AAGUID matching the one in metadata statement 
+            (e) check that authData.rpIdHash matches the sent rpIdHash 
+            (f) check that UP(bit 0) flag in flags is set 
+            (g) check that AT(bit 6) flag in flags is set, and attestation credential data is presented 
+            (h) check that ED(bit 7) flag in flags is not set, and check that there is not Extension Data present
+            (i) check that authData.pubKey is correctly encoded:
+            (j) if public key is an RSA(kty(1) is set to 3) public key, check that: 
+                (1) alg(2) is set to algorithm that matches corresponding one in metadata statement
+                (2) contains n(-1) that is of type BYTE STRING 
+                (3) contains e(-2) that is of type BYTE STRING 
+                (4) does NOT contains ANY other coefficients
+            (k) if public key is an EC2(kty(1) is set to 2) public key, check that: 
+                (1) alg(2) is set to algorithm that matches corresponding one in metadata statement
+                (2) crv(-1) field that is set to EC identifier from "COSE Elliptic Curves" registry
+                (3) contains x(-2) is of type BYTE STRING, and is 32bytes long 
+                (4) contains y(-3) is of type BYTE STRING, and is 32bytes long 
+                (5) does NOT contains ANY other coefficients
+            (k) if public key is an OKP(kty(1) is set to 1) public key, check that: 
+                (1) alg(2) is set to algorithm that matches corresponding one in metadata statement
+                (2) crv(-1) field that is set to EdDSA identifier from "COSE Elliptic Curves" registry
+                (3) contains x(-2) is of type BYTE STRING, and is 32bytes long 
+                (5) does NOT contains ANY other coefficients
+
+    
+    ✓ P-03
+
+        Decode "attStmt" CBOR MAP and: 
+            (a) check that "alg" field is presented it matches "alg" in PK
+            (b) check that "sig" field is presented and it is of type BYTE STRING
+
+    
+false [
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICBzCCAYygAwIBAgIBATAKBggqhkjOPQQDAzByMSgwJgYDVQQDDB9GaWRvbnQg\n' +
+    'RW50ZXJwcmlzZSBSb290IENBIEVTMzg0MRUwEwYDVQQKDAxKb2huIEJyYWRsZXkx\n' +
+    'IjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAkNB\n' +
+    'MB4XDTE3MDcxNDAyNDAwMFoXDTQ2MTAyMjIyNTQyMVowYDELMAkGA1UEBhMCVVMx\n' +
+    'ETAPBgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49AgEG\n' +
+    'CCqGSM49AwEHA0IABI1hfmXJUI5kvMVnOsgqZ5naPBRGaCwljEY//99Y39L6Pmw3\n' +
+    'i1PXlcSk3/tBme3Xhi8jq68CA7S4kRugVpmU4QGjJTAjMAwGA1UdEwEB/wQCMAAw\n' +
+    'EwYLKwYBBAGC5RwCAQEEBAMCBSAwCgYIKoZIzj0EAwMDaQAwZgIxAN49sZvz1vc+\n' +
+    'w2jPKGco/F89mQwtDFda8hufnmdG1J55DuALmqh4mqEqB1tJ9Nf7GQIxAM1Mi9o/\n' +
+    'm9Avj+eqkMAeWeZitSgEaCK5nquOpy6nFxoq4wEcFDQzTP1SFqolMU1WSA==\n' +
+    '-----END CERTIFICATE-----',
+  '-----BEGIN CERTIFICATE-----\n' +
+    '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\n' +
+    '-----END CERTIFICATE-----'
+]
+false [
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICBzCCAYygAwIBAgIBATAKBggqhkjOPQQDAzByMSgwJgYDVQQDDB9GaWRvbnQg\n' +
+    'RW50ZXJwcmlzZSBSb290IENBIEVTMzg0MRUwEwYDVQQKDAxKb2huIEJyYWRsZXkx\n' +
+    'IjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAkNB\n' +
+    'MB4XDTE3MDcxNDAyNDAwMFoXDTQ2MTAyMjIyNTQyMVowYDELMAkGA1UEBhMCVVMx\n' +
+    'ETAPBgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49AgEG\n' +
+    'CCqGSM49AwEHA0IABI1hfmXJUI5kvMVnOsgqZ5naPBRGaCwljEY//99Y39L6Pmw3\n' +
+    'i1PXlcSk3/tBme3Xhi8jq68CA7S4kRugVpmU4QGjJTAjMAwGA1UdEwEB/wQCMAAw\n' +
+    'EwYLKwYBBAGC5RwCAQEEBAMCBSAwCgYIKoZIzj0EAwMDaQAwZgIxAN49sZvz1vc+\n' +
+    'w2jPKGco/F89mQwtDFda8hufnmdG1J55DuALmqh4mqEqB1tJ9Nf7GQIxAM1Mi9o/\n' +
+    'm9Avj+eqkMAeWeZitSgEaCK5nquOpy6nFxoq4wEcFDQzTP1SFqolMU1WSA==\n' +
+    '-----END CERTIFICATE-----',
+  '-----BEGIN CERTIFICATE-----\n' +
+    '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\n' +
+    'cZ/XJtzf5AAAAAAAAAAAAAAAAAAAAAAIEhgdIyc=\n' +
+    '-----END CERTIFICATE-----'
+]
+false [
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICBzCCAYygAwIBAgIBATAKBggqhkjOPQQDAzByMSgwJgYDVQQDDB9GaWRvbnQg\n' +
+    'RW50ZXJwcmlzZSBSb290IENBIEVTMzg0MRUwEwYDVQQKDAxKb2huIEJyYWRsZXkx\n' +
+    'IjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAkNB\n' +
+    'MB4XDTE3MDcxNDAyNDAwMFoXDTQ2MTAyMjIyNTQyMVowYDELMAkGA1UEBhMCVVMx\n' +
+    'ETAPBgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49AgEG\n' +
+    'CCqGSM49AwEHA0IABI1hfmXJUI5kvMVnOsgqZ5naPBRGaCwljEY//99Y39L6Pmw3\n' +
+    'i1PXlcSk3/tBme3Xhi8jq68CA7S4kRugVpmU4QGjJTAjMAwGA1UdEwEB/wQCMAAw\n' +
+    'EwYLKwYBBAGC5RwCAQEEBAMCBSAwCgYIKoZIzj0EAwMDaQAwZgIxAN49sZvz1vc+\n' +
+    'w2jPKGco/F89mQwtDFda8hufnmdG1J55DuALmqh4mqEqB1tJ9Nf7GQIxAM1Mi9o/\n' +
+    'm9Avj+eqkMAeWeZitSgEaCK5nquOpy6nFxoq4wEcFDQzTP1SFqolMU1WSA==\n' +
+    '-----END CERTIFICATE-----',
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIIdfzCCC1agAwIBAgIBATALBglghkgBZQMEAxMwYDELMAkGA1UEBhMCVVMxETAP\n' +
+    'BgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVzdGF0\n' +
+    'aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTAeFw0xNzA3MTQwMjQwMDBa\n' +
+    'Fw00NjEwMjIyMDE4MzhaMGAxCzAJBgNVBAYTAlVTMREwDwYDVQQKDAhDaHJvbWl1\n' +
+    'bTEiMCAGA1UECwwZQXV0aGVudGljYXRvciBBdHRlc3RhdGlvbjEaMBgGA1UEAwwR\n' +
+    'QmF0Y2ggQ2VydGlmaWNhdGUwggoyMAsGCWCGSAFlAwQDEwOCCiEA6bruAn/MWQHM\n' +
+    'jvA8alkSstVSSsJHlp9iOUTXp0XB9N2hc1jp8sBnaGRUB+8wzSOCrOxKFKoYZVFM\n' +
+    'BR/nlrRPD/kB9iJ/P//OLYmEkQzhVstH9qOagmAEpsR0Ai7IpMU7i89K4dzxmKKO\n' +
+    'Aw8YUXeAWMSfjgvl/mttjY6ozSxnAIWU6ihvHYMD3TmGuLdDEQL+N4kgFOKN7XUW\n' +
+    'P76u+xhdtwmvXcup10IDrkRYPKQwljv9YVqnm+YoyBKgo7ErqdJeIRE7zF++PSUu\n' +
+    '2e2zVQrMdQCU7xhTarOLi783DxSeV1pjo/3TsNK2W27cCEbem9sX6s/1LjOMGorS\n' +
+    'fQr5Pr8QXXg55tBdJ/1tNFFwKBL2/kytzNTcpslm96+OB9Ze/qYVVZZ5Jra5gYoh\n' +
+    'xlI4UPm6CIxzqgAW0iYbDYsrbLMOfW5Yi3cg0Xuo2q86NSr6RmUapsy0qKamA48+\n' +
+    'o2kQvUni+aUq/Cfl60j+TqJGDRrsx2d73qhCL+nwA+56NCv6ozr9t5n+UJ7bKVV0\n' +
+    'lZmbnH02ZVT6ZqxQ3x7CHi5/QZXlruc7iCiiITcX4r8FbTEPjX08+kxfPq3pe920\n' +
+    '1sJb9JBrdyVGHHYMtmD99hvYksGDM9Od43feUiqpb92AQlbc/BVfRjvVLhVmI67/\n' +
+    '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\n' +
+    'NXbSI9EqaSycK+tBCVoByXwtsR7'... 287 more characters
+]
+false [
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICBzCCAYygAwIBAgIBATAKBggqhkjOPQQDAzByMSgwJgYDVQQDDB9GaWRvbnQg\n' +
+    'RW50ZXJwcmlzZSBSb290IENBIEVTMzg0MRUwEwYDVQQKDAxKb2huIEJyYWRsZXkx\n' +
+    'IjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAkNB\n' +
+    'MB4XDTE3MDcxNDAyNDAwMFoXDTQ2MTAyMjIyNTQyMVowYDELMAkGA1UEBhMCVVMx\n' +
+    'ETAPBgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49AgEG\n' +
+    'CCqGSM49AwEHA0IABI1hfmXJUI5kvMVnOsgqZ5naPBRGaCwljEY//99Y39L6Pmw3\n' +
+    'i1PXlcSk3/tBme3Xhi8jq68CA7S4kRugVpmU4QGjJTAjMAwGA1UdEwEB/wQCMAAw\n' +
+    'EwYLKwYBBAGC5RwCAQEEBAMCBSAwCgYIKoZIzj0EAwMDaQAwZgIxAN49sZvz1vc+\n' +
+    'w2jPKGco/F89mQwtDFda8hufnmdG1J55DuALmqh4mqEqB1tJ9Nf7GQIxAM1Mi9o/\n' +
+    'm9Avj+eqkMAeWeZitSgEaCK5nquOpy6nFxoq4wEcFDQzTP1SFqolMU1WSA==\n' +
+    '-----END CERTIFICATE-----',
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICBjCCAYygAwIBAgIBATAKBggqhkjOPQQDAzByMSgwJgYDVQQDDB9GaWRvbnQg\n' +
+    'RW50ZXJwcmlzZSBSb290IENBIEVTMzg0MRUwEwYDVQQKDAxKb2huIEJyYWRsZXkx\n' +
+    'IjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAkNB\n' +
+    'MB4XDTE3MDcxNDAyNDAwMFoXDTQ2MTAyMjIwMTgzOFowYDELMAkGA1UEBhMCVVMx\n' +
+    'ETAPBgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49AgEG\n' +
+    'CCqGSM49AwEHA0IABI1hfmXJUI5kvMVnOsgqZ5naPBRGaCwljEY//99Y39L6Pmw3\n' +
+    'i1PXlcSk3/tBme3Xhi8jq68CA7S4kRugVpmU4QGjJTAjMAwGA1UdEwEB/wQCMAAw\n' +
+    'EwYLKwYBBAGC5RwCAQEEBAMCBSAwCgYIKoZIzj0EAwMDaAAwZQIxAJ2MSkkfULFm\n' +
+    'r58pS0NnDrPr5PrXvlsCsvCarf3YAaiZ1zwCVi7umsqJBUeLVeKXQAIwEwnuTcPf\n' +
+    '8wpWOuWd0LuS8jZ3E1O8Oan4rUgV0WdkZ5xLR/r3mSDhxvgvCCN6Abdj\n' +
+    '-----END CERTIFICATE-----'
+]
+true [
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICBzCCAYygAwIBAgIBATAKBggqhkjOPQQDAzByMSgwJgYDVQQDDB9GaWRvbnQg\n' +
+    'RW50ZXJwcmlzZSBSb290IENBIEVTMzg0MRUwEwYDVQQKDAxKb2huIEJyYWRsZXkx\n' +
+    'IjAgBgNVBAsMGUF1dGhlbnRpY2F0b3IgQXR0ZXN0YXRpb24xCzAJBgNVBAYTAkNB\n' +
+    'MB4XDTE3MDcxNDAyNDAwMFoXDTQ2MTAyMjIyNTQyMVowYDELMAkGA1UEBhMCVVMx\n' +
+    'ETAPBgNVBAoMCENocm9taXVtMSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMRowGAYDVQQDDBFCYXRjaCBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49AgEG\n' +
+    'CCqGSM49AwEHA0IABI1hfmXJUI5kvMVnOsgqZ5naPBRGaCwljEY//99Y39L6Pmw3\n' +
+    'i1PXlcSk3/tBme3Xhi8jq68CA7S4kRugVpmU4QGjJTAjMAwGA1UdEwEB/wQCMAAw\n' +
+    'EwYLKwYBBAGC5RwCAQEEBAMCBSAwCgYIKoZIzj0EAwMDaQAwZgIxAN49sZvz1vc+\n' +
+    'w2jPKGco/F89mQwtDFda8hufnmdG1J55DuALmqh4mqEqB1tJ9Nf7GQIxAM1Mi9o/\n' +
+    'm9Avj+eqkMAeWeZitSgEaCK5nquOpy6nFxoq4wEcFDQzTP1SFqolMU1WSA==\n' +
+    '-----END CERTIFICATE-----',
+  '-----BEGIN CERTIFICATE-----\n' +
+    'MIICaDCCAe6gAwIBAgIUOLB1Ka53ZiSF/HIGy6jAO3O9umswCgYIKoZIzj0EAwMw\n' +
+    'cjEoMCYGA1UEAwwfRmlkb250IEVudGVycHJpc2UgUm9vdCBDQSBFUzM4NDEVMBMG\n' +
+    'A1UECgwMSm9obiBCcmFkbGV5MSIwIAYDVQQLDBlBdXRoZW50aWNhdG9yIEF0dGVz\n' +
+    'dGF0aW9uMQswCQYDVQQGEwJDQTAeFw0yNjEwMTgwNDExMjFaFw0zNjEwMTUwNDEx\n' +
+    'MjFaMHIxKDAmBgNVBAMMH0ZpZG9udCBFbnRlcnByaXNlIFJvb3QgQ0EgRVMzODQx\n' +
+    'FTATBgNVBAoMDEpvaG4gQnJhZGxleTEiMCAGA1UECwwZQXV0aGVudGljYXRvciBB\n' +
+    'dHRlc3RhdGlvbjELMAkGA1UEBhMCQ0EwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAATT\n' +
+    'TxUOhMgwwtAGfaggYwIiG7G8Rx0shuAmo9sY5vultNRsQIKbw4eVkxjDXunqynKQ\n' +
+    '5XJ6aR4SKWOuYlfYSaMukb4YY1Owyyly4rTY0SZm/pG1YExwajZk7UojgZ/5l1Wj\n' +
+    'RTBDMBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQW\n' +
+    'BBTJjzOEuEouEv/qKEau50kepO1neDAKBggqhkjOPQQDAwNoADBlAjAy8VU/SA0N\n' +
+    'ht0zhsIBg+dQ6DdIHGocXUMloHYgUcX/+C74eFjgKTBjnPx9PCh5coECMQDNa6vi\n' +
+    'FEf4DeyzQc2qZF2l3+KKtocvkitocGtS79VPPS3X/Eb7UlGmH2osVRK2ydM=\n' +
+    '-----END CERTIFICATE-----'
+]
+    ✓ P-04
+
+        If "x5c" presented: 
+            (a) Check that "ecdaaKeyId" is NOT presented 
+            (b) Check that "x5c" is of type SEQUENCE 
+            (c) Check that metadata statement contains "attestationRootCertificates" field, and it’s not empty. 
+            (d) Check that metadata statement "attestationTypes" SEQUENCE contains "basic_full"
+            (e) Decode certificate chain
+            (f) If "x5c" contains exactly one certificate, check if that certificate is already a member of the metadata.attestationRootCertificates. If it is, skip chain verification
+            (g) Verify certificate chain:
+                (1) For each certificate in the metadata.attestationRootCertificates, attach attestation root to the x5c, and try verifying it. If none produce a valid chain, fail
+            (h) Pick a leaf certificate of the chain and check that: 
+                (1) Version is of type INTEGER and is set to 3 
+                (2) Subject-C - is of type UTF8String, and is set to ISO 3166 code specifying the country where the Authenticator vendor is incorporated (UTF8String) 
+                (3) Subject-O - is of type UTF8String, and is set to the legal name of the Authenticator vendor 
+                (4) Subject-OU - is of type UTF8String, and is set to literal string “Authenticator Attestation” 
+                (5) Subject-CN - is of type UTF8String, and is not empty
+                (6) Basic Constraints extension MUST have the CA component set to false. 
+                (7) [TBD] If the related attestation root certificate is used for multiple authenticator models, the Extension OID 1.3.6.1.4.1.45724.1.1.4 (id-fido-gen-ce-aaguid) MUST be present, containing the AAGUID as a 16-byte OCTET STRING. The extension MUST NOT be marked as critical. 
+                (8) Check that certificate is not expired, is current(notBefore is set to the past date), and is valid for at least 5 years [TBD]
+            (i) Concatenate authenticatorData and signData to clientDataHash. Using key extracted from leaf certificate, signData verify signature in "sig" field.
+
+     (111ms)
+    - P-05
+
+        If "ecdaaKeyId" presented: 
+            (a) Check that "x5c" is NOT presented 
+            (b) Check that metadata statement attestationFormats contains "ecdaa" 
+            (c) Verify that sig is a valid signature over the concatenation of authenticatorData and clientDataHash using ECDAA-Verify with ECDAA-Issuer public key identified by ecdaaKeyId (see [FIDOEcdaaAlgorithm]).
+
+    
+    - P-06
+
+        If neither "x5c" nor "ecdaaKeyId" is present, then self attestation is presented, then: 
+            (a) Check that metadata statement contains "attestationRootCertificates" field, and it’s an empty ARRAY. 
+            (b) Check that metadata statement attestationFormats contains "basic_surrogate" 
+            (c) Concatenate authenticatorData and clientDataHash to signData. Using public key extracted from authenticatorData, signData verify signature in "sig" field.
+
+    
+
+
+  4 passing (133ms)
+  2 pending
+
+FINAL {"suites":1,"tests":6,"passes":4,"pending":2,"failures":0,"start":"2026-10-27T22:54:21.301Z","end":"2026-10-27T22:54:21.434Z","duration":133}

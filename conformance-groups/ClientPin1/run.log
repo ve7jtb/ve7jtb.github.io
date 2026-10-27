@@ -1,0 +1,1881 @@
+[1027/225425.500954:ERROR:electron/shell/common/mac/codesign_util.cc:79] task_name_for_pid: (os/kern) failure (5)
+
+
+  
+
+        Authr-ClientPin1-GetKeyAgreement
+
+        Test authenticatorClientPin(0x06), of version 0x01 support of getKeyAgreement(0x02) command
+
+    
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '3abdbbcd92f90a0b9f807034113e3042f7700c59a808063950e0f3ed6cad8cce',
+      '-3': '371f44b654fa9b669397a064ae410d1f8457cc49c166f5b09e723ee40c228ef6'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  58, 189, 187, 205, 146, 249,  10,  11, 159, 128, 112,
+     52,  17,  62,  48,  66, 247, 112,  12,  89, 168,   8,   6,
+     57,  80, 224, 243, 237, 108, 173, 140, 206,  34,  88,  32,
+     55,  31,  68, 182,  84, 250, 155, 102, 147, 151, 160, 100,
+    174,  65,  13,  31, 132,  87, 204,  73, 193, 102, 245, 176,
+    158, 114,  62, 228,  12,  34, 142, 246
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+    ✓ P-1
+
+        Send a valid CTAP2 authenticatorClientPin(0x01) message with getKeyAgreement(0x02) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and:
+            (a) check that authenticatorClientPin_Response contains "keyAgreement" field, and its of type MAP
+            (b) in COSE "keyAgreement" field:
+                (1) check that public key is EC2(kty(1) is set to 2) 
+                (2) check that key crv(-1) curve field that is set to P256(1)
+                (3) check that key alg(3) is set to ECDH-ES+HKDF-256(-25)
+                (4) check that key contains x(-2) is of type BYTE STRING, and is 32bytes long 
+                (5) check that key contains y(-3) is of type BYTE STRING, and is 32bytes long 
+                (6) check that key does NOT contains ANY other coefficients
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+
+  
+
+        Authr-ClientPin1-NewPin
+
+        Test authenticatorClientPin(0x06), of version 0x01 support of setPIN(0x03), changePIN(0x04) and clientpin1_ObtainPINToken(0x05) commands
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'aa5401bf17e9b5ce8f58ddd9c89ce41cdc70194adf4cfb60c1e4a76149a4e62e',
+      '-3': '9da1c826eec110a4ae0faa2941a53a9ea6eac0cc64a2bd8cc93d6c01fd408e0a'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 170,  84,   1, 191,  23, 233, 181, 206, 143,  88, 221,
+    217, 200, 156, 228,  28, 220, 112,  25,  74, 223,  76, 251,
+     96, 193, 228, 167,  97,  73, 164, 230,  46,  34,  88,  32,
+    157, 161, 200,  38, 238, 193,  16, 164, 174,  15, 170,  41,
+     65, 165,  58, 158, 166, 234, 192, 204, 100, 162, 189, 140,
+    201,  61, 108,   1, 253,  64, 142,  10
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a501020338182001215820e02d157e6771180070c713296b89934216a9ce218a8932ccb1b12f5fbd5ec25a225820e1743bfabcec6c6230a7525a266994a2589e428f3a0c65e0ab0eb24af644b59204501ab82a77ff0372acc8bd2b9d98056e63055840d9c01589add1a49581fc0710a4b05c7de435b9ab4829024ad8db0683491f56858ed91eb23ff076fe5f1442dc3d32d23132076e26763dbf7dc8ee64a000e4d2d0 {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'e02d157e6771180070c713296b89934216a9ce218a8932ccb1b12f5fbd5ec25a',
+    '-3': 'e1743bfabcec6c6230a7525a266994a2589e428f3a0c65e0ab0eb24af644b592'
+  },
+  '4': '1ab82a77ff0372acc8bd2b9d98056e63',
+  '5': 'd9c01589add1a49581fc0710a4b05c7de435b9ab4829024ad8db0683491f56858ed91eb23ff076fe5f1442dc3d32d23132076e26763dbf7dc8ee64a000e4d2d0'
+}
+(node:41860) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `Electron --trace-deprecation ...` to show where the warning was created)
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {},
+  cborResponseStruct: {},
+  cborBuffer: Uint8Array(1) [ 160 ],
+  response: {}
+}
+    ✓ P-1
+
+        Generate a shared key by deriving sharedSecret from previously obtained keyAgreement, and set new random clientPin
+
+    
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'aa5401bf17e9b5ce8f58ddd9c89ce41cdc70194adf4cfb60c1e4a76149a4e62e',
+      '-3': '9da1c826eec110a4ae0faa2941a53a9ea6eac0cc64a2bd8cc93d6c01fd408e0a'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 170,  84,   1, 191,  23, 233, 181, 206, 143,  88, 221,
+    217, 200, 156, 228,  28, 220, 112,  25,  74, 223,  76, 251,
+     96, 193, 228, 167,  97,  73, 164, 230,  46,  34,  88,  32,
+    157, 161, 200,  38, 238, 193,  16, 164, 174,  15, 170,  41,
+     65, 165,  58, 158, 166, 234, 192, 204, 100, 162, 189, 140,
+    201,  61, 108,   1, 253,  64, 142,  10
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a60101020403a5010203381820012158204f4faca733c4e740e5c954aaff3107f9efcfb49e2402f1ddafe76fd20d4a1bd3225820c6318494e9418619488e492ceedb845c71f79c6c912b00f5895f8acb546de39a0450037659cf7aac8d0d08829bb17e05837605584038e5bbf98ed2746dba68a8d86ba4a456827c1c8a09fa23ff60504965520e7336740352b41b8659e95ce2bfc7aec83d2fba3c99ff303a37dd5a16f0647e48e4ab06509d61949ca8da1c0d475a7f8f8c17108c {
+  '1': 1,
+  '2': 4,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '4f4faca733c4e740e5c954aaff3107f9efcfb49e2402f1ddafe76fd20d4a1bd3',
+    '-3': 'c6318494e9418619488e492ceedb845c71f79c6c912b00f5895f8acb546de39a'
+  },
+  '4': '037659cf7aac8d0d08829bb17e058376',
+  '5': '38e5bbf98ed2746dba68a8d86ba4a456827c1c8a09fa23ff60504965520e7336740352b41b8659e95ce2bfc7aec83d2fba3c99ff303a37dd5a16f0647e48e4ab',
+  '6': '9d61949ca8da1c0d475a7f8f8c17108c'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {},
+  cborResponseStruct: {},
+  cborBuffer: Uint8Array(1) [ 160 ],
+  response: {}
+}
+    ✓ P-2
+
+        Change current pincode to the new pincode
+
+    
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'aa5401bf17e9b5ce8f58ddd9c89ce41cdc70194adf4cfb60c1e4a76149a4e62e',
+      '-3': '9da1c826eec110a4ae0faa2941a53a9ea6eac0cc64a2bd8cc93d6c01fd408e0a'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 170,  84,   1, 191,  23, 233, 181, 206, 143,  88, 221,
+    217, 200, 156, 228,  28, 220, 112,  25,  74, 223,  76, 251,
+     96, 193, 228, 167,  97,  73, 164, 230,  46,  34,  88,  32,
+    157, 161, 200,  38, 238, 193,  16, 164, 174,  15, 170,  41,
+     65, 165,  58, 158, 166, 234, 192, 204, 100, 162, 189, 140,
+    201,  61, 108,   1, 253,  64, 142,  10
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a50102033818200121582053ad8e53545751c272977b9d9ff95b6543b9a3acbbcefc4339a7faa15658822a2258200331d6fd361d62496ba8e99a9b646e64c41f401729db0072e9a3cd2c45b813820650ce429d5be2791ef58c395d7eee8cf34a {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '53ad8e53545751c272977b9d9ff95b6543b9a3acbbcefc4339a7faa15658822a',
+    '-3': '0331d6fd361d62496ba8e99a9b646e64c41f401729db0072e9a3cd2c45b81382'
+  },
+  '6': 'ce429d5be2791ef58c395d7eee8cf34a'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': 'da4c0ac7850380615846f95cba0ae658d6a02fb66148c2564ca5b48c6d586c80'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+      218,  76,  10, 199, 133,  3, 128,  97,
+       88,  70, 249,  92, 186, 10, 230,  88,
+      214, 160,  47, 182,  97, 72, 194,  86,
+       76, 165, 180, 140, 109, 88, 108, 128
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,  2,  88,  32, 218,  76,  10, 199,
+    133,  3, 128,  97,  88,  70, 249,  92,
+    186, 10, 230,  88, 214, 160,  47, 182,
+     97, 72, 194,  86,  76, 165, 180, 140,
+    109, 88, 108, 128
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+      218,  76,  10, 199, 133,  3, 128,  97,
+       88,  70, 249,  92, 186, 10, 230,  88,
+      214, 160,  47, 182,  97, 72, 194,  86,
+       76, 165, 180, 140, 109, 88, 108, 128
+    ]
+  }
+}
+    ✓ P-3
+
+        Get a valid pinAuth token
+
+    
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'aa5401bf17e9b5ce8f58ddd9c89ce41cdc70194adf4cfb60c1e4a76149a4e62e',
+      '-3': '9da1c826eec110a4ae0faa2941a53a9ea6eac0cc64a2bd8cc93d6c01fd408e0a'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 170,  84,   1, 191,  23, 233, 181, 206, 143,  88, 221,
+    217, 200, 156, 228,  28, 220, 112,  25,  74, 223,  76, 251,
+     96, 193, 228, 167,  97,  73, 164, 230,  46,  34,  88,  32,
+    157, 161, 200,  38, 238, 193,  16, 164, 174,  15, 170,  41,
+     65, 165,  58, 158, 166, 234, 192, 204, 100, 162, 189, 140,
+    201,  61, 108,   1, 253,  64, 142,  10
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a50102033818200121582054afeddc3c6ad11b60d9bdc4fef889751848283281d03f76d9982e41a675a833225820248bebc572a3a26cf38c2ee73d3f425e24bc3592bc10b9aa3f435c0101561afe06503dfad101b3e0f06c6dedbe7f228c7187 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '54afeddc3c6ad11b60d9bdc4fef889751848283281d03f76d9982e41a675a833',
+    '-3': '248bebc572a3a26cf38c2ee73d3f425e24bc3592bc10b9aa3f435c0101561afe'
+  },
+  '6': '3dfad101b3e0f06c6dedbe7f228c7187'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '07249184a0e07532b5dc14e63028aad367d20005b96887434b075cc2e14dd62a'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+        7,  36, 145, 132, 160, 224, 117,  50,
+      181, 220,  20, 230,  48,  40, 170, 211,
+      103, 210,   0,   5, 185, 104, 135,  67,
+       75,   7,  92, 194, 225,  77, 214,  42
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,   7,  36, 145, 132, 160,
+    224, 117,  50, 181, 220,  20, 230,  48,  40,
+    170, 211, 103, 210,   0,   5, 185, 104, 135,
+     67,  75,   7,  92, 194, 225,  77, 214,  42
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+        7,  36, 145, 132, 160, 224, 117,  50,
+      181, 220,  20, 230,  48,  40, 170, 211,
+      103, 210,   0,   5, 185, 104, 135,  67,
+       75,   7,  92, 194, 225,  77, 214,  42
+    ]
+  }
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    147, 117,  37, 203, 167, 44, 169, 140,
+    151, 178, 215,  52, 134,  1,  88,  21,
+     76,  68, 166, 131, 225, 80, 231, 225,
+     24,  75, 233, 215, 161, 27,  46,  11
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'previousextend.ml'
+  },
+  '3': {
+    id: Uint8Array(32) [
+       97, 194, 155, 135,  68, 202,  82, 172,
+        1,  21,  38, 206, 161, 226, 234, 140,
+      119,  22,  44, 207, 225,  80,  45, 102,
+      184,  49, 223, 139,  49,  26,  11, 146
+    ],
+    name: 'christenayoshimura@rejoicenoiseless.bj',
+    displayName: 'Christena Yoshimura'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': undefined,
+  '8': Uint8Array(16) [
+    211,  19, 90,  58,  92,   9,
+    243, 214,  3, 105, 142, 235,
+    239,  42,  7, 120
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a6015820937525cba72ca98c97b2d734860158154c44a683e150e7e1184be9d7a11b2e0b02a26269647170726576696f7573657874656e642e6d6c646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a3626964582061c29b8744ca52ac011526cea1e2ea8c77162ccfe1502d66b831df8b311a0b92646e616d657826636872697374656e61796f7368696d7572614072656a6f6963656e6f6973656c6573732e626a6b646973706c61794e616d6573436872697374656e6120596f7368696d7572610481a263616c672664747970656a7075626c69632d6b65790850d3135a3a5c09f3d603698eebef2a07780901 {
+  '1': '937525cba72ca98c97b2d734860158154c44a683e150e7e1184be9d7a11b2e0b',
+  '2': {
+    id: 'previousextend.ml',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '61c29b8744ca52ac011526cea1e2ea8c77162ccfe1502d66b831df8b311a0b92',
+    name: 'christenayoshimura@rejoicenoiseless.bj',
+    displayName: 'Christena Yoshimura'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '8': 'd3135a3a5c09f3d603698eebef2a0778',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 0,
+  type: 'MakeCredential',
+  cborResponse: {
+    '1': 'packed',
+    '2': 'c883de596633bd6ed982d9ff58450193e7f5be2a48ef87daa7b0e73f6e3750ea45000000010102030405060708010203040506070800200d163cbe9742c491cdd36cbdc77e679ec999cb8088c6cff8abf8fa2c1f9b59dda5010203262001215820511cd924487ae26b4f8e143600046bf898e144e95ac9b46ef9cffadd899072ac225820d39c69b4200f340df7688ffbcc3d52abf2e45eb6e7419e26bed4fc4b45a08ed2',
+    '3': {
+      alg: -7,
+      sig: '3045022030fc437b169d7045dddf410a5993155e7675c73e4450d71623d7263019d230cf022100aa2219125fb94c83e207b3c83cd35db876a67510ab8e19d14caee697f8aa2fea',
+      x5c: [Array]
+    }
+  },
+  cborResponseStruct: {
+    '1': 'packed',
+    '2': Uint8Array(164) [
+      200, 131, 222,  89, 102,  51, 189, 110, 217, 130, 217, 255,
+       88,  69,   1, 147, 231, 245, 190,  42,  72, 239, 135, 218,
+      167, 176, 231,  63, 110,  55,  80, 234,  69,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32,  13,  22,  60, 190, 151,
+       66, 196, 145, 205, 211, 108, 189, 199, 126, 103, 158, 201,
+      153, 203, 128, 136, 198, 207, 248, 171, 248, 250,  44,  31,
+      155,  89, 221, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32,  81,  28, 217,
+      ... 64 more items
+    ],
+    '3': { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  },
+  cborBuffer: Uint8Array(791) [
+    163,   1, 102, 112,  97,  99, 107, 101, 100,   2,  88, 164,
+    200, 131, 222,  89, 102,  51, 189, 110, 217, 130, 217, 255,
+     88,  69,   1, 147, 231, 245, 190,  42,  72, 239, 135, 218,
+    167, 176, 231,  63, 110,  55,  80, 234,  69,   0,   0,   0,
+      1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+      4,   5,   6,   7,   8,   0,  32,  13,  22,  60, 190, 151,
+     66, 196, 145, 205, 211, 108, 189, 199, 126, 103, 158, 201,
+    153, 203, 128, 136, 198, 207, 248, 171, 248, 250,  44,  31,
+    155,  89, 221, 165,
+    ... 691 more items
+  ],
+  response: {
+    fmt: 'packed',
+    authData: Uint8Array(164) [
+      200, 131, 222,  89, 102,  51, 189, 110, 217, 130, 217, 255,
+       88,  69,   1, 147, 231, 245, 190,  42,  72, 239, 135, 218,
+      167, 176, 231,  63, 110,  55,  80, 234,  69,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32,  13,  22,  60, 190, 151,
+       66, 196, 145, 205, 211, 108, 189, 199, 126, 103, 158, 201,
+      153, 203, 128, 136, 198, 207, 248, 171, 248, 250,  44,  31,
+      155,  89, 221, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32,  81,  28, 217,
+      ... 64 more items
+    ],
+    attStmt: { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  }
+}
+    ✓ P-4
+
+        Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'aa5401bf17e9b5ce8f58ddd9c89ce41cdc70194adf4cfb60c1e4a76149a4e62e',
+      '-3': '9da1c826eec110a4ae0faa2941a53a9ea6eac0cc64a2bd8cc93d6c01fd408e0a'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 170,  84,   1, 191,  23, 233, 181, 206, 143,  88, 221,
+    217, 200, 156, 228,  28, 220, 112,  25,  74, 223,  76, 251,
+     96, 193, 228, 167,  97,  73, 164, 230,  46,  34,  88,  32,
+    157, 161, 200,  38, 238, 193,  16, 164, 174,  15, 170,  41,
+     65, 165,  58, 158, 166, 234, 192, 204, 100, 162, 189, 140,
+    201,  61, 108,   1, 253,  64, 142,  10
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a50102033818200121582007ca76ae0f6eb9a54dc60175d45ad88b8ebc34cb4104dedc9c378710c6c4a8cf225820c3c141cc8df92932e9e91574ab653c3d76b5980597028a1db1ec8e1f1e06509b06506d0c000126627457924073e3ec6c74c7 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '07ca76ae0f6eb9a54dc60175d45ad88b8ebc34cb4104dedc9c378710c6c4a8cf',
+    '-3': 'c3c141cc8df92932e9e91574ab653c3d76b5980597028a1db1ec8e1f1e06509b'
+  },
+  '6': '6d0c000126627457924073e3ec6c74c7'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '8507f22466c48ce58eeeceeed68a2bdebf8bccc4429ed9587bba3587392986e1'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+      133,   7, 242,  36, 102, 196, 140,
+      229, 142, 238, 206, 238, 214, 138,
+       43, 222, 191, 139, 204, 196,  66,
+      158, 217,  88, 123, 186,  53, 135,
+       57,  41, 134, 225
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32, 133,   7, 242,  36,
+    102, 196, 140, 229, 142, 238, 206, 238,
+    214, 138,  43, 222, 191, 139, 204, 196,
+     66, 158, 217,  88, 123, 186,  53, 135,
+     57,  41, 134, 225
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+      133,   7, 242,  36, 102, 196, 140,
+      229, 142, 238, 206, 238, 214, 138,
+       43, 222, 191, 139, 204, 196,  66,
+      158, 217,  88, 123, 186,  53, 135,
+       57,  41, 134, 225
+    ]
+  }
+}
+[CTAP2.1] Generating GetAssertion CBOR for struct...  {
+  '1': 'previousextend.ml',
+  '2': Uint8Array(32) [
+    169, 129,  87,  12,  91,  38,  45, 117,
+    180, 131, 203, 200, 123, 171, 199, 145,
+    182,   0,  13, 244,  29,  10, 191, 193,
+     69, 174,   9,  14, 160,  30, 187,  66
+  ],
+  '3': [ { type: 'public-key', id: [Uint8Array] } ],
+  '4': undefined,
+  '5': undefined,
+  '6': Uint8Array(16) [
+    216, 180, 57, 118, 118,
+    125, 206, 80, 212, 159,
+    250, 157, 13, 121,  18,
+     39
+  ],
+  '7': 1
+}
+[CTAP2.1] GetAssertion: ---> Sending CTAP CMD... 02a5017170726576696f7573657874656e642e6d6c025820a981570c5b262d75b483cbc87babc791b6000df41d0abfc145ae090ea01ebb420381a262696458200d163cbe9742c491cdd36cbdc77e679ec999cb8088c6cff8abf8fa2c1f9b59dd64747970656a7075626c69632d6b65790650d8b43976767dce50d49ffa9d0d7912270701 {
+  '1': 'previousextend.ml',
+  '2': 'a981570c5b262d75b483cbc87babc791b6000df41d0abfc145ae090ea01ebb42',
+  '3': [
+    {
+      id: '0d163cbe9742c491cdd36cbdc77e679ec999cb8088c6cff8abf8fa2c1f9b59dd',
+      type: 'public-key'
+    }
+  ],
+  '6': 'd8b43976767dce50d49ffa9d0d791227',
+  '7': 1
+}
+[CTAP2.1] GetAssertion: <--- Received response {
+  statusCode: 0,
+  type: 'GetAssertion',
+  cborResponse: {
+    '2': 'c883de596633bd6ed982d9ff58450193e7f5be2a48ef87daa7b0e73f6e3750ea0500000002',
+    '3': '3045022100fca122150c0e28d44d7f737a494e4e861a122f7df42340e0a72f451410fde9ce02201e3c90e1c0d6246d5786b5d1cb1f37f064453942869494bb151d096ac0d84fe8'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(37) [
+      200, 131, 222,  89, 102,  51, 189, 110, 217,
+      130, 217, 255,  88,  69,   1, 147, 231, 245,
+      190,  42,  72, 239, 135, 218, 167, 176, 231,
+       63, 110,  55,  80, 234,   5,   0,   0,   0,
+        2
+    ],
+    '3': Uint8Array(71) [
+       48,  69,   2,  33,   0, 252, 161,  34,  21, 12,  14,  40,
+      212,  77, 127, 115, 122,  73,  78,  78, 134, 26,  18,  47,
+      125, 244,  35,  64, 224, 167,  47,  69,  20, 16, 253, 233,
+      206,   2,  32,  30,  60, 144, 225, 192, 214, 36, 109,  87,
+      134, 181, 209, 203,  31,  55, 240, 100,  69, 57,  66, 134,
+      148, 148, 187,  21,  29,   9, 106, 192, 216, 79, 232
+    ]
+  },
+  cborBuffer: Uint8Array(115) [
+    162,   2,  88,  37, 200, 131, 222,  89, 102,  51, 189, 110,
+    217, 130, 217, 255,  88,  69,   1, 147, 231, 245, 190,  42,
+     72, 239, 135, 218, 167, 176, 231,  63, 110,  55,  80, 234,
+      5,   0,   0,   0,   2,   3,  88,  71,  48,  69,   2,  33,
+      0, 252, 161,  34,  21,  12,  14,  40, 212,  77, 127, 115,
+    122,  73,  78,  78, 134,  26,  18,  47, 125, 244,  35,  64,
+    224, 167,  47,  69,  20,  16, 253, 233, 206,   2,  32,  30,
+     60, 144, 225, 192, 214,  36, 109,  87, 134, 181, 209, 203,
+     31,  55, 240, 100,
+    ... 15 more items
+  ],
+  response: {
+    authData: Uint8Array(37) [
+      200, 131, 222,  89, 102,  51, 189, 110, 217,
+      130, 217, 255,  88,  69,   1, 147, 231, 245,
+      190,  42,  72, 239, 135, 218, 167, 176, 231,
+       63, 110,  55,  80, 234,   5,   0,   0,   0,
+        2
+    ],
+    signature: Uint8Array(71) [
+       48,  69,   2,  33,   0, 252, 161,  34,  21, 12,  14,  40,
+      212,  77, 127, 115, 122,  73,  78,  78, 134, 26,  18,  47,
+      125, 244,  35,  64, 224, 167,  47,  69,  20, 16, 253, 233,
+      206,   2,  32,  30,  60, 144, 225, 192, 214, 36, 109,  87,
+      134, 181, 209, 203,  31,  55, 240, 100,  69, 57,  66, 134,
+      148, 148, 187,  21,  29,   9, 106, 192, 216, 79, 232
+    ]
+  }
+}
+    ✓ P-5
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Check that authData.flags have UV flag set
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+
+  
+
+        Authr-ClientPin1-Policy
+
+        Check authenticator correctly implementing PinProtocol security policies
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '26c8c13e578ec20786ff9f2604559d64c3f606e164afaca6f7c7ee8e255596d3',
+      '-3': 'fd7d63ad05fbfd63806224fbb47a2631ced6b88cbe18a7f7f84d67864acbe0fc'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  38, 200, 193,  62,  87, 142, 194,   7, 134, 255, 159,
+     38,   4,  85, 157, 100, 195, 246,   6, 225, 100, 175, 172,
+    166, 247, 199, 238, 142,  37,  85, 150, 211,  34,  88,  32,
+    253, 125,  99, 173,   5, 251, 253,  99, 128,  98,  36, 251,
+    180, 122,  38,  49, 206, 214, 184, 140, 190,  24, 167, 247,
+    248,  77, 103, 134,  74, 203, 224, 252
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a50102033818200121582023005c346d1e9e6613dae8438735346d2b04e82abe0f573e90cb3d018d3c12a5225820ae725327e1d731f6b41c0b09a30d707d27ac44dce3a11f170fad31775128e9e304507329ec199c74c8d34f124545a8fb6d41055840cebf7cbb5ca315b2f40730034a8c0507cf35e642f45f4c2b18624b75ba98747005c3df578088f1002db80b9cf9ca522f4275b4d9a93c5236f4f7b5aa83c82a5f {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '23005c346d1e9e6613dae8438735346d2b04e82abe0f573e90cb3d018d3c12a5',
+    '-3': 'ae725327e1d731f6b41c0b09a30d707d27ac44dce3a11f170fad31775128e9e3'
+  },
+  '4': '7329ec199c74c8d34f124545a8fb6d41',
+  '5': 'cebf7cbb5ca315b2f40730034a8c0507cf35e642f45f4c2b18624b75ba98747005c3df578088f1002db80b9cf9ca522f4275b4d9a93c5236f4f7b5aa83c82a5f'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {},
+  cborResponseStruct: {},
+  cborBuffer: Uint8Array(1) [ 160 ],
+  response: {}
+}
+    ✓ P-1
+
+        Try setting new pin, that is of size between minPINLength+1 and 63 characters, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00)
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'eb5cc9f2960e8f0a5cc167ed3a4c54e04e4fa5001e4bd93e8f9a34ffbcf3c1d8',
+      '-3': '139d811dc5d20ec94b1c24d62d97fbc3daa7826a85f31aa0a1c1ee9d439face9'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 235,  92, 201, 242, 150,  14, 143,  10,  92, 193, 103,
+    237,  58,  76,  84, 224,  78,  79, 165,   0,  30,  75, 217,
+     62, 143, 154,  52, 255, 188, 243, 193, 216,  34,  88,  32,
+     19, 157, 129,  29, 197, 210,  14, 201,  75,  28,  36, 214,
+     45, 151, 251, 195, 218, 167, 130, 106, 133, 243,  26, 160,
+    161, 193, 238, 157,  67, 159, 172, 233
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a501020338182001215820093b9e18933032ff2a22b67111e439191e1ee86550e720fbee96a258679485e3225820070d1e556cdf92c598a8835837106cd954583e0a3f22d811787fb3bafb3884930450a0fa19181f4ae9cf6a87e206776795d90558400791f1c3727a22b17eff7af9886b8f2aca32914c1e0477237aac8cdb4186fc23005cea9a1fc7f6642151a56ff608da143e9c837a13fa7d2fe2c48746df09bb3a {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '093b9e18933032ff2a22b67111e439191e1ee86550e720fbee96a258679485e3',
+    '-3': '070d1e556cdf92c598a8835837106cd954583e0a3f22d811787fb3bafb388493'
+  },
+  '4': 'a0fa19181f4ae9cf6a87e206776795d9',
+  '5': '0791f1c3727a22b17eff7af9886b8f2aca32914c1e0477237aac8cdb4186fc23005cea9a1fc7f6642151a56ff608da143e9c837a13fa7d2fe2c48746df09bb3a'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 55,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+    ✓ F-1
+
+        Try setting new pin, that is less than 4 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'e8cd61d260a72e9665acecb523b35f4554f57f23020574ff13c7a14c4cb88647',
+      '-3': 'dd56ed0ec3a1b1795009dbb4bbd6136f614d1cecd8e8d4335fbd561e1ee35fbe'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 232, 205,  97, 210,  96, 167,  46, 150, 101, 172, 236,
+    181,  35, 179,  95,  69,  84, 245, 127,  35,   2,   5, 116,
+    255,  19, 199, 161,  76,  76, 184, 134,  71,  34,  88,  32,
+    221,  86, 237,  14, 195, 161, 177, 121,  80,   9, 219, 180,
+    187, 214,  19, 111,  97,  77,  28, 236, 216, 232, 212,  51,
+     95, 189,  86,  30,  30, 227,  95, 190
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a501020338182001215820beb0ed638ea4260a48f7b380064ab2e62764d00e96be1af9c5b0616a83c705c5225820e2a4e8e9a0bf6c7478cd26ad040190e9d6e21ba12ccff4ef40a8637dec157c330450234bc780696345185e50f7ba553fb7dc05584054443e574503c508eb48edf99f5d8cc1817db6a1d0bf1241bb2bc65e7a9efa22acedbeab5db05eb303a21f4981b99b58450b7f95784e1b96a7e786af3de83a36 {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'beb0ed638ea4260a48f7b380064ab2e62764d00e96be1af9c5b0616a83c705c5',
+    '-3': 'e2a4e8e9a0bf6c7478cd26ad040190e9d6e21ba12ccff4ef40a8637dec157c33'
+  },
+  '4': '234bc780696345185e50f7ba553fb7dc',
+  '5': '54443e574503c508eb48edf99f5d8cc1817db6a1d0bf1241bb2bc65e7a9efa22acedbeab5db05eb303a21f4981b99b58450b7f95784e1b96a7e786af3de83a36'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 55,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+    ✓ F-2
+
+        Try setting new pin, that is bigger than 63 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)
+
+    
+
+  
+
+        Authr-ClientPin1-GetRetries
+
+        Test authenticatorClientPin(0x06), of version 0x01 support of getRetries(0x01) command
+
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'cb457f602186f89225f05d27fbd7247e593d3375987098581018782ee22e8774',
+      '-3': 'dee171ac0c6d1691ff63cbc193d49833c537028f496265c0b71d6744dc1fbdbc'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 203,  69, 127,  96,  33, 134, 248, 146,  37, 240,  93,
+     39, 251, 215,  36, 126,  89,  61,  51, 117, 152, 112, 152,
+     88,  16,  24, 120,  46, 226,  46, 135, 116,  34,  88,  32,
+    222, 225, 113, 172,  12, 109,  22, 145, 255,  99, 203, 193,
+    147, 212, 152,  51, 197,  55,   2, 143,  73,  98, 101, 192,
+    183,  29, 103,  68, 220,  31, 189, 188
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a50102033818200121582073dc6b1aaba9a3aa014a8a5dad5f31a5c7f341ffa552af7041400bb664a2794b225820664c581c79c626bbe130e495755de1b41f46adac109e104ec85aaf355bafd0e204501a24b7b343231a132e597db0d1e65ee5055840f914f85e409e98075b3087fa0195f62c404a561d98f489d5c18ef5627fcd62ffcceaa37e72bf236d93fa9badec27a3a66dd06f7b3bda3f3a4e5432b5fea965b1 {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '73dc6b1aaba9a3aa014a8a5dad5f31a5c7f341ffa552af7041400bb664a2794b',
+    '-3': '664c581c79c626bbe130e495755de1b41f46adac109e104ec85aaf355bafd0e2'
+  },
+  '4': '1a24b7b343231a132e597db0d1e65ee5',
+  '5': 'f914f85e409e98075b3087fa0195f62c404a561d98f489d5c18ef5627fcd62ffcceaa37e72bf236d93fa9badec27a3a66dd06f7b3bda3f3a4e5432b5fea965b1'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {},
+  cborResponseStruct: {},
+  cborBuffer: Uint8Array(1) [ 160 ],
+  response: {}
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010201 { '1': 1, '2': 1 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: { '3': 8 },
+  cborResponseStruct: { '3': 8 },
+  cborBuffer: Uint8Array(3) [ 161, 3, 8 ],
+  response: { pinRetries: 8 }
+}
+    ✓ P-1
+
+        Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and:
+            (a) check that authenticatorClientPin_Response contains "retries" field
+            (b) authenticatorClientPin_Response.retries is of type NUMBER
+            (c) authenticatorClientPin_Response.retries is 8 or less!
+
+    
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': 'cb457f602186f89225f05d27fbd7247e593d3375987098581018782ee22e8774',
+      '-3': 'dee171ac0c6d1691ff63cbc193d49833c537028f496265c0b71d6744dc1fbdbc'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 203,  69, 127,  96,  33, 134, 248, 146,  37, 240,  93,
+     39, 251, 215,  36, 126,  89,  61,  51, 117, 152, 112, 152,
+     88,  16,  24, 120,  46, 226,  46, 135, 116,  34,  88,  32,
+    222, 225, 113, 172,  12, 109,  22, 145, 255,  99, 203, 193,
+    147, 212, 152,  51, 197,  55,   2, 143,  73,  98, 101, 192,
+    183,  29, 103,  68, 220,  31, 189, 188
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158208b9bce948cd99f10d75e3840b2ef45c2c3340e86cbccd333333c3663efb2ee1a225820873775224b0f86bd47103f3aa3da16890c3d302a0ef972e1dad04e07956392680650df4a6416fd8c81d09faec3fc9237aafe {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '8b9bce948cd99f10d75e3840b2ef45c2c3340e86cbccd333333c3663efb2ee1a',
+    '-3': '873775224b0f86bd47103f3aa3da16890c3d302a0ef972e1dad04e0795639268'
+  },
+  '6': 'df4a6416fd8c81d09faec3fc9237aafe'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 49,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '137de751d6fa447f5cf0f8763c7a71dcea9be2a8a7e8e405c78b714101d05850',
+      '-3': '64085ed0d180feb0eaa3655ad230f1e7c5cce45444b4b41fef9c0b735142a135'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  19, 125, 231,  81, 214, 250,  68, 127,  92, 240, 248,
+    118,  60, 122, 113, 220, 234, 155, 226, 168, 167, 232, 228,
+      5, 199, 139, 113,  65,   1, 208,  88,  80,  34,  88,  32,
+    100,   8,  94, 208, 209, 128, 254, 176, 234, 163, 101,  90,
+    210,  48, 241, 231, 197, 204, 228,  84,  68, 180, 180,  31,
+    239, 156,  11, 115,  81,  66, 161,  53
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158200ea75a2b82aac64d4f455de024c141f4c72f5e5d229af12a438bd60ff2f9c392225820dd77a66f548d608c9b1866dc4ad7f02ff7bbafc1961c95c72e931064c19b84f8065072c9416a40f3b6fefbfef479292c4c7f {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '0ea75a2b82aac64d4f455de024c141f4c72f5e5d229af12a438bd60ff2f9c392',
+    '-3': 'dd77a66f548d608c9b1866dc4ad7f02ff7bbafc1961c95c72e931064c19b84f8'
+  },
+  '6': '72c9416a40f3b6fefbfef479292c4c7f'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 49,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010201 { '1': 1, '2': 1 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: { '3': 6 },
+  cborResponseStruct: { '3': 6 },
+  cborBuffer: Uint8Array(3) [ 161, 3, 6 ],
+  response: { pinRetries: 6 }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '7b8a63f1d14a1f1fc75e5b68e690bd31cb8428d80ba593b23c8e80876b27c5b2',
+      '-3': 'cd5930675a4e38a4608ea0ee3aad9faef5957f261e87eebf88c9a14fd7fb8488'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 123, 138,  99, 241, 209,  74,  31,  31, 199,  94,  91,
+    104, 230, 144, 189,  49, 203, 132,  40, 216,  11, 165, 147,
+    178,  60, 142, 128, 135, 107,  39, 197, 178,  34,  88,  32,
+    205,  89,  48, 103,  90,  78,  56, 164,  96, 142, 160, 238,
+     58, 173, 159, 174, 245, 149, 127,  38,  30, 135, 238, 191,
+    136, 201, 161,  79, 215, 251, 132, 136
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158206d583ec92e2742fde450728807721bdb88055033d8e4e9bd9a3b9c7b4c7d99c72258201912c7697da03dfd3faf56d6076ae6f3f568cdaba7651eae33ac96938da4ded00650b8d8ba67c3e245122d77a5ff2efa533c {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '6d583ec92e2742fde450728807721bdb88055033d8e4e9bd9a3b9c7b4c7d99c7',
+    '-3': '1912c7697da03dfd3faf56d6076ae6f3f568cdaba7651eae33ac96938da4ded0'
+  },
+  '6': 'b8d8ba67c3e245122d77a5ff2efa533c'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '50fc285565dece52bcfde7996d1e80bee6b0fea7a222cedab24ea816908b791d'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+       80, 252,  40,  85, 101, 222, 206,
+       82, 188, 253, 231, 153, 109,  30,
+      128, 190, 230, 176, 254, 167, 162,
+       34, 206, 218, 178,  78, 168,  22,
+      144, 139, 121,  29
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,  80, 252,  40,  85,
+    101, 222, 206,  82, 188, 253, 231, 153,
+    109,  30, 128, 190, 230, 176, 254, 167,
+    162,  34, 206, 218, 178,  78, 168,  22,
+    144, 139, 121,  29
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+       80, 252,  40,  85, 101, 222, 206,
+       82, 188, 253, 231, 153, 109,  30,
+      128, 190, 230, 176, 254, 167, 162,
+       34, 206, 218, 178,  78, 168,  22,
+      144, 139, 121,  29
+    ]
+  }
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    249, 130, 220, 136,  54, 77, 206,  85,
+    185, 164,  56, 152,  39, 36,  55, 131,
+    164,   8, 244, 132, 131, 68, 186, 119,
+     70,  74, 125, 151,  60, 21, 155, 241
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'excusespurious.nu'
+  },
+  '3': {
+    id: Uint8Array(32) [
+       66, 190, 111,  50, 145, 122, 216, 182,
+       86, 252,  93,  60, 214,  49, 104,  49,
+       63,  94, 215, 213, 115, 133,  84,  51,
+      255, 161, 253, 142, 212, 216, 216,  11
+    ],
+    name: 'stanford.mcguffie@hairgrape.ms',
+    displayName: 'Stanford Mcguffie'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': undefined,
+  '8': Uint8Array(16) [
+    145, 229, 188, 91,  83, 180,
+     45,  30,  69, 34, 227, 166,
+     79, 168, 206, 22
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a6015820f982dc88364dce55b9a4389827243783a408f4848344ba77464a7d973c159bf102a26269647165786375736573707572696f75732e6e75646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a3626964582042be6f32917ad8b656fc5d3cd63168313f5ed7d573855433ffa1fd8ed4d8d80b646e616d65781e7374616e666f72642e6d63677566666965406861697267726170652e6d736b646973706c61794e616d65715374616e666f7264204d636775666669650481a263616c672664747970656a7075626c69632d6b6579085091e5bc5b53b42d1e4522e3a64fa8ce160901 {
+  '1': 'f982dc88364dce55b9a4389827243783a408f4848344ba77464a7d973c159bf1',
+  '2': {
+    id: 'excusespurious.nu',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '42be6f32917ad8b656fc5d3cd63168313f5ed7d573855433ffa1fd8ed4d8d80b',
+    name: 'stanford.mcguffie@hairgrape.ms',
+    displayName: 'Stanford Mcguffie'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '8': '91e5bc5b53b42d1e4522e3a64fa8ce16',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 0,
+  type: 'MakeCredential',
+  cborResponse: {
+    '1': 'packed',
+    '2': 'a8d0c30ce8d6ddc5065f91dd56759a80ea33afbe19666725748d48ab34ac5d0d4500000001010203040506070801020304050607080020ce1165f2c1412e880e0a207e9192ed3af45e3d5a718adf08bdd08cc434af70ada5010203262001215820c946818a71cab8d96ccd0ce5c017d5e1206afd49c6e3dfadb61768705600ebad2258205b0b067d84d68859afa871b1b76c273191a44fc0ca3d45b958b53e426b9fed2f',
+    '3': {
+      alg: -7,
+      sig: '304502207f573f1d07da857787ffcd903197ba62d865423b84c8b3bfb470e22bc2218e08022100a38286fb777d5858feaed1ae46e52c029d173654f5f74b311c1b7c7e91642797',
+      x5c: [Array]
+    }
+  },
+  cborResponseStruct: {
+    '1': 'packed',
+    '2': Uint8Array(164) [
+      168, 208, 195,  12, 232, 214, 221, 197,   6,  95, 145, 221,
+       86, 117, 154, 128, 234,  51, 175, 190,  25, 102, 103,  37,
+      116, 141,  72, 171,  52, 172,  93,  13,  69,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 206,  17, 101, 242, 193,
+       65,  46, 136,  14,  10,  32, 126, 145, 146, 237,  58, 244,
+       94,  61,  90, 113, 138, 223,   8, 189, 208, 140, 196,  52,
+      175, 112, 173, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32, 201,  70, 129,
+      ... 64 more items
+    ],
+    '3': { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  },
+  cborBuffer: Uint8Array(790) [
+    163,   1, 102, 112,  97,  99, 107, 101, 100,   2,  88, 164,
+    168, 208, 195,  12, 232, 214, 221, 197,   6,  95, 145, 221,
+     86, 117, 154, 128, 234,  51, 175, 190,  25, 102, 103,  37,
+    116, 141,  72, 171,  52, 172,  93,  13,  69,   0,   0,   0,
+      1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+      4,   5,   6,   7,   8,   0,  32, 206,  17, 101, 242, 193,
+     65,  46, 136,  14,  10,  32, 126, 145, 146, 237,  58, 244,
+     94,  61,  90, 113, 138, 223,   8, 189, 208, 140, 196,  52,
+    175, 112, 173, 165,
+    ... 690 more items
+  ],
+  response: {
+    fmt: 'packed',
+    authData: Uint8Array(164) [
+      168, 208, 195,  12, 232, 214, 221, 197,   6,  95, 145, 221,
+       86, 117, 154, 128, 234,  51, 175, 190,  25, 102, 103,  37,
+      116, 141,  72, 171,  52, 172,  93,  13,  69,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 206,  17, 101, 242, 193,
+       65,  46, 136,  14,  10,  32, 126, 145, 146, 237,  58, 244,
+       94,  61,  90, 113, 138, 223,   8, 189, 208, 140, 196,  52,
+      175, 112, 173, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32, 201,  70, 129,
+      ... 64 more items
+    ],
+    attStmt: { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010201 { '1': 1, '2': 1 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: { '3': 8 },
+  cborResponseStruct: { '3': 8 },
+  cborBuffer: Uint8Array(3) [ 161, 3, 8 ],
+  response: { pinRetries: 8 }
+}
+    ✓ P-2
+        
+        Send two CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check that each request fails with error CTAP2_ERR_PIN_INVALID(0x31).
+        
+        Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, and check that retries have decreased by two.
+        
+        Register a valid authenticatorMakeCred(0x01) using the valid PIN. Check that retries counter is reset and back to the original retries counter.
+
+    
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '7b8a63f1d14a1f1fc75e5b68e690bd31cb8428d80ba593b23c8e80876b27c5b2',
+      '-3': 'cd5930675a4e38a4608ea0ee3aad9faef5957f261e87eebf88c9a14fd7fb8488'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 123, 138,  99, 241, 209,  74,  31,  31, 199,  94,  91,
+    104, 230, 144, 189,  49, 203, 132,  40, 216,  11, 165, 147,
+    178,  60, 142, 128, 135, 107,  39, 197, 178,  34,  88,  32,
+    205,  89,  48, 103,  90,  78,  56, 164,  96, 142, 160, 238,
+     58, 173, 159, 174, 245, 149, 127,  38,  30, 135, 238, 191,
+    136, 201, 161,  79, 215, 251, 132, 136
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a50102033818200121582087a0f5e8b038e2fb0ac2d6b12700534ad2200f3b68e3dd60ed2098d169669610225820bfaad684c78a5e375e7b81b8e1b888737a6a7709e8ef3f35ed2964c10c5e7cfb0650bbebc5f36c84cf361a199d946b1d9303 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '87a0f5e8b038e2fb0ac2d6b12700534ad2200f3b68e3dd60ed2098d169669610',
+    '-3': 'bfaad684c78a5e375e7b81b8e1b888737a6a7709e8ef3f35ed2964c10c5e7cfb'
+  },
+  '6': 'bbebc5f36c84cf361a199d946b1d9303'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 49,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '3944c29f722a830da1cd1b514782b95a8156e68357fab9d0e18ad894e1994967',
+      '-3': 'bdcd4d6b41f1535d3bcc68d53a90a4281f7799ff26af1c26754096f24904cb3c'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  57,  68, 194, 159, 114,  42, 131,  13, 161, 205,  27,
+     81,  71, 130, 185,  90, 129,  86, 230, 131,  87, 250, 185,
+    208, 225, 138, 216, 148, 225, 153,  73, 103,  34,  88,  32,
+    189, 205,  77, 107,  65, 241,  83,  93,  59, 204, 104, 213,
+     58, 144, 164,  40,  31, 119, 153, 255,  38, 175,  28,  38,
+    117,  64, 150, 242,  73,   4, 203,  60
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158209c295fcce260eab9051b302baaaa8498afa0c01734ae3bfb625abccfd472549d225820183ff475cb46e68b142d98aac9e71f9ed62279011cb39a9a3d958499375c531a0650e32203d4a5c858c2c1e93ce15d2792d1 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '9c295fcce260eab9051b302baaaa8498afa0c01734ae3bfb625abccfd472549d',
+    '-3': '183ff475cb46e68b142d98aac9e71f9ed62279011cb39a9a3d958499375c531a'
+  },
+  '6': 'e32203d4a5c858c2c1e93ce15d2792d1'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 49,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '00f30b2fffb3c810f724a0dc5cc98eae0a63da1eae2ea8f711c90996c7761417',
+      '-3': '51ca6cd69ec3cbfd2c2dcc41abce9f75669c2cd7e72ee9064f398e794adf9886'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,   0, 243,  11,  47, 255, 179, 200,  16, 247,  36, 160,
+    220,  92, 201, 142, 174,  10,  99, 218,  30, 174,  46, 168,
+    247,  17, 201,   9, 150, 199, 118,  20,  23,  34,  88,  32,
+     81, 202, 108, 214, 158, 195, 203, 253,  44,  45, 204,  65,
+    171, 206, 159, 117, 102, 156,  44, 215, 231,  46, 233,   6,
+     79,  57, 142, 121,  74, 223, 152, 134
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a50102033818200121582096d00bcc22e5aa4523cf3abb0e1edd504896c4cf8f93f574b88cf55f278b4a362258204aae85ef5d44a83af19061a4901d0ecaaf575214fa6a853248ee3b527c53911a06501bf30506c68d2950584f7bf51bb5d410 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '96d00bcc22e5aa4523cf3abb0e1edd504896c4cf8f93f574b88cf55f278b4a36',
+    '-3': '4aae85ef5d44a83af19061a4901d0ecaaf575214fa6a853248ee3b527c53911a'
+  },
+  '6': '1bf30506c68d2950584f7bf51bb5d410'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 52,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '1da6e6e93a0fe2f7edc58d91e533b87256c60b64a4fa143fcf1402fde280e37f',
+      '-3': 'fa4210c4ac7bbd2e5df78075df0244759a15bb3e595cfdf844301f8e6864f8cc'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  29, 166, 230, 233,  58,  15, 226, 247, 237, 197, 141,
+    145, 229,  51, 184, 114,  86, 198,  11, 100, 164, 250,  20,
+     63, 207,  20,   2, 253, 226, 128, 227, 127,  34,  88,  32,
+    250,  66,  16, 196, 172, 123, 189,  46,  93, 247, 128, 117,
+    223,   2,  68, 117, 154,  21, 187,  62,  89,  92, 253, 248,
+     68,  48,  31, 142, 104, 100, 248, 204
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820d07846a2656d2375804677eb3d636ea37668cdc599ff1b14a533a37fc672af3a225820136300d7e7faa9433b08cbfbd651d8fea4d033c69aaa3b39529535ed4dcdb24506503f9b4cc496d9151878f828a20a0dc2df {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'd07846a2656d2375804677eb3d636ea37668cdc599ff1b14a533a37fc672af3a',
+    '-3': '136300d7e7faa9433b08cbfbd651d8fea4d033c69aaa3b39529535ed4dcdb245'
+  },
+  '6': '3f9b4cc496d9151878f828a20a0dc2df'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 52,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '68196d043126072710df442650250417ac43463769ea6d17c7b13a3fc5d200b3',
+      '-3': '35c8552fce98fdd8dd6f355d8d395cc1809b972246f3303944e085a26134323d'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 104,  25, 109,   4,  49,  38,   7,  39,  16, 223,  68,
+     38,  80,  37,   4,  23, 172,  67,  70,  55, 105, 234, 109,
+     23, 199, 177,  58,  63, 197, 210,   0, 179,  34,  88,  32,
+     53, 200,  85,  47, 206, 152, 253, 216, 221, 111,  53,  93,
+    141,  57,  92, 193, 128, 155, 151,  34,  70, 243,  48,  57,
+     68, 224, 133, 162,  97,  52,  50,  61
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820abc06b638dacc8c0c7c2ba075ded6d034bf927aa63fd89e7fad5704684458e1e225820f3aa37c7cbe0020ce98bfb3a1ee9154a3cf49a4ed7e9b0eaf44e7e1728312ef0065042345dccd1d1be99f9af4e34e375a345 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'abc06b638dacc8c0c7c2ba075ded6d034bf927aa63fd89e7fad5704684458e1e',
+    '-3': 'f3aa37c7cbe0020ce98bfb3a1ee9154a3cf49a4ed7e9b0eaf44e7e1728312ef0'
+  },
+  '6': '42345dccd1d1be99f9af4e34e375a345'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 52,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '830567532beda32cb3cf3812657bb90c2148ab3535054e038887c530f84ddba8',
+      '-3': '2bd6384e8242725280530865f99183183b55e0a4935d0c1816111bd3b4c04cae'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32, 131,   5, 103,  83,  43, 237, 163,  44, 179, 207,  56,
+     18, 101, 123, 185,  12,  33,  72, 171,  53,  53,   5,  78,
+      3, 136, 135, 197,  48, 248,  77, 219, 168,  34,  88,  32,
+     43, 214,  56,  78, 130,  66, 114,  82, 128,  83,   8, 101,
+    249, 145, 131,  24,  59,  85, 224, 164, 147,  93,  12,  24,
+     22,  17,  27, 211, 180, 192,  76, 174
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158206652594cf75fe55d4a70ad01d4d93f2460942b0990024b8625598080c3bbe1f12258208a4b36db5b714bc103cbe9c8be6e357bfaf8e2614844a4d367cd16fff7a7ef2a0650d287c15f20baf82c8e7f5319758783d8 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '6652594cf75fe55d4a70ad01d4d93f2460942b0990024b8625598080c3bbe1f1',
+    '-3': '8a4b36db5b714bc103cbe9c8be6e357bfaf8e2614844a4d367cd16fff7a7ef2a'
+  },
+  '6': 'd287c15f20baf82c8e7f5319758783d8'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 52,
+  type: 'ClientPIN',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+    1) P-3
+        
+        Send three CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check and check that for the last one authenticator returns CTAP2_ERR_PIN_AUTH_BLOCKED(0x34).
+    
+    
+    - P-4
+
+        Keep sending getPinToken subCommand with invalid pin until retries counter reaches 0.
+
+        Send CTAP2 authenticatorClientPin(0x01) message with getPinToken(0x01) subCommand, that contains valid pinCode, and check that authenticator returns error CTAP2_ERR_PIN_BLOCKED(0x32)
+    
+        if (originalRetriesCounter <= 3)
+    
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+
+
+  11 passing (65ms)
+  1 pending
+  1 failing
+
+  1) 
+
+        Authr-ClientPin1-GetRetries
+
+        Test authenticatorClientPin(0x06), of version 0x01 support of getRetries(0x01) command
+
+    
+       P-3
+        
+        Send three CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check and check that for the last one authenticator returns CTAP2_ERR_PIN_AUTH_BLOCKED(0x34).
+    
+    :
+
+      Expected authenticator to succeed with CTAP2_ERR_PIN_INVALID(49). Got CTAP2_ERR_PIN_AUTH_BLOCKED(52)
+      + expected - actual
+
+      -52
+      +49
+      
+      at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6794:24)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+
+
+FINAL {"suites":4,"tests":13,"passes":11,"pending":1,"failures":1,"start":"2026-10-27T22:54:25.721Z","end":"2026-10-27T22:54:25.786Z","duration":65}

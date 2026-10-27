@@ -1,0 +1,1296 @@
+{
+  "suite": "CTAP 2.1",
+  "toolVersion": "1.9.2-2",
+  "rawStats": {
+    "tests": 166,
+    "passes": 77,
+    "pending": 60,
+    "failures": 30
+  },
+  "notes": [
+    "Development run of FIDO Conformance Tools Electron v1.9.2-2 CTAP 2.1 authenticator protocol test files, using the tool\u2019s Mocha runner, sandbox, helpers, CBOR and crypto implementations in Electron Node VM mode. No test assertions were changed.",
+    "Default Chromium harness profile: packed ES256 attestation, automatic user presence, PIN protocol 1, resident credential capacity 3. Each test group ran in a new harness process; tests within each group retained the suite\u2019s normal sequencing.",
+    "Excluded physical HID/NFC/BLE transport tests and Metadata certification tests. Unsupported features were skipped by the suite. CTAP 2.3 and MTC/PQC were not covered.",
+    "Development metadata used the local PQC metadata as a starting point, limited algorithms to ES256/COSE, added external passcode verification and software protection, and populated authenticatorGetInfo from the live device. Consequently GetInfo comparisons are consistency checks, not independent validation of vendor metadata.",
+    "Counts are raw Mocha results: failures include one hook failure, so failures + passes + pending exceeds the test count by one. A hook failure can prevent later cases from running.",
+    "ExtensionsHMAC crashed the authenticator with SIGABRT at virtual_ctap2_device.cc:3265 (NOTREACHED during malformed encrypted-salt handling). The suite\u2019s F-2 negative test accepted the rejected promise as an expected error and reported a pass; that pass is not valid evidence of conformance. A later failure in that group was caused by the closed harness.",
+    "ExtensionsHMAC2 forces PIN protocol 2 even though this profile advertises protocol 1; its six failures are profile incompatibilities or cascades, not evidence that advertised PIN protocol 1 is unsupported.",
+    "No Chromium source changes were made during this run. Results are development diagnostics, not an official certification result."
+  ],
+  "groups": [
+    {
+      "group": "General",
+      "stats": {
+        "suites": 1,
+        "tests": 3,
+        "passes": 3,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-10-27T22:54:20.561Z",
+        "end": "2026-10-27T22:54:20.569Z",
+        "duration": 8
+      },
+      "results": [
+        {
+          "title": "Authr-Generic-1 Generic FIDO protocol tests P-1 Send a valid CTAP2 GetInfo request, wait for the response and check that: (a) CTAP2 responseCode is CTAP1_ERR_SUCCESS(0x00) (b) Check that version(0x01) field is presented and is set to \"FIDO_2_1\" (c) Check that aaguid(0x03) field is presented and is 16 bytes long & Check that aaguid(0x03) field value matches Metadata.aaguid (d) If GetInfo contains extensions(0x03) field, check that its of type SEQUENCE, and only contains STRINGS (e) If GetInfo contains options(0x04) field, check that its of type MAP (f) If GetInfo contains maxMsgSize(0x05) field, check that its of type NUMBER (g) If GetInfo contains pinUvAuthProtocols(0x06) field, check that its of type SEQUENCE, and only contains NUMBERS (h) If GetInfo contains maxCredentialCountList(0x07) check that its of type NUMBER, greater than 0 (i) If GetInfo contains maxCredentialIdLength(0x08) check that its of type NUMBER, greater than 0 (j) If GetInfo contains 'transports' (0x09) check that its of type SEQUENCE, and only contains STRINGS (k) If GetInfo contains 'algorithms'(0x0A) check that its of type SEQUENCE, and not empty, and doesn't contain duplicates (l) If GetInfo contains 'maxSerializedLargeBlobArray'(0x0B) (m) If GetInfo contains 'forcePINChange'(0x0C) (n) If GetInfo contains 'minPINLength'(0x0D) (o) If GetInfo contains 'firmwareVersion'(0x0E) (p) If GetInfo contains 'maxCredBlobLength'(0x0F) (q) If GetInfo contains 'maxRPIDsForSetMinPINLength'(0x10) (r) If GetInfo contains 'preferredPlatformUvAttempts'(0x11) (s) If GetInfo contains 'uvModality'(0x12) (t) If GetInfo contains 'certifications'(0x13) (u) If GetInfo contains 'remainingDiscoverableCredentials'(0x14) (v) If GetInfo contains 'vendorPrototypeConfigCommands'(0x15) (---) Check that GetInfo response equals to the metadata.authenticatorGetInfo => Included within relevant block of (*) lettered test",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "Authr-Generic-1 Generic FIDO protocol tests P-2 If GetInfo contains Options field: Check that every option in options is of type Boolean. Additionally: (a) If \"up\" is set to true, check that metadata.userVerificationDetails contains VerificationMethodDescriptor that has \"userVerification\" set to \"presence_internal\" (b) If \"uv\" is set to true, check that metadata.userVerificationDetails contains VerificationMethodDescriptor that has \"userVerification\" set to either of \"fingerprint_internal\", \"voiceprint_internal\", \"faceprint_internal\", \"eyeprint_internal\", \"handprint_internal\", \"pattern_internal\", \"pattern_external\", \"passcode_internal\", \"passcode_external\" (c) If \"uv\" and \"up\" are false, check that metadata.userVerificationDetails contains VerificationMethodDescriptor that has \"userVerification\" set to \"none\"",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-Generic-1 Generic FIDO protocol tests P-3 If GetInfo contains pinUvAuthProtocols, and it is not empty, check that Metadata.userVerificationDetails contains VerificationMethodDescriptor set to \"passcode_external\"",
+          "status": "passed",
+          "duration": 0
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/General/run.log"
+    },
+    {
+      "group": "MakeCredentialRequest",
+      "stats": {
+        "suites": 6,
+        "tests": 38,
+        "passes": 31,
+        "pending": 1,
+        "failures": 6,
+        "start": "2026-10-27T22:54:20.821Z",
+        "end": "2026-10-27T22:54:21.043Z",
+        "duration": 222
+      },
+      "results": [
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP P-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "passed",
+          "duration": 3
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-1 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"clientDataHash\" is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 3
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-2 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"clientDataHash\" is NOT of type BYTE ARRAY, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-3 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"rp\" is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-4 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"rp\" is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-5 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"user\" is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-6 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"user\" is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-7 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-8 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" is NOT of type ARRAY, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-9 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that is NOT of type SEQUENCE, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-10 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"extensions\" that is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-1 Test authenticatorMakeCredential(0x01) request MAP F-11 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"options\" that is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-2 Test PublicKeyCredentialRpEntity in MakeCredential request F-1 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"rp.id\" is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-2 Test PublicKeyCredentialRpEntity in MakeCredential request F-2 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"rp.name\" is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-2 Test PublicKeyCredentialRpEntity in MakeCredential request F-3 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"rp.icon\" is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-3 Test PublicKeyCredentialUserEntity in MakeCredential request F-1 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"user.id\" is NOT of type BYTE ARRAY, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-3 Test PublicKeyCredentialUserEntity in MakeCredential request F-2 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"user.name\" is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-3 Test PublicKeyCredentialUserEntity in MakeCredential request F-3 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"user.displayName\" is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-3 Test PublicKeyCredentialUserEntity in MakeCredential request F-4 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"user.icon\" is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Authenticator succeded when it expected authenticator to fail.: expected 0 to not equal 0",
+            "stack": "AssertionError: Authenticator succeded when it expected authenticator to fail.: expected 0 to not equal 0\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6439:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request P-1 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" with unsupported algorithm listed before supported algorithms, wait for the response, check that Authenticator selects the first supported algorithm and returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-1 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" contains an item of type NOT a MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-2 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" contains a \"PublicKeyCredentialParameters\" with \"type\" field that is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-3 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" contains a \"PublicKeyCredentialParameters\" with \"type\" field that is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-4 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" contains a \"PublicKeyCredentialParameters\" with \"alg\" field is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-5 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" contains a \"PublicKeyCredentialParameters\" with \"alg\" is NOT of type INTEGER, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-6 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\", only containing a \"PublicKeyCredentialParameters\" with \"alg\" set to unsupported by the authenticator algorithm, wait for the response, and check that Authenticator returns error CTAP2_ERR_UNSUPPORTED_ALGORITHM(0x26).",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-4 Test PubKeyCredParams Sequence in MakeCredential request F-7 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"pubKeyCredParams\" contains a \"PublicKeyCredentialParameters\" with \"type\" is NOT set to \"public-key\", wait for the response, and check that Authenticator returns error CTAP2_ERR_UNSUPPORTED_ALGORITHM(0x26).",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Expected authenticator to fail with CTAP2_ERR_UNSUPPORTED_ALGORITHM(38). Got CTAP1_ERR_OTHER(127): expected 127 to equal 38",
+            "stack": "AssertionError: Expected authenticator to fail with CTAP2_ERR_UNSUPPORTED_ALGORITHM(38). Got CTAP1_ERR_OTHER(127): expected 127 to equal 38\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6642:48)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request P-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains \"PublicKeyCredentialDescriptor\" with \"type\" field is NOT set to \"public-key\", wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0x0). Got CTAP1_ERR_OTHER(0x7f): expected 127 to equal 0",
+            "stack": "AssertionError: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0x0). Got CTAP1_ERR_OTHER(0x7f): expected 127 to equal 0\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6713:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request F-1 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains an element that is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request F-2 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains \"PublicKeyCredentialDescriptor\" with \"type\" field is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request F-3 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains \"PublicKeyCredentialDescriptor\" with \"type\" field is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request F-5 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains \"PublicKeyCredentialDescriptor\" with \"id\" field is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request F-6 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains \"PublicKeyCredentialDescriptor\" with \"id\" field is NOT of type ARRAY BUFFER, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Req-5 Test ExcludeList in MakeCredential request F-7 Send CTAP2 authenticatorMakeCredential(0x01) message, with \"excludeList\" that contains \"PublicKeyCredentialDescriptor\" with \"id\" of the previously registered credential, wait for the response, and check that Authenticator returns an error CTAP2_ERR_CREDENTIAL_EXCLUDED(0x19).",
+          "status": "passed",
+          "duration": 3
+        },
+        {
+          "title": "Authr-MakeCred-Req-6 Test Options in MakeCredential request P-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, \"options\" containg an unknown option, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0x0). Got CTAP1_ERR_OTHER(0x7f): expected 127 to equal 0",
+            "stack": "AssertionError: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0x0). Got CTAP1_ERR_OTHER(0x7f): expected 127 to equal 0\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6937:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-MakeCred-Req-6 Test Options in MakeCredential request P-2 If authenticator supports \"uv\" option, send a valid CTAP2 authenticatorMakeCredential(0x01) message, options.uv set to true, wait for the response, check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and check that authenticatorData.flags have UV flag set",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Req-6 Test Options in MakeCredential request P-3 If authenticator supports \"up\" option, send a valid CTAP2 authenticatorMakeCredential(0x01) message, options.up set to true, wait for the response, check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and check that authenticatorData.flags have UP flag set",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP1_ERR_OTHER(127)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP1_ERR_OTHER(127)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-MakeCred-Req-6 Test Options in MakeCredential request F-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, options.up set to false, wait for the response, check that Authenticator returns an error CTAP2_ERR_INVALID_OPTION(0x2C)",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Expected authenticator to fail with CTAP2_ERR_INVALID_OPTION(44). Got CTAP1_ERR_OTHER(127): expected 127 to equal 44",
+            "stack": "AssertionError: Expected authenticator to fail with CTAP2_ERR_INVALID_OPTION(44). Got CTAP1_ERR_OTHER(127): expected 127 to equal 44\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:7007:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/MakeCredentialRequest/run.log"
+    },
+    {
+      "group": "MakeCredentialResponse",
+      "stats": {
+        "suites": 1,
+        "tests": 6,
+        "passes": 4,
+        "pending": 2,
+        "failures": 0,
+        "start": "2026-10-27T22:54:21.301Z",
+        "end": "2026-10-27T22:54:21.434Z",
+        "duration": 133
+      },
+      "results": [
+        {
+          "title": "Authr-MakeCred-Resp-1 Test registration response, and \"packed\" attestation P-01 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, wait for the response, and check that: (a) Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code (b) Response structure can be successfully parsed (c) Response.fmt is of type String (d) Response.fmt is set to either \"packed\", \"tpm\", \"android-key\" or \"android-safetynet\"",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Resp-1 Test registration response, and \"packed\" attestation P-02 Using previously received response, check that: (a) response.authData is of type BYTE ARRAY (b) check that authData is at least (32 + 1 + 4 + 16 + 2 + 16 + 42) bytes long. (c) parse response.authData (d) check that AAGUID matching the one in metadata statement (e) check that authData.rpIdHash matches the sent rpIdHash (f) check that UP(bit 0) flag in flags is set (g) check that AT(bit 6) flag in flags is set, and attestation credential data is presented (h) check that ED(bit 7) flag in flags is not set, and check that there is not Extension Data present (i) check that authData.pubKey is correctly encoded: (j) if public key is an RSA(kty(1) is set to 3) public key, check that: (1) alg(2) is set to algorithm that matches corresponding one in metadata statement (2) contains n(-1) that is of type BYTE STRING (3) contains e(-2) that is of type BYTE STRING (4) does NOT contains ANY other coefficients (k) if public key is an EC2(kty(1) is set to 2) public key, check that: (1) alg(2) is set to algorithm that matches corresponding one in metadata statement (2) crv(-1) field that is set to EC identifier from \"COSE Elliptic Curves\" registry (3) contains x(-2) is of type BYTE STRING, and is 32bytes long (4) contains y(-3) is of type BYTE STRING, and is 32bytes long (5) does NOT contains ANY other coefficients (k) if public key is an OKP(kty(1) is set to 1) public key, check that: (1) alg(2) is set to algorithm that matches corresponding one in metadata statement (2) crv(-1) field that is set to EdDSA identifier from \"COSE Elliptic Curves\" registry (3) contains x(-2) is of type BYTE STRING, and is 32bytes long (5) does NOT contains ANY other coefficients",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-MakeCred-Resp-1 Test registration response, and \"packed\" attestation P-03 Decode \"attStmt\" CBOR MAP and: (a) check that \"alg\" field is presented it matches \"alg\" in PK (b) check that \"sig\" field is presented and it is of type BYTE STRING",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Resp-1 Test registration response, and \"packed\" attestation P-04 If \"x5c\" presented: (a) Check that \"ecdaaKeyId\" is NOT presented (b) Check that \"x5c\" is of type SEQUENCE (c) Check that metadata statement contains \"attestationRootCertificates\" field, and it\u2019s not empty. (d) Check that metadata statement \"attestationTypes\" SEQUENCE contains \"basic_full\" (e) Decode certificate chain (f) If \"x5c\" contains exactly one certificate, check if that certificate is already a member of the metadata.attestationRootCertificates. If it is, skip chain verification (g) Verify certificate chain: (1) For each certificate in the metadata.attestationRootCertificates, attach attestation root to the x5c, and try verifying it. If none produce a valid chain, fail (h) Pick a leaf certificate of the chain and check that: (1) Version is of type INTEGER and is set to 3 (2) Subject-C - is of type UTF8String, and is set to ISO 3166 code specifying the country where the Authenticator vendor is incorporated (UTF8String) (3) Subject-O - is of type UTF8String, and is set to the legal name of the Authenticator vendor (4) Subject-OU - is of type UTF8String, and is set to literal string \u201cAuthenticator Attestation\u201d (5) Subject-CN - is of type UTF8String, and is not empty (6) Basic Constraints extension MUST have the CA component set to false. (7) [TBD] If the related attestation root certificate is used for multiple authenticator models, the Extension OID 1.3.6.1.4.1.45724.1.1.4 (id-fido-gen-ce-aaguid) MUST be present, containing the AAGUID as a 16-byte OCTET STRING. The extension MUST NOT be marked as critical. (8) Check that certificate is not expired, is current(notBefore is set to the past date), and is valid for at least 5 years [TBD] (i) Concatenate authenticatorData and signData to clientDataHash. Using key extracted from leaf certificate, signData verify signature in \"sig\" field.",
+          "status": "passed",
+          "duration": 111
+        },
+        {
+          "title": "Authr-MakeCred-Resp-1 Test registration response, and \"packed\" attestation P-05 If \"ecdaaKeyId\" presented: (a) Check that \"x5c\" is NOT presented (b) Check that metadata statement attestationFormats contains \"ecdaa\" (c) Verify that sig is a valid signature over the concatenation of authenticatorData and clientDataHash using ECDAA-Verify with ECDAA-Issuer public key identified by ecdaaKeyId (see [FIDOEcdaaAlgorithm]).",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-MakeCred-Resp-1 Test registration response, and \"packed\" attestation P-06 If neither \"x5c\" nor \"ecdaaKeyId\" is present, then self attestation is presented, then: (a) Check that metadata statement contains \"attestationRootCertificates\" field, and it\u2019s an empty ARRAY. (b) Check that metadata statement attestationFormats contains \"basic_surrogate\" (c) Concatenate authenticatorData and clientDataHash to signData. Using public key extracted from authenticatorData, signData verify signature in \"sig\" field.",
+          "status": "pending",
+          "duration": 0
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/MakeCredentialResponse/run.log"
+    },
+    {
+      "group": "GetAssertionReq",
+      "stats": {
+        "suites": 3,
+        "tests": 17,
+        "passes": 13,
+        "pending": 2,
+        "failures": 2,
+        "start": "2026-10-27T22:54:21.695Z",
+        "end": "2026-10-27T22:54:21.809Z",
+        "duration": 114
+      },
+      "results": [
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request P-1 Send a valid CTAP2 authenticatorGetAssertion(0x02) message, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request F-1 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"rpId\" is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 3
+        },
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request F-2 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"rpId\" is NOT of type STRING, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request F-3 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"clientDataHash\" is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request F-4 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"clientDataHash\" is NOT of type BYTE ARRAY, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request F-5 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" is NOT of type ARRAY, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-1 Test getAssertion request F-6 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" contains a credential that is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Req-2 Test \"options\" in GetAssertion request P-1 Send a valid CTAP2 authenticatorGetAssertion(0x02) message, \"options\" containg an unknown option, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP1_ERR_OTHER(127)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP1_ERR_OTHER(127)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-GetAssertion-Req-2 Test \"options\" in GetAssertion request P-2 If authenticator supports \"up\" option, send a valid CTAP2 authenticatorGetAssertion(0x02) message, options.up set to true, wait for the response, check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and check that authenticatorData.flags have UP flag set",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Req-2 Test \"options\" in GetAssertion request P-3 If authenticator supports \"uv\" option, send a valid CTAP2 authenticatorGetAssertion(0x02) message, options.uv set to true, wait for the response, check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and check that authenticatorData.flags have UV flag set",
+          "status": "pending",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request P-1 Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" that contains \"PublicKeyCredentialDescriptor\" with \"type\" field is NOT set to \"public-key\", wait for the response, and check that authenticator returns CTAP1_ERR_SUCCESS(0x00) error code",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP1_ERR_OTHER(127)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP1_ERR_OTHER(127)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request F-1 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" that contains an element that is NOT of type MAP, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request F-2 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" that contains \"PublicKeyCredentialDescriptor\" with \"type\" field is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request F-3 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" that contains \"PublicKeyCredentialDescriptor\" with \"type\" field is NOT of type TEXT, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request F-4 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" that contains \"PublicKeyCredentialDescriptor\" with \"id\" field is missing, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request F-5 Send CTAP2 authenticatorGetAssertion(0x02) message, with \"allowList\" that contains \"PublicKeyCredentialDescriptor\" with \"id\" field is NOT of type ARRAY BUFFER, wait for the response, and check that Authenticator returns an error.",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-GetAssertion-Req-3 Test \"allowList\" field in MakeCredential request F-6 If authenticator is Second-Factor only: Send CTAP2 authenticatorGetAssertion(0x02) message, with missing \"allowList\", and check that authenticator returns CTAP2_ERR_NO_CREDENTIALS(0x2E) error code.",
+          "status": "pending",
+          "duration": 0
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/GetAssertionReq/run.log"
+    },
+    {
+      "group": "GetAssertionResp",
+      "stats": {
+        "suites": 1,
+        "tests": 4,
+        "passes": 4,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-10-27T22:54:22.070Z",
+        "end": "2026-10-27T22:54:22.177Z",
+        "duration": 107
+      },
+      "results": [
+        {
+          "title": "Authr-GetAssertion-Resp-1.js Test GetAssertion response P-1 Parse GetAssertion response, and check that: (a) response includes \"signature\" field, and it's of type BYTE STRING (b) response includes \"authData\" field, and it's of type BYTE STRING (c) response MUST not include \"user\", \"credential\" and \"numberOfCredentials\"",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Resp-1.js Test GetAssertion response P-2 Parse GetAssertion_Response.authData and: (a) Check that it's exactly 37 bytes long (b) Check that authData.rpIdHash matches the hash of the GetAssertion_Request.rpId (c) Check that AT flag in authData.flags bitmap is not set",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-GetAssertion-Resp-1.js Test GetAssertion response P-3 Send three valid CTAP2 authenticatorGetAssertion(0x02) request, wait for the responses, and check that response2.counter is bigger than response1.counter, and response3.counter is bigger than response2.counter.",
+          "status": "passed",
+          "duration": 7
+        },
+        {
+          "title": "Authr-GetAssertion-Resp-1.js Test GetAssertion response P-4 Merge authData and clientDataHash, and using previously acquired publicKey verify signature from GetAssertion_Response",
+          "status": "passed",
+          "duration": 78
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/GetAssertionResp/run.log"
+    },
+    {
+      "group": "Reset",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 1,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-10-27T22:54:22.439Z",
+        "end": "2026-10-27T22:54:22.467Z",
+        "duration": 28
+      },
+      "results": [
+        {
+          "title": "Authr-Reset-1 Test authenticator support of Reset command P-1 Successfully execute makeCredential, and test it by sending consequent getAssertion and check that both are succeeding. Send authenticatorReset(0x07) immidietly after, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with credId from the previously registered makeCredential, wait for the response, and check that Authenticator returns CTAP2_ERR_NO_CREDENTIALS(0x2E) error code.",
+          "status": "passed",
+          "duration": 14
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/Reset/run.log"
+    },
+    {
+      "group": "OptionsRK",
+      "stats": {
+        "suites": 1,
+        "tests": 5,
+        "passes": 1,
+        "pending": 1,
+        "failures": 3,
+        "start": "2026-10-27T22:54:22.728Z",
+        "end": "2026-10-27T22:54:22.799Z",
+        "duration": 71
+      },
+      "results": [
+        {
+          "title": "Discoverable Credentials(Resident-Key) Test Discoverable Credentials(Resident-Key) support P-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, \"options\" containg an \"rk\" option set to true, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "passed",
+          "duration": 5
+        },
+        {
+          "title": "Discoverable Credentials(Resident-Key) Test Discoverable Credentials(Resident-Key) support P-2 FOR AUTHENTICATORS WITHOUT A DISPLAY AND PERFORM NO VERIFICATION Send three valid CTAP2 authenticatorMakeCredential(0x01) message, \"options\" containg an \"rk\" option set to true, and if authenticator supports UV option set \"uv\" to false, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with no allowList presented, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains \"numberOfCredentials\" field that is of type Number and is set to 3. Send authenticatorGetNextAssertion(0x08), until numberOfCredentials is 1, retrieve responses and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code for each of the requests. Check that response.user ONLY contains id field and nothing else!",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Discoverable Credentials(Resident-Key) Test Discoverable Credentials(Resident-Key) support P-3 FOR AUTHENTICATORS WITHOUT A DISPLAY AND USE EITHER UV OR CLIENTPIN If UV option is supported, configure UV, else set new pin, and run registrations with pin. Send two valid CTAP2 authenticatorMakeCredential(0x01) message, \"options\" containg an \"rk\" option set to true, and if authenticator supports UV option set \"uv\" to true, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with no allowList presented, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains \"numberOfCredentials\" field that is of type Number and is set to 2. Send authenticatorGetNextAssertion(0x08), until numberOfCredentials is 1, retrieve responses and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code for each of the requests. Check that response.user contains all of the registered userInfo",
+          "status": "failed",
+          "duration": 5,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Discoverable Credentials(Resident-Key) Test Discoverable Credentials(Resident-Key) support P-4 FOR AUTHENTICATORS WITH DISPLAY Send three valid CTAP2 authenticatorMakeCredential(0x01) message, \"options\" containg an \"rk\" option set to true, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send three CTAP2 authenticatorGetAssertion(0x02) messages, with no allowList presented, asking using in a random order to select credentials, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains \"numberOfCredentials\" field that is of type Number and is set to 1.",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Discoverable Credentials(Resident-Key) Test Discoverable Credentials(Resident-Key) support P-5 Create a valid CTAP2 credential, with an \"rk\" option set to true. For the same Relying Party Identifier, overwrite previous credential with new valid rk credential, and check that both values of credId and COSEPublicKey, was changed.",
+          "status": "failed",
+          "duration": 3,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/OptionsRK/run.log"
+    },
+    {
+      "group": "OptionsEP",
+      "stats": {
+        "suites": 1,
+        "tests": 9,
+        "passes": 1,
+        "pending": 6,
+        "failures": 2,
+        "start": "2026-10-27T22:54:23.066Z",
+        "end": "2026-10-27T22:54:23.141Z",
+        "duration": 75
+      },
+      "results": [
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support P-1 FOR ENTERPRISE PROFILE If vendor selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by checking that GetInfo.options.ep options is not undefined!",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support P-2 FOR ENTERPRISE PROFILE If vendor selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the test RPID \"enterprisetest.certinfra.fidoalliance.org\", and enterpriseAttestation set to 0x01, wait for the response, and check that: 1) Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. 2) Attestation.fmt is \"packed\" 3) Attestation.attStmt.x5c batch certificate list is exactly 1 certificate long 4) Attestation.attStmt.x5c fist certificate matches the required for test EPBatchCertificate b) Attestation.epAtt is a boolean and is set to true",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support P-3 FOR ENTERPRISE PROFILE If vendor selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the test RPID \"enterprisetest.certinfra.fidoalliance.org\", and enterpriseAttestation set to 0x02, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "pending",
+          "duration": 1
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support F-1 FOR CONSUMER PROFILE If vendor did NOT selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by checking that GetInfo.options.ep options IS undefined!",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support F-2 FOR CONSUMER PROFILE If vendor did NOT selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the test RPID \"enterprisetest.certinfra.fidoalliance.org\", and enterpriseAttestation set to 0x01, wait for the response, and check that Authenticator returns CTAP1_ERR_INVALID_PARAMETER(0x02) error code.",
+          "status": "failed",
+          "duration": 2,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_INVALID_PARAMETER(0x2). Got CTAP1_ERR_SUCCESS(0x0): expected 0 to equal 2",
+            "stack": "AssertionError: Expected authenticator to succeed with CTAP1_ERR_INVALID_PARAMETER(0x2). Got CTAP1_ERR_SUCCESS(0x0): expected 0 to equal 2\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6221:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support F-3 FOR CONSUMER PROFILE If vendor did NOT selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the test RPID \"enterprisetest.certinfra.fidoalliance.org\", and enterpriseAttestation set to 0x02, wait for the response, and check that Authenticator returns CTAP1_ERR_INVALID_PARAMETER(0x02) error code.",
+          "status": "failed",
+          "duration": 2,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_INVALID_PARAMETER(0x2). Got CTAP1_ERR_SUCCESS(0x0): expected 0 to equal 2",
+            "stack": "AssertionError: Expected authenticator to succeed with CTAP1_ERR_INVALID_PARAMETER(0x2). Got CTAP1_ERR_SUCCESS(0x0): expected 0 to equal 2\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6240:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support F-4 FOR ENTERPRISE PROFILE If vendor selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the test RPID \"enterprisetest.certinfra.fidoalliance.org\", and enterpriseAttestation set to RANDOM TYPE, wait for the response, and check that Authenticator returns an error.",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support F-5 FOR ENTERPRISE PROFILE If vendor selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the test RPID \"enterprisetest.certinfra.fidoalliance.org\", and enterpriseAttestation set to a number that is NOT 0x01 and NOT 0x02, wait for the response, and check that Authenticator returns CTAP2_ERR_INVALID_OPTION(0x2C) error code.",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Enterprise Attestation (Security: Enterprise Profile Only) Test Enterprise Attestation support F-6 FOR ENTERPRISE PROFILE If vendor selected Security Enterprise Profile: Check that authenticator supports Enterprise Attestation by sending a valid CTAP2 authenticatorMakeCredential(0x01) message with, RPID set to the WRONG RPID, and enterpriseAttestation set 0x01, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and make sure that normal, NON-Enterprise attestation is returned",
+          "status": "pending",
+          "duration": 0
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/OptionsEP/run.log"
+    },
+    {
+      "group": "ExtensionsHMAC",
+      "stats": {
+        "suites": 1,
+        "tests": 7,
+        "passes": 4,
+        "pending": 0,
+        "failures": 3,
+        "start": "2026-10-27T22:54:23.405Z",
+        "end": "2026-10-27T22:54:23.726Z",
+        "duration": 321
+      },
+      "results": [
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support P-1 Send a valid CTAP2 authenticatorClientPin(0x01) message with getKeyAgreement(0x02) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) check that authenticatorClientPin_Response contains \"keyAgreement\" field, and its of type MAP (b) in COSE \"keyAgreement\" field: (1) check that public key is EC2(kty(1) is set to 2) (2) check that key crv(-1) curve field that is set to P256(1) (3) check that key alg(3) is set to ECDH-ES+HKDF-256(-25) (4) check that key contains x(-2) is of type BYTE STRING, and is 32bytes long (5) check that key contains y(-3) is of type BYTE STRING, and is 32bytes long (6) check that key does NOT contains ANY other coefficients",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support P-2 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, \"extensions\" containg a valid \"hmac-secret\" set to true, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, with extensions payload containing 'hmac-secret' field set to true",
+          "status": "passed",
+          "duration": 4
+        },
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support P-3 Send a valid CTAP2 getAssertion(0x02) message, \"extensions\" containing a valid \"hmac-secret\" extension request, with one salt, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) Check that response contains extensions encrypted \"hmac-secret\" extension response. Decrypt it and save it as salt1 (b) Send another GetAssertion with salt1 and salt2, and check that response still equal to result, and nonUvSalt2Hmac does not equal nonUvSalt1Hmac",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support P-4 Send a valid CTAP2 GetAssertion(0x02) message, \"extensions\" containing a valid \"hmac-secret\" extension request, with salt1 and salt2, wait for the response, and: (a) Check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code (b) Check that response extensions contain \"hmac-secret\" extension. Decrypt extensions (c) Check that decrypted hmacs contain uvSalt1Hmac, and uvSalt2Hmac (d) Check that uvSalt1Hmac does not equal to nonUvSalt1Hmac, an uvSalt2Hmac does not equal to nonUvSalt2Hmac",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "This test is failed because previous test has failed as well!",
+            "stack": "Error: This test is failed because previous test has failed as well!\n    at n.eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6301:19)"
+          }
+        },
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support F-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, \"extensions\" containg \"hmac-secret\" set to a random type, wait for the response, and check that Authenticator returns an error",
+          "status": "passed",
+          "duration": 7
+        },
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support F-2 Send a CTAP2 getAssertion(0x02) message, with \"extensions\" containing \"hmac-secret\" extension request with one salt that is shorter than 32 bytes, wait for the response, and check that authenticator returns an error",
+          "status": "passed",
+          "duration": 278
+        },
+        {
+          "title": "HMAC-Secret Test HMAC-Secret extension support F-3 Send a CTAP2 getAssertion(0x02) message, with \"extensions\" containg a \"hmac-secret\" extension request with two salts, with second salt that is shorter than 32 bytes, wait for the response, and check that authenticator returns an error",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Chromium harness is closed",
+            "stack": "Error: Chromium harness is closed\n    at ChromiumBridge.request (/Users/jbradley/.gemini/antigravity/scratch/fido_extracted/dependencies/transports/chromiumdep.js:51:48)\n    at ChromiumBridge.send (/Users/jbradley/.gemini/antigravity/scratch/fido_extracted/dependencies/transports/chromiumdep.js:73:37)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        }
+      ],
+      "crashes": [
+        "[1027/225423.446614:FATAL:device/fido/virtual_ctap2_device.cc:3265] NOTREACHED hit. "
+      ],
+      "log": "conformance-groups/ExtensionsHMAC/run.log"
+    },
+    {
+      "group": "ExtensionsHMAC2",
+      "stats": {
+        "suites": 1,
+        "tests": 7,
+        "passes": 1,
+        "pending": 0,
+        "failures": 6,
+        "start": "2026-10-27T22:54:23.983Z",
+        "end": "2026-10-27T22:54:24.045Z",
+        "duration": 62
+      },
+      "results": [
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. P-1 Send a valid CTAP2 authenticatorClientPin(0x01) message with getKeyAgreement(0x02) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) check that authenticatorClientPin_Response contains \"keyAgreement\" field, and its of type MAP (b) in COSE \"keyAgreement\" field: (1) check that public key is EC2(kty(1) is set to 2) (2) check that key crv(-1) curve field that is set to P256(1) (3) check that key alg(3) is set to ECDH-ES+HKDF-256(-25) (4) check that key contains x(-2) is of type BYTE STRING, and is 32bytes long (5) check that key contains y(-3) is of type BYTE STRING, and is 32bytes long (6) check that key does NOT contains ANY other coefficients",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Cannot read properties of undefined (reading '1')",
+            "stack": "TypeError: Cannot read properties of undefined (reading '1')\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6093:42)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. P-2 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, \"extensions\" containg a valid \"hmac-secret\" set to true, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, with extensions payload containing 'hmac-secret' field set to true",
+          "status": "passed",
+          "duration": 5
+        },
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. P-3 Send a valid CTAP2 getAssertion(0x02) message, \"extensions\" containing a valid \"hmac-secret\" extension request, with one salt, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) Check that response contains extensions encrypted \"hmac-secret\" extension response. Decrypt it and save it as salt1 (b) Send another GetAssertion with salt1 and salt2, and check that response still equal to result, and nonUvSalt2Hmac does not equal nonUvSalt1Hmac",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:5251:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. P-4 Send a valid CTAP2 GetAssertion(0x02) message, \"extensions\" containing a valid \"hmac-secret\" extension request, with salt1 and salt2, wait for the response, and: (a) Check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code (b) Check that response extensions contain \"hmac-secret\" extension. Decrypt extensions (c) Check that decrypted hmacs contain uvSalt1Hmac, and uvSalt2Hmac (d) Check that uvSalt1Hmac does not equal to nonUvSalt1Hmac, an uvSalt2Hmac does not equal to nonUvSalt2Hmac",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "This test is failed because previous test has failed as well!",
+            "stack": "Error: This test is failed because previous test has failed as well!\n    at n.eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6297:19)"
+          }
+        },
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. F-1 Send a valid CTAP2 authenticatorMakeCredential(0x01) message, \"extensions\" containg \"hmac-secret\" set to a random type, wait for the response, and check that Authenticator returns an error",
+          "status": "failed",
+          "duration": 2,
+          "error": {
+            "message": "For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:5251:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. F-2 Send a CTAP2 getAssertion(0x02) message, with \"extensions\" containing \"hmac-secret\" extension request with one salt that is shorter than 32 bytes, wait for the response, and check that authenticator returns an error",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:5251:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "HMAC-Secret: Strict PUAT2 Test authenticators for support of HMAC-Secret extension in strictly PinUvAuth Protocol 2 setting. F-3 Send a CTAP2 getAssertion(0x02) message, with \"extensions\" containg a \"hmac-secret\" extension request with two salts, with second salt that is shorter than 32 bytes, wait for the response, and check that authenticator returns an error",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:5251:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ExtensionsHMAC2/run.log"
+    },
+    {
+      "group": "ExtensionsCredProtect",
+      "stats": {
+        "suites": 1,
+        "tests": 4,
+        "passes": 3,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-10-27T22:54:24.332Z",
+        "end": "2026-10-27T22:54:24.388Z",
+        "duration": 56
+      },
+      "results": [
+        {
+          "title": "CredProtect Test CredProtect extension support P-1 Create a new (discoverable if supported) credential, with \"extensions\" containing a valid \"credProtect\" extension set to userVerificationOptional(0x01), and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid GetAssertion(0x02) request with previously recorded credId and UV/UP set to false, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. If rk is supported, send a valid GetAssertion(0x02) request in RK mode(no credentialId), and UV/UP set to false, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.",
+          "status": "passed",
+          "duration": 5
+        },
+        {
+          "title": "CredProtect Test CredProtect extension support P-2 Create a new (discoverable if supported) credential, with \"extensions\" containing valid \"credProtect\" extension set to userVerificationOptionalWithCredentialIDList(0x02), and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid GetAssertion(0x02) request with previously recorded credId and UV/UP set to false, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid GetAssertion(0x02) request in RK mode(no credentialId), and UV/UP set to false, and check that Authenticator returns an error",
+          "status": "passed",
+          "duration": 3
+        },
+        {
+          "title": "CredProtect Test CredProtect extension support P-3 Create a new (discoverable if supported) credential, with \"extensions\" containing valid \"credProtect\" extension set to userVerificationRequired(0x03), and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send a valid GetAssertion(0x02) request with previously recorded credId and UV/UP set to false, and check that Authenticator returns an error Send a valid GetAssertion(0x02) request in RK mode(no credentialId), and UV/UP set to false, and check that Authenticator returns an error",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "CredProtect Test CredProtect extension support P-4 If rk and CredentialManagement is supported: (a) Create a new discoverable credential, with \"extensions\" containing valid \"credProtect\" extension set to a random level. (b) Call CredentialManagementAPI, find the corresponding credential, and check that credProtect level matches the set value.",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)",
+            "stack": "Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ExtensionsCredProtect/run.log"
+    },
+    {
+      "group": "ExtensionsCredBlob",
+      "stats": {
+        "suites": 1,
+        "tests": 3,
+        "passes": 0,
+        "pending": 3,
+        "failures": 0,
+        "start": "2026-10-27T22:54:24.647Z",
+        "end": "2026-10-27T22:54:24.656Z",
+        "duration": 9
+      },
+      "results": [
+        {
+          "title": "CredBlob Test CredBlob extensionsupport P-1 Check that GetInfo contains maxCredBlobLength(0x0F) field, and it is at least 32",
+          "status": "pending"
+        },
+        {
+          "title": "CredBlob Test CredBlob extensionsupport P-2 Create a new discoverable credential, with \"extensions\" containg valid \"credBlob\" extension set to a random buffer, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send GetAssertion request with credBlob extension set to true, and check that result contains credBlob extension with expected bytes.",
+          "status": "pending"
+        },
+        {
+          "title": "CredBlob Test CredBlob extensionsupport P-3 Create a new discoverable credential and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Send GetAssertion request with credBlob extension set to true, and check that result contains credBlob extension with empty BYTE STRING",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ExtensionsCredBlob/run.log"
+    },
+    {
+      "group": "ExtensionsLargeBlobKey",
+      "stats": {
+        "suites": 1,
+        "tests": 6,
+        "passes": 0,
+        "pending": 6,
+        "failures": 0,
+        "start": "2026-10-27T22:54:24.910Z",
+        "end": "2026-10-27T22:54:24.918Z",
+        "duration": 8
+      },
+      "results": [
+        {
+          "title": "LargeBlobKey Test Large Blob Key extension support P-1 Create a new credential with extensions containing largeBlobKey set to True, and check that authenticator succeeds, and that MakeCredential response contains largeBlobKey(0x05) key set to a random 32 byte BYTE STRING. Send a corresponding new MakeCredential request and see that largeBlobKeys do not match!",
+          "status": "pending"
+        },
+        {
+          "title": "LargeBlobKey Test Large Blob Key extension support P-2 Send GetAssertion request for the previously registered credential with largeBlobKey extension set to true, and check that returned largeBlob key set to the previously recorded largeBlob key",
+          "status": "pending"
+        },
+        {
+          "title": "LargeBlobKey Test Large Blob Key extension support F-1 Send MakeCredential request with largeBlobKey extension set to FALSE, and check that authenticator returns CTAP2_ERR_INVALID_OPTION(0x2C)",
+          "status": "pending"
+        },
+        {
+          "title": "LargeBlobKey Test Large Blob Key extension support F-2 Send MakeCredential request with largeBlobKey extension set to not BOOLEAN, and check that authenticator returns CTAP2_ERR_CBOR_UNEXPECTED_TYPE(0x2C)",
+          "status": "pending"
+        },
+        {
+          "title": "LargeBlobKey Test Large Blob Key extension support F-3 Send GetAssertion request for the previously registered credential with largeBlobKey extension set to FALSE, and check that authenticator returns CTAP2_ERR_INVALID_OPTION(0x2C)",
+          "status": "pending"
+        },
+        {
+          "title": "LargeBlobKey Test Large Blob Key extension support F-4 Send GetAssertion request for the previously registered credential with largeBlobKey extension set to random type, and check that authenticator returns CTAP2_ERR_CBOR_UNEXPECTED_TYPE(0x2C)",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ExtensionsLargeBlobKey/run.log"
+    },
+    {
+      "group": "ExtensionsMinPinLength",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 1,
+        "failures": 0,
+        "start": "2026-10-27T22:54:25.176Z",
+        "end": "2026-10-27T22:54:25.185Z",
+        "duration": 9
+      },
+      "results": [
+        {
+          "title": "MinPinLength Extension Test MinPinLength extension support P-1 Create a new credential with extensions containing minPinLenth set to True, and check that authenticator succeeds Check that MakeCredential response extensions contain minPinLength extension. If authenticator supports GetInfo minPINLength, check that minPinLength extension result equal to GetInfo.minPINLength",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ExtensionsMinPinLength/run.log"
+    },
+    {
+      "group": "ExtensionsUVM",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 1,
+        "failures": 0,
+        "start": "2026-10-27T22:54:25.447Z",
+        "end": "2026-10-27T22:54:25.456Z",
+        "duration": 9
+      },
+      "results": [
+        {
+          "title": "UVM Test User Verification Extension extension support P-1 Create a new credential with extensions containing uvm extension input set to True, and check that authenticator succeeds Check that MakeCredential response extensions contain uvm extension output.",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ExtensionsUVM/run.log"
+    },
+    {
+      "group": "ClientPin1",
+      "stats": {
+        "suites": 4,
+        "tests": 13,
+        "passes": 11,
+        "pending": 1,
+        "failures": 1,
+        "start": "2026-10-27T22:54:25.721Z",
+        "end": "2026-10-27T22:54:25.786Z",
+        "duration": 65
+      },
+      "results": [
+        {
+          "title": "Authr-ClientPin1-GetKeyAgreement Test authenticatorClientPin(0x06), of version 0x01 support of getKeyAgreement(0x02) command P-1 Send a valid CTAP2 authenticatorClientPin(0x01) message with getKeyAgreement(0x02) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) check that authenticatorClientPin_Response contains \"keyAgreement\" field, and its of type MAP (b) in COSE \"keyAgreement\" field: (1) check that public key is EC2(kty(1) is set to 2) (2) check that key crv(-1) curve field that is set to P256(1) (3) check that key alg(3) is set to ECDH-ES+HKDF-256(-25) (4) check that key contains x(-2) is of type BYTE STRING, and is 32bytes long (5) check that key contains y(-3) is of type BYTE STRING, and is 32bytes long (6) check that key does NOT contains ANY other coefficients",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "Authr-ClientPin1-NewPin Test authenticatorClientPin(0x06), of version 0x01 support of setPIN(0x03), changePIN(0x04) and clientpin1_ObtainPINToken(0x05) commands P-1 Generate a shared key by deriving sharedSecret from previously obtained keyAgreement, and set new random clientPin",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "Authr-ClientPin1-NewPin Test authenticatorClientPin(0x06), of version 0x01 support of setPIN(0x03), changePIN(0x04) and clientpin1_ObtainPINToken(0x05) commands P-2 Change current pincode to the new pincode",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "Authr-ClientPin1-NewPin Test authenticatorClientPin(0x06), of version 0x01 support of setPIN(0x03), changePIN(0x04) and clientpin1_ObtainPINToken(0x05) commands P-3 Get a valid pinAuth token",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-ClientPin1-NewPin Test authenticatorClientPin(0x06), of version 0x01 support of setPIN(0x03), changePIN(0x04) and clientpin1_ObtainPINToken(0x05) commands P-4 Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "passed",
+          "duration": 4
+        },
+        {
+          "title": "Authr-ClientPin1-NewPin Test authenticatorClientPin(0x06), of version 0x01 support of setPIN(0x03), changePIN(0x04) and clientpin1_ObtainPINToken(0x05) commands P-5 Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "title": "Authr-ClientPin1-Policy Check authenticator correctly implementing PinProtocol security policies P-1 Try setting new pin, that is of size between minPINLength+1 and 63 characters, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00)",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-ClientPin1-Policy Check authenticator correctly implementing PinProtocol security policies F-1 Try setting new pin, that is less than 4 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-ClientPin1-Policy Check authenticator correctly implementing PinProtocol security policies F-2 Try setting new pin, that is bigger than 63 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "title": "Authr-ClientPin1-GetRetries Test authenticatorClientPin(0x06), of version 0x01 support of getRetries(0x01) command P-1 Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) check that authenticatorClientPin_Response contains \"retries\" field (b) authenticatorClientPin_Response.retries is of type NUMBER (c) authenticatorClientPin_Response.retries is 8 or less!",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "title": "Authr-ClientPin1-GetRetries Test authenticatorClientPin(0x06), of version 0x01 support of getRetries(0x01) command P-2 Send two CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check that each request fails with error CTAP2_ERR_PIN_INVALID(0x31). Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, and check that retries have decreased by two. Register a valid authenticatorMakeCred(0x01) using the valid PIN. Check that retries counter is reset and back to the original retries counter.",
+          "status": "passed",
+          "duration": 5
+        },
+        {
+          "title": "Authr-ClientPin1-GetRetries Test authenticatorClientPin(0x06), of version 0x01 support of getRetries(0x01) command P-3 Send three CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check and check that for the last one authenticator returns CTAP2_ERR_PIN_AUTH_BLOCKED(0x34).",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP2_ERR_PIN_INVALID(49). Got CTAP2_ERR_PIN_AUTH_BLOCKED(52): expected 52 to equal 49",
+            "stack": "AssertionError: Expected authenticator to succeed with CTAP2_ERR_PIN_INVALID(49). Got CTAP2_ERR_PIN_AUTH_BLOCKED(52): expected 52 to equal 49\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6794:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-ClientPin1-GetRetries Test authenticatorClientPin(0x06), of version 0x01 support of getRetries(0x01) command P-4 Keep sending getPinToken subCommand with invalid pin until retries counter reaches 0. Send CTAP2 authenticatorClientPin(0x01) message with getPinToken(0x01) subCommand, that contains valid pinCode, and check that authenticator returns error CTAP2_ERR_PIN_BLOCKED(0x32) if (originalRetriesCounter <= 3)",
+          "status": "pending",
+          "duration": 0
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ClientPin1/run.log"
+    },
+    {
+      "group": "ClientPin2",
+      "stats": {
+        "suites": 7,
+        "tests": 21,
+        "passes": 0,
+        "pending": 21,
+        "failures": 0,
+        "start": "2026-10-27T22:54:26.057Z",
+        "end": "2026-10-27T22:54:26.072Z",
+        "duration": 15
+      },
+      "results": [
+        {
+          "title": "Authr-ClientPin2-GetKeyAgreement Test authenticatorClientPin(0x06), of version 0x02 support of getKeyAgreement(0x02) command P-1 Send a valid CTAP2 authenticatorClientPin(0x01) message with getKeyAgreement(0x02) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) check that authenticatorClientPin_Response contains \"keyAgreement\" field, and its of type MAP (b) in COSE \"keyAgreement\" field: (1) check that public key is EC2(kty(1) is set to 2) (2) check that key crv(-1) curve field that is set to P256(1) (3) check that key alg(3) is set to ECDH-ES+HKDF-256(-25) (4) check that key contains x(-2) is of type BYTE STRING, and is 32bytes long (5) check that key contains y(-3) is of type BYTE STRING, and is 32bytes long (6) check that key does NOT contains ANY other coefficients",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-NewPin Test authenticatorClientPin(0x06), of version 0x02 support of setPIN(0x03), changePIN(0x04) and getPinToken(0x05) commands P-1 Generate a shared key by deriving sharedSecret from previously obtained keyAgreement, and set new random clientPin",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-NewPin Test authenticatorClientPin(0x06), of version 0x02 support of setPIN(0x03), changePIN(0x04) and getPinToken(0x05) commands P-2 Change current pincode to the new pincode",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinToken Test authenticatorClientPin(0x06), of version 0x02 support of getPinToken(0x05) commands P-1 Get a valid pinAuth token",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinToken Test authenticatorClientPin(0x06), of version 0x02 support of getPinToken(0x05) commands P-2 Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinToken Test authenticatorClientPin(0x06), of version 0x02 support of getPinToken(0x05) commands P-3 Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinUvAuthTokenUsingPinWithPermissions Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingPinWithPermissions(0x09) commands P-1 Get a valid pinUVAuthToken with permissions",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinUvAuthTokenUsingPinWithPermissions Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingPinWithPermissions(0x09) commands P-2 Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinUvAuthTokenUsingPinWithPermissions Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingPinWithPermissions(0x09) commands P-3 Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinUvAuthTokenUsingUvWithPermissions Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingUvWithPermissions(0x06) commands P-1 Get a valid pinUVAuthToken with permissions",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinUvAuthTokenUsingUvWithPermissions Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingUvWithPermissions(0x06) commands P-2 Send a valid CTAP2 authenticatorMakeCredential(0x01) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetPinUvAuthTokenUsingUvWithPermissions Test authenticatorClientPin(0x06), of version 0x02 support of getPinUvAuthTokenUsingUvWithPermissions(0x06) commands P-3 Send a valid CTAP2 authenticatorGetAssertion(0x02) message with pinAuth, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that authData.flags have UV flag set",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-Policy Check authenticator correctly implementing PinProtocol security policies P-1 Try setting new pin, that is of size between minPINLength+1 and 63 characters, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00)",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-Policy Check authenticator correctly implementing PinProtocol security policies F-1 Try setting new pin, that is less than 4 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-Policy Check authenticator correctly implementing PinProtocol security policies F-2 Try setting new pin, that is bigger than 63 bytes, and check that Authenticator returns an error",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-Policy Check authenticator correctly implementing PinProtocol security policies F-3 Try setting new pin, that is exactly 64 bytes, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-Policy Check authenticator correctly implementing PinProtocol security policies F-4 Try setting new pin, that consists of Unicode codepoints of size minPINLength - 1, and check that Authenticator returns error CTAP2_ERR_PIN_POLICY_VIOLATION(0x37)",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetRetries Test authenticatorClientPin(0x06), of version 0x02 support of getPINRetries(0x01) command P-1 Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code, and: (a) check that authenticatorClientPin_Response contains \"retries\" field (b) authenticatorClientPin_Response.retries is of type NUMBER (c) authenticatorClientPin_Response.retries is 8 or less!",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetRetries Test authenticatorClientPin(0x06), of version 0x02 support of getPINRetries(0x01) command P-2 Send two CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check that each request fails with error CTAP2_ERR_PIN_INVALID(0x31). Send a valid CTAP2 authenticatorClientPin(0x01) message with getRetries(0x01) subCommand, and check that retries have decreased by two. Register a valid authenticatorMakeCred(0x01) using the valid PIN. Check that retries counter is reset and back to the original retries counter.",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetRetries Test authenticatorClientPin(0x06), of version 0x02 support of getPINRetries(0x01) command P-3 Send three CTAP2 authenticatorClientPin(0x01) messages with getPinToken(0x01) subCommand, that contain invalid pinCode, and check and check that for the last one authenticator returns CTAP2_ERR_PIN_AUTH_BLOCKED(0x34).",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-ClientPin2-GetRetries Test authenticatorClientPin(0x06), of version 0x02 support of getPINRetries(0x01) command P-4 Keep sending getPinToken subCommand with invalid pin until retries counter reaches 0. Send CTAP2 authenticatorClientPin(0x01) message with getPinToken(0x01) subCommand, that contains valid pinCode, and check that authenticator returns error CTAP2_ERR_PIN_BLOCKED(0x32)",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/ClientPin2/run.log"
+    },
+    {
+      "group": "CredManAPI21",
+      "stats": {
+        "suites": 3,
+        "tests": 5,
+        "passes": 0,
+        "pending": 0,
+        "failures": 6,
+        "start": "2026-10-27T22:54:26.335Z",
+        "end": "2026-10-27T22:54:26.403Z",
+        "duration": 68
+      },
+      "results": [
+        {
+          "title": "Authr-CredentialManagement-EnumerateRPs Test authenticatorCredentialManagement(0x0A) command support for discoverable credential metadata and enumeration functionality for RPs P-1 If authenticator supports Credential Management API: Create new discoverable credential. Send authenticatorCredentialManagement(0x0D) with getCredsMetadata(0x01), and check that existingResidentCredentialsCount is 1, and maxPossibleRemainingResidentCredentialsCount is more than 1. Create another discoverable credential, and make sure that existingResidentCredentialsCount is now 2.",
+          "status": "failed",
+          "duration": 4,
+          "error": {
+            "message": "Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0x0). Got CTAP2_ERR_KEY_STORE_FULL(0x28): expected 40 to equal 0",
+            "stack": "AssertionError: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0x0). Got CTAP2_ERR_KEY_STORE_FULL(0x28): expected 40 to equal 0\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6067:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-CredentialManagement-EnumerateRPs Test authenticatorCredentialManagement(0x0A) command support for discoverable credential metadata and enumeration functionality for RPs P-2 If authenticator supports Credential Management API: Send authenticatorCredentialManagement(0x0D) with enumerateRPsBegin(0x02), and check that result: (a) Result.rp is present and of type MAP (b) Result.rp.id is present and is of type String. (c) Result.rp.id is in a list of known rpIDs. (d) Result.rpIDHash is a valid SHA-256 hash of Result.rp.id, and is of type BYTESTRING. (e) Result.totalRPs is a Number and is set to 2, same as a number of registered RPIDs.",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Previous test failed!",
+            "stack": "Error: Previous test failed!\n    at n.eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6156:19)"
+          }
+        },
+        {
+          "title": "Authr-CredentialManagement-EnumerateRPs Test authenticatorCredentialManagement(0x0A) command support for discoverable credential metadata and enumeration functionality for RPs P-3 If authenticator supports Credential Management API: Send authenticatorCredentialManagement(0x0D) with enumerateRPsGetNextRP(0x03), and check that result: (a) Result.rp is present and of type MAP (b) Result.rp.id is present and is of type String. (c) Result.rp.id is in a list of known rpIDs. (d) Result.rpIDHash is a valid SHA-256 hash of Result.rp.id, and is of type BYTESTRING.",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Previous test failed!",
+            "stack": "Error: Previous test failed!\n    at n.eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6210:19)"
+          }
+        },
+        {
+          "title": "Authr-CredentialManagement-EnumerateCredentials Test authenticatorCredentialManagement(0x0A) command support for discoverable credential enumeration P-1 If authenticator supports Credential Management API: Create two new discoverable credentials. Send authenticatorCredentialManagement(0x0D) with enumerateCredentialsBegin(0x04), and make sure that: (a) Response.credentialID is of type PublicKeyCredentialDescriptor, and matching previously recorded credentialID (b) Response.user is of type PublicKeyCredentialUserEntity, and at least contains id, that matches previously recorded (c) Response.publicKey is a COSE_Key and matches previously recorded (d) Response.totalCredentials is a number and set to 2, same as registered credentials",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:5251:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        },
+        {
+          "title": "Authr-CredentialManagement-EnumerateCredentials Test authenticatorCredentialManagement(0x0A) command support for discoverable credential enumeration P-2 If authenticator supports Credential Management API: Create two new discoverable credentials. Send authenticatorCredentialManagement(0x0D) with enumerateCredentialsGetNextCredential(0x05), and make sure that: (a) Response.credentialID is of type PublicKeyCredentialDescriptor, and matching previously recorded credentialID (b) Response.user is of type PublicKeyCredentialUserEntity, and at least contains id, that matches previously recorded (c) Response.publicKey is a COSE_Key and matches previously recorded (d) Response.totalCredentials is undefined",
+          "status": "failed",
+          "duration": 0,
+          "error": {
+            "message": "Previous test failed!",
+            "stack": "Error: Previous test failed!\n    at n.eval (eval at compileCode (sandbox.js:25:26), <anonymous>:6434:19)"
+          }
+        },
+        {
+          "title": "Authr-CredentialManagement-UpdateAndDelete Test authenticatorCredentialManagement(0x0A) command, for support of Update and Delete functionality for discoverable credentials \"before each\" hook for \"P-1 If authenticator supports Credential Management API: Create a discoverable credential. Send authenticatorCredentialManagement(0x0D) with updateUserInformation(0x07), and make sure that: (a) At least Response.user.id is present and matches new value. (b) If authenticator supports name and displayName fields, make sure that updated value is correct and missing field is now removed. \"",
+          "status": "failed",
+          "duration": 1,
+          "error": {
+            "message": "For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)",
+            "stack": "Error: For KeyAgreement expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_PIN_AUTH_INVALID(51)\n    at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:5251:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+          }
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/CredManAPI21/run.log"
+    },
+    {
+      "group": "AuthenticatorConfig",
+      "stats": {
+        "suites": 1,
+        "tests": 4,
+        "passes": 0,
+        "pending": 4,
+        "failures": 0,
+        "start": "2026-10-27T22:54:26.666Z",
+        "end": "2026-10-27T22:54:26.672Z",
+        "duration": 6
+      },
+      "results": [
+        {
+          "title": "Authr-AuthenticatorConfig-AuthenticatorConfig Test authenticatorConfig(0x0D) command P-1 If authenticator supports enteprise attestation, send authenticatorConfig(0x0D) with enableEnterpriseAttestation(0x01), and check that GetInfo.options.ep is set to true.",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-AuthenticatorConfig-AuthenticatorConfig Test authenticatorConfig(0x0D) command P-2 If authenticator supports alwaysUv: Collect GetInfo.options.alwaysUv value. Send authenticatorConfig(0x0D) with toggleAlwaysUv(0x02), and check that: a) If authenticator supports alwaysUv, check that GetInfo.options.alwaysUv is opposite value b) Or if alwaysUv was true, and authenticator does not support disabling alwaysUv, check that authenticator returns CTAP2_ERR_OPERATION_DENIED(0x27)",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-AuthenticatorConfig-AuthenticatorConfig Test authenticatorConfig(0x0D) command P-3 If authenticator supports setMinPINLength: Send authenticatorConfig(0x0D) with setMinPINLength(0x03), with newMinPINLength(0x01) larger than current character limit, and see that: a) Authenticator succeeds. b) getInfo.forcePINChange is true.",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-AuthenticatorConfig-AuthenticatorConfig Test authenticatorConfig(0x0D) command P-4 If authenticator supports setMinPINLength, and minPinLength extension: Send authenticatorConfig(0x0D) with setMinPINLength(0x03), with minPinLengthRPIDs(0x02) with max available RPIDs set to random domains, and see that authenticator succeeds.",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/AuthenticatorConfig/run.log"
+    },
+    {
+      "group": "BioEnrollment21",
+      "stats": {
+        "suites": 3,
+        "tests": 7,
+        "passes": 0,
+        "pending": 7,
+        "failures": 0,
+        "start": "2026-10-27T22:54:26.932Z",
+        "end": "2026-10-27T22:54:26.963Z",
+        "duration": 31
+      },
+      "results": [
+        {
+          "title": "Authr-BioEnrollment-BioModAndSensorInfo Test authenticatorBioEnrollment(0x09) command support for biometric enrolment P-1 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with getModality(0x06) set to true. Check that response is succesful and contains one field modality(0x01) set to one of the allowed modalities",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-BioEnrollment-BioModAndSensorInfo Test authenticatorBioEnrollment(0x09) command support for biometric enrolment P-2 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with subCommand(0x06) set to getFingerprintSensorInfo(0x07), and modality(0x01) to the corresponding modality. Check that response is succesful, and that: (a) fingerprintKind(0x02) is a Number, and set to the allowed kind (b) maxCaptureSamplesRequiredForEnroll(0x02) is a number, and is bigger than 0 (c) If maxTemplateFriendlyName is present, check that it is of type Number, and is bigger than 0",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-BioEnrollment-BioModAndSensorInfo Test authenticatorBioEnrollment(0x09) command support for biometric enrolment P-1 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with enrollBegin(0x01) with supported modality, and check that response contains: (a) templateId(0x04) - byte string, at least one byte long (b) remainingSamples(0x06) - number, and above zero (c) lastEnrollSampleStatus(0x05) - number, a valid BE status code Send authenticatorBioEnrollment(0x09) with cancelCurrentEnrollment(0x03 subcommand, and check that authenticator succeeds.",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-BioEnrollment-BioModAndSensorInfo Test authenticatorBioEnrollment(0x09) command support for biometric enrolment P-2 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with enrollBegin(0x01) with supported modality. Check that command succeeds. Keep sending enrollCaptureNextSample(0x02) for the specified templateId, and check that: (b) remainingSamples(0x06) - number, and is the same or less than previous request (c) lastEnrollSampleStatus(0x05) - number, a valid BE status code When remainingSamples is 0, and lastEnrollSampleStatus is CTAP2_ENROLL_FEEDBACK_FP_GOOD(0x00), stop",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-BioEnrollment-EnumerateRenameRemove Test authenticatorBioEnrollment(0x09) support for Enumeration, Renaming, and Removal of the biometric modality P-1 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with enumerateEnrollments(0x04) with supported modality, and check that response contains: (a) templateId(0x01) - byte string, at least one byte long. Set to the previously registered templateId! (b) templateFriendlyName(0x02) - string",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-BioEnrollment-EnumerateRenameRemove Test authenticatorBioEnrollment(0x09) support for Enumeration, Renaming, and Removal of the biometric modality P-2 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with setFriendlyName(0x05) with new name. Send authenticatorBioEnrollment(0x09) with enumerateEnrollments(0x04) with supported modality, and check that response.templateFriendlyName is equal to the new name.",
+          "status": "pending",
+          "duration": 0
+        },
+        {
+          "title": "Authr-BioEnrollment-EnumerateRenameRemove Test authenticatorBioEnrollment(0x09) support for Enumeration, Renaming, and Removal of the biometric modality P-3 If authenticator supports BioEnrollment API: Send authenticatorBioEnrollment(0x09) with removeEnrollment(0x06) with previously enrolled fingerprint. Send authenticatorBioEnrollment(0x09) with enumerateEnrollments(0x04) and check that authenticator returns CTAP2_ERR_INVALID_OPTION(0x2C)",
+          "status": "pending",
+          "duration": 0
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/BioEnrollment21/run.log"
+    },
+    {
+      "group": "LargeBlobs",
+      "stats": {
+        "suites": 1,
+        "tests": 4,
+        "passes": 0,
+        "pending": 4,
+        "failures": 0,
+        "start": "2026-10-27T22:54:27.224Z",
+        "end": "2026-10-27T22:54:27.230Z",
+        "duration": 6
+      },
+      "results": [
+        {
+          "title": "Authr-LargeBlobs-1 Test authenticatorLargeBlobs(0x0C) command P-1 If authenticator supports largeBlobs: If GetInfo contains maxSerializedLargeBlobArray, check that it's larger then 1024",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-LargeBlobs-1 Test authenticatorLargeBlobs(0x0C) command P-2 If authenticator supports largeBlobs: Send LargeBlobs with Get set to 0x00, and offset set to 0x00, and see that authenticator succeeds and response.config contains empty byte array",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-LargeBlobs-1 Test authenticatorLargeBlobs(0x0C) command P-3 If authenticator supports largeBlobs: Send LargeBlobs with Get set to random number larger than 17, and offset set to 0x00, and see that authenticator succeeds and response.config contains 17 byte long response containing empty CBOR array and first 16 bytes of the corresponding SHA256 hash",
+          "status": "pending"
+        },
+        {
+          "title": "Authr-LargeBlobs-1 Test authenticatorLargeBlobs(0x0C) command P-4 If authenticator supports largeBlobs: Send LargeBlobs with Set(0x02) with a random buffer value, offset is 0, and length is the random length of the buffer. Check that authenticator succeeds. Send corresponding Get and see that response.config is set to the concatenation of the random buffer and the corresponding first 16 bytes of the SHA256 hash Send Get with a random length and random offset and check that authenticator returns expected buffer",
+          "status": "pending"
+        }
+      ],
+      "crashes": [],
+      "log": "conformance-groups/LargeBlobs/run.log"
+    }
+  ]
+}

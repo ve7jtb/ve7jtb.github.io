@@ -1,0 +1,3656 @@
+[1027/225422.510539:ERROR:electron/shell/common/mac/codesign_util.cc:79] task_name_for_pid: (os/kern) failure (5)
+
+
+  
+
+        Discoverable Credentials(Resident-Key)
+
+        Test Discoverable Credentials(Resident-Key) support
+
+    
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Reset: ---> Sending CTAP CMD... 07 undefined
+[CTAP2.1] Reset: <--- Received response {
+  statusCode: 0,
+  type: 'Reset',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: Uint8Array(0) [],
+  response: undefined
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    202, 170,  38,  80, 166, 176, 131,
+    186,  36,  44, 180, 138, 193, 151,
+    184,  52, 114, 180, 188, 236, 109,
+    195, 246, 240, 194,  81,  41,  55,
+    115, 244, 131, 158
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'excusewhispering.bf'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      195, 201,  88,  2, 154, 230,  68, 229,
+       44, 238, 163, 94,  85, 163, 147, 183,
+      255, 246, 192, 25,  63,  82, 106, 108,
+      247, 252,  68, 85,  82,  12, 167,  28
+    ],
+    name: 'marcelle.ritchie@whisperingirate.pk',
+    displayName: 'Marcelle Ritchie'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a5015820caaa2650a6b083ba242cb48ac197b83472b4bcec6dc3f6f0c251293773f4839e02a26269647365786375736577686973706572696e672e6266646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820c3c958029ae644e52ceea35e55a393b7fff6c0193f526a6cf7fc4455520ca71c646e616d6578236d617263656c6c652e726974636869654077686973706572696e6769726174652e706b6b646973706c61794e616d65704d617263656c6c6520526974636869650481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': 'caaa2650a6b083ba242cb48ac197b83472b4bcec6dc3f6f0c251293773f4839e',
+  '2': {
+    id: 'excusewhispering.bf',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'c3c958029ae644e52ceea35e55a393b7fff6c0193f526a6cf7fc4455520ca71c',
+    name: 'marcelle.ritchie@whisperingirate.pk',
+    displayName: 'Marcelle Ritchie'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 0,
+  type: 'MakeCredential',
+  cborResponse: {
+    '1': 'packed',
+    '2': 'f8c2e1290f0930daa9569d0f4186095d9455bd04a087b80727b11ced122670a1410000000101020304050607080102030405060708002038d77b6a8170d74ce22c275831a8695d1c3501bc671cd1f8e6fe5a685fa3a0e9a50102032620012158206d0ea8e894c1f2a7dee05ca9533f6f6077b49c214e0a48dc6e4c015d17323b95225820c638d88d80a99dff7f964cd72bb5be15a646775a23f1356d74c1e2e1bfa4fe11',
+    '3': {
+      alg: -7,
+      sig: '304502207e55f0086f25030663d024a5a7ee9e4c317c40a3cb9d4f760d8ea7fa5c0c7eb0022100e53fa8dbbe3ec734d118ae33f52bb89dd9faa5a6c1e27796efb67e7308efdc9f',
+      x5c: [Array]
+    }
+  },
+  cborResponseStruct: {
+    '1': 'packed',
+    '2': Uint8Array(164) [
+      248, 194, 225,  41,  15,   9,  48, 218, 169,  86, 157,  15,
+       65, 134,   9,  93, 148,  85, 189,   4, 160, 135, 184,   7,
+       39, 177,  28, 237,  18,  38, 112, 161,  65,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32,  56, 215, 123, 106, 129,
+      112, 215,  76, 226,  44,  39,  88,  49, 168, 105,  93,  28,
+       53,   1, 188, 103,  28, 209, 248, 230, 254,  90, 104,  95,
+      163, 160, 233, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32, 109,  14, 168,
+      ... 64 more items
+    ],
+    '3': { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  },
+  cborBuffer: Uint8Array(790) [
+    163,   1, 102, 112,  97,  99, 107, 101, 100,   2,  88, 164,
+    248, 194, 225,  41,  15,   9,  48, 218, 169,  86, 157,  15,
+     65, 134,   9,  93, 148,  85, 189,   4, 160, 135, 184,   7,
+     39, 177,  28, 237,  18,  38, 112, 161,  65,   0,   0,   0,
+      1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+      4,   5,   6,   7,   8,   0,  32,  56, 215, 123, 106, 129,
+    112, 215,  76, 226,  44,  39,  88,  49, 168, 105,  93,  28,
+     53,   1, 188, 103,  28, 209, 248, 230, 254,  90, 104,  95,
+    163, 160, 233, 165,
+    ... 690 more items
+  ],
+  response: {
+    fmt: 'packed',
+    authData: Uint8Array(164) [
+      248, 194, 225,  41,  15,   9,  48, 218, 169,  86, 157,  15,
+       65, 134,   9,  93, 148,  85, 189,   4, 160, 135, 184,   7,
+       39, 177,  28, 237,  18,  38, 112, 161,  65,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32,  56, 215, 123, 106, 129,
+      112, 215,  76, 226,  44,  39,  88,  49, 168, 105,  93,  28,
+       53,   1, 188, 103,  28, 209, 248, 230, 254,  90, 104,  95,
+      163, 160, 233, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32, 109,  14, 168,
+      ... 64 more items
+    ],
+    attStmt: { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  }
+}
+    ✓ P-1
+
+        Send a valid CTAP2 authenticatorMakeCredential(0x01) message, "options" containg an "rk" option set to true, wait for the response, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+    
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     89,  72, 109, 187,  38, 200, 255,  69,
+      2,  65, 120, 146, 248,  36,  18, 192,
+    211,  55,  13,  75, 225,  85, 206, 247,
+    148, 185,  46, 205, 134, 128,  45,  38
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'switchhuckleberry.gb'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      120,   8,  75, 197,  66, 190, 193, 127,
+      132,  92, 151, 128, 207, 118,  43, 106,
+      239, 203, 215,  93,  19, 186, 127, 127,
+       88,  28,   0, 185,  79, 203, 167, 248
+    ],
+    name: 'peregrin.tuk@abhorrentpine.ae',
+    displayName: 'Peregrin Tuk'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a501582059486dbb26c8ff4502417892f82412c0d3370d4be155cef794b92ecd86802d2602a2626964747377697463686875636b6c6562657272792e6762646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a3626964582078084bc542bec17f845c9780cf762b6aefcbd75d13ba7f7f581c00b94fcba7f8646e616d65781d706572656772696e2e74756b406162686f7272656e7470696e652e61656b646973706c61794e616d656c506572656772696e2054756b0481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': '59486dbb26c8ff4502417892f82412c0d3370d4be155cef794b92ecd86802d26',
+  '2': {
+    id: 'switchhuckleberry.gb',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '78084bc542bec17f845c9780cf762b6aefcbd75d13ba7f7f581c00b94fcba7f8',
+    name: 'peregrin.tuk@abhorrentpine.ae',
+    displayName: 'Peregrin Tuk'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 0,
+  type: 'MakeCredential',
+  cborResponse: {
+    '1': 'packed',
+    '2': '6f8768ff5664b83d4f30d4d61ecdaca32f88c4532ac38467bf214ff0a6865a7741000000010102030405060708010203040506070800208bc2c64769580e5ab14f092329fe2e7a57e15c716e163984c339fbd445692202a50102032620012158206c333ab498ac0f5062c7763dcfbfae09379bfc973d4e521d16441671d566e996225820e1c36d99ec77e04aea7904bdb402fa3df924e0e64526b2ba8bc97c615411760e',
+    '3': {
+      alg: -7,
+      sig: '3046022100cf33ebf28106cef137ec8cb67b451baa33ec57cc8ad1dbee2faf095e7e25fb5a022100bad8063949604e3e846380c4d9fe14c4bcaa0a50a4522e1e283202f14f70059a',
+      x5c: [Array]
+    }
+  },
+  cborResponseStruct: {
+    '1': 'packed',
+    '2': Uint8Array(164) [
+      111, 135, 104, 255,  86, 100, 184,  61,  79,  48, 212, 214,
+       30, 205, 172, 163,  47, 136, 196,  83,  42, 195, 132, 103,
+      191,  33,  79, 240, 166, 134,  90, 119,  65,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 139, 194, 198,  71, 105,
+       88,  14,  90, 177,  79,   9,  35,  41, 254,  46, 122,  87,
+      225,  92, 113, 110,  22,  57, 132, 195,  57, 251, 212,  69,
+      105,  34,   2, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32, 108,  51,  58,
+      ... 64 more items
+    ],
+    '3': { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  },
+  cborBuffer: Uint8Array(791) [
+    163,   1, 102, 112,  97,  99, 107, 101, 100,   2,  88, 164,
+    111, 135, 104, 255,  86, 100, 184,  61,  79,  48, 212, 214,
+     30, 205, 172, 163,  47, 136, 196,  83,  42, 195, 132, 103,
+    191,  33,  79, 240, 166, 134,  90, 119,  65,   0,   0,   0,
+      1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+      4,   5,   6,   7,   8,   0,  32, 139, 194, 198,  71, 105,
+     88,  14,  90, 177,  79,   9,  35,  41, 254,  46, 122,  87,
+    225,  92, 113, 110,  22,  57, 132, 195,  57, 251, 212,  69,
+    105,  34,   2, 165,
+    ... 691 more items
+  ],
+  response: {
+    fmt: 'packed',
+    authData: Uint8Array(164) [
+      111, 135, 104, 255,  86, 100, 184,  61,  79,  48, 212, 214,
+       30, 205, 172, 163,  47, 136, 196,  83,  42, 195, 132, 103,
+      191,  33,  79, 240, 166, 134,  90, 119,  65,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 139, 194, 198,  71, 105,
+       88,  14,  90, 177,  79,   9,  35,  41, 254,  46, 122,  87,
+      225,  92, 113, 110,  22,  57, 132, 195,  57, 251, 212,  69,
+      105,  34,   2, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32, 108,  51,  58,
+      ... 64 more items
+    ],
+    attStmt: { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  }
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     19,  67, 140, 202, 171,  23,  89, 215,
+    182, 114, 106,  34, 158, 115,  27, 196,
+    139, 153,  36, 204,  96, 113, 165, 144,
+      0, 161,  26, 186, 160, 157, 233,  48
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'switchhuckleberry.gb'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      200,  19, 126,  76,  74, 105, 151, 158,
+      192, 154, 132, 134, 125, 225, 176,  70,
+      172,  86,  43,  36, 162, 138,  39, 164,
+      191, 203, 162, 134, 177,  32,   6, 137
+    ],
+    name: 'domitila.headen@murkymango.do',
+    displayName: 'Domitila Headen'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a501582013438ccaab1759d7b6726a229e731bc48b9924cc6071a59000a11abaa09de93002a2626964747377697463686875636b6c6562657272792e6762646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820c8137e4c4a69979ec09a84867de1b046ac562b24a28a27a4bfcba286b1200689646e616d65781d646f6d6974696c612e68656164656e406d75726b796d616e676f2e646f6b646973706c61794e616d656f446f6d6974696c612048656164656e0481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': '13438ccaab1759d7b6726a229e731bc48b9924cc6071a59000a11abaa09de930',
+  '2': {
+    id: 'switchhuckleberry.gb',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'c8137e4c4a69979ec09a84867de1b046ac562b24a28a27a4bfcba286b1200689',
+    name: 'domitila.headen@murkymango.do',
+    displayName: 'Domitila Headen'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 0,
+  type: 'MakeCredential',
+  cborResponse: {
+    '1': 'packed',
+    '2': '6f8768ff5664b83d4f30d4d61ecdaca32f88c4532ac38467bf214ff0a6865a7741000000010102030405060708010203040506070800208983de0e52a96d30b9e139dd62cdcf9ff24437291aad5eed8d9719c43b7fdf03a501020326200121582006be81ba5b7f3d3dc36f686332acc4eb01ee61acd794f3414ab65fd7c9f136dc225820c88d17be737f20ee633212b5332aa0f8cd41d8ad516ef9880f0884c7083ac83e',
+    '3': {
+      alg: -7,
+      sig: '3044022070c7f2bb0dce4ad9bf014c8d219d2b598350cfa8dce3360fda496db97c385a4c02203b7c27b9397249790b97046627f95c99f6d22726167ab6b5d7112111db453c90',
+      x5c: [Array]
+    }
+  },
+  cborResponseStruct: {
+    '1': 'packed',
+    '2': Uint8Array(164) [
+      111, 135, 104, 255,  86, 100, 184,  61,  79,  48, 212, 214,
+       30, 205, 172, 163,  47, 136, 196,  83,  42, 195, 132, 103,
+      191,  33,  79, 240, 166, 134,  90, 119,  65,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 137, 131, 222,  14,  82,
+      169, 109,  48, 185, 225,  57, 221,  98, 205, 207, 159, 242,
+       68,  55,  41,  26, 173,  94, 237, 141, 151,  25, 196,  59,
+      127, 223,   3, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32,   6, 190, 129,
+      ... 64 more items
+    ],
+    '3': { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  },
+  cborBuffer: Uint8Array(789) [
+    163,   1, 102, 112,  97,  99, 107, 101, 100,   2,  88, 164,
+    111, 135, 104, 255,  86, 100, 184,  61,  79,  48, 212, 214,
+     30, 205, 172, 163,  47, 136, 196,  83,  42, 195, 132, 103,
+    191,  33,  79, 240, 166, 134,  90, 119,  65,   0,   0,   0,
+      1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+      4,   5,   6,   7,   8,   0,  32, 137, 131, 222,  14,  82,
+    169, 109,  48, 185, 225,  57, 221,  98, 205, 207, 159, 242,
+     68,  55,  41,  26, 173,  94, 237, 141, 151,  25, 196,  59,
+    127, 223,   3, 165,
+    ... 689 more items
+  ],
+  response: {
+    fmt: 'packed',
+    authData: Uint8Array(164) [
+      111, 135, 104, 255,  86, 100, 184,  61,  79,  48, 212, 214,
+       30, 205, 172, 163,  47, 136, 196,  83,  42, 195, 132, 103,
+      191,  33,  79, 240, 166, 134,  90, 119,  65,   0,   0,   0,
+        1,   1,   2,   3,   4,   5,   6,   7,   8,   1,   2,   3,
+        4,   5,   6,   7,   8,   0,  32, 137, 131, 222,  14,  82,
+      169, 109,  48, 185, 225,  57, 221,  98, 205, 207, 159, 242,
+       68,  55,  41,  26, 173,  94, 237, 141, 151,  25, 196,  59,
+      127, 223,   3, 165,   1,   2,   3,  38,  32,   1,  33,  88,
+       32,   6, 190, 129,
+      ... 64 more items
+    ],
+    attStmt: { alg: -7, sig: [Uint8Array], x5c: [Array] }
+  }
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     99, 190,   3, 154, 187,  96, 162,  33,
+     10,   4, 215, 217, 229, 134,   6, 162,
+    182, 206, 157, 179, 178, 225, 149,   8,
+     69, 187, 139, 183, 145, 224, 160,  93
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'switchhuckleberry.gb'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      192,  18,  18, 249, 169,  97,  97,  78,
+      101, 138,  44, 249, 155, 167, 158,  43,
+       58, 216, 168, 218, 137,  62, 147, 195,
+       33,  72,  19, 144, 235,  96, 229,   9
+    ],
+    name: 'latoshasabatini@fancythoughtless.ve',
+    displayName: 'Latosha Sabatini'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a501582063be039abb60a2210a04d7d9e58606a2b6ce9db3b2e1950845bb8bb791e0a05d02a2626964747377697463686875636b6c6562657272792e6762646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820c01212f9a961614e658a2cf99ba79e2b3ad8a8da893e93c321481390eb60e509646e616d6578236c61746f7368617361626174696e694066616e637974686f756768746c6573732e76656b646973706c61794e616d65704c61746f736861205361626174696e690481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': '63be039abb60a2210a04d7d9e58606a2b6ce9db3b2e1950845bb8bb791e0a05d',
+  '2': {
+    id: 'switchhuckleberry.gb',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'c01212f9a961614e658a2cf99ba79e2b3ad8a8da893e93c321481390eb60e509',
+    name: 'latoshasabatini@fancythoughtless.ve',
+    displayName: 'Latosha Sabatini'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     58, 147, 118, 201,  59,  98, 173,
+    155,  87, 192, 241,  98, 150, 122,
+     70, 182, 204, 212,  20, 212,  45,
+    158, 167,  36, 217, 173, 140, 154,
+    201, 210, 205, 244
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'swankywait.kw'
+  },
+  '3': {
+    id: Uint8Array(32) [
+        6, 155, 117, 147,  52, 229, 50, 254,
+      180,  98,  10, 137, 212, 166, 30, 115,
+       18, 226,  95, 236, 208, 175, 30, 114,
+      174, 191,  17, 101, 112, 239, 37, 205
+    ],
+    name: 'angelplaza@flameblueberry.re',
+    displayName: 'Angel Plaza'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a50158203a9376c93b62ad9b57c0f162967a46b6ccd414d42d9ea724d9ad8c9ac9d2cdf402a26269646d7377616e6b79776169742e6b77646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820069b759334e532feb4620a89d4a61e7312e25fecd0af1e72aebf116570ef25cd646e616d65781c616e67656c706c617a6140666c616d65626c756562657272792e72656b646973706c61794e616d656b416e67656c20506c617a610481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': '3a9376c93b62ad9b57c0f162967a46b6ccd414d42d9ea724d9ad8c9ac9d2cdf4',
+  '2': {
+    id: 'swankywait.kw',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '069b759334e532feb4620a89d4a61e7312e25fecd0af1e72aebf116570ef25cd',
+    name: 'angelplaza@flameblueberry.re',
+    displayName: 'Angel Plaza'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    137, 142, 179, 212, 228, 243, 193,
+    145,  92,  48, 146,  75, 156, 242,
+     96, 252, 223, 201,  38,  51,  47,
+     60, 170, 213, 181, 178, 236, 237,
+    183, 151,  48, 208
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'successfulfancy.cu'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      123,  44, 146, 175, 183,  42,  91, 120,
+       19,  27, 235, 254,  40, 162,  26, 235,
+       43, 147, 133, 168,  76, 255,  74, 234,
+       81, 190, 228, 118,  46, 206, 158, 207
+    ],
+    name: 'marivelplacencia@voyageorder.pt',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a5015820898eb3d4e4f3c1915c30924b9cf260fcdfc926332f3caad5b5b2ecedb79730d002a2626964727375636365737366756c66616e63792e6375646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a362696458207b2c92afb72a5b78131bebfe28a21aeb2b9385a84cff4aea51bee4762ece9ecf646e616d65781f6d61726976656c706c6163656e63696140766f796167656f726465722e70746b646973706c61794e616d65714d61726976656c20506c6163656e6369610481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': '898eb3d4e4f3c1915c30924b9cf260fcdfc926332f3caad5b5b2ecedb79730d0',
+  '2': {
+    id: 'successfulfancy.cu',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '7b2c92afb72a5b78131bebfe28a21aeb2b9385a84cff4aea51bee4762ece9ecf',
+    name: 'marivelplacencia@voyageorder.pt',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    172, 209, 214,  99,  29, 185,  76,
+    208, 234,  24, 250, 115, 235, 105,
+    141,   4,  78, 136, 224, 102, 179,
+    128, 200,   1, 196, 148, 239,  99,
+    226, 147, 255, 133
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'impulseblueberry.ch'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      252, 223, 143, 201,  12,  32,  58, 164,
+       74, 219, 136,  25, 118, 180, 178, 182,
+       54, 151,   0,  14,  42,  53, 234, 165,
+       90,  47, 163,  94, 253, 146, 118, 250
+    ],
+    name: 'marivelplacencia@mightyclose.bi',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': undefined,
+  '9': undefined,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a5015820acd1d6631db94cd0ea18fa73eb698d044e88e066b380c801c494ef63e293ff8502a262696473696d70756c7365626c756562657272792e6368646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820fcdf8fc90c203aa44adb881976b4b2b63697000e2a35eaa55a2fa35efd9276fa646e616d65781f6d61726976656c706c6163656e636961406d6967687479636c6f73652e62696b646973706c61794e616d65714d61726976656c20506c6163656e6369610481a263616c672664747970656a7075626c69632d6b657907a162726bf5 {
+  '1': 'acd1d6631db94cd0ea18fa73eb698d044e88e066b380c801c494ef63e293ff85',
+  '2': {
+    id: 'impulseblueberry.ch',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'fcdf8fc90c203aa44adb881976b4b2b63697000e2a35eaa55a2fa35efd9276fa',
+    name: 'marivelplacencia@mightyclose.bi',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true }
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+    1) P-2
+    
+        FOR AUTHENTICATORS WITHOUT A DISPLAY AND PERFORM NO VERIFICATION
+
+        Send three valid CTAP2 authenticatorMakeCredential(0x01) message, "options" containg an "rk" option set to true, and if authenticator supports UV option set "uv" to false, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with no allowList presented, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains "numberOfCredentials" field that is of type Number and is set to 3.
+
+        Send authenticatorGetNextAssertion(0x08), until numberOfCredentials is 1, retrieve responses and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code for each of the requests. Check that response.user ONLY contains id field and nothing else!
+
+    
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: false,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a50101020303a5010203381820012158208d2b0ef794f2202b096e51d5f7b1543531afe65bf9a013fc247ce31519ba2cab22582015b955e8729758ff0a54b3f048a8a3bae725196765d7e7d8e47083861c8a44d30450c752cf0cf7ce76589fd967abff0de7f4055840fcb17ae6320ec260f448679efacba2d3c9c2d42e137306e55535b15105c275e2c04fd40cc8d12d18bf928194e2520209cb194de6285e10f9e79de9ebd2c0fb92 {
+  '1': 1,
+  '2': 3,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '8d2b0ef794f2202b096e51d5f7b1543531afe65bf9a013fc247ce31519ba2cab',
+    '-3': '15b955e8729758ff0a54b3f048a8a3bae725196765d7e7d8e47083861c8a44d3'
+  },
+  '4': 'c752cf0cf7ce76589fd967abff0de7f4',
+  '5': 'fcb17ae6320ec260f448679efacba2d3c9c2d42e137306e55535b15105c275e2c04fd40cc8d12d18bf928194e2520209cb194de6285e10f9e79de9ebd2c0fb92'
+}
+(node:41841) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `Electron --trace-deprecation ...` to show where the warning was created)
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {},
+  cborResponseStruct: {},
+  cborBuffer: Uint8Array(1) [ 160 ],
+  response: {}
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820f12353f185d409a857731add6f1a6ec72341182a678c0735da98b0be2ca38e2f22582002f65322026b1400ce0c8ab525605377fcde5b6d57e89abc62e63156833e524606502d1d32548d80e024e7ebc5e0de7fb98f {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'f12353f185d409a857731add6f1a6ec72341182a678c0735da98b0be2ca38e2f',
+    '-3': '02f65322026b1400ce0c8ab525605377fcde5b6d57e89abc62e63156833e5246'
+  },
+  '6': '2d1d32548d80e024e7ebc5e0de7fb98f'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '2346e901ee7da2fecba2fd198bddd1fd8ecbbdb21eb3cb66181c1fc3e7b97312'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+       35,  70, 233,   1, 238, 125, 162,
+      254, 203, 162, 253,  25, 139, 221,
+      209, 253, 142, 203, 189, 178,  30,
+      179, 203, 102,  24,  28,  31, 195,
+      231, 185, 115,  18
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,  35,  70, 233,   1,
+    238, 125, 162, 254, 203, 162, 253,  25,
+    139, 221, 209, 253, 142, 203, 189, 178,
+     30, 179, 203, 102,  24,  28,  31, 195,
+    231, 185, 115,  18
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+       35,  70, 233,   1, 238, 125, 162,
+      254, 203, 162, 253,  25, 139, 221,
+      209, 253, 142, 203, 189, 178,  30,
+      179, 203, 102,  24,  28,  31, 195,
+      231, 185, 115,  18
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     23, 119, 139, 143,  99, 152, 117,
+     38,  27, 251, 169, 114, 117,  42,
+    106, 149, 201, 215, 130, 131, 196,
+     94,  69, 239, 120, 183, 126,  63,
+    206, 182, 189,  13
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'starfruitchoke.rs'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      228, 114,  75,  48, 173, 207, 101, 215,
+      198, 179,   2,   6, 150,   6, 106,  73,
+       96, 182, 119, 159, 168,  49,  90, 237,
+       15,  69, 241, 207,  79,  92, 199,  23
+    ],
+    name: 'angel.plaza@motionmango.kg',
+    displayName: 'Angel Plaza'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+    243,  62, 156, 108,  13,
+    128, 244,  19, 254,  53,
+     15,  56, 223, 114, 138,
+    199
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a701582017778b8f639875261bfba972752a6a95c9d78283c45e45ef78b77e3fceb6bd0d02a26269647173746172667275697463686f6b652e7273646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820e4724b30adcf65d7c6b3020696066a4960b6779fa8315aed0f45f1cf4f5cc717646e616d65781a616e67656c2e706c617a61406d6f74696f6e6d616e676f2e6b676b646973706c61794e616d656b416e67656c20506c617a610481a263616c672664747970656a7075626c69632d6b657907a162726bf50850f33e9c6c0d80f413fe350f38df728ac70901 {
+  '1': '17778b8f639875261bfba972752a6a95c9d78283c45e45ef78b77e3fceb6bd0d',
+  '2': {
+    id: 'starfruitchoke.rs',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'e4724b30adcf65d7c6b3020696066a4960b6779fa8315aed0f45f1cf4f5cc717',
+    name: 'angel.plaza@motionmango.kg',
+    displayName: 'Angel Plaza'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': 'f33e9c6c0d80f413fe350f38df728ac7',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820c1b1d8dd7194900a605ed263bc27d0122f004cee0e587060170220f4bd78b183225820bb3caefe3d65c26a7f043a1be6be1119567b692a235219c1d3e522fa175ea2d3065045685cad3562669d6ca3622bca8bf4e1 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'c1b1d8dd7194900a605ed263bc27d0122f004cee0e587060170220f4bd78b183',
+    '-3': 'bb3caefe3d65c26a7f043a1be6be1119567b692a235219c1d3e522fa175ea2d3'
+  },
+  '6': '45685cad3562669d6ca3622bca8bf4e1'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '341a5aaf1a4609bf01524995eaf2018f31a697901d71d7aa75126544daa859fc'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+       52,  26,  90, 175,  26,  70,   9, 191,
+        1,  82,  73, 149, 234, 242,   1, 143,
+       49, 166, 151, 144,  29, 113, 215, 170,
+      117,  18, 101,  68, 218, 168,  89, 252
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,  52,  26,  90, 175,  26,
+     70,   9, 191,   1,  82,  73, 149, 234, 242,
+      1, 143,  49, 166, 151, 144,  29, 113, 215,
+    170, 117,  18, 101,  68, 218, 168,  89, 252
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+       52,  26,  90, 175,  26,  70,   9, 191,
+        1,  82,  73, 149, 234, 242,   1, 143,
+       49, 166, 151, 144,  29, 113, 215, 170,
+      117,  18, 101,  68, 218, 168,  89, 252
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    169,  60,  79, 213, 140, 134, 115, 210,
+     49,  77,  43,  47, 145,  66,  13, 132,
+    158,  83, 207, 110, 157,   9, 215,   1,
+    136, 106, 202, 121,  99, 180, 121,  67
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'nectarinecause.mu'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      217,   4,  78, 189, 183,  41, 150, 229,
+       20,  96,  37,  28,  83,  45, 152,  42,
+      198,  47, 104, 163,  53, 139,  12,  28,
+      136, 222, 219, 175, 178, 102, 202,  83
+    ],
+    name: 'lora.chasse@blue-eyedgrape.np',
+    displayName: 'Lora Chasse'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+    124, 162, 234, 233, 160,
+    143, 165,  74, 132, 163,
+     58,  99,  18, 141, 115,
+     70
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a7015820a93c4fd58c8673d2314d2b2f91420d849e53cf6e9d09d701886aca7963b4794302a2626964716e6563746172696e6563617573652e6d75646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820d9044ebdb72996e51460251c532d982ac62f68a3358b0c1c88dedbafb266ca53646e616d65781d6c6f72612e63686173736540626c75652d6579656467726170652e6e706b646973706c61794e616d656b4c6f7261204368617373650481a263616c672664747970656a7075626c69632d6b657907a162726bf508507ca2eae9a08fa54a84a33a63128d73460901 {
+  '1': 'a93c4fd58c8673d2314d2b2f91420d849e53cf6e9d09d701886aca7963b47943',
+  '2': {
+    id: 'nectarinecause.mu',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'd9044ebdb72996e51460251c532d982ac62f68a3358b0c1c88dedbafb266ca53',
+    name: 'lora.chasse@blue-eyedgrape.np',
+    displayName: 'Lora Chasse'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': '7ca2eae9a08fa54a84a33a63128d7346',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158203d97d989dea26843e3fdf235aef7aca1dcd42243b07e71a00f59d8227bd8c1ef2258209384db775dddb64f2a2b19ef29a6fad2495c8a329484e79b64f2c50ce26746e30650eacfdb6ca7c155877ad3fce5894db094 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '3d97d989dea26843e3fdf235aef7aca1dcd42243b07e71a00f59d8227bd8c1ef',
+    '-3': '9384db775dddb64f2a2b19ef29a6fad2495c8a329484e79b64f2c50ce26746e3'
+  },
+  '6': 'eacfdb6ca7c155877ad3fce5894db094'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '5978b1b06b7948581af811931a4ac6dcdc2920201c649afe76b4e3dd0f08a9fe'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+       89, 120, 177, 176, 107, 121,  72,  88,
+       26, 248,  17, 147,  26,  74, 198, 220,
+      220,  41,  32,  32,  28, 100, 154, 254,
+      118, 180, 227, 221,  15,   8, 169, 254
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,  89, 120, 177, 176,
+    107, 121,  72,  88,  26, 248,  17, 147,
+     26,  74, 198, 220, 220,  41,  32,  32,
+     28, 100, 154, 254, 118, 180, 227, 221,
+     15,   8, 169, 254
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+       89, 120, 177, 176, 107, 121,  72,  88,
+       26, 248,  17, 147,  26,  74, 198, 220,
+      220,  41,  32,  32,  28, 100, 154, 254,
+      118, 180, 227, 221,  15,   8, 169, 254
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     59, 172,  91,  87, 118, 213, 156,  13,
+    182, 236, 214,   2, 161, 244,  56,  70,
+    142, 166, 226,  32,  76,  48, 169, 201,
+    226,  18, 234, 236,   2,   7, 124, 200
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'guiderelation.io'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      241, 166, 223, 250, 189,  74,  81, 141,
+        2,  47,  85, 129, 105,  71,  99,  59,
+      125,  83, 190, 212,   5, 236,  25, 166,
+       86, 187,  99, 188, 196,  92, 121, 234
+    ],
+    name: 'sharylseguin@hairspark.az',
+    displayName: 'Sharyl Seguin'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+    205, 174,   8, 184,  11,
+    188,  67, 200, 121,  16,
+    106,  55, 228, 100, 194,
+    190
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a70158203bac5b5776d59c0db6ecd602a1f438468ea6e2204c30a9c9e212eaec02077cc802a262696470677569646572656c6174696f6e2e696f646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820f1a6dffabd4a518d022f55816947633b7d53bed405ec19a656bb63bcc45c79ea646e616d65781973686172796c73656775696e4068616972737061726b2e617a6b646973706c61794e616d656d53686172796c2053656775696e0481a263616c672664747970656a7075626c69632d6b657907a162726bf50850cdae08b80bbc43c879106a37e464c2be0901 {
+  '1': '3bac5b5776d59c0db6ecd602a1f438468ea6e2204c30a9c9e212eaec02077cc8',
+  '2': {
+    id: 'guiderelation.io',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'f1a6dffabd4a518d022f55816947633b7d53bed405ec19a656bb63bcc45c79ea',
+    name: 'sharylseguin@hairspark.az',
+    displayName: 'Sharyl Seguin'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': 'cdae08b80bbc43c879106a37e464c2be',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820ec8c259ef353b40ed771eff924b678efdb92433ba72fc2577a50d91a13fc57332258206c16a21aca455eeaf9715c1aba10afd17b81c35d34391a6aa1d2382d4823049606503dabf1c52d0435e5d480aa8940628078 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'ec8c259ef353b40ed771eff924b678efdb92433ba72fc2577a50d91a13fc5733',
+    '-3': '6c16a21aca455eeaf9715c1aba10afd17b81c35d34391a6aa1d2382d48230496'
+  },
+  '6': '3dabf1c52d0435e5d480aa8940628078'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '34d05f22833cd146489b9498c5e308fb7a4da6f81e797fc5e5c8db35722d6661'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+       52, 208,  95,  34, 131,  60, 209,  70,
+       72, 155, 148, 152, 197, 227,   8, 251,
+      122,  77, 166, 248,  30, 121, 127, 197,
+      229, 200, 219,  53, 114,  45, 102,  97
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32,  52, 208,  95,  34,
+    131,  60, 209,  70,  72, 155, 148, 152,
+    197, 227,   8, 251, 122,  77, 166, 248,
+     30, 121, 127, 197, 229, 200, 219,  53,
+    114,  45, 102,  97
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+       52, 208,  95,  34, 131,  60, 209,  70,
+       72, 155, 148, 152, 197, 227,   8, 251,
+      122,  77, 166, 248,  30, 121, 127, 197,
+      229, 200, 219,  53, 114,  45, 102,  97
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    120, 247, 182,  18, 179,  59, 171, 214,
+      0, 216,  44, 141, 194, 253, 238, 170,
+    161,  87, 164, 238,  48, 144, 207,   9,
+      4, 126, 248,  36,   0,   8, 202,  63
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'obedientdistribution.dm'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      174,  27, 147, 241, 240,  90, 143, 246,
+      243, 226, 157,  99, 123, 241,  70, 160,
+      228, 149, 182,  78,   4,  11,  78,  81,
+      210, 177,   4, 236, 139, 211, 183,  86
+    ],
+    name: 'taren.gatewood@limewide.sz',
+    displayName: 'Taren Gatewood'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+     40, 152,  26, 146,   7, 1,
+     63, 226,  22,  47, 129, 0,
+    251,  43, 228,  68
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a701582078f7b612b33babd600d82c8dc2fdeeaaa157a4ee3090cf09047ef8240008ca3f02a2626964776f62656469656e74646973747269627574696f6e2e646d646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820ae1b93f1f05a8ff6f3e29d637bf146a0e495b64e040b4e51d2b104ec8bd3b756646e616d65781a746172656e2e67617465776f6f64406c696d65776964652e737a6b646973706c61794e616d656e546172656e2047617465776f6f640481a263616c672664747970656a7075626c69632d6b657907a162726bf5085028981a9207013fe2162f8100fb2be4440901 {
+  '1': '78f7b612b33babd600d82c8dc2fdeeaaa157a4ee3090cf09047ef8240008ca3f',
+  '2': {
+    id: 'obedientdistribution.dm',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'ae1b93f1f05a8ff6f3e29d637bf146a0e495b64e040b4e51d2b104ec8bd3b756',
+    name: 'taren.gatewood@limewide.sz',
+    displayName: 'Taren Gatewood'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': '28981a9207013fe2162f8100fb2be444',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+    2) P-3
+        
+        FOR AUTHENTICATORS WITHOUT A DISPLAY AND USE EITHER UV OR CLIENTPIN
+
+        If UV option is supported, configure UV, else set new pin, and run registrations with pin.
+
+        Send two valid CTAP2 authenticatorMakeCredential(0x01) message, "options" containg an "rk" option set to true, and if authenticator supports UV option set "uv" to true, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with no allowList presented, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains "numberOfCredentials" field that is of type Number and is set to 2.
+
+        Send authenticatorGetNextAssertion(0x08), until numberOfCredentials is 1, retrieve responses and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code for each of the requests. Check that response.user contains all of the registered userInfo
+
+    
+    - P-4
+    
+        FOR AUTHENTICATORS WITH DISPLAY
+
+        Send three valid CTAP2 authenticatorMakeCredential(0x01) message, "options" containg an "rk" option set to true, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Send three CTAP2 authenticatorGetAssertion(0x02) messages, with no allowList presented, asking using in a random order to select credentials, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains "numberOfCredentials" field that is of type Number and is set to 1.
+
+    
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820c7692a9bbc004dd26979fbfde8d732b7da72320fb5c8d6c1d78d352ff19b4b1a225820f442fe1870a25ff16bfc8690d3bcfd9a19c6209e53edb4ccc9332473531526950650de327dd2a15ef54fd2652ba713b7c7ae {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'c7692a9bbc004dd26979fbfde8d732b7da72320fb5c8d6c1d78d352ff19b4b1a',
+    '-3': 'f442fe1870a25ff16bfc8690d3bcfd9a19c6209e53edb4ccc933247353152695'
+  },
+  '6': 'de327dd2a15ef54fd2652ba713b7c7ae'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': 'b122046dc1c7444697cc06b3fa4de149e8c6f69553ba6b798b5d6c5cde53fd0e'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+      177,  34,   4, 109, 193, 199,  68,  70,
+      151, 204,   6, 179, 250,  77, 225,  73,
+      232, 198, 246, 149,  83, 186, 107, 121,
+      139,  93, 108,  92, 222,  83, 253,  14
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32, 177,  34,   4, 109,
+    193, 199,  68,  70, 151, 204,   6, 179,
+    250,  77, 225,  73, 232, 198, 246, 149,
+     83, 186, 107, 121, 139,  93, 108,  92,
+    222,  83, 253,  14
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+      177,  34,   4, 109, 193, 199,  68,  70,
+      151, 204,   6, 179, 250,  77, 225,  73,
+      232, 198, 246, 149,  83, 186, 107, 121,
+      139,  93, 108,  92, 222,  83, 253,  14
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    150, 170,  87, 120, 112,   7, 228, 143,
+      8, 161, 197,  88,   7,  25, 237, 237,
+    118, 120,  82,  31, 245,  88, 193, 244,
+    241, 233,  97,  11,  86, 253, 249,  21
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'disapprovesuccessful.se'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      111, 209,  64,  21, 240,  87, 154, 92,
+      170,  64, 184,  43,  26, 221, 246, 30,
+      131, 190, 152, 159,  37,  50, 127,  2,
+       36,  98, 213,   6,  33, 168,  13, 70
+    ],
+    name: 'juliannahollman@papayawindy.il',
+    displayName: 'Julianna Hollman'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+    222, 69,  21, 133, 168,   8,
+    148, 70, 151, 107,  63, 132,
+     11, 77, 172,  16
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a701582096aa57787007e48f08a1c5580719eded7678521ff558c1f4f1e9610b56fdf91502a262696477646973617070726f76657375636365737366756c2e7365646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a362696458206fd14015f0579a5caa40b82b1addf61e83be989f25327f022462d50621a80d46646e616d65781e6a756c69616e6e61686f6c6c6d616e4070617061796177696e64792e696c6b646973706c61794e616d65704a756c69616e6e6120486f6c6c6d616e0481a263616c672664747970656a7075626c69632d6b657907a162726bf50850de451585a8089446976b3f840b4dac100901 {
+  '1': '96aa57787007e48f08a1c5580719eded7678521ff558c1f4f1e9610b56fdf915',
+  '2': {
+    id: 'disapprovesuccessful.se',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '6fd14015f0579a5caa40b82b1addf61e83be989f25327f022462d50621a80d46',
+    name: 'juliannahollman@papayawindy.il',
+    displayName: 'Julianna Hollman'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': 'de451585a8089446976b3f840b4dac10',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a5010203381820012158200be4986da6be82ab1a246f59d84cfb24b951a7ebd15ca39f02d38734472629232258205e6076f63eae4058105924d9316c744860909b6b28bd46e63b4f29be2a8b0b0a065040388f715f5f6078ce438dfc4b8595d1 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': '0be4986da6be82ab1a246f59d84cfb24b951a7ebd15ca39f02d3873447262923',
+    '-3': '5e6076f63eae4058105924d9316c744860909b6b28bd46e63b4f29be2a8b0b0a'
+  },
+  '6': '40388f715f5f6078ce438dfc4b8595d1'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '7b632945ac508f030e76db5c40b82598e35782d1c61900e51820ea3ed7916465'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+      123,  99,  41,  69, 172,  80, 143,   3,
+       14, 118, 219,  92,  64, 184,  37, 152,
+      227,  87, 130, 209, 198,  25,   0, 229,
+       24,  32, 234,  62, 215, 145, 100, 101
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32, 123,  99,  41,  69, 172,
+     80, 143,   3,  14, 118, 219,  92,  64, 184,
+     37, 152, 227,  87, 130, 209, 198,  25,   0,
+    229,  24,  32, 234,  62, 215, 145, 100, 101
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+      123,  99,  41,  69, 172,  80, 143,   3,
+       14, 118, 219,  92,  64, 184,  37, 152,
+      227,  87, 130, 209, 198,  25,   0, 229,
+       24,  32, 234,  62, 215, 145, 100, 101
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+     81, 154, 254, 217, 173, 122, 219,   1,
+    213,  43, 193, 193,  16,  50, 184, 223,
+     23, 180,  78,  94, 130,  17, 100,  77,
+     86, 122, 152, 150, 187, 211, 118,  58
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'elderlytangerine.sc'
+  },
+  '3': {
+    id: Uint8Array(32) [
+        5, 191,  33, 72, 47, 172, 183, 233,
+       20,  79,  51, 82, 77,  98, 234, 110,
+      214, 104, 245, 89, 73, 153, 172, 153,
+      114,   8, 211, 19, 58, 229,  18,   0
+    ],
+    name: 'sharda.manier@messupsuccessful.rw',
+    displayName: 'Sharda Manier'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+    138, 187,  28, 230, 243,
+    181, 176, 122, 145, 181,
+    111,  46, 127, 196,  33,
+     60
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a7015820519afed9ad7adb01d52bc1c11032b8df17b44e5e8211644d567a9896bbd3763a02a262696473656c6465726c7974616e676572696e652e7363646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a3626964582005bf21482facb7e9144f33524d62ea6ed668f5594999ac997208d3133ae51200646e616d6578217368617264612e6d616e696572406d65737375707375636365737366756c2e72776b646973706c61794e616d656d536861726461204d616e6965720481a263616c672664747970656a7075626c69632d6b657907a162726bf508508abb1ce6f3b5b07a91b56f2e7fc4213c0901 {
+  '1': '519afed9ad7adb01d52bc1c11032b8df17b44e5e8211644d567a9896bbd3763a',
+  '2': {
+    id: 'elderlytangerine.sc',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: '05bf21482facb7e9144f33524d62ea6ed668f5594999ac997208d3133ae51200',
+    name: 'sharda.manier@messupsuccessful.rw',
+    displayName: 'Sharda Manier'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': '8abb1ce6f3b5b07a91b56f2e7fc4213c',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820a94bcfd2bfd378573553959cfe1d5c35b0bf5654e83881df1bd671dea7b84386225820561191fb7a5168d277c1a778ac69163f429f78c71867a56a80d11671e3d78c0106501587144e94ced0af1f727c252aa77c3c {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'a94bcfd2bfd378573553959cfe1d5c35b0bf5654e83881df1bd671dea7b84386',
+    '-3': '561191fb7a5168d277c1a778ac69163f429f78c71867a56a80d11671e3d78c01'
+  },
+  '6': '1587144e94ced0af1f727c252aa77c3c'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': '6d90adc67b38310a7ec20b318926aeda9d22d26b7b92bacee78c56ec960da0b4'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+      109, 144, 173, 198, 123,  56,  49,
+       10, 126, 194,  11,  49, 137,  38,
+      174, 218, 157,  34, 210, 107, 123,
+      146, 186, 206, 231, 140,  86, 236,
+      150,  13, 160, 180
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32, 109, 144, 173, 198,
+    123,  56,  49,  10, 126, 194,  11,  49,
+    137,  38, 174, 218, 157,  34, 210, 107,
+    123, 146, 186, 206, 231, 140,  86, 236,
+    150,  13, 160, 180
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+      109, 144, 173, 198, 123,  56,  49,
+       10, 126, 194,  11,  49, 137,  38,
+      174, 218, 157,  34, 210, 107, 123,
+      146, 186, 206, 231, 140,  86, 236,
+      150,  13, 160, 180
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    128,  40, 112, 191, 103,  86,   4,  88,
+    103, 239, 148, 155, 118, 169,  39, 196,
+    253, 104, 186, 173, 183, 189, 143, 148,
+     94,  19,  39,  91, 213,   9, 183, 246
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'satsumaspiritual.mo'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      174, 154, 114,  94, 233,  35, 181,   2,
+      146,  23, 101, 147, 126,  96,  84,  27,
+      104,  53,  33,  84, 103, 214, 234, 106,
+       67, 148, 201, 121, 193, 240, 254,  25
+    ],
+    name: 'marivelplacencia@sootheindustrious.bj',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+     21, 125, 162, 201,  56,
+    118, 237, 165, 188, 126,
+    237, 247, 145, 103,  92,
+     71
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a7015820802870bf6756045867ef949b76a927c4fd68baadb7bd8f945e13275bd509b7f602a26269647373617473756d6173706972697475616c2e6d6f646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820ae9a725ee923b502921765937e60541b6835215467d6ea6a4394c979c1f0fe19646e616d6578256d61726976656c706c6163656e63696140736f6f746865696e6475737472696f75732e626a6b646973706c61794e616d65714d61726976656c20506c6163656e6369610481a263616c672664747970656a7075626c69632d6b657907a162726bf50850157da2c93876eda5bc7eedf791675c470901 {
+  '1': '802870bf6756045867ef949b76a927c4fd68baadb7bd8f945e13275bd509b7f6',
+  '2': {
+    id: 'satsumaspiritual.mo',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'ae9a725ee923b502921765937e60541b6835215467d6ea6a4394c979c1f0fe19',
+    name: 'marivelplacencia@sootheindustrious.bj',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': '157da2c93876eda5bc7eedf791675c47',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+[CTAP2.1] Generating test PUAT...
+[CTAP2.1] GetInfo: ---> Sending CTAP CMD... 04 undefined
+[CTAP2.1] GetInfo: <--- Received response {
+  statusCode: 0,
+  type: 'GetInfo',
+  cborResponse: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': '01020304050607080102030405060708',
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborResponseStruct: {
+    '1': [ 'FIDO_2_0', 'FIDO_2_1' ],
+    '2': [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    '3': Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    '4': {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    '6': [ 1 ],
+    '10': [ [Object], [Object], [Object], [Object] ],
+    '20': 3,
+    '22': [ 'mtc', 'packed' ]
+  },
+  cborBuffer: Uint8Array(262) [
+    168,   1, 130, 104,  70,  73,  68,  79,  95,  50,  95,  48,
+    104,  70,  73,  68,  79,  95,  50,  95,  49,   2, 131, 107,
+     99, 114, 101, 100,  80, 114, 111, 116, 101,  99, 116, 107,
+    104, 109,  97,  99,  45, 115, 101,  99, 114, 101, 116, 105,
+    109, 116,  99,  45, 100, 101,  98, 117, 103,   3,  80,   1,
+      2,   3,   4,   5,   6,   7,   8,   1,   2,   3,   4,   5,
+      6,   7,   8,   4, 167,  98, 114, 107, 245,  98, 117, 112,
+    245, 100, 112, 108,  97, 116, 244, 104,  99, 114, 101, 100,
+     77, 103, 109, 116,
+    ... 162 more items
+  ],
+  response: {
+    versions: [ 'FIDO_2_0', 'FIDO_2_1' ],
+    extensions: [ 'credProtect', 'hmac-secret', 'mtc-debug' ],
+    aaguid: Uint8Array(16) [
+      1, 2, 3, 4, 5, 6,
+      7, 8, 1, 2, 3, 4,
+      5, 6, 7, 8
+    ],
+    options: {
+      rk: true,
+      up: true,
+      plat: false,
+      credMgmt: true,
+      clientPin: true,
+      pinUvAuthToken: true,
+      credentialMgmtPreview: true
+    },
+    pinUvAuthProtocols: [ 1 ],
+    algorithms: [ [Object], [Object], [Object], [Object] ],
+    remainingDiscoverableCredentials: 3
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a201010202 { '1': 1, '2': 2 }
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': '5f0b5d87bba377ce828d62a920fb0f47dd40948144b79ac9cb76134e17bcc37a',
+      '-3': 'e2299913da468453fc13bc3ef2f1a62b1e65c092ad43856c544d2a851abcc8ad'
+    }
+  },
+  cborResponseStruct: {
+    '1': {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  },
+  cborBuffer: Uint8Array(80) [
+    161,   1, 165,   1,   2,   3,  56,  24,  32,   1,  33,  88,
+     32,  95,  11,  93, 135, 187, 163, 119, 206, 130, 141,  98,
+    169,  32, 251,  15,  71, 221,  64, 148, 129,  68, 183, 154,
+    201, 203, 118,  19,  78,  23, 188, 195, 122,  34,  88,  32,
+    226,  41, 153,  19, 218,  70, 132,  83, 252,  19, 188,  62,
+    242, 241, 166,  43,  30, 101, 192, 146, 173,  67, 133, 108,
+     84,  77,  42, 133,  26, 188, 200, 173
+  ],
+  response: {
+    keyAgreement: {
+      '1': 2,
+      '3': -25,
+      '-1': 1,
+      '-2': [Uint8Array],
+      '-3': [Uint8Array]
+    }
+  }
+}
+[CTAP2.1] ClientPIN: ---> Sending CTAP CMD... 06a40101020503a501020338182001215820a3a80794d0a9104cb7da2ce128932de426ae475484ecf1a05b3b9ed6912df148225820e83c82593a7ca577c87834e4daa8dc0c8d05574e3011230cb2c0c797bd26a4a506506b0e6b80cf2b86cec9eea28976b7d4c3 {
+  '1': 1,
+  '2': 5,
+  '3': {
+    '1': 2,
+    '3': -25,
+    '-1': 1,
+    '-2': 'a3a80794d0a9104cb7da2ce128932de426ae475484ecf1a05b3b9ed6912df148',
+    '-3': 'e83c82593a7ca577c87834e4daa8dc0c8d05574e3011230cb2c0c797bd26a4a5'
+  },
+  '6': '6b0e6b80cf2b86cec9eea28976b7d4c3'
+}
+[CTAP2.1] ClientPIN: <--- Received response {
+  statusCode: 0,
+  type: 'ClientPIN',
+  cborResponse: {
+    '2': 'cab2cfc0e95fa7b142e615b6e39b8f45834b8c5597f1c643d6208fa1d8402dba'
+  },
+  cborResponseStruct: {
+    '2': Uint8Array(32) [
+      202, 178, 207, 192, 233,  95, 167,
+      177,  66, 230,  21, 182, 227, 155,
+      143,  69, 131,  75, 140,  85, 151,
+      241, 198,  67, 214,  32, 143, 161,
+      216,  64,  45, 186
+    ]
+  },
+  cborBuffer: Uint8Array(36) [
+    161,   2,  88,  32, 202, 178, 207, 192,
+    233,  95, 167, 177,  66, 230,  21, 182,
+    227, 155, 143,  69, 131,  75, 140,  85,
+    151, 241, 198,  67, 214,  32, 143, 161,
+    216,  64,  45, 186
+  ],
+  response: {
+    pinUvAuthToken: Uint8Array(32) [
+      202, 178, 207, 192, 233,  95, 167,
+      177,  66, 230,  21, 182, 227, 155,
+      143,  69, 131,  75, 140,  85, 151,
+      241, 198,  67, 214,  32, 143, 161,
+      216,  64,  45, 186
+    ]
+  }
+}
+[CTAP2.1] Test PUAT acquired
+[CTAP2.1] Generating MakeCredential CBOR for struct...  {
+  '1': Uint8Array(32) [
+    227,  86, 152, 145,  90, 155, 232, 158,
+    178,   5,  73,  86, 158, 155, 132,  14,
+     88, 138, 215, 113, 102, 246, 190,  47,
+     65, 199, 245,   8, 167,  58, 237,   2
+  ],
+  '2': {
+    name: 'The Example Corporation with fake domain!',
+    id: 'switchback.is'
+  },
+  '3': {
+    id: Uint8Array(32) [
+      241, 211, 163, 223, 100, 130,  59,
+       97, 159,  89,  74, 251, 248,  34,
+      192, 192, 236,  90, 120, 100, 101,
+      254, 197, 102, 149,  54, 144, 191,
+      216, 196, 217, 191
+    ],
+    name: 'marivelplacencia@scintillatingjujube.st',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { type: 'public-key', alg: -7 } ],
+  '5': undefined,
+  '6': undefined,
+  '7': { rk: true },
+  '8': Uint8Array(16) [
+    123, 170,  70, 162, 233,
+     27, 245, 104, 225, 117,
+     84, 251, 123,  71, 211,
+     42
+  ],
+  '9': 1,
+  '10': undefined
+}
+[CTAP2.1] MakeCredential: ---> Sending CTAP CMD... 01a7015820e35698915a9be89eb20549569e9b840e588ad77166f6be2f41c7f508a73aed0202a26269646d7377697463686261636b2e6973646e616d657829546865204578616d706c6520436f72706f726174696f6e20776974682066616b6520646f6d61696e2103a36269645820f1d3a3df64823b619f594afbf822c0c0ec5a786465fec566953690bfd8c4d9bf646e616d6578276d61726976656c706c6163656e636961407363696e74696c6c6174696e676a756a7562652e73746b646973706c61794e616d65714d61726976656c20506c6163656e6369610481a263616c672664747970656a7075626c69632d6b657907a162726bf508507baa46a2e91bf568e17554fb7b47d32a0901 {
+  '1': 'e35698915a9be89eb20549569e9b840e588ad77166f6be2f41c7f508a73aed02',
+  '2': {
+    id: 'switchback.is',
+    name: 'The Example Corporation with fake domain!'
+  },
+  '3': {
+    id: 'f1d3a3df64823b619f594afbf822c0c0ec5a786465fec566953690bfd8c4d9bf',
+    name: 'marivelplacencia@scintillatingjujube.st',
+    displayName: 'Marivel Placencia'
+  },
+  '4': [ { alg: -7, type: 'public-key' } ],
+  '7': { rk: true },
+  '8': '7baa46a2e91bf568e17554fb7b47d32a',
+  '9': 1
+}
+[CTAP2.1] MakeCredential: <--- Received response {
+  statusCode: 40,
+  type: 'MakeCredential',
+  cborResponse: undefined,
+  cborResponseStruct: undefined,
+  cborBuffer: undefined,
+  response: undefined
+}
+    3) P-5
+
+        Create a valid CTAP2 credential, with an "rk" option set to true.
+        
+        For the same Relying Party Identifier, overwrite previous credential with new valid rk credential,
+        
+        and check that both values of credId and COSEPublicKey, was changed.
+
+    
+
+
+  1 passing (71ms)
+  1 pending
+  3 failing
+
+  1) 
+
+        Discoverable Credentials(Resident-Key)
+
+        Test Discoverable Credentials(Resident-Key) support
+
+    
+       P-2
+    
+        FOR AUTHENTICATORS WITHOUT A DISPLAY AND PERFORM NO VERIFICATION
+
+        Send three valid CTAP2 authenticatorMakeCredential(0x01) message, "options" containg an "rk" option set to true, and if authenticator supports UV option set "uv" to false, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with no allowList presented, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains "numberOfCredentials" field that is of type Number and is set to 3.
+
+        Send authenticatorGetNextAssertion(0x08), until numberOfCredentials is 1, retrieve responses and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code for each of the requests. Check that response.user ONLY contains id field and nothing else!
+
+    :
+     Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)
+      at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+  2) 
+
+        Discoverable Credentials(Resident-Key)
+
+        Test Discoverable Credentials(Resident-Key) support
+
+    
+       P-3
+        
+        FOR AUTHENTICATORS WITHOUT A DISPLAY AND USE EITHER UV OR CLIENTPIN
+
+        If UV option is supported, configure UV, else set new pin, and run registrations with pin.
+
+        Send two valid CTAP2 authenticatorMakeCredential(0x01) message, "options" containg an "rk" option set to true, and if authenticator supports UV option set "uv" to true, wait for the responses, and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code.
+
+        Send a valid CTAP2 authenticatorGetAssertion(0x02) message, with no allowList presented, wait for the response and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code. Check that response contains "numberOfCredentials" field that is of type Number and is set to 2.
+
+        Send authenticatorGetNextAssertion(0x08), until numberOfCredentials is 1, retrieve responses and check that Authenticator returns CTAP1_ERR_SUCCESS(0x00) error code for each of the requests. Check that response.user contains all of the registered userInfo
+
+    :
+     Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)
+      at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+  3) 
+
+        Discoverable Credentials(Resident-Key)
+
+        Test Discoverable Credentials(Resident-Key) support
+
+    
+       P-5
+
+        Create a valid CTAP2 credential, with an "rk" option set to true.
+        
+        For the same Relying Party Identifier, overwrite previous credential with new valid rk credential,
+        
+        and check that both values of credId and COSEPublicKey, was changed.
+
+    :
+     Error: Expected authenticator to succeed with CTAP1_ERR_SUCCESS(0). Got CTAP2_ERR_KEY_STORE_FULL(40)
+      at eval (eval at compileCode (sandbox.js:25:26), <anonymous>:3416:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+
+
+FINAL {"suites":1,"tests":5,"passes":1,"pending":1,"failures":3,"start":"2026-10-27T22:54:22.728Z","end":"2026-10-27T22:54:22.799Z","duration":71}
