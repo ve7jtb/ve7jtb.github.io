@@ -2,9 +2,9 @@
 
 > [!NOTE]
 > **Specification Update (Authenticate 2026 CTAP2 TWG Consensus):**
-> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
-> - **`fmt: "mtc"`** (formerly `mtc`): The compact, preferred default format where public keys are omitted from the wire and resolved out-of-band via FIDO MDS3 or manufacturer manifests.
-> - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key.
+> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was established as the single operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), `mtcl` (MTC Large with inline public key) has been removed and the specification standardizes:
+> - **`fmt: "mtc"`** *(formerly `mtc-mds`)*: The compact Merkle Tree Certificate format where public keys are omitted from the wire and resolved out-of-band via FIDO MDS3 or manufacturer manifests.
+> - **`mtcDebug` (`mtc-debug`)**: The WebAuthn Level 4 diagnostic registration extension providing in-band public key, inclusion proof, root hash, and device serial access for automated test harnesses.
 ### Architectural Evaluation: Transport Wire Sizes, Manifest Distribution, and Relying Party Validation Complexity
 
 > [!IMPORTANT]
@@ -90,24 +90,24 @@ $$\text{Wire Size} = \text{CBOR Overhead} + \text{authData} + \text{attStmt}$$
 
 The table below contrasts the end-to-end `MakeCredential` payload sizes across NIST post-quantum credential algorithms, evaluated against the **$7,609\text{-byte}$ USB CTAPHID limit**:
 
-| Credential Algorithm | Inline `"mtcl"` (sig + `pubKey` + `563 B` proof) | Enterprise `"mtc"` (with `563 B` proof) | **Enterprise `"mtc"` Proof-Less** (manifest-resolved) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt`) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt`) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **`ML-DSA-44`** (`-48`) | $5,723\text{ B}$ ✅ | $4,401\text{ B}$ ✅ | **$3,832\text{ B}$** ✅ | $4,441\text{ B}$ ✅ | **$3,385\text{ B}$** ✅ |
-| **`ML-DSA-65`** (`-49`) | $7,892\text{ B}$ ⚠️ *(+283 B)* | $5,930\text{ B}$ ✅ | **$5,361\text{ B}$** ✅ | $5,081\text{ B}$ ✅ | **$4,025\text{ B}$** ✅ |
-| **`ML-DSA-87`** (`-50`) | $10,490\text{ B}$ ⚠️ *(+2,881 B)* | $7,888\text{ B}$ ⚠️ *(+279 B)* | **$7,319\text{ B}$** ✅ *(290 B margin)* | $5,721\text{ B}$ ✅ *(1,888 B margin)* | **$4,665\text{ B}$** ✅ *(2,944 B margin)* |
-| **`FN-DSA-512`** (`-60`) | $4,499\text{ B}$ ✅ | $3,177\text{ B}$ ✅ | **$2,608\text{ B}$** ✅ | $3,990\text{ B}$ ✅ | **$2,934\text{ B}$** ✅ |
-| **`FN-DSA-1024`** (`-61`) | $5,861\text{ B}$ ✅ | $4,539\text{ B}$ ✅ | **$3,970\text{ B}$** ✅ | $4,886\text{ B}$ ✅ | **$3,830\text{ B}$** ✅ |
+| Credential Algorithm | Enterprise `"mtc"` (with `563 B` proof, `mtcEntryDesc`) | **Enterprise `"mtc"` Proof-Less** (`mtcKeyRef`, manifest-resolved) | **LM-OTS Enterprise Direct ($W=4$)** ($3,008\text{ B}$ `attStmt`) | **LM-OTS Enterprise Direct ($W=8$)** ($1,952\text{ B}$ `attStmt`) |
+| :--- | :---: | :---: | :---: | :---: |
+| **`ML-DSA-44`** (`-48`) | $4,401\text{ B}$ ✅ | **$3,832\text{ B}$** ✅ | $4,441\text{ B}$ ✅ | **$3,385\text{ B}$** ✅ |
+| **`ML-DSA-65`** (`-49`) | $5,930\text{ B}$ ✅ | **$5,361\text{ B}$** ✅ | $5,081\text{ B}$ ✅ | **$4,025\text{ B}$** ✅ |
+| **`ML-DSA-87`** (`-50`) | $7,888\text{ B}$ ⚠️ *(+279 B)* | **$7,319\text{ B}$** ✅ *(290 B margin)* | $5,721\text{ B}$ ✅ *(1,888 B margin)* | **$4,665\text{ B}$** ✅ *(2,944 B margin)* |
+| **`FN-DSA-512`** (`-60`) | $3,177\text{ B}$ ✅ | **$2,608\text{ B}$** ✅ | $3,990\text{ B}$ ✅ | **$2,934\text{ B}$** ✅ |
+| **`FN-DSA-1024`** (`-61`) | $4,539\text{ B}$ ✅ | **$3,970\text{ B}$** ✅ | $4,886\text{ B}$ ✅ | **$3,830\text{ B}$** ✅ |
 
 ```mermaid
 xychart-beta
     title "Total MakeCredential Wire Size vs 7,609 B HID Limit (Bytes)"
     x-axis ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87", "FN-DSA-512", "FN-DSA-1024"]
-    y-axis "Wire Size (Bytes)" 2000 --> 11000
-    bar [5723, 7892, 10490, 4499, 5861]
+    y-axis "Wire Size (Bytes)" 2000 --> 9000
+    bar [4401, 5930, 7888, 3177, 4539]
     bar [3832, 5361, 7319, 2608, 3970]
     bar [3385, 4025, 4665, 2934, 3830]
 ```
-*(Legend: Bar 1 = Inline `"mtcl"`; Bar 2 = Proof-Less `"mtc"`; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)*
+*(Legend: Bar 1 = `"mtc"` with `563 B` proof (`mtcEntryDesc`); Bar 2 = Proof-Less `"mtc"` (`mtcKeyRef`); Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)*
 
 ### 2.3 Key Wire Size Findings
 1. **The Category 5 `ML-DSA-87` Bottleneck**:
@@ -132,7 +132,7 @@ flowchart TD
         C -->|mtcEntryDesc With-Proof| E[Branch 2: Landmark Subtree Proof]
         
         D --> D1{Held manifest for caId?}
-        D1 -->|No| D2[Fail or Request Client Retry with fmt: mtcl]
+        D1 -->|No| D2[Fail or Use mtcDebug in Test Mode]
         D1 -->|Yes| D3[Lookup batchKeys by caId, serial]
         D3 --> D4[Check deviceSerial matches authData ext if present]
         D4 --> D5[Verify ML-DSA Signature over authData]
@@ -160,17 +160,17 @@ To verify an `mtc` attestation statement, an Enterprise Relying Party must imple
    - The RP must query an offline relational or key-value store holding individual public keys ($13.3\text{–}26.1\text{ MB}$ per $100\text{k}$ devices).
    - **Upfront Table Validation**: Before accepting any lookup result, the RP must have verified the manifest table against the manufacturer's Root CA signature or recomputed the Merkle tree over all leaves to verify `subtrees[].rootHash`.
 2. **Branch 2 (Landmark Proof Inclusion — `mtcEntryDesc`)**:
-   - If the authenticator belongs to a contractor or BYOD scenario where the RP does not hold the manifest, the RP parses `mtcProof`, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB.
+   - If `mtcEntryDesc` is used, the RP parses `mtcProof`, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB or manifest.
 3. **Branch 3 (Manifest Serial Validation & Inventory Lookup)**:
-   - Because a separate wire serial extension is omitted, the RP extracts the hardware serial number directly from the manufacturer's manifest record (or leaf commitment in `fmt: "mtcl"`), verifying it against the organization's asset inventory.
+   - Because a separate wire serial extension is omitted, the RP extracts the hardware serial number directly from the manufacturer's manifest record (or leaf commitment in `mtcEntryDesc`), verifying it against the organization's asset inventory.
 4. **Branch 4 (Manifest Drift & Reseller Fallback)**:
-   - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc` fails. The RP/client must initiate a fallback to inline `fmt: "mtcl"` or `fmt: "packed"`, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.
+   - If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, `mtc` fails unless the RP/client falls back to `fmt: "packed"` (requiring a classical/PQ X.509 ASN.1 certificate path validation engine) or diagnostic `mtcDebug`.
 5. **Branch 5 (Revocation & Key Life-Cycle Management)**:
    - Revocation requires tracking delta arrays of `revokedSerials` inside every manifest update.
 
 > [!TIP]
-> **Diagnostic Verification via WebAuthn Level 4 `mtc-debug`**:
-> For test harnesses and automated conformance suites, the WebAuthn Level 4 **`mtc-debug`** extension allows an RP to bypass manifest lookups by requesting `mtc-debug: true`, which instructs the authenticator to return the active public key (and device serial when Enterprise Attestation is active) directly in `authenticatorData.extensions["mtc-debug"]`.
+> **Diagnostic Verification via WebAuthn Level 4 `mtcDebug` (`mtc-debug`)**:
+> For test harnesses and automated conformance suites, the WebAuthn Level 4 **`mtcDebug`** extension allows an RP to bypass manifest lookups by requesting `mtcDebug: true`, which instructs the authenticator to return `pubKey`, `deviceSerial` (when Enterprise Attestation is active), `notBefore`, `notAfter`, `firmwareVersion`, `mtcProof`, and `rootHash` directly in `authenticatorData.extensions["mtc-debug"]`.
 
 ### 3.2 Single Pure-Algebraic Path in RFC 8554 LM-OTS ($80\,\mu\text{s}$)
 
@@ -204,7 +204,7 @@ In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branc
 
 ## 5. Conclusions & Strategic Recommendation
 
-1. **For General Non-Enterprise Attestation (`fmt: "none"` / `fmt: "mtc"` / `fmt: "mtcl"`)**:
+1. **For General Non-Enterprise Attestation (`fmt: "none"` / `fmt: "mtc"`)**:
    - **`mtc` via FIDO MDS3 is the optimal path.** It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.
 
 2. **For High-Assurance Enterprise Direct Attestation (`0x0A`)**:

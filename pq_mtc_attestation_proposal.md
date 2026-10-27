@@ -1,12 +1,12 @@
-# Proposal: Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (`mtc` and `mtcl`)
+# Proposal: Post-Quantum WebAuthn Attestation Using Merkle Tree Certificates (`mtc`) and the `mtcDebug` Extension
 
 Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/), [W3C WebAuthn Level 3 / Level 4 §8](https://www.w3.org/TR/webauthn-3/#sctn-defined-attestation-formats), [FIDO CTAP 2.3](https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html), and [FIDO Metadata Statement (MDS3)](https://fidoalliance.org/specs/mds/fido-metadata-statement-v3.0-ps-20210518.html).
 
 > [!NOTE]
 > **Specification Update (Authenticate 2026 CTAP2 TWG Consensus):**
-> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/log-assisted Merkle Tree Certificate proposal was recognized as the preferred operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging), the format identifiers have been updated:
-> - **`fmt: "mtc"`** (formerly `mtc-mds`): The compact, preferred default format. The multi-kilobyte post-quantum public key is omitted from the wire payload and fetched via FIDO MDS3 (`MtcTrustAnchor.batchKeys`) or the vendor's manifest.
-> - **`fmt: "mtcl"`** (formerly `mtc`): Merkle Tree Certificate Large, carrying the inline public key alongside the Merkle inclusion proof.
+> Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was established as the single operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging) and avoid redundant transmission of multi-kilobyte public keys on the wire, `mtcl` (MTC Large with inline public key) has been removed and the specification standardizes:
+> - **`fmt: "mtc"`** *(formerly `mtc-mds`)*: The compact Merkle Tree Certificate attestation statement format. The multi-kilobyte post-quantum public key is omitted from the wire payload and resolved out-of-band via FIDO MDS3 (`MtcTrustAnchor.batchKeys`) or the manufacturer's manifest.
+> - **`mtcDebug` (`mtc-debug`)**: The WebAuthn Level 4 diagnostic registration extension (§8.7) enabling test fixtures, conformance suites, and offline verifiers to retrieve the active attestation public key, inclusion proof, root hash, validity timestamps, firmware version, and (when Enterprise Attestation is granted) device serial number in-band.
 
 > [!IMPORTANT]
 > **Attribution & Scope of Fidont:**
@@ -43,102 +43,63 @@ With classical `ES256` (65 B public key, ~71 B signature), a single-cert `packed
 
 ---
 
-## 2. Two New WebAuthn Attestation Formats: `mtc` and `mtcl`
+## 2. WebAuthn Attestation Format `mtc` and Diagnostic Extension `mtcDebug`
 
-Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/), we define **two complementary WebAuthn Attestation Statement Formats**:
+Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/), we define **one compact WebAuthn Attestation Statement Format (`fmt: "mtc"`)** and **one diagnostic registration extension (`mtcDebug` / `mtc-debug`)**:
 
-1. **`mtcl` (`fmt: "mtcl"`) — MTC Large Attestation with Inline Public Key:**
-   - Carries the attestation public key (`pubKey` as a CBOR-encoded `COSE_Key`) inline alongside `alg`, `sig`, and `mtcCert`.
-   - **Use Case:** Enterprise Attestation (`AttCA`), standalone MTCs, or large vendor batch logs where the Relying Party only caches the **32-byte Landmark `SubtreeHash` `[start, end)`** (or cosigner public keys) from MDS and does not store every individual batch public key.
-   - **Flash Savings on Authenticator:** Because Fidont derives `pubKey` on the fly from the 32-byte attestation private key seed (`attestation_key.get_pub_key()`), the authenticator **never needs to store the 1.3–2.6 KB public key in flash**—only the 32-byte seed and the ~150–280 B `mtcCert`!
+1. **`mtc` (`fmt: "mtc"`) — Compact MDS/Manifest-Assisted MTC Attestation (Public Key Omitted on Wire):**
+   - Omits `pubKey` from `attStmt` on the wire. The Relying Party resolves the attestation public key indexed by `(mtcCert.caId, mtcCert.serial)` from the FIDO Metadata Service (`mtcTrustAnchors[].batchKeys`) in non-enterprise mode, or from the manufacturer's signed Enterprise Manifest in enterprise mode (`0x0A = 1` or `2`).
+   - Supports two `mtcCert` encodings:
+     - **With inclusion proof (`mtcEntryDesc`):** carries `{ caId, serial, notBefore, notAfter, ?firmwareVersion, ?mtcProof }` so the RP can verify Merkle inclusion against a 32-byte landmark `rootHash`.
+     - **Proof-less key reference (`mtcKeyRef`):** carries only `{ caId, serial }` (`~20–30 B`) when the RP has pre-authenticated the complete MDS `batchKeys` table or manufacturer Enterprise Manifest against the Root CA signature.
+   - **Flash Savings on Authenticator:** Because Fidont derives `pubKey` on the fly from the 32-byte attestation private key seed (`attestation_key.get_pub_key()`) and omits `pubKey` on the wire, the authenticator only stores the 32-byte seed and compact `mtcCert` descriptor, while guaranteeing that **all `ML-DSA` parameter sets (`ML-DSA-44`, `ML-DSA-65`, and `ML-DSA-87`) fit inside a single 7,609-byte USB HID CTAP2 message**.
 
-2. **`mtc` (`fmt: "mtc"`) — Compact MDS/Log-Assisted MTC Attestation (Preferred Default, Public Key Omitted on Wire):** *(formerly `mtc-mds`)*
-   - Omits `pubKey` from `attStmt` on the wire. The Relying Party fetches the batch attestation public key indexed by `(mtcCert.caId, mtcCert.serial)` from the FIDO Metadata Service (`mtcTrustAnchors[].batchKeys`) or the vendor's MTC issuance log.
-   - **Use Case:** Basic Batch Attestation (`Basic`) for hardware security keys where a vendor has a small number of manufacturing batches per model, and maximum wire compression is required so that **even `ML-DSA-87` (`-50`) and `ML-DSA-87-Ed448` (`-56`) fit inside a single 7,609-byte USB HID CTAP2 frame**.
+2. **`mtcDebug` (`mtc-debug`) — WebAuthn Level 4 Diagnostic Registration Extension (§8.7):**
+   - Provides in-band access to `pubKey`, optional `deviceSerial` (strictly gated on Enterprise Attestation `0x0A = 1` or `2`), and optional offline verification fields (`notBefore`, `notAfter`, `firmwareVersion`, `mtcProof`, `rootHash`) for automated test harnesses and FIDO conformance tools when an external MDS3 or manifest database is unavailable.
 
 ### Wire-Size Comparison Across Formats (`2^8 = 256` Batch Log Entries, Landmark Proof = 256 B)
 
 | Format | `ML-DSA-44` (`-48`) | `ML-DSA-65` (`-49`) | `ML-DSA-87` (`-50`) | `ML-DSA-87-Ed448` (`-56`) | Fits USB HID (`7,609 B` limit)? |
 | :--- | ---: | ---: | ---: | ---: | :---: |
 | Classical X.509 `packed` (1-cert PQ CA) | ~7,924 B | ~10,982 B | ~14,898 B | ~15,247 B | ❌ None fit |
-| **`fmt: "mtcl"`** (Inline `pubKey` + Landmark `MTCProof`) | **~5,490 B** | **~7,600 B** | **~10,200 B** | **~10,435 B** | ✅ `ML-DSA-44` & `ML-DSA-65` fit! |
-| **`fmt: "mtc"`** (RP fetches `pubKey` via MDS/Log) | **~4,165 B** | **~5,635 B** | **~7,595 B** | **~7,769 B** | ✅ **`ML-DSA-44`, `ML-DSA-65`, & `ML-DSA-87` fit!** |
+| **`fmt: "mtc"` with `mtcEntryDesc` proof** (RP resolves `pubKey` via MDS/Manifest) | **~4,165 B** | **~5,635 B** | **~7,595 B** | **~7,769 B** | ✅ **`ML-DSA-44`, `ML-DSA-65`, & `ML-DSA-87` fit!** |
+| **`fmt: "mtc"` proof-less (`mtcKeyRef`)** (Pre-authenticated MDS/Manifest table) | **~3,832 B** | **~5,361 B** | **~7,319 B** | **~7,493 B** | ✅ **All parameter sets fit!** |
 
-*(With $2^4 = 16$ batches per model, the Landmark `MTCProof` inclusion path is only $4 \times 32 = 128\text{ B}$, reducing `mtc` for `ML-DSA-87` to **~7,467 B** and `ML-DSA-87-Ed448` to **~7,641 B**—or **~7,577 B** for a 4-batch log!)*
+*(With $2^4 = 16$ batches per model, the Landmark `MTCProof` inclusion path is only $4 \times 32 = 128\text{ B}$, reducing `mtc` with proof for `ML-DSA-87` to **~7,467 B** and proof-less `mtcKeyRef` to **~7,319 B**!)*
 
 ```mermaid
 flowchart TB
     subgraph Vendor["Authenticator Vendor (MTC CA)"]
-        Log["Append-Only Batch Key Log\nMTCLogEntry[i] = { serial, validity,\nSHA-256(pubKey), aaguid, firmwareVersion }"]
-        Tree["Merkle Tree [0..end)\n32-byte Landmark SubtreeHash"]
+        Log["Append-Only Batch / Enterprise Key Log\nFidoMtcLogEntry[i] = { caId, serial, validity,\naaguid, firmwareVersion?, SHA-256(pubKey), extensions }"]
+        Tree["Merkle Tree [0..end)\n32-byte Landmark rootHash"]
         Log --> Tree
     end
 
-    subgraph MDS["FIDO Metadata Service (MDS3)"]
-        Stmt["MetadataStatement.mtcTrustAnchors:\n• caId, logNumber\n• trustedSubtrees: [{start, end, subtreeHash}]\n• revokedSerialRanges\n• batchKeys (for mtc): [{serial, pubKey}]"]
+    subgraph MDS["FIDO Metadata Service (MDS3) / Enterprise Manifest"]
+        Stmt["MetadataStatement.mtcTrustAnchors:\n• caId, maxBatchWindow\n• subtrees: [{logNumber, start, end, rootHash, alg, signature}]\n• revokedSerials\n• batchKeys: [{serial, alg, coseKey, notBefore, notAfter, deviceSerial?}]"]
     end
 
-    subgraph Formats["Two CTAP2 / WebAuthn Formats"]
-        MTC["fmt: 'mtcl' (Inline Public Key)\nattStmt = {\n  alg, sig,\n  pubKey: COSE_Key,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, firmwareVersion?, mtcProof }\n}"]
-        MTCC["fmt: 'mtc' (MDS Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: { caId, serial, notBefore,\n             notAfter, firmwareVersion?, mtcProof }\n}\n(Saves 1.3–2.7 KB on wire!)"]
+    subgraph Format["CTAP2 / WebAuthn Level 4 Format (fmt: 'mtc')"]
+        MTCC["fmt: 'mtc' (MDS / Manifest Key Lookup)\nattStmt = {\n  alg, sig,\n  mtcCert: mtcEntryDesc / mtcKeyRef\n}\n(Omits pubKey on wire — saves 1.3–2.6 KB!)"]
+        MTCD["Optional Extension: 'mtcDebug' ('mtc-debug')\nauthData.extensions['mtc-debug'] = {\n  pubKey, deviceSerial?, notBefore?, notAfter?,\n  firmwareVersion?, mtcProof?, rootHash?\n}"]
     end
 
     subgraph RP["WebAuthn Relying Party Verification"]
-        V1["1. Obtain pubKey:\n   • 'mtcl': from attStmt.pubKey\n   • 'mtc': lookup (caId, serial) in MDS/Log"]
-        V2["2. Verify sig over (authData || clientDataHash)\n3. Check validity & revokedSerialRanges\n4. Reconstruct MTCLogEntry w/ SHA-256(pubKey) & authData.aaguid\n5. Verify mtcProof against MDS Landmark SubtreeHash"]
+        V1["1. Resolve pubKey:\n   • Standard: lookup (caId, serial) in MDS / Manifest\n   • Diagnostic: from extensions['mtc-debug'].pubKey"]
+        V2["2. Verify sig over SHA-256(authData || clientDataHash)\n3. Check validity [notBefore, notAfter] & revokedSerials\n4. Reconstruct FidoMtcLogEntry & verify mtcProof against rootHash\n   (or verify pre-authenticated manifest table for mtcKeyRef)"]
         V1 --> V2
     end
 
-    Tree -->|"Published in MDS BLOB"| Stmt
-    Log -->|"Published for mtc"| Stmt
-    MTC --> V1
+    Tree -->|"Published in MDS / Manifest"| Stmt
+    Log -->|"Published in batchKeys"| Stmt
     MTCC --> V1
+    MTCD -.->|"In-band diagnostic mode"| V1
     Stmt --> V1
 ```
 
 ---
 
-## 3. Normative Specification: `mtc` and `mtcl` Attestation Statement Formats
-
-### 3.1 Format 1: MTC Large Attestation Statement Format (`fmt: "mtcl"`)
-
-- **Attestation statement format identifier:** `"mtcl"`
-- **Attestation types supported:** `[=Basic=]`, `[=AttCA=]`, `[=Self=]`
-- **Syntax (CDDL):**
-
-```cddl
-$$attStmtType //= (
-    fmt: "mtcl",
-    attStmt: mtclStmtFormat
-)
-
-mtclStmtFormat = {
-    alg: COSEAlgorithmIdentifier,
-    sig: bytes,
-    pubKey: bytes,            ; Canonical CBOR-encoded COSE_Key of the attestation public key
-    mtcCert: mtcEntryDesc,
-} // {
-    alg: COSEAlgorithmIdentifier,
-    sig: bytes,               ; Self attestation (when pubKey and mtcCert are omitted)
-}
-
-mtcEntryDesc = {
-    caId: bytes,              ; ASN.1 DER Binary TrustAnchorID (RFC 9879 / draft-ietf-plants-merkle-tree-certs §4)
-    serial: uint,             ; uint64: (log_number << 48) | index
-    notBefore: uint,          ; uint64 Unix epoch seconds
-    notAfter: uint,           ; uint64 Unix epoch seconds; 253402300799 (9999-12-31T23:59:59Z per RFC 5280 §4.1.2.5) if non-expiring
-    ? firmwareVersion: uint,  ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
-    mtcProof: bytes,          ; TLS-serialized MTCProof (draft-ietf-plants-merkle-tree-certs §4.2)
-}                             ; REQUIRED in fmt "mtcl": the inline pubKey is authenticated only by this proof
-```
-
-> [!NOTE]
-> **Manufacturer Considerations for `firmwareVersion` in the MTC Manifest:**  
-> Manufacturers should weigh operational simplicity against cryptographic assurance when deciding whether to include `firmwareVersion` in the MTC leaf entry (`FidoMtcLogEntry`) and manifest:
-> - **Omitting `firmwareVersion` (`fw_version = 0`):** Allows a single Merkle tree root (`rootHash`) and batch key to be used across multiple firmware releases without generating a new subtree checkpoint or `caId` when minor firmware updates are released under a stable AAGUID.
-> - **Including `firmwareVersion` *(Recommended)*:** Because `firmwareVersion` is cryptographically committed as an immutable field in `FidoMtcLogEntry`, each new firmware version requires a new attestation batch key and leaf `serial`, which in turn requires generating a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS / the manufacturer manifest. However, binding `firmwareVersion` to the batch key is **more secure**: it cryptographically binds the exact firmware revision to the attestation signature and allows Relying Parties to selectively revoke a vulnerable firmware build via `revokedSerials` without invalidating patched authenticators that share the same AAGUID.
-
-### 3.2 Format 2: Compact MDS-Assisted MTC Attestation Statement Format (`fmt: "mtc"`)
+## 3. Normative Specification: `mtc` Attestation Statement Format (`fmt: "mtc"`)
 
 - **Attestation statement format identifier:** `"mtc"`
 - **Attestation types supported:** `[=Basic=]`, `[=AttCA=]`
@@ -153,14 +114,29 @@ $$attStmtType //= (
 mtcStmtFormat = {
     alg: COSEAlgorithmIdentifier,
     sig: bytes,
-    mtcCert: mtcEntryDesc / mtcKeyRef,  ; Attestation public key is omitted; RP fetches pubKey by (caId, serial) from MDS/log/manifest
+    mtcCert: mtcEntryDesc / mtcKeyRef   ; Attestation public key is omitted on the wire; RP resolves pubKey by (caId, serial) from MDS/manifest
 }
 
-mtcKeyRef = {                 ; Proof-less key reference (§8.6): only valid when the RP holds the full,
-    caId: bytes,              ; signed key table (MDS batchKeys or Enterprise manifest) for this caId
-    serial: uint,             ; uint64: (log_number << 48) | index — the lookup key
+mtcEntryDesc = {
+    caId: bytes,                        ; 1-4 byte compact CA Log Identifier (ASN.1 DER Binary TrustAnchorID)
+    serial: uint,                       ; uint64: (logNumber << 48) | index
+    notBefore: uint,                    ; uint64 Unix epoch seconds
+    notAfter: uint,                     ; uint64 Unix epoch seconds; 253402300799 (9999-12-31T23:59:59Z per RFC 5280 §4.1.2.5) if non-expiring
+    ? firmwareVersion: uint,            ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
+    ? mtcProof: bytes                   ; Binary RFC 9162 / draft-ietf-plants-merkle-tree-certs §4.2 inclusion proof
+}
+
+mtcKeyRef = {                           ; Proof-less key reference (§8.6): used when the RP holds the complete,
+    caId: bytes,                        ; authenticated key table (MDS batchKeys or Enterprise manifest) for this caId
+    serial: uint                        ; uint64: (logNumber << 48) | index — the lookup key
 }
 ```
+
+> [!NOTE]
+> **Manufacturer Considerations for `firmwareVersion` in the MTC Manifest:**  
+> Manufacturers should weigh operational simplicity against cryptographic assurance when deciding whether to include `firmwareVersion` in the MTC leaf entry (`FidoMtcLogEntry`) and manifest:
+> - **Omitting `firmwareVersion` (`fw_version = 0`):** Allows a single Merkle tree root (`rootHash`) and batch key to be used across multiple firmware releases without generating a new subtree checkpoint or `caId` when minor firmware updates are released under a stable AAGUID.
+> - **Including `firmwareVersion` *(Recommended)*:** Because `firmwareVersion` is cryptographically committed as an immutable field in `FidoMtcLogEntry`, each new firmware version requires a new attestation batch key and leaf `serial`, which in turn requires generating a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS / the manufacturer manifest. However, binding `firmwareVersion` to the batch key is **more secure**: it cryptographically binds the exact firmware revision to the attestation signature and allows Relying Parties to selectively revoke a vulnerable firmware build via `revokedSerials` without invalidating patched authenticators that share the same AAGUID.
 
 Key identification in `"mtc"` always uses **`(caId, serial)`**, for both Non-Enterprise and Enterprise attestation. The device serial number is never used as a lookup key (§8.6.1). The Merkle proof is **optional** in `"mtc"`:
 - **With proof (`mtcEntryDesc`):** the RP trusts only a 32-byte landmark `rootHash`, plus the key it resolves.
@@ -170,7 +146,7 @@ Key identification in `"mtc"` always uses **`(caId, serial)`**, for both Non-Ent
 
 ## 4. Deterministic `MTCLogEntry` Leaf Structure & `MTCProof` Encoding
 
-Both `mtc` and `mtcl` share the exact same Merkle Tree issuance log structure and `MTCProof` binary format from [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/):
+The `"mtc"` attestation format uses the Merkle Tree issuance log structure and `MTCProof` binary format from [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/doc/draft-ietf-plants-merkle-tree-certs/):
 
 ### 4.1 Leaf Entry Serialization (`FidoMtcLogEntry`)
 
@@ -209,45 +185,43 @@ struct {
 
 ---
 
-## 5. Relying Party Verification Procedure (Unified for `mtc` and `mtcl`)
+## 5. Relying Party Verification Procedure for `fmt: "mtc"`
 
-Given `(fmt, attStmt, authenticatorData, clientDataHash)`:
+Given `(attStmt, authenticatorData, clientDataHash)`:
 
 1. **Decode CBOR:**
-   - Parse `attStmt` according to `mtclStmtFormat` (if `fmt == "mtcl"`) or `mtcStmtFormat` (if `fmt == "mtc"`).
-2. **Handle `Self` Attestation (only applicable when `fmt == "mtcl"` and `mtcCert` is absent):**
-   - Validate `alg == authenticatorData.attestedCredentialData.credentialPublicKey.alg`.
-   - Verify `sig` over `authenticatorData || clientDataHash` using `credentialPublicKey`.
-   - Return Attestation Type `Self`.
-3. **Resolve Trust Anchor & Attestation Public Key (`pubKey`):**
-   - Lookup the `MtcTrustAnchor` matching `mtcCert.caId` for `authenticatorData.attestedCredentialData.aaguid` in FIDO MDS (or Enterprise AttCA configuration).
-   - **If `fmt == "mtcl"`:**
-     - Extract `pubKey = attStmt.pubKey` and decode it as a `COSE_Key`.
-   - **If `fmt == "mtc"`:**
-     - Lookup `mtcCert.serial` in `mtcTrustAnchor.batchKeys` (or query the synced MTC log for `(mtcCert.caId, mtcCert.serial)`) to obtain the canonical CBOR-encoded `COSE_Key` bytes `pubKey`. Fail verification if `(caId, serial)` is unknown.
-     - *(Diagnostic Alternative)*: If the registration negotiated the WebAuthn Level 4 `mtc-debug` extension (§8.7), the RP MAY decode `pubKey` directly from `authenticatorData.extensions["mtc-debug"].pubKey` to perform immediate offline signature verification without external database access.
-4. **Verify Attestation Signature:**
+   - Verify that `attStmt` conforms to the CDDL syntax of `mtcStmtFormat` (`{ alg, sig, mtcCert }`).
+2. **Resolve Trust Anchor & Attestation Public Key (`pubKey`):**
+   - Extract `caId` and `serial` from `attStmt.mtcCert`.
+   - Lookup the `MtcTrustAnchor` matching `caId` for `authenticatorData.attestedCredentialData.aaguid` in FIDO MDS (non-enterprise mode) or the manufacturer's Enterprise Manifest (enterprise mode).
+   - Lookup `serial` in `mtcTrustAnchor.batchKeys` (or query the synced MTC log for `(caId, serial)`) to obtain the canonical CBOR-encoded `COSE_Key` bytes `pubKey` (and `deviceSerial` if present in Enterprise mode).
+   - *(Diagnostic Alternative)*: If conveyed via the WebAuthn Level 4 `mtcDebug` (`mtc-debug`) extension (§8.7), the RP or test harness MAY decode `pubKey` (and optional `notBefore`, `notAfter`, `firmwareVersion`, `mtcProof`, `rootHash`, and `deviceSerial`) from `authenticatorData.extensions["mtc-debug"]`.
+   - Fail verification if no `pubKey` can be resolved.
+3. **Verify Attestation Signature:**
    - Verify that `pubKey.alg == attStmt.alg`.
-   - Verify that `attStmt.sig` is a valid signature over `authenticatorData || clientDataHash` using `pubKey`.
-5. **Check Validity Period & Serial Revocation (`draft-ietf-plants-merkle-tree-certs` §6.2 Steps 2–3):**
-   - Verify current time is within `[mtcCert.notBefore, mtcCert.notAfter]`.
-   - Check that `mtcCert.serial >> 48 == mtcTrustAnchor.logNumber`.
-   - Check that `mtcCert.serial` is not within any `[minSerial, maxSerial]` range in `mtcTrustAnchor.revokedSerialRanges`.
-6. **Reconstruct Leaf & Verify Merkle Inclusion Proof (`draft-ietf-plants-merkle-tree-certs` §6.2 Steps 4–6):**
-   - Compute `pubKeyHash = SHA-256(pubKey)`.
-   - Reconstruct `FidoMtcLogEntry` from `(mtcCert.caId, mtcCert.serial, mtcCert.notBefore, mtcCert.notAfter, authenticatorData.aaguid, mtcCert.firmwareVersion, pubKeyHash, mtcProof.extensions)`.
-   - Compute `expectedSubtreeHash` using RFC 9162 §2.1.3.2 over `(index = mtcCert.serial & 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)`.
-   - Verify that `(mtcProof.start, mtcProof.end, expectedSubtreeHash)` matches an active landmark entry in `mtcTrustAnchor.trustedSubtrees` (or, if `mtcProof.signatures` is non-empty, satisfies `mtcTrustAnchor.quorum` over `mtcTrustAnchor.cosigners`).
-   - **Proof-less `mtcKeyRef` (`"mtc"` only, §8.6):** if `mtcCert` has no `mtcProof`, skip this step. In step 5, use the matched `MtcBatchKeyEntry`'s `notBefore` / `notAfter` in place of `mtcCert`'s. This is permitted only if the RP verified the signature (or `rootHash`) over the whole `mtcTrustAnchor.batchKeys` table when it loaded the table. Otherwise fail verification.
-   - **Enterprise device serial (§8.3, §8.6):** if the matched entry contains `deviceSerial`, return it as the device serial. In `fmt: "mtcl"`, the device serial is committed in `MtcProof.extensions` in the verified leaf hash.
+   - Concatenate `authenticatorData` and `clientDataHash` to form `nonceToHash`, compute `nonce = SHA-256(nonceToHash)`, and verify that `attStmt.sig` is a valid signature over `nonce` using `pubKey`.
+4. **Check Validity Period & Serial Revocation (`draft-ietf-plants-merkle-tree-certs` §6.2 Steps 2–3):**
+   - Verify that current time is within `[notBefore, notAfter]` (taken from `mtcEntryDesc`, the matched `MtcBatchKeyEntry` in MDS/manifest when `mtcKeyRef` is used, or `mtc-debug` in offline diagnostic mode). Note: `notAfter = 253402300799` (`9999-12-31T23:59:59Z` per RFC 5280 §4.1.2.5) indicates a non-expiring device attestation key.
+   - Check that `serial >> 48 == mtcTrustAnchor.subtrees[].logNumber`.
+   - Check that `serial` is not within any revoked serial range in `mtcTrustAnchor.revokedSerials`.
+5. **Reconstruct Leaf & Verify Merkle Inclusion Proof (`draft-ietf-plants-merkle-tree-certs` §6.2 Steps 4–6):**
+   - **If `mtcProof` is present (in `mtcEntryDesc` or in `mtc-debug` alongside `mtcKeyRef`):**
+     - Compute `pubKeyHash = SHA-256(pubKey)`.
+     - Reconstruct `FidoMtcLogEntry` from `(caId, serial, notBefore, notAfter, authenticatorData.aaguid, firmwareVersion, pubKeyHash, mtcProof.extensions)`.
+     - Compute `expectedSubtreeHash` using RFC 9162 §2.1.3.2 over `(index = serial & 0xFFFFFFFFFFFF, mtcProof.start, mtcProof.end, FidoMtcLogEntry, mtcProof.inclusion_proof)`.
+     - Verify that `(mtcProof.start, mtcProof.end, expectedSubtreeHash)` matches an active landmark entry in `mtcTrustAnchor.subtrees` (or `mtc-debug.rootHash` in offline diagnostic mode).
+   - **If `mtcCert` conforms to proof-less `mtcKeyRef` (and no `mtcProof` is used):**
+     - Verify that the RP has previously authenticated the complete `mtcTrustAnchor.batchKeys` table (MDS or Enterprise Manifest) against the Root CA signature or published trust anchor `rootHash`.
+6. **Enterprise Device Serial Check:**
+   - If Enterprise Attestation was requested and active, verify that the resolved `deviceSerial` (from the manufacturer manifest entry or committed in `mtcProof.extensions`) matches an authorized device in the RP's inventory.
 7. **Return Result:**
-   - Return Attestation Type `Basic` (or `AttCA`) and the matched `mtcTrustAnchor`.
+   - Return Attestation Type `Basic` (or `AttCA` in enterprise mode) and the matched `mtcTrustAnchor`.
 
 ---
 
 ## 6. FIDO Metadata Statement (`fido-metadata-statement.bs`) Extensions
 
-To support both `mtc` and `mtcl`, we extend `MetadataStatement` with `mtcTrustAnchors`:
+To support `fmt: "mtc"`, we extend `MetadataStatement` with `mtcTrustAnchors`:
 
 ```idl
 dictionary MtcSubtree {
@@ -438,8 +412,7 @@ In CTAP 2.3 §6.4 (`authenticatorGetInfo` `(0x04)`), response member **`0x16` (`
 3. **Dynamic Capability Advertising from Persisted Material**:
    Because `"none"` attestation support is implied in CTAP / WebAuthn, `process_get_info` omits `"none"` from `0x16` (`attestationFormats`) while still supporting `"none"` when requested via `0x0B` (`attestationFormatsPreference`):
    - **When an MTC descriptor is provisioned (`ProvisionedMtcAttestation::from_bytes` succeeds)**:
-     - If provisioned default format is `Mtc`: `["mtc", "mtcl", "packed"]`
-     - If provisioned default format is `Mtcl`: `["mtcl", "mtc", "packed"]`
+     - `["mtc", "packed"]`
    - **When a traditional X.509 DER certificate is provisioned or no batch certificate is present**:
      - `["packed"]`
 
@@ -452,7 +425,7 @@ sequenceDiagram
     participant Authnr as Fidont Authenticator
 
     Client->>Authnr: authenticatorGetInfo (0x04)
-    Authnr-->>Client: 0x16 (attestationFormats): ["mtc", "mtcl", "packed"]
+    Authnr-->>Client: 0x16 (attestationFormats): ["mtc", "packed"]
     alt RP requests attestation ("mtc" preferred)
         RP->>Client: navigator.credentials.create({ attestation: "direct", attestationFormats: ["mtc", "packed"] })
         Client->>Authnr: authenticatorMakeCredential (0x01) { 0x0B: ["mtc", "packed"] }
@@ -465,25 +438,24 @@ sequenceDiagram
     end
 ```
 
-### 7.3 3-Tier Size-Aware Default Attestation Cascade (`"packed"` $\to$ `"mtcl"` $\to$ `"mtc"`)
+### 7.3 Size-Aware Default Attestation Selection (`"packed"` $\to$ `"mtc"`)
 
 When provisioned via `tools/configure.py --mtc`, `ProvisionedMtcAttestation` (`libraries/opensk/src/ctap/mtc.rs`) stores **both** the batch X.509 DER certificate (`x5c`) and the compact `MtcCertDescriptor` (`mtcCert`) in Fidont's persistent certificate store (`11,253 B` capacity across `ATTESTATION_CERTIFICATE` and `ATTESTATION_CERTIFICATE_EXTRA_SHARDS`).
 
-When the client omits `attestationFormatsPreference` (`0x0B`), `process_make_credential` (`libraries/opensk/src/ctap/mod.rs`) evaluates a **3-tier size-aware cascade** so every registration returns the richest self-contained attestation format that fits inside a single `7,609 B` USB HID CTAP2 message (`<= 7,550 B` threshold):
+When the client omits `attestationFormatsPreference` (`0x0B`), `process_make_credential` (`libraries/opensk/src/ctap/mod.rs`) evaluates a **size-aware selection** so every registration returns a format that fits inside a single `7,609 B` USB HID CTAP2 message (`<= 7,550 B` threshold):
 
-1. **Tier 1 — `"packed"` (with batch `x5c`)**: If `auth_data.len() + sig.len() + x5c.len() + 60 <= 7550`, Fidont returns standard WebAuthn **`fmt: "packed"`** with `x5c: [batch_cert_der]` signed by the batch key.
-2. **Tier 2 — `"mtcl"` (with inline `pubKey` + `mtcCert`)**: Otherwise, if `auth_data.len() + sig.len() + pk_bytes.len() + 260 <= 7550`, Fidont returns **`fmt: "mtcl"`** with inline `pubKey` and `mtcCert`.
-3. **Tier 3 — `"mtc"` (`mtcCert` only, `pubKey` omitted)**: Otherwise, Fidont returns **`fmt: "mtc"`**, omitting `pubKey` so the response always fits under `7,609 B`.
+1. **Tier 1 — `"packed"` (with batch `x5c`)**: For classical credential algorithms (`ES256`, `Ed25519`, etc.) or when `auth_data.len() + sig.len() + x5c.len() + 60 <= 7550`, Fidont returns standard WebAuthn **`fmt: "packed"`** with `x5c: [batch_cert_der]`.
+2. **Tier 2 — `"mtc"` (`mtcCert` only, `pubKey` omitted)**: When including `x5c` would exceed the `7,609 B` single-message budget (as is the case for post-quantum `ML-DSA` and `FN-DSA` credentials with post-quantum CAs), Fidont returns **`fmt: "mtc"`**, omitting `pubKey` so the response always fits under `7,609 B`.
 
 > [!NOTE]
-> This cascade applies only to **modern clients** (CTAP 2.2 / 2.3). When the authenticator detects a **legacy client** that negotiates only `pinUvAuthProtocol` 1, such as Windows 10, it skips the cascade and uses the backward-compatible default in [§7.5](#75-legacy-client-detection-pinuvauthprotocol-1-and-backward-compatible-attestation-defaults).
+> This selection applies only to **modern clients** (CTAP 2.2 / 2.3). When the authenticator detects a **legacy client** that negotiates only `pinUvAuthProtocol` 1, such as Windows 10, it uses the backward-compatible default in [§7.5](#75-legacy-client-detection-pinuvauthprotocol-1-and-backward-compatible-attestation-defaults).
 
 | Credential Signing Algorithm | Batch Key = `-48` (`ML-DSA-44`, `x5c`=`4,127 B`) | Batch Key = `-49` (`ML-DSA-65`, `x5c`=`5,656 B`) | Batch Key = `-50` (`ML-DSA-87`, `x5c`=`7,614 B`) |
 | :--- | :---: | :---: | :---: |
-| **Classical (`-7`, `-8`, `-19`, `-35`, `-36`, `-47`, `-257`)** | **`"packed"` (`x5c`)** (`6,704–7,008 B`) | **`"mtcl"` (`pubKey`)** (`5,632–5,936 B`) | **`"mtc"`** (`4,898–5,202 B`) |
-| **`ML-DSA-44` (`-48`, `-54`, `-57`)** | **`"mtcl"` (`pubKey`)** (`5,395–5,673 B`) | **`"mtcl"` (`pubKey`)** (`6,924–7,202 B`) | **`"mtc"`** (`6,190–6,468 B`) |
-| **`ML-DSA-65` (`-49`, `-55`, `-58`)** | **`"mtcl"` (`pubKey`)** (`6,035–6,313 B`) | **`"mtc"`** (`5,586–5,864 B`) | **`"mtc"`** (`6,830–7,108 B`) |
-| **`ML-DSA-87` (`-50`, `-56`, `-59`)** | **`"mtcl"` (`pubKey`)** (`6,675–6,989 B`) | **`"mtc"`** (`6,226–6,540 B`) | **`"mtc"`** (`7,470–7,535 B`) |
+| **Classical (`-7`, `-8`, `-19`, `-35`, `-36`, `-47`, `-257`)** | **`"packed"` (`x5c`)** (`6,704–7,008 B`) | **`"mtc"`** (`3,680–3,984 B`) | **`"mtc"`** (`4,898–5,202 B`) |
+| **`ML-DSA-44` (`-48`, `-54`, `-57`)** | **`"mtc"`** (`4,073–4,351 B`) | **`"mtc"`** (`4,972–5,250 B`) | **`"mtc"`** (`6,190–6,468 B`) |
+| **`ML-DSA-65` (`-49`, `-55`, `-58`)** | **`"mtc"`** (`4,713–4,991 B`) | **`"mtc"`** (`5,586–5,864 B`) | **`"mtc"`** (`6,830–7,108 B`) |
+| **`ML-DSA-87` (`-50`, `-56`, `-59`)** | **`"mtc"`** (`5,353–5,667 B`) | **`"mtc"`** (`6,226–6,540 B`) | **`"mtc"`** (`7,470–7,535 B`) |
 
 ### 7.4 Fidont Implementation Details
 
@@ -492,8 +464,8 @@ When the client omits `attestationFormatsPreference` (`0x0B`), `process_make_cre
 2. **`src/env/vendor.rs`**:
    - Add `0x03 => cert_append: Option<Vec<u8>>` to `VendorConfigureParameters` so `> 6,000 B` PQ `x5c + mtcCert` bundles (such as `-50` `ML-DSA-87` at `7,820 B`) can be uploaded across two `OPENSK_VENDOR_CONFIGURE` (`0x40`) commands without exceeding `7,609 B`.
 3. **`libraries/opensk/src/ctap/mod.rs`**:
-   - Populate `attestation_formats` (`0x16`) in `process_get_info`.
-   - Implement the 3-tier `"packed"` (`x5c`) $\to$ `"mtcl"` (`pubKey`) $\to$ `"mtc"` cascade and `"none"` support in `process_make_credential`.
+   - Populate `attestation_formats` (`0x16`) in `process_get_info` (`["mtc", "packed"]`).
+   - Implement the size-aware `"packed"` (`x5c`) $\to$ `"mtc"` selection and `"none"` support in `process_make_credential`.
 4. **`tools/configure.py`**:
    - Bundle `"x5c": cert_der` inside `provisioned_mtc` and automatically split `cert_or_mtc_bytes` into a `6,000 B` initial chunk (`0x02`) + continuation chunk (`0x03`) when needed.
 
@@ -501,7 +473,7 @@ When the client omits `attestationFormatsPreference` (`0x0B`), `process_make_cre
 
 Older CTAP 2.0 / 2.1 platform clients, such as **Windows 10's built-in WebAuthn stack (`webauthn.dll`)**, negotiate **only PIN/UV Auth Protocol 1**. Browsers on Windows 10 delegate to that stack. These clients:
 - never send `pinUvAuthProtocol = 2`, even when the authenticator lists `[2, 1]` in `authenticatorGetInfo.pinUvAuthProtocols` (`0x06`);
-- never send `attestationFormatsPreference` (`0x0B`, added in CTAP 2.2), so they cannot request `"mtcl"`, `"mtc"`, or `"none"`;
+- never send `attestationFormatsPreference` (`0x0B`, added in CTAP 2.2), so they cannot request `"mtc"` or `"none"`;
 - are hard-limited to the `7,609 B` CTAPHID single-message ceiling, and pass the attestation object through to RPs that predate PQ and MTC attestation formats.
 
 > [!NOTE]
@@ -539,7 +511,7 @@ Wire sizes for the Legacy Option B default (`ES256` attestation signature `~71 B
 | `ML-DSA-87` (`-50`) | `~2,750 B` | **`~3,393 B`** ✅ | `~2,755 B` ✅ | `~9,357 B` ❌ |
 
 > [!IMPORTANT]
-> **Security tradeoff of Legacy Option B:** a classical `ES256` attestation is **not post-quantum secure**. It proves the authenticator model to today's RPs, but a future quantum adversary could forge it. This is acceptable as a compatibility default because a legacy client cannot deliver a PQ attestation anyway. RPs that need PQ attestation must use a modern client that sends `0x0B` (e.g. `["mtcl", "packed"]`). **Enterprise Attestation (`0x0A`)** is unaffected: it is only reachable through clients that implement CTAP 2.1 enterprise attestation, and follows §8.1.1.
+> **Security tradeoff of Legacy Option B:** a classical `ES256` attestation is **not post-quantum secure**. It proves the authenticator model to today's RPs, but a future quantum adversary could forge it. This is acceptable as a compatibility default because a legacy client cannot deliver a PQ attestation anyway. RPs that need PQ attestation must use a modern client that sends `0x0B` (e.g. `["mtc", "packed"]`). **Enterprise Attestation (`0x0A`)** is unaffected: it is only reachable through clients that implement CTAP 2.1 enterprise attestation, and follows §8.1.1.
 
 #### 7.5.3 Fidont Implementation Notes
 
@@ -566,69 +538,63 @@ Under WebAuthn Level 3 (§6.5.5) and CTAP 2.3 (`enterpriseAttestation` `0x0A` in
 
 To cleanly satisfy both requirements without sacrificing privacy on standard registrations or breaking compatibility with legacy X.509 Enterprise Relying Parties, **each physical authenticator is provisioned at manufacturing time with TWO distinct attestation keys** (mapping directly to Fidont's `AttestationId::Batch` and `AttestationId::Enterprise` in `libraries/opensk/src/api/persist.rs`).
 
-When **Enterprise Attestation is enabled** on the authenticator (`AttestationId::Enterprise`), **both** the single-device Enterprise `mtcCert` and the per-enterprise-batch-key **X.509 DER certificate (`x5c`)** are loaded into the Enterprise `ProvisionedMtcAttestation` bundle (`{ "fmt": "mtcl", "x5c": enterprise_x509_der, "mtcCert": enterprise_mtc_cert }`):
+When **Enterprise Attestation is enabled** on the authenticator (`AttestationId::Enterprise`), **both** the single-device Enterprise `mtcCert` and the per-enterprise-batch-key **X.509 DER certificate (`x5c`)** are loaded into the Enterprise `ProvisionedMtcAttestation` bundle (`{ "fmt": "mtc", "x5c": enterprise_x509_der, "mtcCert": enterprise_mtc_cert }`):
 
 | Property | Key 1: Non-Enterprise Batch Key (`AttestationId::Batch`) | Key 2: Enterprise Single-Device Key (`AttestationId::Enterprise`) |
 | :--- | :--- | :--- |
 | **When Selected** | Default (`enterpriseAttestation` `0x0A` omitted) | `enterpriseAttestation` (`0x0A`) $= 1$ or $2$ |
 | **Batch Size ($B$)** | **$\ge 100,000$ devices** share the **same** keypair & leaf `serial` | **$1$ device per keypair** ("single-device batch key", unique leaf `serial` per device) |
-| **Provisioned Certificates** | Batch `mtcCert` ($d = 2$ hashes, `83 B`) + Batch X.509 `x5c` (`4,127 B`) | Single-Device Enterprise `mtcCert` ($d = 17$ hashes, `563 B`) **+ Per-Enterprise-Batch-Key X.509 `x5c` (`4,127 B`)** |
+| **Provisioned Certificates** | Batch `mtcCert` ($d = 2$ hashes, `83 B`) + Batch X.509 `x5c` (`4,127 B`) | Single-Device Enterprise `mtcCert` (`mtcKeyRef` `~20 B` or `mtcEntryDesc` `563 B`) **+ Per-Enterprise-Batch-Key X.509 `x5c` (`4,127 B`)** |
 | **Merkle Tree Structure** | Small Batch MTC Tree (e.g., $N = 4$ leaves covering 400,000 devices across 4 batches; $d = 2$ sibling hashes = `64 B`) | Per-Device Enterprise MTC Tree (e.g., $N = 100,000$ leaves for 100,000 devices; $d = \lceil \log_2(100,000) \rceil = 17$ sibling hashes = `544 B`) |
-| **Public Key Distribution** | Pre-distributed in FIDO MDS3 `MtcTrustAnchor.batchKeys` (only 1 entry per 100,000 devices) | Sent **inline on the wire** inside **`x5c`** (`fmt: "packed"`) or via **`fmt: "mtcl"`** (`pubKey` + `mtcCert`); **not** listed in MDS (`batchKeys: []`) |
-| **Format Selection Rule** | Respects `0x0B`; defaults to 3-tier size cascade (`"packed"` $\to$ `"mtcl"` $\to$ `"mtc"`) when `0x0B` is empty/omitted | - **`fmt: "packed"` (with Enterprise `x5c`)** if `"packed"` is the **first** format in `0x0B`, **or** if `0x0B` is empty/omitted and `x5c` fits within the `7,609 B` response budget (same Tier 1 size logic as Non-Enterprise)<br/>- **`fmt: "mtcl"` (with inline `pubKey` + `mtcCert`)** if `"mtcl"` is first in `0x0B`, **or** if `0x0B` is empty/omitted and `x5c` exceeds the `7,609 B` response budget |
+| **Public Key Distribution** | Pre-distributed in FIDO MDS3 `MtcTrustAnchor.batchKeys` (only 1 entry per 100,000 devices) | Resolved via the manufacturer's signed **Enterprise Manifest** (`MtcTrustAnchor.batchKeys`), or conveyed inside `x5c` (`fmt: "packed"`), or in-band via `mtcDebug` (`mtc-debug`) for test harnesses |
+| **Format Selection Rule** | Respects `0x0B`; defaults to size-aware selection (`"packed"` $\to$ `"mtc"`) when `0x0B` is empty/omitted | - **`fmt: "packed"` (with Enterprise `x5c`)** if `"packed"` is the **first** format in `0x0B` and `x5c` fits within the `7,609 B` response budget<br/>- **`fmt: "mtc"` (with `mtcKeyRef` or `mtcEntryDesc`)** if `"mtc"` is first in `0x0B`, **or** if `0x0B` is empty/omitted and `x5c` exceeds the `7,609 B` response budget |
 | **On-Device Flash Cost** | `32 B` ML-DSA seed + `83 B` `mtcCert` + `4,127 B` batch `x5c` ($\approx 4,257\text{ B}$) | `32 B` ML-DSA seed + `563 B` `mtcCert` + `4,127 B` per-device `x5c` = **`4,737 B` total** (both bundles fit inside Fidont's `11,253 B` certificate store!) |
-| **CA / IdP Trust Anchor Size** | Single `32 B` `rootHash` + 1 `batchKeys` entry per 100k devices in FIDO MDS3 | Single **`32 B` `rootHash`** in Enterprise IdP trust store (plus standard Enterprise X.509 Root CA for `"packed"` RPs) |
+| **CA / IdP Trust Anchor Size** | Single `32 B` `rootHash` + 1 `batchKeys` entry per 100k devices in FIDO MDS3 | Signed Enterprise Manifest (`MtcTrustAnchor` with `rootHash` + per-device `batchKeys`) in Enterprise IdP trust store |
 
-#### 8.1.1 Enterprise Attestation Format Selection (`"packed"` First / Size-Aware Default vs. `"mtcl"`)
+#### 8.1.1 Enterprise Attestation Format Selection (`"packed"` vs. `"mtc"`)
 
-Loading **both** the Enterprise `mtcCert` and the per-enterprise-batch-key X.509 `x5c` certificate onto the authenticator enables seamless interoperability across both legacy X.509-only Enterprise Relying Parties and modern MTC-aware Enterprise IdPs using the **exact same Tier 1 $\to$ Tier 2 size-aware logic as Non-Enterprise**:
+Loading **both** the Enterprise `mtcCert` and the per-enterprise-batch-key X.509 `x5c` certificate onto the authenticator enables seamless interoperability across both legacy X.509-only Enterprise Relying Parties and modern MTC-aware Enterprise IdPs:
 
 1. **Case A — `"packed"` First in `0x0B`, OR `0x0B` Empty/Omitted and Certificate Fits (`<= 7,609 B`)**:
    - When `enterpriseAttestation` (`0x0A = 1` or `2`) is requested and:
      - `attestationFormatsPreference[0] == "packed"`, **or**
      - `attestationFormatsPreference` (`0x0B`) is **empty or omitted** and the total response with `enterprise_x509_der` fits within the single-frame `7,609 B` USB HID budget (`authData.len() + sig.len() + x5c.len() + 60 <= 7,550 B`),
    - The authenticator selects **`fmt: "packed"`** and returns the provisioned per-enterprise-batch-key X.509 certificate in **`attStmt.x5c = [enterprise_x509_der]`**, signed by `AttestationId::Enterprise` (with the hardware serial number in the X.509 certificate extension OID `1.3.6.1.4.1.45724.1.1.2`).
-   - This gives existing Enterprise Relying Parties (which often omit `0x0B` or pass `0x0B: ["packed"]`) a standard per-device X.509 certificate chain (`x5c`) automatically whenever certificate and credential sizes allow (e.g., classical ES256/EdDSA credentials, or `ML-DSA` credentials with compact/classical Enterprise X.509 certificates).
+   - This gives existing Enterprise Relying Parties (which often omit `0x0B` or pass `0x0B: ["packed"]`) a standard per-device X.509 certificate chain (`x5c`) automatically whenever certificate and credential sizes allow (e.g., classical ES256/EdDSA credentials).
 
-2. **Case B — `"mtcl"` First in `0x0B`, OR `0x0B` Empty/Omitted and `x5c` Exceeds `7,609 B` Budget**:
-   - When `"mtcl"` precedes `"packed"` in `0x0B` (`0x0B: ["mtcl", ...]`)), **or** when `0x0B` is empty/omitted and including the post-quantum `x5c` certificate would exceed the `7,609 B` USB HID frame limit, the authenticator returns **`fmt: "mtcl"`** with its unique inline `pubKey` (`1,322 B` for `ML-DSA-44`) and its 17-hash `mtcCert` (`563 B`) committing the device serial number in its leaf hash.
-   - Unlike Non-Enterprise attestation (which has a Tier 3 `"mtc"` fallback using MDS `batchKeys`), single-device Enterprise public keys are never published in **public** FIDO MDS (`batchKeys: []`). For RPs that do not hold the manufacturer's manifest, Enterprise attestation therefore stops at Tier 2 (`"mtcl"`). With an `ML-DSA-44` Enterprise key, `"mtcl"` fits inside `7,609 B` for all credential algorithms (`5,931 B` for `ML-DSA-44`, `6,571 B` for `ML-DSA-65`, and `7,211 B` for `ML-DSA-87`).
-
-3. **Case C — `"mtc"` via the Enterprise Manifest (§8.6)**:
-   - Applies when `"mtc"` is first in `0x0B`, **or** when `0x0B` is empty/omitted and Enterprise Attestation is requested, in **either** mode: vendor-facilitated (`0x0A = 1`) or platform-managed (`0x0A = 2`). Manufacturers provide the signed manifest to every key purchaser, and the RP receiving Enterprise Attestation is normally that purchaser.
-   - The authenticator returns `fmt: "mtc"` with a proof-less `mtcKeyRef` (`{caId, serial}`, `~20–30 B`). The RP resolves the device `pubKey` and `deviceSerial` by `(caId, serial)` from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. No wire extension in `authenticatorData.extensions` is needed.
-   - An RP without the manifest (e.g. keys bought through a reseller, or BYOD into another organization) requests `0x0B: ["mtcl"]` or `["packed"]`. It then receives Case B (with device serial in the `mtcCert` leaf) or Case A (with serial in the X.509 certificate).
+2. **Case B — `"mtc"` via the Enterprise Manifest (§8.6)**:
+   - Applies when `"mtc"` is first in `0x0B`, **or** when `0x0B` is empty/omitted and including the post-quantum `x5c` certificate would exceed the `7,609 B` USB HID frame limit, in **either** mode: vendor-facilitated (`0x0A = 1`) or platform-managed (`0x0A = 2`). Manufacturers provide the signed manifest to every key purchaser, and the RP receiving Enterprise Attestation is normally that purchaser.
+   - The authenticator returns **`fmt: "mtc"`** with a proof-less `mtcKeyRef` (`{caId, serial}`, `~20–30 B`) or `mtcEntryDesc` (`563 B`). The RP resolves the device `pubKey` and `deviceSerial` by `(caId, serial)` from its manifest, exactly as a Non-Enterprise RP resolves a batch key from MDS. No wire serial extension in `authenticatorData.extensions` is needed.
+   - For automated test fixtures or offline verification without a pre-loaded manifest, the RP or test runner requests the WebAuthn Level 4 **`mtcDebug` (`mtc-debug`)** extension (§8.7), which delivers `pubKey`, `deviceSerial`, `notBefore`, `notAfter`, `firmwareVersion`, `mtcProof`, and `rootHash` in-band.
 
 ```mermaid
 flowchart TD
     subgraph NonEnt["1. Non-Enterprise Attestation (0x0A omitted)"]
         direction TB
         BatchKey["AttestationId::Batch (Shared by >= 100,000 devices)<br/>Loaded with: Batch mtcCert (83 B) + Batch x5c (4,127 B)"]
-        BatchCascade["Format Selection:<br/>Respects 0x0B; when 0x0B is empty/omitted,<br/>uses 3-tier size cascade ('packed' -> 'mtcl' -> 'mtc')"]
+        BatchCascade["Format Selection:<br/>Respects 0x0B; when 0x0B is empty/omitted,<br/>uses size-aware selection ('packed' -> 'mtc')"]
         BatchKey --> BatchCascade
     end
 
     subgraph Ent["2. Enterprise Attestation (0x0A = 1 or 2)"]
         direction TB
-        EntKey["AttestationId::Enterprise (1 unique key per authenticator)<br/>Loaded with: Single-Device mtcCert (563 B) + Per-Device X.509 x5c (4,127 B)"]
+        EntKey["AttestationId::Enterprise (1 unique key per authenticator)<br/>Loaded with: Enterprise mtcCert + Per-Device X.509 x5c (4,127 B)"]
         EntPref{"Check 0x0B<br/>(attestationFormatsPreference)"}
         EntSize{"Does 'packed' with x5c fit<br/>in 7,609 B USB HID budget?"}
-        EntPacked["Tier 1: Return fmt = 'packed'<br/>attStmt: { alg, sig, x5c: [enterprise_x509_der] }<br/>(serial in cert / leaf)"]
-        EntMtc["Tier 2: Return fmt = 'mtcl'<br/>attStmt: { alg, sig, pubKey, mtcCert (17-hash proof) }<br/>(serial in cert / leaf)"]
+        EntPacked["Tier 1: Return fmt = 'packed'<br/>attStmt: { alg, sig, x5c: [enterprise_x509_der] }<br/>(serial in cert)"]
+        EntMtc["Tier 2: Return fmt = 'mtc'<br/>attStmt: { alg, sig, mtcCert: mtcKeyRef / mtcEntryDesc }<br/>(pubKey + deviceSerial resolved via Enterprise Manifest or mtcDebug)"]
         EntKey --> EntPref
         EntPref -- "0x0B[0] == 'packed'" --> EntPacked
-        EntPref -- "0x0B[0] == 'mtcl'" --> EntMtc
+        EntPref -- "0x0B[0] == 'mtc'" --> EntMtc
         EntPref -- "0x0B empty or omitted" --> EntSize
         EntSize -- "Yes (authData + sig + x5c + 60 <= 7,550 B)" --> EntPacked
         EntSize -- "No (x5c too large for 7,609 B)" --> EntMtc
     end
 ```
 
-### 8.2 Enterprise `MtcTrustAnchor` Configuration (Zero `batchKeys` Overhead & Root CA Subtree Signature)
+### 8.2 Enterprise `MtcTrustAnchor` Configuration & Root CA Subtree Checkpoint Signature
 
-Because the Enterprise single-device key uses **`fmt: "mtcl"`** (sending `subjectKey` inline in `attStmt.mtcCert`), the Enterprise `MtcTrustAnchor` in the enterprise IdP or MDS entry requires **zero `batchKeys` entries** (`"batchKeys": []`)—only the 32-byte `rootHash` of the Enterprise Merkle tree.
-
-Furthermore, to cryptographically bind `"caId": "g5k_AQI"` and its `subtrees` to the **Enterprise Root CA certificate** in `attestationRootCertificates` (e.g., an **ML-DSA-87** Enterprise Root CA that also signs the per-device `x5c` certificate), each subtree entry in `mtcTrustAnchors` carries `"alg"` (e.g., `-50` for `ML-DSA-87`) and `"signature"` over the canonical 85-byte `FidoMtcSubtreeCheckpoint`:
+To cryptographically bind `"caId": "g5k_AQI"`, its `subtrees`, and the manufacturer's Enterprise Manifest to the **Enterprise Root CA certificate** in `attestationRootCertificates` (e.g., an **ML-DSA-87** Enterprise Root CA that also signs the per-device `x5c` certificate), each subtree entry in `mtcTrustAnchors` carries `"alg"` (e.g., `-50` for `ML-DSA-87`) and `"signature"` over the canonical 85-byte `FidoMtcSubtreeCheckpoint`:
 
 ```c
 struct {
@@ -672,9 +638,9 @@ struct {
 
 In standard X.509 Enterprise Attestation (`fmt: "packed"`), the authenticator's hardware serial number (e.g., `"123456"`) is carried in the FIDO Enterprise Serial Number X.509 extension (**`OID 1.3.6.1.4.1.45724.1.1.2`**, `id-fido-gen-ce-sernum`, encoded as an ASN.1 `OCTET STRING`).
 
-For Enterprise MTC Attestation (`fmt: "mtc"` and `fmt: "mtcl"`), a separate wire serial extension in `authenticatorData.extensions` is **omitted**. Instead, the device serial number is bound and authenticated through two native mechanisms:
+For Enterprise MTC Attestation (`fmt: "mtc"`), a separate wire serial extension in `authenticatorData.extensions` is **omitted**. Instead, the device serial number is bound and authenticated through two native mechanisms:
 1. **Committed in the Merkle Tree Leaf (`FidoMtcLogEntry.extensions`)**:
-   Inside the device's Merkle Tree Certificate (`mtcCert`), the hardware serial number is committed directly into the leaf hash ($H(\text{pubKey} \parallel \text{aaguid} \parallel \dots \parallel \text{deviceSerial})$). In `fmt: "mtcl"` (or `fmt: "mtc"` with proof), the Relying Party verifies that this leaf hash ascents to the Root CA-signed `rootHash`.
+   Inside the device's Merkle Tree Certificate (`mtcCert`), the hardware serial number is committed directly into the leaf hash ($H(\text{pubKey} \parallel \text{aaguid} \parallel \dots \parallel \text{deviceSerial})$). When `fmt: "mtc"` is verified with an inclusion proof, the Relying Party verifies that this leaf hash ascends to the Root CA-signed `rootHash`.
 2. **Delivered in the Manufacturer Manifest (`MtcBatchKeyEntry.deviceSerial`)**:
    In compact manifest-assisted mode (`fmt: "mtc"`), the enterprise IdP resolves `deviceSerial` directly from the manufacturer's pre-loaded signed manifest keyed by `(caId, serial)`. The device's attestation signature proves possession of the private key matching that manifest entry.
 
@@ -759,7 +725,7 @@ To ensure backward compatibility with classical WebAuthn Relying Parties while p
 | :--- | :---: | :--- | :--- | :--- |
 | **PQ Enterprise Root CA** | `ML-DSA-87` (`-50`) | `crypto_data_enterprise/enterprise_root_ca.key`<br/>`crypto_data_enterprise/enterprise_root_ca.pem` | Self-signed Root CA (`CA:TRUE`, in `attestationRootCertificates[0]`) | Signs all 4 PQ leaf X.509 certificates (`ML-DSA-44`, `ML-DSA-65`, `ML-DSA-87`, and Enterprise) **and** signs the 85-byte `FidoMtcSubtreeCheckpoint` (`alg: -50`, `signature`) in `MtcTrustAnchor.subtrees` for both `"caId": "g5k_AQE"` and `"caId": "g5k_AQI"`. |
 | **Classical Enterprise Root CA** | `ES384` (`P-384`, `-35`) | `crypto_data_enterprise/enterprise_root_ca_es384.key`<br/>`crypto_data_enterprise/enterprise_root_ca_es384.pem` | Self-signed Root CA (`CA:TRUE`, in `attestationRootCertificates[1]`) | Signs the second Non-Enterprise classical `ES256` batch X.509 certificate (`crypto_data/fidont_cert.pem`). |
-| **Primary Non-Enterprise PQ Batch Key** | `ML-DSA-44` (`-48`), `ML-DSA-65` (`-49`), or `ML-DSA-87` (`-50`) | `crypto_data_mldsa44/fidont.key`<br/>`crypto_data_mldsa44/fidont_cert.pem` | `ML-DSA-87` Root CA (`enterprise_root_ca.pem`) + MTC tree `"g5k_AQE"` | Used on **ML-DSA / PQ composite `MakeCredential` operations** (`!ep_att`), or when `"mtcl"` / `"mtc"` is explicitly requested in `0x0B`. |
+| **Primary Non-Enterprise PQ Batch Key** | `ML-DSA-44` (`-48`), `ML-DSA-65` (`-49`), or `ML-DSA-87` (`-50`) | `crypto_data_mldsa44/fidont.key`<br/>`crypto_data_mldsa44/fidont_cert.pem` | `ML-DSA-87` Root CA (`enterprise_root_ca.pem`) + MTC tree `"g5k_AQE"` | Used on **ML-DSA / PQ composite `MakeCredential` operations** (`!ep_att`), or when `"mtc"` is explicitly requested in `0x0B`. |
 | **Second Non-Enterprise Classical Batch Key (`cKey` + `cX5c`)** | `ES256` (`P-256`, `-7`) | `crypto_data/fidont.key`<br/>`crypto_data/fidont_cert.pem` | `ES384` Root CA (`enterprise_root_ca_es384.pem`) | Used on **non-ML-DSA `MakeCredential` operations** (`ES256`, `ES384`, `ES512`, `Ed25519`, `Ed448`, `RS256` when `!ep_att` and no explicit MTC preference is set in `0x0B`), returning `fmt: "packed"` with the `512 B` `ES256` X.509 certificate (`x5c`). |
 | **Enterprise Single-Device Batch Key** | `ML-DSA-44` (`-48`) | `crypto_data_enterprise/fidont.key`<br/>`crypto_data_enterprise/fidont_cert.pem` | `ML-DSA-87` Root CA (`enterprise_root_ca.pem`) + MTC tree `"g5k_AQI"` | Used whenever **Enterprise Attestation (`ep_att = true`, `0x0A = 1` or `2`)** is requested. |
 
@@ -767,7 +733,7 @@ To ensure backward compatibility with classical WebAuthn Relying Parties while p
 
 ### 8.6 Unified `(caId, serial)` Key Lookup: Enterprise Manifest and Non-Enterprise MDS (Proof-Optional `"mtc"`)
 
-For Enterprise Attestation, the manufacturer delivers a file out of band to the purchasing enterprise. It lists the **device serial number and attestation public key for every authenticator** sold to that enterprise. An RP holding that file already has every key the authenticator could send inline, and it can check the whole file once against the manufacturer's signature. On the wire, both the inline `pubKey` (`"mtcl"`) and the Merkle `mtcProof` are then redundant.
+For Enterprise Attestation, the manufacturer delivers a file out of band to the purchasing enterprise. It lists the **device serial number and attestation public key for every authenticator** sold to that enterprise. An RP holding that file already has every key the authenticator could send, and it can check the whole file once against the manufacturer's signature. On the wire, both an inline `pubKey` and the Merkle `mtcProof` are then redundant.
 
 #### 8.6.1 Lookup Key: Send `(caId, serial)`, Not the Device Serial
 
@@ -782,7 +748,7 @@ For Enterprise Attestation, the manufacturer delivers a file out of band to the 
 
 **Rule:** `"mtc"` always identifies the attestation key by `(caId, serial)`. The **device serial** is never a lookup key. In Enterprise mode:
 1. The device serial is **delivered by the manifest entry** (`MtcBatchKeyEntry.deviceSerial`). This is the authoritative source. The device signature verified with that entry's key proves the response came from the device holding that `(caId, serial)` key, and therefore from that serial.
-2. In Enterprise mode, the device serial is delivered by the manifest entry (or committed inside the Merkle tree leaf in `fmt: "mtcl"`). No separate wire serial extension in `authenticatorData.extensions` is needed.
+2. In Enterprise mode, the device serial is delivered by the manifest entry (and committed inside the Merkle tree leaf `FidoMtcLogEntry.extensions`). No separate wire serial extension in `authenticatorData.extensions` is needed.
 
 #### 8.6.2 One Schema, Two Trust Sources
 
@@ -814,17 +780,17 @@ The Enterprise manifest **is** an `MtcTrustAnchor` (§6), with the same JSON lay
 
 **Authenticating the manifest without a new signature:** each `batchKeys` entry carries every field of `FidoMtcLogEntry` (§4.1). The `aaguid` is taken from the metadata entry, and `deviceSerial` is committed as the entry's `extensions`. When the RP loads the manifest, it can rebuild the Merkle tree from all entries and compare the result with the signed `subtrees[].rootHash`. This is a **one-time check**. After it passes, every per-registration proof is redundant.
 
-#### 8.6.3 Wire Size: Proof-Less `"mtc"` vs. `"mtcl"`
+#### 8.6.3 Wire Size: `"mtc"` With Proof (`mtcEntryDesc`) vs. Proof-Less `"mtc"` (`mtcKeyRef`)
 
 These figures use the same `authData` baseline as `lmots_longfellow_attestation_proposal.md` §6.3: `PK_len + 70 B` with zero wire serial extension overhead. The Enterprise key is level-matched to the credential algorithm.
 
-| Credential = Enterprise Key | `"mtcl"` (sig + `pubKey` + `563 B` proof) | `"mtc"` with proof (sig + `563 B`) | **`"mtc"` proof-less** (manifest-resolved) |
-| :--- | ---: | ---: | ---: | ---: |
-| `ML-DSA-44` (`-48`) | `5,723 B` ✅ | `4,401 B` ✅ | `3,868 B` ✅ | **`3,832 B`** ✅ |
-| `ML-DSA-65` (`-49`) | `7,892 B` ⚠️ **OVER HID LIMIT (`+283 B`)** | `5,930 B` ✅ | `5,397 B` ✅ | **`5,361 B`** ✅ |
-| `ML-DSA-87` (`-50`) | `10,490 B` ⚠️ **OVER HID LIMIT (`+2,881 B`)** | `7,888 B` ⚠️ **OVER HID LIMIT (`+279 B`)** | `7,355 B` ✅ *(`254 B` margin)* | **`7,319 B`** ✅ *(`290 B` margin)* |
+| Credential = Enterprise Key | `"mtc"` with 17-hash proof (`mtcEntryDesc`, `563 B` proof) | `"mtc"` proof-less with wire serial ext | **`"mtc"` proof-less (`mtcKeyRef`, manifest-resolved)** |
+| :--- | ---: | ---: | ---: |
+| `ML-DSA-44` (`-48`) | `4,401 B` ✅ | `3,868 B` ✅ | **`3,832 B`** ✅ |
+| `ML-DSA-65` (`-49`) | `5,930 B` ✅ | `5,397 B` ✅ | **`5,361 B`** ✅ |
+| `ML-DSA-87` (`-50`) | `7,888 B` ⚠️ **OVER HID LIMIT (`+279 B`)** | `7,355 B` ✅ *(`254 B` margin)* | **`7,319 B`** ✅ *(`290 B` margin)* |
 
-Dropping the proof is what gets a **level-matched `ML-DSA-87` Enterprise attestation** under the `7,609 B` CTAPHID limit. Omitting the optional serial extension saves another `36 B`.
+Dropping the 17-hash proof via `mtcKeyRef` is what gets a **level-matched `ML-DSA-87` Enterprise attestation** under the `7,609 B` CTAPHID limit. Omitting the optional serial extension saves another `36 B`.
 
 #### 8.6.4 Format Selection by Enterprise Attestation Mode
 
@@ -832,24 +798,24 @@ Manufacturers are expected to provide the manifest to **every key purchaser**, w
 
 | Scenario | RP Holds Manifest? | Default Format (when `0x0B` is absent) |
 | :--- | :---: | :--- |
-| **Vendor-facilitated EA** (`0x0A = 1`): RP ID on the authenticator's preconfigured list | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`). §8.1.1 Case C |
-| **Platform-managed EA** (`0x0A = 2`): enterprise policy on the browser/platform permits EA for the RP | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`). §8.1.1 Case C |
-| Exception: an RP that did not purchase the keys (reseller or retail purchase, BYOD into another organization) | ❌ | The RP or client requests `0x0B: ["mtcl"]` or `["packed"]`. The authenticator then returns `"mtcl"` / `"packed"` `x5c` (serial bound in cert/manifest) |
-| **Non-Enterprise** | Public MDS | §7.3 cascade. `"mtc"` sends the proof unless the RP syncs and verifies the full `batchKeys` table |
+| **Vendor-facilitated EA** (`0x0A = 1`): RP ID on the authenticator's preconfigured list | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`). §8.1.1 Case B |
+| **Platform-managed EA** (`0x0A = 2`): enterprise policy on the browser/platform permits EA for the RP | ✅ (purchaser) | **`"mtc"` proof-less** (`mtcKeyRef`). §8.1.1 Case B |
+| Exception: an RP or test harness without the manifest | ❌ | Requests `0x0B: ["packed"]` (for classical `x5c`) or enables the **`mtcDebug` (`mtc-debug`)** extension (§8.7) to receive `pubKey`, `deviceSerial`, `mtcProof`, and `rootHash` in-band |
+| **Non-Enterprise** | Public MDS | §7.3 selection. `"mtc"` sends `mtcEntryDesc` or `mtcKeyRef` resolved via FIDO MDS `batchKeys` |
 
 > [!WARNING]
 > **Operational costs of the manifest:**
 > - **Size:** one public key per device, about `133 MB` / `197 MB` / `261 MB` per 100,000 devices for `ML-DSA-44` / `-65` / `-87`. A 10,000-device enterprise needs `13–26 MB`.
 > - **Distribution:** every verifying RP needs the manifest, or a central enterprise IdP does all verification. Each new purchase requires a manifest update, and revocations are delivered as `revokedSerials` updates.
-> - **Fallback:** if the RP lacks a manifest entry, verification fails cleanly. The client can then retry with `0x0B: ["mtcl"]`, which carries the inline `pubKey` and the proof committing the device serial.
+> - **Diagnostic / Offline Mode:** when testing without a pre-loaded manifest, the client can request `extensions: { mtcDebug: true }` (§8.7), which carries `pubKey`, `deviceSerial` (when EP 1/2 is active), `notBefore`, `notAfter`, `firmwareVersion`, `mtcProof`, and `rootHash` in-band.
 
 ---
 
-### 8.7 WebAuthn Level 4 Diagnostic Extension: `mtc-debug`
+### 8.7 WebAuthn Level 4 Diagnostic Extension: `mtcDebug` (`mtc-debug`)
 
-Targeting **[W3C WebAuthn Level 4 (§10 Defined Extensions)](https://github.com/w3c/webauthn/)** and CTAP 2.3+, the **`mtc-debug`** extension provides an optional diagnostic mechanism for automated test harnesses, FIDO conformance tools, device driver certification, and developer sandbox environments.
+Targeting **[W3C WebAuthn Level 4 (§10.2.1 Defined Authenticator Extensions)](https://github.com/w3c/webauthn/)** and CTAP 2.3+, the **`mtcDebug`** (`mtc-debug`) extension provides a diagnostic mechanism for automated test harnesses, FIDO conformance tools, device driver certification, and offline developer sandbox environments.
 
-Because the preferred **`fmt: "mtc"`** format intentionally omits the multi-kilobyte post-quantum attestation public key from the wire payload to stay within USB HID framing limits, offline test fixtures and sandbox verifiers without an immediate FIDO MDS3 BLOB or manufacturer manifest connection cannot otherwise verify `attStmt.sig`. Furthermore, in Enterprise Attestation (`ep`), test harnesses need an in-band way to inspect TRNG key-injection records and hardware serial numbers.
+Because **`fmt: "mtc"`** omits the multi-kilobyte post-quantum attestation public key (and, in `mtcKeyRef` mode, the inclusion proof and validity dates) from the wire payload to stay within USB HID framing limits, offline test fixtures without a live FIDO MDS3 BLOB or manufacturer manifest connection use `mtcDebug` to retrieve the active attestation public key and leaf verification parameters in-band.
 
 #### 8.7.1 WebIDL Definitions (WebAuthn Level 4)
 
@@ -858,16 +824,37 @@ Because the preferred **`fmt: "mtc"`** format intentionally omits the multi-kilo
 partial dictionary AuthenticationExtensionsClientInputs {
     boolean mtcDebug;
 };
+partial dictionary AuthenticationExtensionsClientInputsJSON {
+    boolean mtcDebug;
+};
 
 // WebAuthn Level 4 Partial Dictionary for Client Extension Outputs
 partial dictionary AuthenticationExtensionsClientOutputs {
     MtcDebugExtensionOutput mtcDebug;
 };
+partial dictionary AuthenticationExtensionsClientOutputsJSON {
+    MtcDebugExtensionOutputJSON mtcDebug;
+};
 
-// WebAuthn Level 4 Extension Output Structure
+// WebAuthn Level 4 Extension Output Structures
 dictionary MtcDebugExtensionOutput {
     required ArrayBuffer pubKey;          // Canonical CBOR-encoded COSE_Key
     DOMString            deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
+    unsigned long long   notBefore;       // Unix timestamp (seconds)
+    unsigned long long   notAfter;        // Unix timestamp (seconds); 253402300799 if non-expiring
+    unsigned long        firmwareVersion; // CTAP 2.3 parameter 0x0E
+    ArrayBuffer          mtcProof;        // Binary RFC 9162 Merkle inclusion proof
+    ArrayBuffer          rootHash;        // 32-byte Landmark / Trust Anchor root hash
+};
+
+dictionary MtcDebugExtensionOutputJSON {
+    required Base64URLString pubKey;          // Base64url-encoded COSE_Key
+    DOMString                deviceSerial;    // Present ONLY if Enterprise Attestation (EP) is active
+    unsigned long long       notBefore;       // Unix timestamp (seconds)
+    unsigned long long       notAfter;        // Unix timestamp (seconds); 253402300799 if non-expiring
+    unsigned long            firmwareVersion; // CTAP 2.3 parameter 0x0E
+    Base64URLString          mtcProof;        // Base64url-encoded RFC 9162 inclusion proof
+    Base64URLString          rootHash;        // Base64url-encoded 32-byte root hash
 };
 ```
 
@@ -881,14 +868,17 @@ $$extension-input //= (
 
 ; authenticatorData.extensions map entry
 $$extension-output //= (
-    mtc-debug: MtcDebugExtensionOutput
+    mtc-debug: MtcDebugAuthOutput
 )
 
-MtcDebugExtensionOutput = {
+MtcDebugAuthOutput = {
     pubKey: bytes,                    ; REQUIRED: Canonical CBOR-encoded COSE_Key of the active attestation key
-    ? deviceSerial: tstr / uint       ; OPTIONAL: Device serial number.
-                                      ; MUST be present IF AND ONLY IF Enterprise
-                                      ; Attestation (0x0A = 1 or 2) is active.
+    ? deviceSerial: text,             ; OPTIONAL: Device serial number (MUST be present ONLY if EP 1 or 2 is active)
+    ? notBefore: uint,                ; OPTIONAL: Earliest Unix timestamp at which key is valid
+    ? notAfter: uint,                 ; OPTIONAL: Key expiration Unix timestamp (253402300799 if non-expiring)
+    ? firmwareVersion: uint,          ; OPTIONAL: Authenticator firmware version (CTAP 2.3 parameter 0x0E)
+    ? mtcProof: bytes,                ; OPTIONAL: Binary RFC 9162 Merkle inclusion proof
+    ? rootHash: bytes                 ; OPTIONAL: 32-byte expected Landmark/Trust Anchor root hash
 }
 ```
 
@@ -896,15 +886,16 @@ MtcDebugExtensionOutput = {
 
 1. **Client Processing (`navigator.credentials.create()`)**:
    - If `options.publicKey.extensions?.mtcDebug === true`, the browser/platform client sets `mtc-debug: true` in the CTAP2 `authenticatorMakeCredential` extensions parameter.
+   - Upon receiving the response, the client validates that `deviceSerial` is present only if Enterprise Attestation (`ep = 1` or `2`) was requested (cancelling the ceremony with an error otherwise) and populates `clientExtensionResults.mtcDebug` (and base64url-encoded `MtcDebugExtensionOutputJSON` when `cred.toJSON()` is called).
 2. **Authenticator Processing**:
    - If `mtc-debug` is requested and enabled in firmware:
      - Set bit 7 (`ED`, `0x80`) in `authenticatorData.flags`.
      - Extract the canonical CBOR `COSE_Key` of the active attestation key: the shared batch key (`AttestationId::Batch`) if `!ep_att`, or the single-device key (`AttestationId::Enterprise`) if `ep_att`.
      - **Conditional `deviceSerial`**: If Enterprise Attestation was negotiated and granted (`0x0A = 1` or `2`), populate `deviceSerial` with the hardware serial number. If Enterprise Attestation is **not** active, the authenticator **MUST NOT** include `deviceSerial`.
-     - Return `mtc-debug: { pubKey, [deviceSerial] }` in `authenticatorData.extensions`.
+     - **Offline Manifest & Inclusion Proof Fields**: If configured to support autonomous offline verification in proof-less `mtcKeyRef` environments, include `notBefore`, `notAfter` (`253402300799` if non-expiring), `firmwareVersion`, `mtcProof`, and `rootHash`.
 3. **Relying Party / Test Harness Validation**:
-   - The RP decodes `pubKey` directly from `extensions["mtc-debug"]` and immediately verifies `attStmt.sig` over `authenticatorData || clientDataHash` without requiring an out-of-band MDS or manifest lookup.
-   - If `ep` was requested, the RP verifies `extensions["mtc-debug"].deviceSerial` against its test fixture or inventory database.
+   - The RP decodes `pubKey` directly from `extensions["mtc-debug"]` and immediately verifies `attStmt.sig` over `SHA-256(authenticatorData || clientDataHash)` without requiring an out-of-band MDS or manifest lookup.
+   - If `mtcProof` and `rootHash` are present, the verifier reconstructs `FidoMtcLogEntry` using `notBefore`, `notAfter`, `firmwareVersion`, and `SHA-256(pubKey)` and verifies Merkle inclusion against `rootHash`.
 
 #### 8.7.4 Privacy & Wire Framing Considerations
 
@@ -938,23 +929,23 @@ For Fidont's single-leaf batch certificates signed by our `ML-DSA-87` Enterprise
 | **ASN.1 DER Boilerplate + FIDO Extensions** | `351 B` | `407 B` | `403 B` | `409 B` |
 | **1. Standard X.509 DER (`x5c` in `"packed"`)** | **`512 B`** | **`6,346 B`** *(or `4,127 B` w/ `-48` root)* | **`6,982 B`** *(or `5,656 B` w/ `-49` root)* | **`7,628 B`** |
 | **2. C509 (`c5c` in `draft-ietf-cose-cbor-encoded-cert-21`)** | **`~215 B`** (`-58%`) | **`~6,050 B`** (`-4.7%`) *(or `~3,840 B` w/ `-48` root)* | **`~6,690 B`** (`-4.2%`) *(or `~5,365 B` w/ `-49` root)* | **`~7,335 B`** (`-3.8%`) |
-| **3. MTC Large (`fmt: "mtcl"`, inline `pubKey` + `mtcCert`)** | **`158 B`** (`-69%`) | **`1,405 B`** (`-77.9%`) *(or `1,885 B` Enterprise 17-hash)* | **`2,045 B`** (`-70.7%`) | **`2,685 B`** (`-64.8%`) |
-| **4. Compact MTC (`fmt: "mtc"`, `mtcCert` only)** | **`83 B`** (`-84%`) | **`83 B`** (`-98.7%`) | **`83 B`** (`-98.8%`) | **`83 B`** (`-98.9%`) |
+| **3. Compact MTC (`fmt: "mtc"`, `mtcCert` with proof)** | **`83 B`** (`-84%`) | **`83 B`** (`-98.7%`) | **`83 B`** (`-98.8%`) | **`83 B`** (`-98.9%`) |
+| **4. Proof-Less MTC (`fmt: "mtc"`, `mtcKeyRef` only)** | **`~20 B`** (`-96%`) | **`~20 B`** (`-99.7%`) | **`~20 B`** (`-99.7%`) | **`~20 B`** (`-99.7%`) |
 
 ### 9.2 Total CTAP2 `MakeCredential` Wire Size: C509 vs. MTC (`7,609 B` USB HID Limit)
 
 When we add the credential creation payload (`authData` with the new credential's PQ public key + `attStmt.sig` from the batch key), a C509 certificate still exceeds the `7,609 B` USB HID frame limit across post-quantum configurations because it still carries the multi-kilobyte CA signature (`issuerSignatureValue`) on the wire:
 
-| Credential Algorithm + Batch Key | `"packed"` with DER `x5c` | `"packed"` / `"c509"` with C509 `c5c` | **`"mtcl"` (inline `pubKey` + `mtcCert`)** | **`"mtc"` (`mtcCert` only)** |
+| Credential Algorithm + Batch Key | `"packed"` with DER `x5c` | `"packed"` / `"c509"` with C509 `c5c` | **`"mtc"` with proof (`mtcEntryDesc`)** | **`"mtc"` proof-less (`mtcKeyRef`)** |
 | :--- | :---: | :---: | :---: | :---: |
-| **`ML-DSA-44` cred + `ML-DSA-44` batch** *(signed by `ML-DSA-87` root)* | `10,295 B` ❌ | `~10,000 B` ❌ *(or `~7,790 B` ❌ w/ `-48` root)* | **`5,395 B`** ✅ | **`4,073 B`** ✅ |
-| **`ML-DSA-65` cred + `ML-DSA-65` batch** *(signed by `ML-DSA-87` root)* | `12,461 B` ❌ | `~12,165 B` ❌ *(or `~10,840 B` ❌ w/ `-49` root)* | **`7,565 B`** ✅ | **`5,586 B`** ✅ |
-| **`ML-DSA-87` cred + `ML-DSA-87` batch** *(signed by `ML-DSA-87` root)* | `15,065 B` ❌ | `~14,770 B` ❌ | `10,165 B` ❌ | **`7,470 B`** ✅ |
-| **Classical `ES256` cred + Classical `ES256` batch (`cKey`/`cX5c`)** | **`736 B`** ✅ | **`~440 B`** ✅ (`-296 B`) | **`382 B`** ✅ | **`307 B`** ✅ |
+| **`ML-DSA-44` cred + `ML-DSA-44` batch** *(signed by `ML-DSA-87` root)* | `10,295 B` ❌ | `~10,000 B` ❌ *(or `~7,790 B` ❌ w/ `-48` root)* | **`4,073 B`** ✅ | **`3,832 B`** ✅ |
+| **`ML-DSA-65` cred + `ML-DSA-65` batch** *(signed by `ML-DSA-87` root)* | `12,461 B` ❌ | `~12,165 B` ❌ *(or `~10,840 B` ❌ w/ `-49` root)* | **`5,586 B`** ✅ | **`5,361 B`** ✅ |
+| **`ML-DSA-87` cred + `ML-DSA-87` batch** *(signed by `ML-DSA-87` root)* | `15,065 B` ❌ | `~14,770 B` ❌ | **`7,470 B`** ✅ | **`7,319 B`** ✅ |
+| **Classical `ES256` cred + Classical `ES256` batch (`cKey`/`cX5c`)** | **`736 B`** ✅ | **`~440 B`** ✅ (`-296 B`) | **`307 B`** ✅ | **`~244 B`** ✅ |
 
 ### 9.3 Where C509 Complements Fidont & Post-Quantum WebAuthn
 
-While C509 cannot replace MTC (`"mtcl"` / `"mtc"`) for post-quantum attestation over USB HID, `draft-ietf-cose-cbor-encoded-cert-21` provides three valuable complementary capabilities:
+While C509 cannot replace MTC (`"mtc"`) for post-quantum attestation over USB HID, `draft-ietf-cose-cbor-encoded-cert-21` provides three valuable complementary capabilities:
 
 1. **Lossless On-Device Flash Compression via Type 3 C509 (`c509CertificateType = 3`)**:
    - Because Fidont provisions up to three X.509 certificates in NVRAM alongside `mtcCert` (the PQ batch `x5c`, the classical `ES256` batch `cX5c`, and the Enterprise `x5c`), storing those certificates in **C509 Type 3 (CBOR re-encoded X.509v3)** saves **`~300 bytes` per certificate** (`~900 B` total across all three certificates in flash).

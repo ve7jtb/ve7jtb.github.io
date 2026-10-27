@@ -292,15 +292,13 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Credential Algorithm</th>
-<th class="p-3 font-semibold align-bottom text-center">Inline <code>"mtcl"</code> (sig + <code>pubKey</code> + <code>563 B</code> proof)</th>
-<th class="p-3 font-semibold align-bottom text-center">Enterprise <code>"mtc"</code> (with <code>563 B</code> proof)</th>
-<th class="p-3 font-semibold align-bottom text-center"><strong>Enterprise <code>"mtc"</code> Proof-Less</strong> (manifest-resolved)</th>
+<th class="p-3 font-semibold align-bottom text-center">Enterprise <code>"mtc"</code> (with <code>563 B</code> proof, <code>mtcEntryDesc</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center"><strong>Enterprise <code>"mtc"</code> Proof-Less</strong> (<code>mtcKeyRef</code>, manifest-resolved)</th>
 <th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=4$)</strong> ($3,008\text{ B}$ <code>attStmt</code>)</th>
 <th class="p-3 font-semibold align-bottom text-center"><strong>LM-OTS Enterprise Direct ($W=8$)</strong> ($1,952\text{ B}$ <code>attStmt</code>)</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-44</code></strong> (<code>-48</code>)</td>
-<td class="p-3 align-top text-center">$5,723\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center">$4,401\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center"><strong>$3,832\text{ B}$</strong> ✅</td>
 <td class="p-3 align-top text-center">$4,441\text{ B}$ ✅</td>
@@ -308,7 +306,6 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-65</code></strong> (<code>-49</code>)</td>
-<td class="p-3 align-top text-center">$7,892\text{ B}$ ⚠️ <em>(+283 B)</em></td>
 <td class="p-3 align-top text-center">$5,930\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center"><strong>$5,361\text{ B}$</strong> ✅</td>
 <td class="p-3 align-top text-center">$5,081\text{ B}$ ✅</td>
@@ -316,7 +313,6 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>ML-DSA-87</code></strong> (<code>-50</code>)</td>
-<td class="p-3 align-top text-center">$10,490\text{ B}$ ⚠️ <em>(+2,881 B)</em></td>
 <td class="p-3 align-top text-center">$7,888\text{ B}$ ⚠️ <em>(+279 B)</em></td>
 <td class="p-3 align-top text-center"><strong>$7,319\text{ B}$</strong> ✅ <em>(290 B margin)</em></td>
 <td class="p-3 align-top text-center">$5,721\text{ B}$ ✅ <em>(1,888 B margin)</em></td>
@@ -324,7 +320,6 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>FN-DSA-512</code></strong> (<code>-60</code>)</td>
-<td class="p-3 align-top text-center">$4,499\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center">$3,177\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center"><strong>$2,608\text{ B}$</strong> ✅</td>
 <td class="p-3 align-top text-center">$3,990\text{ B}$ ✅</td>
@@ -332,7 +327,6 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>FN-DSA-1024</code></strong> (<code>-61</code>)</td>
-<td class="p-3 align-top text-center">$5,861\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center">$4,539\text{ B}$ ✅</td>
 <td class="p-3 align-top text-center"><strong>$3,970\text{ B}$</strong> ✅</td>
 <td class="p-3 align-top text-center">$4,886\text{ B}$ ✅</td>
@@ -342,11 +336,11 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">xychart-beta
     title "Total MakeCredential Wire Size vs 7,609 B HID Limit (Bytes)"
     x-axis ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87", "FN-DSA-512", "FN-DSA-1024"]
-    y-axis "Wire Size (Bytes)" 2000 --&gt; 11000
-    bar [5723, 7892, 10490, 4499, 5861]
+    y-axis "Wire Size (Bytes)" 2000 --&gt; 9000
+    bar [4401, 5930, 7888, 3177, 4539]
     bar [3832, 5361, 7319, 2608, 3970]
     bar [3385, 4025, 4665, 2934, 3830]</pre></div>
-<p class="text-sm my-2"><em>(Legend: Bar 1 = Inline <code>"mtcl"</code>; Bar 2 = Proof-Less <code>"mtc"</code>; Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)</em></p>
+<p class="text-sm my-2"><em>(Legend: Bar 1 = <code>"mtc"</code> with <code>563 B</code> proof (<code>mtcEntryDesc</code>); Bar 2 = Proof-Less <code>"mtc"</code> (<code>mtcKeyRef</code>); Bar 3 = LM-OTS Enterprise Direct $W=8$. Threshold line: $7,609\text{ B}$)</em></p>
 <h3 id="23-key-wire-size-findings" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.3 Key Wire Size Findings</h3>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>The Category 5 <code>ML-DSA-87</code> Bottleneck</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
@@ -377,7 +371,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
         C --&gt;|mtcEntryDesc With-Proof| E[Branch 2: Landmark Subtree Proof]
         
         D --&gt; D1{Held manifest for caId?}
-        D1 --&gt;|No| D2[Fail or Request Client Retry with fmt: mtcl]
+        D1 --&gt;|No| D2[Fail or Use mtcDebug in Test Mode]
         D1 --&gt;|Yes| D3[Lookup batchKeys by caId, serial]
         D3 --&gt; D4[Check deviceSerial matches authData ext if present]
         D4 --&gt; D5[Verify ML-DSA Signature over authData]
@@ -403,19 +397,19 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
 <li><strong>Upfront Table Validation</strong>: Before accepting any lookup result, the RP must have verified the manifest table against the manufacturer's Root CA signature or recomputed the Merkle tree over all leaves to verify <code>subtrees[].rootHash</code>.</li>
 </ul></li>
 <li><strong>Branch 2 (Landmark Proof Inclusion — <code>mtcEntryDesc</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>If the authenticator belongs to a contractor or BYOD scenario where the RP does not hold the manifest, the RP parses <code>mtcProof</code>, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB.</li>
+<li>If <code>mtcEntryDesc</code> is used, the RP parses <code>mtcProof</code>, computes RFC 9162 Merkle interior hashes, and verifies them against the active landmark in the FIDO MDS3 BLOB or manifest.</li>
 </ul></li>
 <li><strong>Branch 3 (Manifest Serial Validation &amp; Inventory Lookup)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>Because a separate wire serial extension is omitted, the RP extracts the hardware serial number directly from the manufacturer's manifest record (or leaf commitment in <code>fmt: "mtcl"</code>), verifying it against the organization's asset inventory.</li>
+<li>Because a separate wire serial extension is omitted, the RP extracts the hardware serial number directly from the manufacturer's manifest record (or leaf commitment in <code>mtcEntryDesc</code>), verifying it against the organization's asset inventory.</li>
 </ul></li>
 <li><strong>Branch 4 (Manifest Drift &amp; Reseller Fallback)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, <code>mtc</code> fails. The RP/client must initiate a fallback to inline <code>fmt: "mtcl"</code> or <code>fmt: "packed"</code>, forcing the RP to also maintain a classical/PQ X.509 ASN.1 certificate path validation engine.</li>
+<li>If an enterprise key was purchased through a secondary distributor and is missing from the local manifest database, <code>mtc</code> fails unless the RP/client falls back to <code>fmt: "packed"</code> (requiring a classical/PQ X.509 ASN.1 certificate path validation engine) or diagnostic <code>mtcDebug</code>.</li>
 </ul></li>
 <li><strong>Branch 5 (Revocation &amp; Key Life-Cycle Management)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Revocation requires tracking delta arrays of <code>revokedSerials</code> inside every manifest update.</li>
 </ul></li>
 </ol>
-<div class="rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Tip</div><p class="text-sm my-2"><strong>Diagnostic Verification via WebAuthn Level 4 <code>mtc-debug</code></strong>: For test harnesses and automated conformance suites, the WebAuthn Level 4 <strong><code>mtc-debug</code></strong> extension allows an RP to bypass manifest lookups by requesting <code>mtc-debug: true</code>, which instructs the authenticator to return the active public key (and device serial when Enterprise Attestation is active) directly in <code>authenticatorData.extensions["mtc-debug"]</code>.</p></div>
+<div class="rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Tip</div><p class="text-sm my-2"><strong>Diagnostic Verification via WebAuthn Level 4 <code>mtcDebug</code> (<code>mtc-debug</code>)</strong>: For test harnesses and automated conformance suites, the WebAuthn Level 4 <strong><code>mtcDebug</code></strong> extension allows an RP to bypass manifest lookups by requesting <code>mtcDebug: true</code>, which instructs the authenticator to return <code>pubKey</code>, <code>deviceSerial</code> (when Enterprise Attestation is active), <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, <code>mtcProof</code>, and <code>rootHash</code> directly in <code>authenticatorData.extensions["mtc-debug"]</code>.</p></div>
 <h3 id="32-single-pure-algebraic-path-in-rfc-8554-lm-ots-80mutexts" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Single Pure-Algebraic Path in RFC 8554 LM-OTS ($80\,\mu\text{s}$)</h3>
 <p class="text-sm my-2">In contrast, Direct Enterprise LM-OTS eliminates databases, manifests, and branching paths entirely:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
@@ -493,7 +487,7 @@ mtcKeyRef = {                          ; Proof-less reference (§8.6)
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Conclusions &amp; Strategic Recommendation</h2>
       </div>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li><strong>For General Non-Enterprise Attestation (<code>fmt: "none"</code> / <code>fmt: "mtc"</code> / <code>fmt: "mtcl"</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>For General Non-Enterprise Attestation (<code>fmt: "none"</code> / <code>fmt: "mtc"</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong><code>mtc</code> via FIDO MDS3 is the optimal path.</strong> It protects batch user privacy ($\ge 100\text{k}$ devices), integrates directly into the global FIDO MDS BLOB distribution model, and avoids high authenticator flash storage wear.</li>
 </ul></li>
 <li><strong>For High-Assurance Enterprise Direct Attestation (<code>0x0A</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
