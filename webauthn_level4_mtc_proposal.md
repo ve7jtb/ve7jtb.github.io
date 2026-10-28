@@ -65,30 +65,31 @@ $$attStmtType //= (
 
 - **Attestation Statement Format Identifier:** `"mtc"`
 - **Attestation Types Supported:** `Basic`, `AttCA`, `Enterprise`.
-- **Public Key Handling:** The attestation public key is **omitted from the wire** and resolved out-of-band by the Relying Party via FIDO MDS3 (`MtcTrustAnchor.batchKeys`) or the manufacturer's manifest.
+- **Wire Representation (`mtcKeyRef`):** `attStmt.mtcCert` carries **only** the ultra-compact 2-field key reference `{ caId, serial }`. The attestation public key (`coseKey`), validity window (`notBefore`, `notAfter`), optional `firmwareVersion`, and optional `mtcProof` are **omitted from `attStmt` on the wire** and resolved out-of-band by the Relying Party via FIDO MDS3 (`MtcTrustAnchor.batchKeys`), the manufacturer's enterprise inventory manifest, or in-band via the `mtcDebug` (`mtc-debug`) registration extension.
 
 #### Syntax (CDDL)
 ```cddl
 mtcStmtFormat = {
     alg: COSEAlgorithmIdentifier,
     sig: bytes,
-    mtcCert: mtcEntryDesc / mtcKeyRef
-}
-
-mtcEntryDesc = {
-    caId: bytes,                      ; 1-4 byte compact CA Log Identifier
-    serial: uint,                     ; Log entry serial number = (logNumber << 48) | index
-    notBefore: uint,                  ; Unix timestamp (seconds)
-    notAfter: uint,                   ; Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
-    ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
-    ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
+    mtcCert: mtcKeyRef
 }
 
 mtcKeyRef = {
     caId: bytes,                      ; 1-4 byte compact CA Log Identifier
-    serial: uint                      ; Log entry serial number for manifest lookup
+    serial: uint                      ; Log entry serial number = (logNumber << 48) | index
 }
 ```
+
+#### Required Metadata (`mtcTrustAnchors[].batchKeys[]`) & Manifest Entry Fields
+Because `attStmt.mtcCert` on the wire contains only `{ caId, serial }`, each entry in `mtcTrustAnchors[].batchKeys[]` (and Enterprise manufacturer manifests) provides:
+- `serial` (`uint`): 64-bit log entry serial number `(logNumber << 48) | index`.
+- `notBefore` (`uint`): Unix timestamp (seconds).
+- `notAfter` (`uint`): Unix timestamp (seconds); `253402300799` (`9999-12-31T23:59:59Z`) if non-expiring.
+- `coseKey` (`Base64URLString`): Canonical CBOR-encoded `COSE_Key` structure (per RFC 9052 §7). Because the COSE algorithm identifier (`alg`, label `3`) is embedded inside the `COSE_Key` structure, a separate top-level `alg` property on `batchKeys[]` is redundant and omitted.
+- `firmwareVersion` (`uint`, optional): Authenticator firmware version (CTAP 2.3 parameter `0x0E`).
+- `mtcProof` (`Base64URLString`, optional): Binary RFC 9162 Merkle inclusion proof.
+- `deviceSerial` (`DOMString`, optional): Hardware serial number (Enterprise manifest only).
 
 > [!IMPORTANT]
 > **Non-Expiring Device Attestation (`notAfter = 253402300799`):**  
@@ -102,7 +103,7 @@ mtcKeyRef = {
 > - **Omitting `firmwareVersion`:** Allows a single Merkle tree `rootHash` and batch key to be used across multiple firmware releases, avoiding the need to issue a new batch key or publish a new checkpoint or `caId` when minor firmware revisions are released under a stable AAGUID.
 > - **Including `firmwareVersion` *(Recommended)*:** Because `firmwareVersion` is cryptographically committed as an immutable field in `FidoMtcLogEntry`, deploying a new firmware version requires issuing a new attestation batch key and leaf `serial`, which in turn requires generating a new signed subtree checkpoint (`rootHash`) or `caId` in FIDO MDS3 or the manufacturer manifest. However, binding `firmwareVersion` to the batch key is **more secure**: it cryptographically attests the exact firmware version that generated a credential and allows Relying Parties to selectively revoke or flag a vulnerable firmware build via `revokedSerials` without distrusting patched authenticators that share the same AAGUID.
 
-#### Example: `fmt: "mtc"` Attestation Statement (Non-Expiring Hardware Attestation)
+#### Example: `fmt: "mtc"` Attestation Statement on the Wire
 
 ```cbor-diag
 {
@@ -112,11 +113,7 @@ mtcKeyRef = {
     "sig": h'3a7f91c2... (2420-byte signature)',
     "mtcCert": {
       "caId": h'83993f0101',                          / Compact CA Identifier /
-      "serial": 1970324836974592,                     / (7 << 48) | 0 /
-      "notBefore": 1767225600,                        / 2026-01-01T00:00:00Z /
-      "notAfter": 253402300799,                       / 9999-12-31T23:59:59Z (never expires, RFC 5280 §4.1.2.5) /
-      "firmwareVersion": 332805,                      / v5.20.5 (0x00051405) /
-      "mtcProof": h'000000000000000000000200000040...'
+      "serial": 1970324836974592                      / (7 << 48) | 0 /
     }
   }
 }
@@ -124,19 +121,19 @@ mtcKeyRef = {
 
 #### Relying Party Verification Procedure for `fmt: "mtc"`
 Given `(attStmt, authenticatorData, clientDataHash)`:
-1. Verify `attStmt` conforms to `mtcStmtFormat`.
-2. Compute $\text{payload} = \text{authenticatorData} \parallel \text{clientDataHash}$.
-3. Resolve the attestation public key:
+1. Verify `attStmt` conforms to `mtcStmtFormat` (`{ alg, sig, mtcCert: { caId, serial } }`).
+2. Compute $\text{verificationData} = \text{authenticatorData} \parallel \text{clientDataHash}$.
+3. Resolve the attestation key entry (`pubKey`, `notBefore`, `notAfter`, optional `firmwareVersion`, optional `mtcProof`, and optional `deviceSerial`):
    - Extract `(attStmt.mtcCert.caId, attStmt.mtcCert.serial)`.
-   - In non-enterprise mode: query FIDO MDS3 `mtcTrustAnchors[caId].batchKeys` for `serial`.
-   - In enterprise mode: query the local manufacturer's inventory manifest for `serial`.
-   - Let `pubKey` be the canonical CBOR `COSE_Key` obtained from the lookup.
-4. Verify `attStmt.sig` over $\text{payload}$ using `pubKey` and `attStmt.alg`.
-5. Verify tree commitment:
-   - If `attStmt.mtcCert` (or `authenticatorData.extensions["mtc-debug"]` when `mtcKeyRef` is used) contains `mtcProof`: walk the sibling hashes from `SHA-256(pubKey)` up to the landmark `rootHash` published in MDS3 (or `mtc-debug.rootHash` in offline conformance mode).
-   - Otherwise, if `attStmt.mtcCert` is proof-less (`mtcKeyRef` without `mtcProof`): verify that the RP previously authenticated the complete manifest or MDS key table against the Root CA signature over `rootHash`.
-6. Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$ (using `attStmt.mtcCert`, `mtc-debug`, or the verified manifest/MDS entry).
-7. Verify revocation: verify `serial` is not in `revokedSerials`.
+   - In non-enterprise mode: query FIDO MDS3 `mtcTrustAnchors[caId].batchKeys` for `serial` to obtain the canonical CBOR-encoded `COSE_Key` structure (`coseKey`), `notBefore`, `notAfter`, optional `firmwareVersion`, and optional `mtcProof`.
+   - In enterprise mode: query the local manufacturer's inventory manifest for `serial` to obtain `coseKey`, `notBefore`, `notAfter`, optional `firmwareVersion`, optional `mtcProof`, and `deviceSerial`.
+   - Alternatively, if `authenticatorData.extensions["mtc-debug"]` is present, extract the canonical CBOR-encoded `COSE_Key` structure `pubKey` (matching the `batchKeys[].coseKey` format), `notBefore`, `notAfter`, optional `firmwareVersion`, `mtcProof`, optional `rootHash`, and optional `deviceSerial`.
+4. Verify that the `alg` parameter (`3`) inside the `COSE_Key` structure `pubKey` matches `attStmt.alg`, and verify `attStmt.sig` over $\text{verificationData}$ using `pubKey` and `attStmt.alg`.
+5. Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$ from the resolved metadata/manifest entry (or `mtc-debug`).
+6. Verify revocation: verify `serial` is not in `revokedSerials`.
+7. Verify tree commitment:
+   - If `mtcProof` is present (in the resolved metadata/manifest entry or in `authenticatorData.extensions["mtc-debug"]`): walk the sibling hashes from `SHA-256(pubKey)` up to the landmark `rootHash` published in MDS3 (or `mtc-debug.rootHash` in offline conformance mode).
+   - Otherwise, verify that the RP previously authenticated the complete manifest or MDS `batchKeys` table against the Root CA signature over `rootHash`.
 
 ---
 
