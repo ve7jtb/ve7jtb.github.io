@@ -106,7 +106,7 @@ diff --git a/index.bs b/index.bs
 index 70e98e0..fd42f74 100644
 --- a/index.bs
 +++ b/index.bs
-@@ -6974,6 +6974,84 @@ The "compound" attestation statement format is used to pass multiple, self-conta
+@@ -6974,6 +6971,119 @@ The "compound" attestation statement format is used to pass multiple, self-conta
          return implementation-specific values representing any combination of outputs from successful [=verification procedures=].
  
  
@@ -278,11 +278,10 @@ index 70e98e0..fd42f74 100644
 +: Authenticator extension processing
 +::
 +    1. If `mtc-debug` is [TRUE] in the authenticator extension inputs:
-+        1. Let |pubKey| be the canonical CBOR-encoded `COSE_Key` structure (per [[!RFC9052]] Section 7, matching the `coseKey` format in `mtcTrustAnchors[].batchKeys[]`) of the authenticator's active attestation public key.
-+        2. Let |output| be a new CBOR map with `pubKey` set to |pubKey|.
++        1. Let |output| be a new CBOR map.
++        2. Let |pubKey| be the canonical CBOR-encoded `COSE_Key` structure (per [[!RFC9052]] Section 7, matching the `coseKey` format in `mtcTrustAnchors[].batchKeys[]`) of the authenticator's active attestation public key. Set <code>|output|["pubKey"] = |pubKey|</code>.
 +        3. If Enterprise Attestation was requested and granted for this operation:
-+            1. Let |serial| be the device serial number text string.
-+            2. Set <code>|output|["deviceSerial"] = |serial|</code>.
++            1. Let |serial| be the device serial number text string. Set <code>|output|["deviceSerial"] = |serial|</code>.
 +        4. Otherwise:
 +            1. The authenticator MUST NOT include `deviceSerial` if Enterprise Attestation was not granted.
 +        5. Populate the MTC leaf descriptor and Merkle inclusion proof fields (enabling autonomous offline verification of the 2-field `mtcKeyRef` in `attStmt.mtcCert`):
