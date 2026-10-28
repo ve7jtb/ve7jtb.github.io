@@ -89,6 +89,15 @@ def build_index():
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
           <!-- Item 1 -->
+          <a href="#sec-mtc-trust-chain" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Cryptographic Reference</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">MTC Trust Chain &amp; Signed Preimages</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">6-level diagram &amp; exact byte layouts from Vendor X.509 Root CA in MDS3 down to batch COSE_Key &amp; attStmt.sig.</p>
+            </div>
+          </a>
+
+          <!-- Item 1b -->
           <a href="#sec-mtc-dummies" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Architecture Primer</span>
@@ -198,6 +207,92 @@ def build_index():
         </div>
       </div>
     </header>
+
+    <!-- Section 0: MTC Cryptographic Trust Chain Architecture -->
+    <section id="sec-mtc-trust-chain" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Cryptographic Trust Chain &amp; Preimage Reference
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            Vendor X.509 Root CA &rarr; FidoMtcSubtreeCheckpoint
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            RFC 9162 Merkle Tree &amp; FidoMtcLogEntry
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            2-Field mtcKeyRef &amp; COSE_Key
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+          <a href="./mtc_trust_chain_architecture.html" class="hover:underline">
+            FIDO MDS3 &amp; WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture
+          </a>
+        </h2>
+        <p class="text-sm text-[var(--muted-foreground)]">
+          End-to-end 6-level architecture diagram and byte-level signature/hash preimage specification from the <strong>FIDO MDS3 BLOB JWS</strong> (Level 0) and <strong>Vendor X.509 Attestation Root CA</strong> (<code>metadata.attestationRootCertificates[]</code>, Level 1) through the signed 85-byte <strong><code>FidoMtcSubtreeCheckpoint</code></strong> (<code>mtcTrustAnchors[].subtrees[].signature</code>, Level 2), <strong>RFC 9162 SHA-256 Merkle inclusion tree</strong> and <strong><code>FidoMtcLogEntry</code></strong> leaf preimage (Level 3), 2-field <strong><code>mtcKeyRef</code> (<code>{ caId, serial }</code>)</strong> resolution to the self-describing <strong><code>COSE_Key</code></strong> (<code>batchKeys[].coseKey</code> / <code>mtc-debug.pubKey</code>, Level 4), and the on-wire WebAuthn registration signature <strong><code>attStmt.sig</code></strong> over <code>authenticatorData || clientDataHash</code> (Level 5).
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-1">
+        <a href="./mtc_trust_chain_architecture.html"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+          <span>Read Full HTML Reference</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="./mtc_trust_chain_architecture.md"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+          <span>View Markdown Source (<code>.md</code>)</span>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Reference Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a href="./mtc_trust_chain_architecture.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              6-Level Trust Chain Diagram &amp; <code>FidoMtcSubtreeCheckpoint</code> (85B)
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              End-to-end Mermaid trust chain diagram, master summary table of every signature/hash preimage, and exact 85-byte binary layout signed by the Vendor X.509 Root CA.
+            </p>
+          </a>
+
+          <a href="./mtc_trust_chain_architecture.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–4</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              RFC 9162 Merkle Inclusion, <code>FidoMtcLogEntry</code> &amp; 2-Field <code>mtcKeyRef</code>
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              <code>SHA-256(0x00 || FidoMtcLogEntry)</code> leaf hashing, <code>0x01</code> interior node climbing, and why <code>alg</code> at COSE label <code>3</code> inside <code>COSE_Key</code> is authoritative.
+            </p>
+          </a>
+
+          <a href="./mtc_trust_chain_architecture.html#section-5"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              <code>attStmt.sig</code> over <code>verificationData</code> &amp; RP Verification Checklist
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Exact byte layout of <code>authenticatorData || clientDataHash</code> and the 6-step Relying Party verification checklist.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
 
     <!-- Section 1: MTC (Merkle Tree COSE) for Dummies -->
     <section id="sec-mtc-dummies" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">

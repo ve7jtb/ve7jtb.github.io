@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIDO MDS3 &amp; WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Cryptographic Trust Chain Reference</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Vendor X.509 Root CA → Subtree Checkpoint</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">RFC 9162 Merkle Inclusion &amp; FidoMtcLogEntry</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">2-Field mtcKeyRef &amp; COSE_Key</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./mtc_trust_chain_architecture.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      FIDO MDS3 &amp; WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Complete 6-level signature and hash preimage reference from the FIDO MDS3 JWS and Vendor X.509 Attestation Root CA through the 85-byte FidoMtcSubtreeCheckpoint signature, RFC 9162 SHA-256 Merkle inclusion tree, FidoMtcLogEntry leaf preimage, 2-field mtcKeyRef ({ caId, serial }) COSE_Key resolution, and WebAuthn registration signature (attStmt.sig over authenticatorData || clientDataHash).
+    </p>
+
+
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">End-to-End Cryptographic Trust Chain Overview</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Levels 1 &amp; 2: Vendor X.509 Root CA &amp; Signed Subtree Checkpoint (<code>FidoMtcSubtreeCheckpoint</code>)</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Level 3: RFC 9162 SHA-256 Merkle Hash Tree &amp; <code>FidoMtcLogEntry</code> Leaf Preimage</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Level 4: 2-Field <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) Resolution &amp; Self-Describing <code>COSE_Key</code></div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Level 5: Authenticator Registration Signature (<code>attStmt.sig</code>)</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. End-to-End Cryptographic Trust Chain Overview</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#master-summary-table-what-gets-signed-or-hashed-at-each-level" class="hover:underline">&sect;Master Summary Table: What Gets Signed or Hashed at Each Level</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Levels 1 &amp; 2: Vendor X.509 Root CA &amp; Signed Subtree Checkpoint (<code>FidoMtcSubtreeCheckpoint</code>)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#21-why-the-vendor-x509-root-ca-signs-the-subtree-checkpoint" class="hover:underline">&sect;2.1 Why the Vendor X.509 Root CA Signs the Subtree Checkpoint</a></div>
+            <div><a href="#22-exact-binary-layout-of-fidomtcsubtreecheckpoint-level-2-signed-preimage" class="hover:underline">&sect;2.2 Exact Binary Layout of <code>FidoMtcSubtreeCheckpoint</code> (Level 2 Signed Preimage)</a></div>
+            <div><a href="#23-level-2-verification-rules" class="hover:underline">&sect;2.3 Level 2 Verification Rules</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Level 3: RFC 9162 SHA-256 Merkle Hash Tree &amp; <code>FidoMtcLogEntry</code> Leaf Preimage</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#31-reconstructing-fidomtclogentry-level-3b-leaf-preimage" class="hover:underline">&sect;3.1 Reconstructing <code>FidoMtcLogEntry</code> (Level 3b Leaf Preimage)</a></div>
+            <div><a href="#32-computing-the-leaf-hash-and-climbing-the-rfc-9162-merkle-inclusion-proof" class="hover:underline">&sect;3.2 Computing the Leaf Hash and Climbing the RFC 9162 Merkle Inclusion Proof</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Level 4: 2-Field <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) Resolution &amp; Self-Describing <code>COSE_Key</code></a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#41-ultra-compact-2-field-mtckeyref-on-the-wire" class="hover:underline">&sect;4.1 Ultra-Compact 2-Field <code>mtcKeyRef</code> on the Wire</a></div>
+            <div><a href="#42-why-alg-is-inside-cose_key-and-not-duplicated-on-batchkeys" class="hover:underline">&sect;4.2 Why <code>alg</code> Is Inside <code>COSE_Key</code> (and Not Duplicated on <code>batchKeys[]</code>)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Level 5: Authenticator Registration Signature (<code>attStmt.sig</code>)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#51-exact-signed-preimage-verificationdata" class="hover:underline">&sect;5.1 Exact Signed Preimage (<code>verificationData</code>)</a></div>
+            <div><a href="#52-complete-step-by-step-verification-checklist-relying-party" class="hover:underline">&sect;5.2 Complete Step-by-Step Verification Checklist (Relying Party)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">End-to-End Cryptographic Trust Chain Overview</h2>
+      </div>
+<p class="text-sm my-2">In WebAuthn Level 4 (<code>fmt: "mtc"</code>), attestation separates <strong>heavy post-quantum CA root signatures</strong> (delivered out-of-band in FIDO MDS3 metadata) from <strong>ultra-compact authenticator registration ceremonies</strong> (which carry only a 2-field <code>mtcKeyRef</code> <code>{ caId, serial }</code> and a single registration signature <code>attStmt.sig</code> on the wire).</p>
+<p class="text-sm my-2">The complete trust chain spans <strong>six cryptographic levels</strong>, combining two digital signatures (<code>Level 0</code> FIDO MDS3 JWS and <code>Level 2</code> Vendor X.509 Root CA Subtree Checkpoint signature), one <strong>RFC 9162 SHA-256 Merkle inclusion tree</strong> (<code>Level 3</code>), one <strong>SHA-256 <code>COSE_Key</code> commitment</strong> (<code>Level 4</code>), and one <strong>authenticator registration signature</strong> (<code>Level 5</code>).</p>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart TD
+    subgraph L0["Level 0: FIDO Alliance Metadata Service (MDS3 TOC / BLOB)"]
+        MDS_ROOT["FIDO MDS3 Root CA (X.509)\nVerifies JWS Header x5c Chain"]
+        MDS_JWS["MDS3 BLOB JWS Signature\nSigned over: Base64URL(JWS Header) || '.' || Base64URL(MDS3 Payload)"]
+        MDS_ROOT --&gt; MDS_JWS
+    end
+
+    subgraph L1["Level 1: Vendor X.509 Attestation Root CA (MDS3 Entry)"]
+        VENDOR_X509["metadata.attestationRootCertificates[]\nSelf-Signed Vendor X.509v3 Root CA (BasicConstraints CA:TRUE)\nPublic Key: SPKI (e.g., ML-DSA-87, HSS-LMS, SLH-DSA, or ES384)"]
+        MDS_JWS --&gt;|"Authenticates MetadataStatement\nfor Authenticator AAGUID"| VENDOR_X509
+    end
+
+    subgraph L2["Level 2: Signed MTC Subtree Checkpoint (mtcTrustAnchors[].subtrees[])"]
+        CKPT_PREIMAGE["FidoMtcSubtreeCheckpoint (80 + len(caId) bytes; 85B for 5B caId)\n'FIDO-MTC-SUBTREE-CHECKPOINT-V1\\0\\0' (32B)\n|| uint16_be(len(caId)) (2B) || caId (NB) || uint16_be(logNumber) (2B)\n|| uint48_be(start) (6B) || uint48_be(end) (6B) || rootHash (32B)"]
+        CKPT_SIG["subtrees[].signature (alg = subtrees[].alg, e.g., -50 ML-DSA-87)\nSigned by Vendor X.509 Attestation Root CA Private Key"]
+        VENDOR_X509 --&gt;|"Verifies subtrees[].signature\nusing Root CA SPKI"| CKPT_SIG
+        CKPT_SIG --&gt;|"Authenticates 32-byte\nsubtrees[].rootHash"| CKPT_PREIMAGE
+    end
+
+    subgraph L3["Level 3: RFC 9162 SHA-256 Merkle Hash Tree (Subtree [start, end))"]
+        ROOT_HASH["Subtree Merkle Root: subtrees[].rootHash (32 bytes)"]
+        INT_NODE["Interior Merkle Nodes (RFC 9162 §2.1.1)\nParent = SHA-256(0x01 || LeftChild[32] || RightChild[32])\nComputed using sibling hashes in batchKeys[].proof (or mtc-debug.proof)"]
+        LEAF_HASH["Merkle Leaf Hash at index = (serial &amp; 0xFFFFFFFFFFFF)\nLeafHash = SHA-256(0x00 || FidoMtcLogEntry)"]
+        LOG_ENTRY["FidoMtcLogEntry (Binary Preimage — 83B + len(caId) + fw + ext)\nuint16_be(len(caId)) || caId || uint64_be(serial)\n|| uint64_be(notBefore) || uint64_be(notAfter = 253402300799)\n|| aaguid (16B) || fwBytes (0x00 or 0x01||uint64_be(fwVersion))\n|| SHA-256(coseKey) (32B) || uint16_be(len(ext)) || ext"]
+        CKPT_PREIMAGE --&gt; ROOT_HASH
+        ROOT_HASH ---|"Verified Equal"| INT_NODE
+        INT_NODE ---|"Merkle Path Climb"| LEAF_HASH
+        LEAF_HASH ---|"SHA-256(0x00 || ...)"| LOG_ENTRY
+    end
+
+    subgraph L4["Level 4: Batch or Enterprise Attestation Key (COSE_Key)"]
+        KEY_REF["Wire Lookup Key: 2-Field mtcKeyRef\nattStmt.mtcCert = { caId, serial } (22 bytes CBOR)"]
+        COSE_KEY["Canonical CBOR COSE_Key (batchKeys[].coseKey or mtc-debug.pubKey)\n{ 1: kty, 3: alg (e.g., -48..-50 / -70..-71 / -7), -1: pub }\nalg in COSE_Key (label 3) is authoritative (no redundant alg on batchKeys[])"]
+        LOG_ENTRY --&gt;|"Commits 32-byte\nSHA-256(coseKey)"| COSE_KEY
+        KEY_REF -.-&gt;|"Resolves entry by\n(caId, serial)"| COSE_KEY
+    end
+
+    subgraph L5["Level 5: Authenticator WebAuthn Registration Signature (On the Wire)"]
+        VERIF_DATA["verificationData = authenticatorData || clientDataHash\nauthenticatorData (rpIdHash || flags || signCount || attestedCredentialData || extensions)\n|| SHA-256(clientDataJSON) (32 bytes)"]
+        ATT_SIG["attStmt.sig (alg = attStmt.alg, matching COSE_Key label 3)\nSigned by Authenticator Batch/Enterprise Private Key over raw verificationData"]
+        CRED_KEY["Attested User Credential Public Key\n(authenticatorData.attestedCredentialData.credentialPublicKey)"]
+        COSE_KEY --&gt;|"Verifies attStmt.sig"| ATT_SIG
+        ATT_SIG --&gt;|"Signs raw bytes of"| VERIF_DATA
+        VERIF_DATA --&gt;|"Binds &amp; Authenticates"| CRED_KEY
+    end</pre></div>
+<h3 id="master-summary-table-what-gets-signed-or-hashed-at-each-level" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Master Summary Table: What Gets Signed or Hashed at Each Level</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Level</th>
+<th class="p-3 font-semibold align-bottom text-left">Artifact / Structure</th>
+<th class="p-3 font-semibold align-bottom text-left">Where It Lives</th>
+<th class="p-3 font-semibold align-bottom text-left">Cryptographic Operation</th>
+<th class="p-3 font-semibold align-bottom text-left">Signer / Key Used</th>
+<th class="p-3 font-semibold align-bottom text-left">Exact Signed or Hashed Preimage</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>0</strong></td>
+<td class="p-3 align-top text-left"><strong>FIDO MDS3 BLOB (<code>JWS</code>)</strong></td>
+<td class="p-3 align-top text-left">FIDO MDS3 TOC/BLOB endpoint</td>
+<td class="p-3 align-top text-left">Digital Signature (<code>RS256</code> / <code>ES256</code> / <code>ES384</code>)</td>
+<td class="p-3 align-top text-left">FIDO Alliance MDS3 Root CA (<code>x5c</code> chain)</td>
+<td class="p-3 align-top text-left">ASCII <code>Base64URL(JWS Header) || "." || Base64URL(MDS3 Payload)</code> containing <code>MetadataStatement</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>1</strong></td>
+<td class="p-3 align-top text-left"><strong>Vendor X.509 Root CA</strong></td>
+<td class="p-3 align-top text-left"><code>metadata.attestationRootCertificates[]</code></td>
+<td class="p-3 align-top text-left">Self-Signed X.509v3 Certificate</td>
+<td class="p-3 align-top text-left">Vendor Attestation Root CA (<code>BasicConstraints CA:TRUE</code>)</td>
+<td class="p-3 align-top text-left">ASN.1 DER <code>TBSCertificate</code> containing the Vendor Root CA Subject Public Key Info (<code>SPKI</code>, e.g., <code>ML-DSA-87</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>2</strong></td>
+<td class="p-3 align-top text-left"><strong>Subtree Checkpoint Signature</strong></td>
+<td class="p-3 align-top text-left"><code>mtcTrustAnchors[].subtrees[].signature</code></td>
+<td class="p-3 align-top text-left">Digital Signature (<code>subtrees[].alg</code>, e.g., <code>-50</code> <code>ML-DSA-87</code>)</td>
+<td class="p-3 align-top text-left">Vendor X.509 Root CA (<code>attestationRootCertificates[]</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>FidoMtcSubtreeCheckpoint</code></strong> (<code>80 + len(caId)</code> bytes; <code>85 bytes</code> for 5B <code>caId</code>) committing <code>(caId, logNumber, start, end, rootHash)</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>3a</strong></td>
+<td class="p-3 align-top text-left"><strong>Merkle Interior Nodes</strong></td>
+<td class="p-3 align-top text-left">Computed during verification from <code>proof</code></td>
+<td class="p-3 align-top text-left"><code>SHA-256</code> (<code>RFC 9162 §2.1.1</code>)</td>
+<td class="p-3 align-top text-left">Keyless hash (<code>SHA-256</code> with <code>0x01</code> domain separator)</td>
+<td class="p-3 align-top text-left"><code>0x01 || LeftChildHash (32B) || RightChildHash (32B)</code> (<code>65 bytes</code> total per interior step)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>3b</strong></td>
+<td class="p-3 align-top text-left"><strong>Merkle Leaf Node</strong></td>
+<td class="p-3 align-top text-left">Computed at <code>index = serial &amp; 0xFFFFFFFFFFFF</code></td>
+<td class="p-3 align-top text-left"><code>SHA-256</code> (<code>RFC 9162 §2.1.1</code>)</td>
+<td class="p-3 align-top text-left">Keyless hash (<code>SHA-256</code> with <code>0x00</code> domain separator)</td>
+<td class="p-3 align-top text-left"><code>0x00 || FidoMtcLogEntry</code> (<code>84 + len(caId) + fw + ext</code> bytes; <code>89 bytes</code> typical)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>4</strong></td>
+<td class="p-3 align-top text-left"><strong>Batch / Enterprise Key Commitment</strong></td>
+<td class="p-3 align-top text-left">Inside <code>FidoMtcLogEntry</code> (<code>pkHash</code> field)</td>
+<td class="p-3 align-top text-left"><code>SHA-256</code> over raw CBOR <code>COSE_Key</code></td>
+<td class="p-3 align-top text-left">Keyless hash (<code>SHA-256</code>)</td>
+<td class="p-3 align-top text-left">Exact canonical CBOR bytes of <code>coseKey</code> (<code>batchKeys[].coseKey</code> or <code>mtc-debug.pubKey</code>), which carries <code>alg</code> at COSE label <code>3</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>5</strong></td>
+<td class="p-3 align-top text-left"><strong>WebAuthn Attestation Signature</strong></td>
+<td class="p-3 align-top text-left"><code>attStmt.sig</code> (on the wire in <code>attestationObject</code>)</td>
+<td class="p-3 align-top text-left">Digital Signature (<code>attStmt.alg</code>, matching <code>coseKey[3]</code>)</td>
+<td class="p-3 align-top text-left">Authenticator Batch or Enterprise Private Key</td>
+<td class="p-3 align-top text-left"><strong><code>verificationData = authenticatorData || clientDataHash</code></strong> (raw concatenation; no outer SHA-256 pre-hash)</td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Levels 1 &amp; 2: Vendor X.509 Root CA &amp; Signed Subtree Checkpoint (<code>FidoMtcSubtreeCheckpoint</code>)</h2>
+      </div>
+<h3 id="21-why-the-vendor-x509-root-ca-signs-the-subtree-checkpoint" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.1 Why the Vendor X.509 Root CA Signs the Subtree Checkpoint</h3>
+<p class="text-sm my-2">In FIDO MDS3, every authenticator model already anchors its hardware identity in <code>metadata.attestationRootCertificates[]</code> — an array of base64-encoded DER X.509v3 Root CA certificates (<code>BasicConstraints CA:TRUE</code>). Rather than introducing a separate PKI for Merkle Tree Certificates, the Vendor X.509 Attestation Root CA directly signs each <strong>MTC Subtree Checkpoint</strong> (<code>mtcTrustAnchors[].subtrees[].signature</code>).</p>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Amortizing Heavy Post-Quantum Root Signatures Out-of-Band:</strong> A single <code>ML-DSA-87</code> (<code>4,627 B</code>), <code>HSS-LMS</code>, or <code>SLH-DSA</code> signature from the Vendor X.509 Attestation Root CA over an <code>85-byte</code> <code>FidoMtcSubtreeCheckpoint</code> authenticates the 32-byte <code>rootHash</code> of a subtree covering up to $2^{48}$ batch or enterprise keys. Relying Parties verify this heavy root signature once when refreshing MDS3 metadata (or on cache miss), removing all CA certificates and root signatures from the WebAuthn registration ceremony.</p></div>
+<h3 id="22-exact-binary-layout-of-fidomtcsubtreecheckpoint-level-2-signed-preimage" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.2 Exact Binary Layout of <code>FidoMtcSubtreeCheckpoint</code> (Level 2 Signed Preimage)</h3>
+<p class="text-sm my-2">For each subtree object in <code>metadata.mtcTrustAnchors[].subtrees[]</code>, the Vendor X.509 Attestation Root CA signs the exact byte sequence <code>FidoMtcSubtreeCheckpoint</code> (<code>80 + len(caId)</code> bytes total; <strong>85 bytes</strong> for a standard 5-byte ASN.1 OBJECT IDENTIFIER <code>caId</code>):</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>+-----------------------------------------------------------------------+
+| Offset | Length | Field       | Encoding / Value                      |
++--------+--------+-------------+---------------------------------------+
+| 0      | 32     | domainSep   | ASCII "FIDO-MTC-SUBTREE-CHECKPOINT-V1"|
+|        |        |             | padded with two trailing 0x00 bytes   |
+|        |        |             | (30 ASCII chars + 0x00 0x00 = 32 B)   |
++--------+--------+-------------+---------------------------------------+
+| 32     | 2      | caIdLen     | uint16_be(len(caId))                  |
+|        |        |             | e.g., 0x0005 for a 5-byte OID         |
++--------+--------+-------------+---------------------------------------+
+| 34     | N      | caId        | Raw bytes of the CA Identifier        |
+|        | (5)    |             | (from parent mtcTrustAnchors[].caId)  |
++--------+--------+-------------+---------------------------------------+
+| 34+N   | 2      | logNumber   | uint16_be(subtrees[].logNumber)       |
+| (39)   |        |             | Matches upper 16 bits of serial       |
++--------+--------+-------------+---------------------------------------+
+| 36+N   | 6      | start       | uint48_be(subtrees[].start)           |
+| (41)   |        |             | Inclusive start leaf index [0..2^48)  |
++--------+--------+-------------+---------------------------------------+
+| 42+N   | 6      | end         | uint48_be(subtrees[].end)             |
+| (47)   |        |             | Exclusive end leaf index (end &gt; start)|
++--------+--------+-------------+---------------------------------------+
+| 48+N   | 32     | rootHash    | Raw 32-byte SHA-256 Merkle subtree    |
+| (53)   |        |             | root hash (subtrees[].rootHash)       |
++-----------------------------------------------------------------------+
+Total Size = 80 + N bytes (85 bytes when N = 5)</code></pre></div>
+<h3 id="23-level-2-verification-rules" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">2.3 Level 2 Verification Rules</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Key &amp; Algorithm Selection:</strong> The verifier extracts the <code>SubjectPublicKeyInfo</code> (<code>SPKI</code>) from a valid X.509v3 Root CA certificate (<code>BasicConstraints CA:TRUE</code>) in <code>metadata.attestationRootCertificates[]</code> matching the COSE algorithm <code>subtrees[].alg</code> (e.g., <code>-50</code> for <code>ML-DSA-87</code>, <code>-49</code> for <code>ML-DSA-65</code>, <code>-48</code> for <code>ML-DSA-44</code>, <code>-46</code> for <code>HSS-LMS</code>).</li>
+<li><strong>Range &amp; Log Matching:</strong> Given a 64-bit <code>serial</code> from <code>attStmt.mtcCert</code>, the verifier splits:<div class="overflow-x-auto py-1 text-sm my-2">$$\text{logNumber} = (\text{serial} \gg 48) \ \&amp; \ \text{0xFFFF}, \qquad \text{leafIndex} = \text{serial} \ \&amp; \ \text{0xFFFFFFFFFFFF}$$</div>
+<p class="text-sm my-2">and selects the subtree entry where <code>subtrees[].logNumber == logNumber</code> and <code>subtrees[].start &lt;= leafIndex &lt; subtrees[].end</code>.</p></li>
+<li><strong>Cryptographic Verification:</strong> The verifier reconstructs <code>FidoMtcSubtreeCheckpoint</code> and verifies <code>subtrees[].signature</code> using the Vendor X.509 Root CA public key and <code>subtrees[].alg</code>.</li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Level 3: RFC 9162 SHA-256 Merkle Hash Tree &amp; <code>FidoMtcLogEntry</code> Leaf Preimage</h2>
+      </div>
+<p class="text-sm my-2">Once the 32-byte <code>subtrees[].rootHash</code> is authenticated by the Vendor X.509 Root CA signature in Level 2, the verifier proves that a specific authenticator batch or enterprise key is an authentic leaf in that subtree at <code>leafIndex = serial &amp; 0xFFFFFFFFFFFF</code>.</p>
+<h3 id="31-reconstructing-fidomtclogentry-level-3b-leaf-preimage" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.1 Reconstructing <code>FidoMtcLogEntry</code> (Level 3b Leaf Preimage)</h3>
+<p class="text-sm my-2">The verifier constructs the canonical binary <code>FidoMtcLogEntry</code> byte string from the resolved key metadata (<code>notBefore</code>, <code>coseKey</code>, optional <code>fwVersion</code>, optional <code>extensions</code>), the authenticator's <code>aaguid</code> (from <code>authenticatorData.attestedCredentialData.aaguid</code>), and <code>(caId, serial)</code> from <code>attStmt.mtcCert</code>:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>+-----------------------------------------------------------------------+
+| Field        | Size      | Encoding / Value                           |
++--------------+-----------+--------------------------------------------+
+| caIdLen      | 2 bytes   | uint16_be(len(caId))                       |
+| caId         | N bytes   | Raw bytes of attStmt.mtcCert.caId          |
+| serial       | 8 bytes   | uint64_be(attStmt.mtcCert.serial)          |
+| notBefore    | 8 bytes   | uint64_be(notBefore) (Unix epoch seconds)  |
+| notAfter     | 8 bytes   | uint64_be(253402300799)                    |
+|              |           | Fixed sentinel: 9999-12-31T23:59:59Z       |
+|              |           | (0x0000003afff4417f) per FIDO Tech Note    |
+| aaguid       | 16 bytes  | Raw 16-byte AAGUID from authenticatorData  |
+| fwBytes      | 1 or 9 B  | 0x00 if fwVersion is omitted/null;         |
+|              |           | otherwise 0x01 || uint64_be(fwVersion)     |
+| pkHash       | 32 bytes  | SHA-256(coseKey) — raw 32-byte SHA-256     |
+|              |           | digest of the canonical CBOR COSE_Key      |
+| extLen       | 2 bytes   | uint16_be(len(extensions)) (0x0000 default)|
+| extensions   | M bytes   | Raw extension bytes (empty by default)     |
++-----------------------------------------------------------------------+
+Total Size = 77 + N + (1 or 9) + M bytes (83 + N bytes when fw=null, ext=empty; 88B for N=5)</code></pre></div>
+<div class="rounded-xl border border-blue-500/40 bg-blue-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Note</div><p class="text-sm my-2"><strong>Why <code>aaguid</code> and <code>SHA-256(coseKey)</code> Are Inside <code>FidoMtcLogEntry</code>:</strong> Nothing in the leaf is trusted on faith. Because <code>aaguid</code> is read directly from the signed <code>authenticatorData</code> on the wire and <code>pkHash = SHA-256(coseKey)</code> is computed over the exact <code>COSE_Key</code> used to verify <code>attStmt.sig</code>, any tampering with the AAGUID, serial number, issuance timestamp, firmware version, or public key changes <code>FidoMtcLogEntry</code>, producing a different leaf hash that fails to match the signed <code>subtrees[].rootHash</code>.</p></div>
+<h3 id="32-computing-the-leaf-hash-and-climbing-the-rfc-9162-merkle-inclusion-proof" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.2 Computing the Leaf Hash and Climbing the RFC 9162 Merkle Inclusion Proof</h3>
+<p class="text-sm my-2">Following <strong>RFC 9162 §2.1.1 (Certificate Transparency v2.0)</strong> domain separation rules:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Leaf Hash (<code>0x00</code> prefix):</strong><div class="overflow-x-auto py-1 text-sm my-2">$$\text{LeafHash} = \text{SHA-256}(\texttt{0x00} \parallel \text{FidoMtcLogEntry})$$</div>
+<p class="text-sm my-2">The <code>0x00</code> byte prevents second-preimage attacks between leaf nodes and interior nodes.</p></li>
+<li><strong>Relative Subtree Coordinates:</strong><div class="overflow-x-auto py-1 text-sm my-2">$$\text{relIndex} = \text{leafIndex} - \text{subtrees[].start}, \qquad \text{subtreeSize} = \text{subtrees[].end} - \text{subtrees[].start}$$</div></li>
+<li><strong>Interior Node Hashing (<code>0x01</code> prefix):</strong> Walking the array of 32-byte sibling hashes $p_0, p_1, \dots, p_{k-1}$ in <code>proof</code> (<code>batchKeys[].proof</code> or <code>mtc-debug.proof</code>) from bottom to top according to the binary decomposition of $(\text{relIndex}, \text{subtreeSize})$:<div class="overflow-x-auto py-1 text-sm my-2">$$\text{NodeHash} = \begin{cases} \text{SHA-256}(\texttt{0x01} \parallel p_i \parallel \text{NodeHash}) &amp; \text{if current node is a right child } (\text{relIndex is odd}) \\ \text{SHA-256}(\texttt{0x01} \parallel \text{NodeHash} \parallel p_i) &amp; \text{if current node is a left child } (\text{relIndex is even}) \end{cases}$$</div></li>
+<li><strong>Root Equality Check:</strong> Verification succeeds only if the final computed 32-byte <code>NodeHash</code> is byte-for-byte identical to the authenticated <code>subtrees[].rootHash</code> from Level 2.</li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Level 4: 2-Field <code>mtcKeyRef</code> (<code>{ caId, serial }</code>) Resolution &amp; Self-Describing <code>COSE_Key</code></h2>
+      </div>
+<h3 id="41-ultra-compact-2-field-mtckeyref-on-the-wire" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.1 Ultra-Compact 2-Field <code>mtcKeyRef</code> on the Wire</h3>
+<p class="text-sm my-2">In WebAuthn Level 4, <code>attStmt.mtcCert</code> on the wire is <strong>always</strong> the 2-field <code>mtcKeyRef</code> map (~22 bytes in CBOR):</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>mtcAttStmtFormat = {
+    alg: COSEAlgorithmIdentifier,
+    sig: bstr,
+    mtcCert: mtcKeyRef
+}
+
+mtcKeyRef = {
+    caId: bstr,   ; Binary CA Identifier (e.g., 5-byte OID)
+    serial: uint  ; 64-bit integer: (logNumber &lt;&lt; 48) | leafIndex
+}</code></pre></div>
+<h3 id="42-why-alg-is-inside-cose_key-and-not-duplicated-on-batchkeys" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">4.2 Why <code>alg</code> Is Inside <code>COSE_Key</code> (and Not Duplicated on <code>batchKeys[]</code>)</h3>
+<p class="text-sm my-2">Both <code>mtcTrustAnchors[].batchKeys[].coseKey</code> (in FIDO MDS3 metadata) and <code>authenticatorData.extensions["mtc-debug"].pubKey</code> (in the self-contained diagnostic extension) encode the public key as a canonical CBOR <code>COSE_Key</code> map (RFC 9052 §7):</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>COSE_Key = {
+    1 =&gt; int,   ; kty: Key Type (e.g., 8 for AKP / ML-DSA / FN-DSA, 2 for EC2)
+    3 =&gt; int,   ; alg: COSEAlgorithmIdentifier (e.g., -48, -49, -50, -70, -71, -7)
+   -1 =&gt; bstr,  ; pub: Raw public key bytes (or -2/-3 for EC2 x/y coordinates)
+}</code></pre></div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Single Authoritative Algorithm (<code>coseKey[3]</code>):</strong> Because label <code>3</code> (<code>alg</code>) is mandatory inside the <code>COSE_Key</code> map and the entire <code>COSE_Key</code> byte string is cryptographically bound into <code>FidoMtcLogEntry</code> via <code>SHA-256(coseKey)</code>, a separate top-level <code>alg</code> field on <code>batchKeys[]</code> is redundant and has been omitted.</li>
+<li><strong>Cross-Check Against <code>attStmt.alg</code>:</strong> During Level 5 verification, the verifier checks that <code>attStmt.alg</code> equals the <code>alg</code> parameter (label <code>3</code>) inside the resolved <code>COSE_Key</code>.</li>
+</ul>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">flowchart LR
+    WIRE["On-Wire attStmt.mtcCert\n{ caId, serial }\n(~22 bytes CBOR)"]
+    
+    subgraph SOURCES["Key &amp; Proof Resolution Sources (Keyed by caId + serial)"]
+        MDS_BATCH["Path A: FIDO MDS3 Metadata\nmtcTrustAnchors[].batchKeys[]\n{ serial, notBefore, coseKey, proof }"]
+        ENT_MAN["Path B: Enterprise Key Manifest\nOut-of-band RP Enterprise Store\n{ serial, notBefore, coseKey, proof }"]
+        MTC_DBG["Path C: mtc-debug Extension\nauthenticatorData.extensions['mtc-debug']\n{ notBefore, pubKey (COSE_Key), proof }"]
+    end
+
+    LEAF["Reconstruct FidoMtcLogEntry\nCompute SHA-256(coseKey)\nClimb RFC 9162 Merkle Proof\nto signed subtrees[].rootHash"]
+
+    WIRE --&gt;|"Standard Batch\nAttestation"| MDS_BATCH
+    WIRE --&gt;|"Enterprise\nAttestation"| ENT_MAN
+    WIRE --&gt;|"Developer / Conformance\nFallback"| MTC_DBG
+
+    MDS_BATCH --&gt; LEAF
+    ENT_MAN --&gt; LEAF
+    MTC_DBG --&gt; LEAF</pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Level 5: Authenticator Registration Signature (<code>attStmt.sig</code>)</h2>
+      </div>
+<h3 id="51-exact-signed-preimage-verificationdata" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Exact Signed Preimage (<code>verificationData</code>)</h3>
+<p class="text-sm my-2">At registration time (<code>navigator.credentials.create()</code>), the authenticator signs the exact concatenation of <code>authenticatorData</code> and <code>clientDataHash</code> (<code>32 bytes</code>):</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">text</div><pre class="text-xs leading-relaxed"><code>+-----------------------------------------------------------------------------------+
+|                        verificationData (Signed by attStmt.sig)                   |
++---------------------------------------------------------+-------------------------+
+|                    authenticatorData                    |     clientDataHash      |
+|                  (Variable Length &gt;= 55B)               |       (32 Bytes)        |
++------------+-------+-----------+------------------------+-------------------------+
+| rpIdHash   | flags | signCount | attestedCredentialData | SHA-256(clientDataJSON) |
+| (32 Bytes) | (1 B) | (4 Bytes) | + optional extensions  | (32 Bytes)              |
++------------+-------+-----------+------------------------+-------------------------+
+                                 |
+                                 +--&gt; aaguid (16 Bytes)
+                                 +--&gt; credentialIdLength (2 Bytes)
+                                 +--&gt; credentialId (L Bytes)
+                                 +--&gt; credentialPublicKey (COSE_Key)
+                                 +--&gt; extensions (optional CBOR map, e.g., "mtc-debug")</code></pre></div>
+<div class="rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Warning</div><p class="text-sm my-2"><strong>No Outer Pre-Hash Before Signing <code>verificationData</code>:</strong> Just like WebAuthn <code>"packed"</code> attestation, the authenticator passes the raw <code>verificationData = authenticatorData || clientDataHash</code> byte string directly to the signing algorithm (<code>ML-DSA.Sign(sk, verificationData, ctx="")</code>, <code>FN-DSA.Sign(sk, verificationData)</code>, or <code>ECDSA_Sign(sk, verificationData)</code>). The verifier must pass the raw <code>verificationData</code> bytes (not <code>SHA-256(verificationData)</code>) to the signature verification function, which performs its own internal hashing (<code>SHAKE256</code> for ML-DSA/FN-DSA, <code>SHA-256</code> for ES256).</p></div>
+<h3 id="52-complete-step-by-step-verification-checklist-relying-party" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.2 Complete Step-by-Step Verification Checklist (Relying Party)</h3>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Client Data Hash:</strong> Compute <code>clientDataHash = SHA-256(clientDataJSON)</code> (<code>32 bytes</code>) and concatenate <code>verificationData = authenticatorData || clientDataHash</code>.</li>
+<li><strong>Extract <code>mtcKeyRef</code>:</strong> Parse <code>attStmt.mtcCert</code> and verify it is a 2-field map containing <code>caId</code> (<code>bstr</code>) and <code>serial</code> (<code>uint</code>). Compute <code>logNumber = (serial &gt;&gt; 48) &amp; 0xFFFF</code> and <code>leafIndex = serial &amp; 0xFFFFFFFFFFFF</code>.</li>
+<li><strong>Resolve Key Entry (<code>coseKey</code>, <code>notBefore</code>, <code>proof</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Look up <code>caId</code> in <code>metadata.mtcTrustAnchors[]</code> (for the authenticator's <code>aaguid</code>) or in a configured Enterprise manifest.</li>
+<li>Locate the entry with matching <code>serial</code> in <code>batchKeys[]</code> (or fall back to <code>authenticatorData.extensions["mtc-debug"]</code> if policy permits).</li>
+</ul></li>
+<li><strong>Verify <code>attStmt.sig</code> (Level 5):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Decode the <code>COSE_Key</code> (<code>batchKeys[].coseKey</code> or <code>mtc-debug.pubKey</code>).</li>
+<li>Verify that <code>attStmt.alg</code> matches the <code>alg</code> field (COSE label <code>3</code>) in <code>COSE_Key</code>.</li>
+<li>Verify <code>attStmt.sig</code> over <code>verificationData</code> using the public key in <code>COSE_Key</code>.</li>
+</ul></li>
+<li><strong>Verify Merkle Inclusion Proof (Levels 3 &amp; 4):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Check that the current timestamp (or attestation check time) is $\ge \text{notBefore}$ and $\le 253402300799$.</li>
+<li>Reconstruct <code>FidoMtcLogEntry</code> using <code>caId</code>, <code>serial</code>, <code>notBefore</code>, <code>notAfter = 253402300799</code>, <code>authenticatorData.attestedCredentialData.aaguid</code>, <code>fwVersion</code>, <code>SHA-256(coseKey)</code>, and <code>extensions</code>.</li>
+<li>Compute <code>LeafHash = SHA-256(0x00 || FidoMtcLogEntry)</code> and walk <code>proof</code> using <code>SHA-256(0x01 || Left || Right)</code> to obtain <code>computedRootHash</code> for the covering subtree <code>[start, end)</code>.</li>
+<li>Verify <code>computedRootHash == subtrees[].rootHash</code>.</li>
+</ul></li>
+<li><strong>Verify Subtree Checkpoint Signature (Levels 1 &amp; 2):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Construct the 85-byte <code>FidoMtcSubtreeCheckpoint</code> for <code>(caId, logNumber, start, end, subtrees[].rootHash)</code>.</li>
+<li>Verify <code>subtrees[].signature</code> (<code>subtrees[].alg</code>) using the Vendor X.509 Attestation Root CA public key in <code>metadata.attestationRootCertificates[]</code> (authenticated by the FIDO MDS3 BLOB JWS at Level 0).</li>
+</ul></li>
+</ol>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./mtc_trust_chain_architecture.md" class="text-[var(--primary)] hover:underline">mtc_trust_chain_architecture.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>

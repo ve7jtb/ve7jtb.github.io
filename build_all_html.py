@@ -418,6 +418,17 @@ DOCUMENT_CONFIGS = {
         "desc": "How I failed to explain this to Dirk — and why I don't want to have to explain it again to $2^8$ people (a Merkle joke, I hope you may get it by the end).",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     },
+    "mtc_trust_chain_architecture": {
+        "title": "FIDO MDS3 & WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture",
+        "badges": [
+            ("Cryptographic Trust Chain Reference", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("Vendor X.509 Root CA → Subtree Checkpoint", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("RFC 9162 Merkle Inclusion & FidoMtcLogEntry", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("2-Field mtcKeyRef & COSE_Key", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Complete 6-level signature and hash preimage reference from the FIDO MDS3 JWS and Vendor X.509 Attestation Root CA through the 85-byte FidoMtcSubtreeCheckpoint signature, RFC 9162 SHA-256 Merkle inclusion tree, FidoMtcLogEntry leaf preimage, 2-field mtcKeyRef ({ caId, serial }) COSE_Key resolution, and WebAuthn registration signature (attStmt.sig over authenticatorData || clientDataHash).",
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
     "chromium_mtc_debug_pull_request": {
         "title": "Chromium Pull Request: WebAuthn Level 4 mtcDebug (mtc-debug) Extension & Enterprise Attestation (EP 1/2) Privacy Gate",
         "badges": [
