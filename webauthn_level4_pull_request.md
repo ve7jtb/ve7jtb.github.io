@@ -19,6 +19,7 @@ Pull request against the **W3C WebAuthentication Working Group [Level 4 Editor's
 > - [§8.10 Merkle Tree Certificate Attestation Statement Format (`mtc`)](./webauthn_level4_review.html#sctn-mtc-attestation)
 > - [§10.2.1 MTC Debug Extension (`mtcDebug`)](./webauthn_level4_review.html#sctn-mtc-debug-extension)
 > - [§11.2 IANA Registrations](./webauthn_level4_review.html#sctn-att-fmt-reg)
+> - [FIDO MDS3 & WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture (`mtc_trust_chain_architecture.html`)](./mtc_trust_chain_architecture.html)
 > - [Chromium Pull Request (`mtcDebug` & `EP 1/2` Privacy Gate)](./chromium_mtc_debug_pull_request.html)
 
 ---

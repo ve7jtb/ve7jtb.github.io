@@ -280,6 +280,7 @@ mtcKeyRef = {
   }
 }</code></pre></div>
 <h4 id="relying-party-verification-procedure-for-fmt-mtc" class="text-base font-semibold text-[var(--foreground)]">Relying Party Verification Procedure for <code>fmt: "mtc"</code></h4>
+<p class="text-sm my-2"><em>(For the complete 6-level trust chain diagram and exact byte layouts of <code>FidoMtcSubtreeCheckpoint</code>, <code>FidoMtcLogEntry</code>, RFC 9162 Merkle nodes, and <code>verificationData</code>, see <strong><a href="./mtc_trust_chain_architecture.html" class="text-[var(--primary)] hover:underline">FIDO MDS3 &amp; WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture</a></strong>.)</em></p>
 <p class="text-sm my-2">Given <code>(attStmt, authenticatorData, clientDataHash)</code>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li>Verify <code>attStmt</code> conforms to <code>mtcStmtFormat</code> (<code>{ alg, sig, mtcCert: { caId, serial } }</code>).</li>

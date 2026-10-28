@@ -1,6 +1,6 @@
 # Proposal: Consolidated `fmt: "mtc"` & `mtc-debug` Support in `java-webauthn-server`
 
-Sources: [webauthn_level4_mtc_proposal.html](./webauthn_level4_mtc_proposal.html), [pq_mtc_attestation_proposal.html](./pq_mtc_attestation_proposal.html), [fido_ctap23_conformance_report.html (Run 22)](./fido_ctap23_conformance_report.html#section-0-0000).
+Sources: [mtc_trust_chain_architecture.html](./mtc_trust_chain_architecture.html), [webauthn_level4_mtc_proposal.html](./webauthn_level4_mtc_proposal.html), [pq_mtc_attestation_proposal.html](./pq_mtc_attestation_proposal.html), [fido_ctap23_conformance_report.html (Run 26)](./fido_ctap23_conformance_report.html#section-0-00000000).
 Target Codebase: [Yubico/java-webauthn-server](https://github.com/Yubico/java-webauthn-server) (includes `ML-DSA-44` `-48`, `ML-DSA-65` `-49`, and `ML-DSA-87` `-50` credential support).
 
 > [!IMPORTANT]

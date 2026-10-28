@@ -2,6 +2,13 @@
 
 **Complete Signature & Hash Preimage Reference — From the Vendor X.509 Attestation Root CA in FIDO MDS3 Down to the Batch/Enterprise `COSE_Key` and Attested User Credential**
 
+> [!TIP]
+> **Companion MTC Proposals & Normative Specifications:**
+> - **[Post-Quantum WebAuthn Attestation Using MTC (`pq_mtc_attestation_proposal.html`)](./pq_mtc_attestation_proposal.html)** — Complete FIDO MDS3 `mtcTrustAnchors` schema, CTAPHID wire-size analysis, and Enterprise Manifest architecture.
+> - **[W3C WebAuthn Level 4 MTC Proposal (`webauthn_level4_mtc_proposal.html`)](./webauthn_level4_mtc_proposal.html)** & **[Pull Request (`webauthn_level4_pull_request.html`)](./webauthn_level4_pull_request.html)** — Normative §8.10 `fmt: "mtc"` and §10.2.1 `mtcDebug` specification changes (rendered in **[`webauthn_level4_review.html`](./webauthn_level4_review.html)**).
+> - **[Yubico `java-webauthn-server` MTC Proposal (`mtc_attestation_proposal.html`)](./mtc_attestation_proposal.html)** — Relying Party verification engine implementation.
+> - **[MTC (Merkle Tree COSE) for Dummies (`mtc_for_dummies.html`)](./mtc_for_dummies.html)** — High-level architectural explainer.
+
 ---
 
 ## 1. End-to-End Cryptographic Trust Chain Overview

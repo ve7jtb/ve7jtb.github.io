@@ -7,6 +7,7 @@ Based on [`draft-ietf-plants-merkle-tree-certs`](https://datatracker.ietf.org/do
 > Based on discussions in the CTAP2 Technical Working Group at Authenticate 2026, the compact MDS/manifest-assisted Merkle Tree Certificate proposal was established as the single operational format for post-quantum WebAuthn attestation. To optimize wire size across constrained transports (such as USB HID single-frame messaging) and avoid redundant transmission of multi-kilobyte public keys on the wire, this specification standardizes:
 > - **`fmt: "mtc"`** *(formerly `mtc-mds`)*: The compact Merkle Tree Certificate attestation statement format. The multi-kilobyte post-quantum public key is omitted from the wire payload and resolved out-of-band via FIDO MDS3 (`MtcTrustAnchor.batchKeys`) or the manufacturer's manifest.
 > - **`mtcDebug` (`mtc-debug`)**: The WebAuthn Level 4 diagnostic registration extension (§8.7) enabling test fixtures, conformance suites, and offline verifiers to retrieve the active attestation public key, inclusion proof, root hash, validity timestamps, firmware version, and (when Enterprise Attestation is granted) device serial number in-band.
+> - **Companion Cryptographic Trust Chain Reference:** For the complete 6-level trust chain diagram and exact byte-level signed/hashed preimage layouts (`FidoMtcSubtreeCheckpoint`, `FidoMtcLogEntry`, RFC 9162 Merkle nodes, `COSE_Key`, and `verificationData`), see **[FIDO MDS3 & WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture (`mtc_trust_chain_architecture.html`)](./mtc_trust_chain_architecture.html)** ([Markdown source](./mtc_trust_chain_architecture.md)).
 
 > [!IMPORTANT]
 > **Attribution & Scope of Fidont:**
@@ -175,6 +176,9 @@ struct {
 ---
 
 ## 5. Relying Party Verification Procedure for `fmt: "mtc"`
+
+> [!TIP]
+> **End-to-End Signature & Hash Preimage Reference:** See **[FIDO MDS3 & WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture (`mtc_trust_chain_architecture.html`)](./mtc_trust_chain_architecture.html)** for the visual 6-level trust chain diagram from the Vendor X.509 Attestation Root CA in FIDO MDS3 (`attestationRootCertificates[]`) through the 85-byte `FidoMtcSubtreeCheckpoint` signature (`mtcTrustAnchors[].subtrees[].signature`), RFC 9162 Merkle inclusion path, `FidoMtcLogEntry` leaf preimage, 2-field `mtcKeyRef` (`{ caId, serial }`) `COSE_Key` resolution, and `attStmt.sig` over `verificationData = authenticatorData || clientDataHash`.
 
 Given `(attStmt, authenticatorData, clientDataHash)`:
 

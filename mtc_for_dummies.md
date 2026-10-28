@@ -8,7 +8,7 @@ A typical X.509 certificate, at its core, ties a number of claims together in a 
 
 Here is the problem: **Post-Quantum Signatures** (another misnomer; they aren't *post-quantum*, only *resistant to post-quantum attacks*, but marketing got there before me) are **big** compared to elliptic curve keys and signatures. *(Call out to Canada's BlackBerry/Certicom for the last 20 years of tiny signatures!)*
 
-Big keys and signatures mean we can't just toss them on the wire like we have gotten used to with ES256 without blowing up things like NFC that are designed for the current small data sizes. When I say "big," think **orders of magnitude larger**—for details, see my [other papers with the numbers](./pq_mtc_attestation_proposal.html). Just take my word for it for now.
+Big keys and signatures mean we can't just toss them on the wire like we have gotten used to with ES256 without blowing up things like NFC that are designed for the current small data sizes. When I say "big," think **orders of magnitude larger**—for details, see my [other papers with the numbers](./pq_mtc_attestation_proposal.html) and the [6-level MTC Cryptographic Trust Chain & Signed Preimage Reference](./mtc_trust_chain_architecture.html). Just take my word for it for now.
 
 So, what do we actually use attestations for, and how can we make them PQ-resistant to something like NIST's Level 5?
 

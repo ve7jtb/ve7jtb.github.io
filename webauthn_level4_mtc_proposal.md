@@ -11,10 +11,11 @@ Targeting the **[W3C WebAuthentication Working Group (WebAuthn Level 4 Editor's 
 > 2. **`mtcDebug` (`mtc-debug`)**: WebAuthn Level 4 registration extension providing in-band diagnostic access to the active attestation public key and hardware serial number for automated test fixtures and conformance tools.
 
 > [!TIP]
-> **Complete WebAuthn Level 4 Specification Review Copy:**  
-> A full rendered review copy of the W3C WebAuthentication Level 4 specification including these changes is available at **[webauthn_level4_review.html](./webauthn_level4_review.html)**. Direct section jump links:
+> **Complete WebAuthn Level 4 Specification Review Copy & Cryptographic Trust Chain Reference:**  
+> A full rendered review copy of the W3C WebAuthentication Level 4 specification including these changes is available at **[webauthn_level4_review.html](./webauthn_level4_review.html)**, and the end-to-end 6-level signature/hash preimage reference is available at **[mtc_trust_chain_architecture.html](./mtc_trust_chain_architecture.html)**. Direct section jump links:
 > - [§8.10 Merkle Tree Certificate Attestation Statement Format (`mtc`)](./webauthn_level4_review.html#sctn-mtc-attestation)
 > - [§10.2.1 MTC Debug Extension (`mtcDebug`)](./webauthn_level4_review.html#sctn-mtc-debug-extension)
+> - [FIDO MDS3 & WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture (`mtc_trust_chain_architecture.html`)](./mtc_trust_chain_architecture.html) ([Markdown](./mtc_trust_chain_architecture.md))
 
 ---
 
@@ -120,6 +121,9 @@ Because `attStmt.mtcCert` on the wire contains only `{ caId, serial }`, each ent
 ```
 
 #### Relying Party Verification Procedure for `fmt: "mtc"`
+
+*(For the complete 6-level trust chain diagram and exact byte layouts of `FidoMtcSubtreeCheckpoint`, `FidoMtcLogEntry`, RFC 9162 Merkle nodes, and `verificationData`, see **[FIDO MDS3 & WebAuthn Level 4 MTC Cryptographic Trust Chain Architecture](./mtc_trust_chain_architecture.html)**.)*
+
 Given `(attStmt, authenticatorData, clientDataHash)`:
 1. Verify `attStmt` conforms to `mtcStmtFormat` (`{ alg, sig, mtcCert: { caId, serial } }`).
 2. Compute $\text{verificationData} = \text{authenticatorData} \parallel \text{clientDataHash}$.
