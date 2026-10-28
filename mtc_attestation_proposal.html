@@ -185,18 +185,18 @@
     ManifestKey --&gt; VerifySig
     ExtKey --&gt; VerifySig
 
-    VerifySig --&gt; ProofCheck{"mtcCert has&lt;br/&gt;mtcProof?"}
-    ProofCheck -- "Yes (mtcEntryDesc)" --&gt; WalkMerkle["Reconstruct FidoMtcLogEntry&lt;br/&gt;(commits SHA-256(pubKey) + aaguid + deviceSerial)&lt;br/&gt;Verify RFC 9162 proof -&gt; subtrees[].rootHash"]
-    ProofCheck -- "No (mtcKeyRef)" --&gt; TableCheck["Require pubKey came from a&lt;br/&gt;rootHash-authenticated Manifest / MDS table"]
+    VerifySig --&gt; ProofCheck{"mtcProof present&lt;br/&gt;(in batchKeys or mtc-debug)?"}
+    ProofCheck -- "Yes" --&gt; WalkMerkle["Reconstruct FidoMtcLogEntry&lt;br/&gt;(commits SHA-256(pubKey) + aaguid + deviceSerial)&lt;br/&gt;Verify RFC 9162 proof -&gt; subtrees[].rootHash"]
+    ProofCheck -- "No" --&gt; TableCheck["Require pubKey came from a&lt;br/&gt;rootHash-authenticated Manifest / MDS table"]
 
     WalkMerkle --&gt; Trusted["attestationTrusted = true&lt;br/&gt;BASIC (Batch) or ATTESTATION_CA (Enterprise)"]
     TableCheck --&gt; Trusted</pre></div>
 <h3 id="why-mtc-debug-mtcproof-is-cryptographically-trusted-in-enterprise-mode" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Why <code>mtc-debug</code> + <code>mtcProof</code> is Cryptographically Trusted in Enterprise Mode</h3>
 <p class="text-sm my-2">In public FIDO MDS3, the Enterprise <code>MtcTrustAnchor</code> (e.g., <code>caId: "g5k_AQI"</code>) publishes the Root-CA-signed <code>subtrees[].rootHash</code> with <code>"batchKeys": []</code> (since individual device keys are not published in public MDS).</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>When the RP has the <strong>vendor manifest</strong>, it resolves <code>(pubKey, deviceSerial)</code> by <code>(caId, serial)</code> from the manifest (supporting both <code>mtcEntryDesc</code> and proof-less <code>mtcKeyRef</code>).</li>
-<li>When the RP does <strong>not</strong> have the vendor manifest (or is running conformance tests) and requests <strong><code>mtcDebug: true</code></strong>, the authenticator returns <code>{ pubKey, deviceSerial }</code> in <code>authenticatorData.extensions["mtc-debug"]</code> and <code>mtcEntryDesc</code> (with <code>mtcProof</code>) in <code>attStmt.mtcCert</code>.</li>
-<li>The RP hashes <code>SHA-256(pubKey)</code> and <code>deviceSerial</code> into <code>FidoMtcLogEntry</code>, walks <code>mtcProof</code>, and verifies that the resulting root matches the Root-CA-signed <code>subtrees[].rootHash</code> from MDS. Neither <code>pubKey</code> nor <code>deviceSerial</code> can be forged because both are committed inside the Merkle leaf authenticated by the CA's <code>rootHash</code>.</li>
+<li>When the RP has the <strong>vendor manifest</strong>, it resolves <code>(coseKey, deviceSerial, notBefore, notAfter, ?firmwareVersion, ?mtcProof)</code> by <code>(caId, serial)</code> from the manifest (<code>mtcKeyRef</code> in <code>attStmt.mtcCert</code>).</li>
+<li>When the RP does <strong>not</strong> have the vendor manifest (or is running conformance tests) and requests <strong><code>mtcDebug: true</code></strong>, the authenticator returns <code>{ pubKey, deviceSerial, notBefore, notAfter, ?firmwareVersion, mtcProof, ?rootHash }</code> in <code>authenticatorData.extensions["mtc-debug"]</code> alongside <code>mtcCert = { caId, serial }</code> in <code>attStmt</code>.</li>
+<li>The RP hashes <code>SHA-256(pubKey)</code> (where <code>pubKey</code> is the canonical CBOR-encoded <code>COSE_Key</code> structure matching <code>batchKeys[].coseKey</code>) and <code>deviceSerial</code> into <code>FidoMtcLogEntry</code>, walks <code>mtcProof</code>, and verifies that the resulting root matches the Root-CA-signed <code>subtrees[].rootHash</code> from MDS. Neither <code>pubKey</code> nor <code>deviceSerial</code> can be forged because both are committed inside the Merkle leaf authenticated by the CA's <code>rootHash</code>.</li>
 </ul>
     </section>
 
@@ -264,10 +264,11 @@ public class MtcSubtree {
 @Value @Builder
 public class MtcBatchKeyEntry {
   long serial;
-  COSEAlgorithmIdentifier alg;
-  ByteArray coseKey;
-  Optional&lt;Long&gt; notBefore;
-  Optional&lt;Long&gt; notAfter;
+  ByteArray coseKey;                            // Canonical CBOR COSE_Key structure (includes alg at label 3)
+  long notBefore;
+  long notAfter;
+  Optional&lt;Long&gt; firmwareVersion;
+  Optional&lt;ByteArray&gt; mtcProof;
   Optional&lt;String&gt; deviceSerial;                // Present in vendor enterprise manifests
 }
 
@@ -296,10 +297,7 @@ public class MtcAttestationInfo {
 <li>Parses CBOR <code>attStmt</code> for <code>fmt: "mtc"</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><code>alg</code>: <code>COSEAlgorithmIdentifier</code> (<code>-48</code> <code>ML-DSA-44</code>, <code>-49</code> <code>ML-DSA-65</code>, <code>-50</code> <code>ML-DSA-87</code>, <code>-7</code> <code>ES256</code>, etc.)</li>
 <li><code>sig</code>: <code>ByteArray</code></li>
-<li><code>mtcCert</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><code>mtcEntryDesc</code>: <code>{ caId, serial, notBefore, notAfter, ?firmwareVersion, ?mtcProof }</code></li>
-<li><code>mtcKeyRef</code>: <code>{ caId, serial }</code> (proof-less)</li>
-</ul></li>
+<li><code>mtcCert</code>: <code>mtcKeyRef</code> (<code>{ caId, serial }</code>)</li>
 </ul></li>
 <li>Rejects <code>attStmt</code> if an inline <code>pubKey</code> field is present (enforcing consolidated <code>fmt: "mtc"</code>).</li>
 </ul></li>
@@ -312,21 +310,21 @@ public class MtcAttestationInfo {
 <li><strong><code>MtcAttestationStatementVerifier</code> Execution Steps</strong> (wired into <a href="https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/FinishRegistrationSteps.java" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline"><code>FinishRegistrationSteps</code></a> Steps 18–21):<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li>Parse <code>attStmt</code> via <code>MtcStatementCodec</code>.</li>
 <li>Look up <code>MtcTrustAnchor</code> from <code>mtcTrustSource</code> by <code>(mtcCert.caId, authData.aaguid)</code>.</li>
-<li><strong>Resolve <code>pubKey</code> (and optional <code>deviceSerial</code>):</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Resolve <code>pubKey</code> (canonical CBOR <code>COSE_Key</code>), <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, optional <code>mtcProof</code>, and optional <code>deviceSerial</code>:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Check <code>anchor.batchKeys.get(mtcCert.serial)</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>In Batch mode (<code>attestation != ENTERPRISE</code>), this yields the MDS batch <code>pubKey</code> (<code>KeySource.MDS_BATCH_KEYS</code>).</li>
-<li>In Enterprise mode (<code>attestation == ENTERPRISE</code>), if a vendor manifest is loaded, this yields the device <code>pubKey</code> and <code>deviceSerial</code> (<code>KeySource.VENDOR_MANIFEST</code>).</li>
+<li>In Batch mode (<code>attestation != ENTERPRISE</code>), this yields the MDS batch <code>coseKey</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, and optional <code>mtcProof</code> (<code>KeySource.MDS_BATCH_KEYS</code>).</li>
+<li>In Enterprise mode (<code>attestation == ENTERPRISE</code>), if a vendor manifest is loaded, this yields the device <code>coseKey</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, optional <code>mtcProof</code>, and <code>deviceSerial</code> (<code>KeySource.VENDOR_MANIFEST</code>).</li>
 </ul></li>
 <li>Otherwise, inspect <code>authData.extensions["mtc-debug"]</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>Extract <code>pubKey</code> (and <code>deviceSerial</code> if Enterprise) (<code>KeySource.MTC_DEBUG_EXTENSION</code>).</li>
+<li>Extract <code>pubKey</code> (canonical CBOR <code>COSE_Key</code>), <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, <code>mtcProof</code>, optional <code>rootHash</code>, and <code>deviceSerial</code> (if Enterprise) (<code>KeySource.MTC_DEBUG_EXTENSION</code>).</li>
 </ul></li>
 <li>Fail if no <code>pubKey</code> can be resolved.</li>
 </ul></li>
 <li>Parse <code>pubKey</code> via <code>WebAuthnCodecs.importCosePublicKey(pubKey)</code>, verify <code>coseKey.alg == attStmt.alg</code>, and verify <code>attStmt.sig</code> over <code>authenticatorData || clientDataJsonHash</code> using <code>Crypto.verifySignature</code>.</li>
 <li>Check validity window <code>[notBefore, notAfter]</code> against <code>clock.instant()</code>, verify <code>!anchor.revokedSerials.contains(serial)</code>, and verify <code>logNumber</code> matches.</li>
 <li><strong>Verify Merkle Commitment:</strong><ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li><strong>If <code>mtcProof</code> is present (in <code>mtcCert</code> <code>mtcEntryDesc</code> or in <code>mtc-debug</code> alongside proof-less <code>mtcKeyRef</code>):</strong> reconstruct <code>FidoMtcLogEntry</code> with <code>SHA-256(pubKey)</code>, <code>authData.aaguid</code>, optional <code>firmwareVersion</code>, and <code>mtcProof.extensions</code> (verifying that <code>mtcProof.extensions</code> matches <code>deviceSerial</code> when in Enterprise <code>mtc-debug</code> mode), compute the RFC 9162 root hash, and verify it equals <code>subtree.rootHash</code> (or <code>mtcDebug.rootHash</code> in standalone offline conformance mode) (<code>ProofMode.INCLUSION_PROOF</code>).</li>
-<li><strong>If <code>mtcProof</code> is absent (<code>mtcKeyRef</code> without <code>mtcDebug.mtcProof</code>):</strong> require <code>keySource != MTC_DEBUG_EXTENSION</code> and <code>anchor.isKeyTableAuthenticated() == true</code> (<code>ProofMode.AUTHENTICATED_KEY_TABLE</code>).</li>
+<li><strong>If <code>mtcProof</code> is present (in the resolved <code>batchKeys</code> entry or in <code>mtc-debug</code>):</strong> reconstruct <code>FidoMtcLogEntry</code> with <code>SHA-256(pubKey)</code>, <code>authData.aaguid</code>, optional <code>firmwareVersion</code>, and <code>mtcProof.extensions</code> (verifying that <code>mtcProof.extensions</code> matches <code>deviceSerial</code> when in Enterprise <code>mtc-debug</code> mode), compute the RFC 9162 root hash, and verify it equals <code>subtree.rootHash</code> (or <code>mtcDebug.rootHash</code> in standalone offline conformance mode) (<code>ProofMode.INCLUSION_PROOF</code>).</li>
+<li><strong>If <code>mtcProof</code> is absent:</strong> require <code>keySource != MTC_DEBUG_EXTENSION</code> and <code>anchor.isKeyTableAuthenticated() == true</code> (<code>ProofMode.AUTHENTICATED_KEY_TABLE</code>).</li>
 </ul></li>
 <li>Set <code>attestationTrusted = true</code>, <code>attestationType = (deviceSerial.isPresent() ? AttestationType.ATTESTATION_CA : AttestationType.BASIC)</code>, and attach <code>MtcAttestationInfo</code> to <code>RegistrationResult</code>.</li>
 </ol></li>

@@ -589,7 +589,7 @@ def build_index():
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Defines the compact Post-Quantum WebAuthn attestation statement format <strong><code>mtc</code></strong> (MDS/manifest-assisted public key lookup with optional inclusion proof <code>mtcEntryDesc</code> or proof-less <code>mtcKeyRef</code>) and the <strong><code>mtcDebug</code></strong> (<code>mtc-debug</code>) diagnostic extension based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup, C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
+          Defines the compact Post-Quantum WebAuthn attestation statement format <strong><code>mtc</code></strong> (MDS/manifest-assisted public key lookup using the ultra-compact 2-field <code>mtcKeyRef</code> <code>{ caId, serial }</code>) and the <strong><code>mtcDebug</code></strong> (<code>mtc-debug</code>) diagnostic extension based on <strong><code>draft-ietf-plants-merkle-tree-certs</code></strong>, enabling <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, and <code>ML-DSA-87</code> hardware authenticator attestations (including Enterprise Attestation <code>0x0A</code>) to fit within a single 7,609-byte USB HID CTAP2 frame. Includes WebAuthn Level 3 AAGUID preservation analysis, Section 7.5 legacy client detection and fallback attestation defaults, Section 8.6 unified <code>(caId, serial)</code> Enterprise manifest lookup, C509 comparisons, and Section 11 multi-level HSS/LMS intermediate hierarchy trade-offs.
         </p>
       </div>
 
@@ -619,7 +619,7 @@ def build_index():
               Normative <code>mtc</code> Format, Leaf Structure &amp; RP Verification
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> (<code>mtcEntryDesc</code> and <code>mtcKeyRef</code>), deterministic <code>FidoMtcLogEntry</code> serialization, and RP verification.
+              Why classical X.509 <code>packed</code> attestation with <code>ML-DSA</code> exceeds the 7,609-byte USB HID frame limit, CDDL definitions for <code>mtcStmtFormat</code> (2-field <code>mtcKeyRef</code>), deterministic <code>FidoMtcLogEntry</code> serialization, and RP verification.
             </p>
           </a>
 

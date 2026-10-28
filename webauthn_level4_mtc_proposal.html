@@ -233,28 +233,30 @@ $$attStmtType //= (
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Attestation Statement Format Identifier:</strong> <code>"mtc"</code></li>
 <li><strong>Attestation Types Supported:</strong> <code>Basic</code>, <code>AttCA</code>, <code>Enterprise</code>.</li>
-<li><strong>Public Key Handling:</strong> The attestation public key is <strong>omitted from the wire</strong> and resolved out-of-band by the Relying Party via FIDO MDS3 (<code>MtcTrustAnchor.batchKeys</code>) or the manufacturer's manifest.</li>
+<li><strong>Wire Representation (<code>mtcKeyRef</code>):</strong> <code>attStmt.mtcCert</code> carries <strong>only</strong> the ultra-compact 2-field key reference <code>{ caId, serial }</code>. The attestation public key (<code>coseKey</code>), validity window (<code>notBefore</code>, <code>notAfter</code>), optional <code>firmwareVersion</code>, and optional <code>mtcProof</code> are <strong>omitted from <code>attStmt</code> on the wire</strong> and resolved out-of-band by the Relying Party via FIDO MDS3 (<code>MtcTrustAnchor.batchKeys</code>), the manufacturer's enterprise inventory manifest, or in-band via the <code>mtcDebug</code> (<code>mtc-debug</code>) registration extension.</li>
 </ul>
 <h4 id="syntax-cddl" class="text-base font-semibold text-[var(--foreground)]">Syntax (CDDL)</h4>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cddl</div><pre class="text-xs leading-relaxed"><code>mtcStmtFormat = {
     alg: COSEAlgorithmIdentifier,
     sig: bytes,
-    mtcCert: mtcEntryDesc / mtcKeyRef
-}
-
-mtcEntryDesc = {
-    caId: bytes,                      ; 1-4 byte compact CA Log Identifier
-    serial: uint,                     ; Log entry serial number = (logNumber &lt;&lt; 48) | index
-    notBefore: uint,                  ; Unix timestamp (seconds)
-    notAfter: uint,                   ; Unix timestamp (seconds); 253402300799 (9999-12-31T23:59:59Z) if non-expiring
-    ? firmwareVersion: uint,          ; Optional authenticator firmware version (CTAP 2.3 parameter 0x0E)
-    ? mtcProof: bytes                 ; Binary RFC 9162 Merkle inclusion proof
+    mtcCert: mtcKeyRef
 }
 
 mtcKeyRef = {
     caId: bytes,                      ; 1-4 byte compact CA Log Identifier
-    serial: uint                      ; Log entry serial number for manifest lookup
+    serial: uint                      ; Log entry serial number = (logNumber &lt;&lt; 48) | index
 }</code></pre></div>
+<h4 id="required-metadata-mtctrustanchorsbatchkeys-manifest-entry-fields" class="text-base font-semibold text-[var(--foreground)]">Required Metadata (<code>mtcTrustAnchors[].batchKeys[]</code>) &amp; Manifest Entry Fields</h4>
+<p class="text-sm my-2">Because <code>attStmt.mtcCert</code> on the wire contains only <code>{ caId, serial }</code>, each entry in <code>mtcTrustAnchors[].batchKeys[]</code> (and Enterprise manufacturer manifests) provides:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><code>serial</code> (<code>uint</code>): 64-bit log entry serial number <code>(logNumber &lt;&lt; 48) | index</code>.</li>
+<li><code>notBefore</code> (<code>uint</code>): Unix timestamp (seconds).</li>
+<li><code>notAfter</code> (<code>uint</code>): Unix timestamp (seconds); <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code>) if non-expiring.</li>
+<li><code>coseKey</code> (<code>Base64URLString</code>): Canonical CBOR-encoded <code>COSE_Key</code> structure (per RFC 9052 §7). Because the COSE algorithm identifier (<code>alg</code>, label <code>3</code>) is embedded inside the <code>COSE_Key</code> structure, a separate top-level <code>alg</code> property on <code>batchKeys[]</code> is redundant and omitted.</li>
+<li><code>firmwareVersion</code> (<code>uint</code>, optional): Authenticator firmware version (CTAP 2.3 parameter <code>0x0E</code>).</li>
+<li><code>mtcProof</code> (<code>Base64URLString</code>, optional): Binary RFC 9162 Merkle inclusion proof.</li>
+<li><code>deviceSerial</code> (<code>DOMString</code>, optional): Hardware serial number (Enterprise manifest only).</li>
+</ul>
 <div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Non-Expiring Device Attestation (<code>notAfter = 253402300799</code>):</strong> When the attestation key provisioned on an authenticator has no well-defined expiration date (i.e., the hardware attestation should never expire), <code>notAfter</code> <strong>MUST</strong> be set to <strong><code>253402300799</code></strong> (<code>0x3AFF44417F</code>), which is the Unix epoch timestamp (in seconds) corresponding to <strong><code>9999-12-31T23:59:59Z</code></strong> (<code>GeneralizedTime</code> <code>99991231235959Z</code> per <strong><a href="https://www.rfc-editor.org/rfc/rfc5280#section-4.1.2.5" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">RFC 5280 §4.1.2.5</a></strong> and IEEE 802.1AR IDevID).</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Cross-Format Consistency:</strong> Matches the <code>notAfter</code> lifetime convention already used in X.509 (<code>x5c</code>) batch and enterprise attestation certificates when an authenticator supports both <code>"packed"</code> and <code>"mtc"</code>.</li>
@@ -265,7 +267,7 @@ mtcKeyRef = {
 <li><strong>Omitting <code>firmwareVersion</code>:</strong> Allows a single Merkle tree <code>rootHash</code> and batch key to be used across multiple firmware releases, avoiding the need to issue a new batch key or publish a new checkpoint or <code>caId</code> when minor firmware revisions are released under a stable AAGUID.</li>
 <li><strong>Including <code>firmwareVersion</code> <em>(Recommended)</em>:</strong> Because <code>firmwareVersion</code> is cryptographically committed as an immutable field in <code>FidoMtcLogEntry</code>, deploying a new firmware version requires issuing a new attestation batch key and leaf <code>serial</code>, which in turn requires generating a new signed subtree checkpoint (<code>rootHash</code>) or <code>caId</code> in FIDO MDS3 or the manufacturer manifest. However, binding <code>firmwareVersion</code> to the batch key is <strong>more secure</strong>: it cryptographically attests the exact firmware version that generated a credential and allows Relying Parties to selectively revoke or flag a vulnerable firmware build via <code>revokedSerials</code> without distrusting patched authenticators that share the same AAGUID.</li>
 </ul></div>
-<h4 id="example-fmt-mtc-attestation-statement-non-expiring-hardware-attestation" class="text-base font-semibold text-[var(--foreground)]">Example: <code>fmt: "mtc"</code> Attestation Statement (Non-Expiring Hardware Attestation)</h4>
+<h4 id="example-fmt-mtc-attestation-statement-on-the-wire" class="text-base font-semibold text-[var(--foreground)]">Example: <code>fmt: "mtc"</code> Attestation Statement on the Wire</h4>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">cbor-diag</div><pre class="text-xs leading-relaxed"><code>{
   "fmt": "mtc",
   "attStmt": {
@@ -273,32 +275,28 @@ mtcKeyRef = {
     "sig": h'3a7f91c2... (2420-byte signature)',
     "mtcCert": {
       "caId": h'83993f0101',                          / Compact CA Identifier /
-      "serial": 1970324836974592,                     / (7 &lt;&lt; 48) | 0 /
-      "notBefore": 1767225600,                        / 2026-01-01T00:00:00Z /
-      "notAfter": 253402300799,                       / 9999-12-31T23:59:59Z (never expires, RFC 5280 §4.1.2.5) /
-      "firmwareVersion": 332805,                      / v5.20.5 (0x00051405) /
-      "mtcProof": h'000000000000000000000200000040...'
+      "serial": 1970324836974592                      / (7 &lt;&lt; 48) | 0 /
     }
   }
 }</code></pre></div>
 <h4 id="relying-party-verification-procedure-for-fmt-mtc" class="text-base font-semibold text-[var(--foreground)]">Relying Party Verification Procedure for <code>fmt: "mtc"</code></h4>
 <p class="text-sm my-2">Given <code>(attStmt, authenticatorData, clientDataHash)</code>:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
-<li>Verify <code>attStmt</code> conforms to <code>mtcStmtFormat</code>.</li>
-<li>Compute $\text{payload} = \text{authenticatorData} \parallel \text{clientDataHash}$.</li>
-<li>Resolve the attestation public key:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Verify <code>attStmt</code> conforms to <code>mtcStmtFormat</code> (<code>{ alg, sig, mtcCert: { caId, serial } }</code>).</li>
+<li>Compute $\text{verificationData} = \text{authenticatorData} \parallel \text{clientDataHash}$.</li>
+<li>Resolve the attestation key entry (<code>pubKey</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, optional <code>mtcProof</code>, and optional <code>deviceSerial</code>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Extract <code>(attStmt.mtcCert.caId, attStmt.mtcCert.serial)</code>.</li>
-<li>In non-enterprise mode: query FIDO MDS3 <code>mtcTrustAnchors[caId].batchKeys</code> for <code>serial</code>.</li>
-<li>In enterprise mode: query the local manufacturer's inventory manifest for <code>serial</code>.</li>
-<li>Let <code>pubKey</code> be the canonical CBOR <code>COSE_Key</code> obtained from the lookup.</li>
+<li>In non-enterprise mode: query FIDO MDS3 <code>mtcTrustAnchors[caId].batchKeys</code> for <code>serial</code> to obtain the canonical CBOR-encoded <code>COSE_Key</code> structure (<code>coseKey</code>), <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, and optional <code>mtcProof</code>.</li>
+<li>In enterprise mode: query the local manufacturer's inventory manifest for <code>serial</code> to obtain <code>coseKey</code>, <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, optional <code>mtcProof</code>, and <code>deviceSerial</code>.</li>
+<li>Alternatively, if <code>authenticatorData.extensions["mtc-debug"]</code> is present, extract the canonical CBOR-encoded <code>COSE_Key</code> structure <code>pubKey</code> (matching the <code>batchKeys[].coseKey</code> format), <code>notBefore</code>, <code>notAfter</code>, optional <code>firmwareVersion</code>, <code>mtcProof</code>, optional <code>rootHash</code>, and optional <code>deviceSerial</code>.</li>
 </ul></li>
-<li>Verify <code>attStmt.sig</code> over $\text{payload}$ using <code>pubKey</code> and <code>attStmt.alg</code>.</li>
-<li>Verify tree commitment:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>If <code>attStmt.mtcCert</code> (or <code>authenticatorData.extensions["mtc-debug"]</code> when <code>mtcKeyRef</code> is used) contains <code>mtcProof</code>: walk the sibling hashes from <code>SHA-256(pubKey)</code> up to the landmark <code>rootHash</code> published in MDS3 (or <code>mtc-debug.rootHash</code> in offline conformance mode).</li>
-<li>Otherwise, if <code>attStmt.mtcCert</code> is proof-less (<code>mtcKeyRef</code> without <code>mtcProof</code>): verify that the RP previously authenticated the complete manifest or MDS key table against the Root CA signature over <code>rootHash</code>.</li>
-</ul></li>
-<li>Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$ (using <code>attStmt.mtcCert</code>, <code>mtc-debug</code>, or the verified manifest/MDS entry).</li>
+<li>Verify that the <code>alg</code> parameter (<code>3</code>) inside the <code>COSE_Key</code> structure <code>pubKey</code> matches <code>attStmt.alg</code>, and verify <code>attStmt.sig</code> over $\text{verificationData}$ using <code>pubKey</code> and <code>attStmt.alg</code>.</li>
+<li>Verify validity dates: check that $\text{notBefore} \le \text{now} \le \text{notAfter}$ from the resolved metadata/manifest entry (or <code>mtc-debug</code>).</li>
 <li>Verify revocation: verify <code>serial</code> is not in <code>revokedSerials</code>.</li>
+<li>Verify tree commitment:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If <code>mtcProof</code> is present (in the resolved metadata/manifest entry or in <code>authenticatorData.extensions["mtc-debug"]</code>): walk the sibling hashes from <code>SHA-256(pubKey)</code> up to the landmark <code>rootHash</code> published in MDS3 (or <code>mtc-debug.rootHash</code> in offline conformance mode).</li>
+<li>Otherwise, verify that the RP previously authenticated the complete manifest or MDS <code>batchKeys</code> table against the Root CA signature over <code>rootHash</code>.</li>
+</ul></li>
 </ol>
     </section>
 
