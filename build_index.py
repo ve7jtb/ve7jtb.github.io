@@ -110,8 +110,8 @@ def build_index():
           <a href="#sec-fido-conformance" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">100% PASS Telemetry</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Run 26)</div>
-              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">252/252 PASS across 18 algorithms (ML-DSA, FN-DSA), stateless Root CAs &amp; hardware UP.</p>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Run 28)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">260/260 PASS across 18 algorithms, 3x18 format matrix (P-06), mtcDebug suite &amp; stateless Root CAs.</p>
             </div>
           </a>
 
@@ -391,10 +391,10 @@ def build_index():
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Run 26: 252 / 252 (100.00% PASS)
+            Run 28: 260 / 260 (100.00% PASS)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            18 Algorithms (incl. FN-DSA-512 &amp; FN-DSA-1024)
+            18 Algorithms &amp; 3x18 Format Matrix (P-06)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             Stateless ML-DSA-87 &amp; ES384 Root CAs
@@ -410,7 +410,7 @@ def build_index():
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 17–26), highlighted by <strong>Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>18m 27.46s</code>)</strong> with stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CAs, 2-field proof-less <code>mtcKeyRef</code> (<code>{ caId, serial }</code>, cutting Enterprise <code>MakeCredential</code> with <code>"mtc-debug"</code> to <code>4,448 B</code> / <code>76</code> HID frames — <code>3,161 B</code> below the <code>7,609 B</code> CTAPHID limit), real Hardware Button (<code>P0.11</code>) &amp; J-Link VCOM (<code>P0.08</code>) User Presence (compiled without <code>up-always-true</code>, <code>179</code> UP checks), and <code>3 / 3</code> zero-dialog automated <code>probe-rs</code> MCU power cycles.
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 12 test runs (Runs 17–28), highlighted by <strong>Run 28 (<code>260 / 260</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>13m 32.03s</code>)</strong> adding the exhaustive <code>Authr-MakeCred-Resp-1</code> <code>P-06</code> (<code>3 formats &times; 18 algorithms = 54</code> registrations) matrix, the dedicated <code>mtcDebug.js</code> suite (<code>7 / 7</code> PASS including <code>"none"</code> and <code>"packed"</code> format gates), strict ASN.1 DER <code>SubjectPublicKeyInfo</code> parsing in <code>cryptodep.js</code>, and authenticated <code>metadata.mtcTrustAnchors</code> subtree/checkpoint verification across all MTC verifiers, alongside <strong>Run 27 (<code>252 / 252</code> PASS in <code>11m 11.17s</code> with <code>/tmp/totalphase.csv</code> USB bus telemetry)</strong> and <strong>Run 26 (<code>252 / 252</code> PASS with <code>269,469</code> RTT lines)</strong>.
         </p>
       </div>
 
@@ -433,25 +433,25 @@ def build_index():
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000000"
+          <a href="./fido_ctap23_conformance_report.html#section-0-000000000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Latest — Run 26: 252 / 252 100.00% PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000 (Latest — Run 28: 260 / 260 100.00% PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 26 (<code>252 / 252</code> <code>100.00%</code> PASS in <code>18m 27.46s</code>): Attestation Deep Dive (<code>Authr-MakeCred-Resp-1</code> &amp; <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code>), Dual <code>P0.11</code>/<code>P0.08</code> UP &amp; <code>3 / 3</code> Zero-Dialog MCU Resets
+              Run 28 (<code>260 / 260</code> <code>100.00%</code> PASS in <code>13m 32.03s</code>): Exhaustive <code>3 &times; 18 = 54</code> Attestation Format Matrix (<code>P-06</code>), Dedicated <code>mtcDebug.js</code> Suite (<code>7 / 7</code> PASS), Strict ASN.1 DER <code>SPKI</code> Parsing &amp; Authenticated <code>metadata.mtcTrustAnchors</code> Verification
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Detailed wire trace analysis of Test 108 (<code>Authr-MakeCred-Resp-1</code>), zero-dialog MCU reboot cycles via <code>probe-rs reset</code>, and hardware verification of all 18 credential key algorithms.
+              Full 260-test conformance verification across all 38 CTAP 2.3 suites, including <code>P-06</code> format &times; algorithm matrix, <code>mtcDebug.js</code> format/privacy gates, and strict <code>metadata.mtcTrustAnchors</code> subtree &amp; checkpoint validation.
             </p>
           </a>
 
-          <a href="./fido_ctap23_conformance_report.html#section-0-0000000"
+          <a href="./fido_ctap23_conformance_report.html#section-0-00000000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000 (Run 25)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Runs 27 &amp; 26: 252 / 252 PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 25: 18 Algorithms &amp; Draft NIST FIPS 206 FN-DSA
+              Run 27 (<code>11m 11.17s</code>, <code>totalphase.csv</code>) &amp; Run 26 (<code>269,469</code> RTT Lines): 18-Algorithm USB &amp; MCU Timing Deep Dive
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              First hardware verification of draft NIST FIPS 206 <code>FN-DSA-512</code> and <code>FN-DSA-1024</code> on an embedded Cortex-M4 microcontroller.
+              Correlated hardware USB protocol analyzer timings across all 18 credential key algorithms, dual <code>P0.11</code>/<code>P0.08</code> UP, and zero-dialog MCU resets.
             </p>
           </a>
 

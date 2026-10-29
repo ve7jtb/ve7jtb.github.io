@@ -64,10 +64,10 @@
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">FIDO2 CTAP 2.3 Conformance Report</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Run 26: 252 / 252 (100.00% PASS)</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">18 Algorithms (incl. FN-DSA-512 &amp; 1024)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Run 28: 260 / 260 (100.00% PASS)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">18 Algorithms &amp; 3x18 Format Matrix (P-06)</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Stateless ML-DSA-87 &amp; ES384 Root CAs</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Dual P0.11/P0.08 UP &amp; Auto Power-Cycle</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Dedicated mtcDebug Suite (7/7 PASS)</span>
       </div>
       <div class="flex items-center gap-4">
         <a href="./fido_ctap23_conformance_report.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
@@ -78,7 +78,7 @@
       FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 8 Extensions (incl. "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation, Dual Hardware/VCOM User Presence &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 17–26), including Run 26 (252 / 252 100.00% PASS, 31 Skipped, 0 Failed in 18m 27.46s across 49,932 debug log lines &amp; 269,469 RTT lines) with stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CAs, 2-field proof-less mtcKeyRef ({ caId, serial }, cutting Enterprise MakeCredential with "mtc-debug" to 4,448 B / 76 frames), real Hardware Button (P0.11) &amp; J-Link VCOM (P0.08) User Presence (compiled without up-always-true, 179 UP checks), and 3 / 3 zero-dialog automated probe-rs MCU power cycles.
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 12 conformance runs (Runs 17–28), highlighted by Run 28 (260 / 260 100.00% PASS, 31 Skipped, 0 Failed in 13m 32.03s across 38,373 debug log lines) adding the exhaustive Authr-MakeCred-Resp-1 P-06 (3 formats × 18 algorithms = 54 registrations) matrix, the dedicated mtcDebug.js suite (7 / 7 PASS including "none" and "packed" format gates), strict ASN.1 DER SubjectPublicKeyInfo parsing in cryptodep.js, and authenticated metadata.mtcTrustAnchors subtree/checkpoint verification across all MTC verifiers.
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of the Last 11 Test Runs (<code>Runs 17–27</code>: 18 Algorithms, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, P-384 Certificate over P-256 Batch Key, Dual Hardware/VCOM User Presence &amp; <code>/tmp/totalphase.csv</code> Telemetry)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of the Last 12 Test Runs (<code>Runs 17–28</code>: 18 Algorithms, <code>3×18</code> Attestation Format Matrix <code>P-06</code>, Dedicated <code>mtcDebug.js</code> Suite, Strict ASN.1 DER <code>SPKI</code> &amp; <code>mtcTrustAnchors</code> Verification, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, Dual Hardware/VCOM UP &amp; <code>/tmp/totalphase.csv</code> Telemetry)</div>
+        </a>
+        <a href="#section-0-000000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.000000000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 28 (<code>18:45:59</code> – <code>18:59:31</code> PDT, <code>2026-10-29</code>, <code>13m 32.03s</code>) Full-Suite Conformance (<code>260 / 260</code> <code>100.00%</code> PASS): Exhaustive <code>3 × 18 = 54</code> Attestation Format Matrix (<code>P-06</code>), Dedicated <code>mtcDebug.js</code> Suite (<code>7 / 7</code> PASS), Strict ASN.1 DER <code>SPKI</code> Parsing &amp; Authenticated <code>metadata.mtcTrustAnchors</code> Verification</div>
         </a>
         <a href="#section-0-00000000" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.00000000</div>
@@ -158,8 +162,14 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of the Last 11 Test Runs (<code>Runs 17–27</code>: 18 Algorithms, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, P-384 Certificate over P-256 Batch Key, Dual Hardware/VCOM User Presence &amp; <code>/tmp/totalphase.csv</code> Telemetry)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of the Last 12 Test Runs (<code>Runs 17–28</code>: 18 Algorithms, <code>3×18</code> Attestation Format Matrix <code>P-06</code>, Dedicated <code>mtcDebug.js</code> Suite, Strict ASN.1 DER <code>SPKI</code> &amp; <code>mtcTrustAnchors</code> Verification, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, Dual Hardware/VCOM UP &amp; <code>/tmp/totalphase.csv</code> Telemetry)</a>
 
+        </li>
+        <li>
+          <a href="#section-0-000000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000000000 Run 28 (<code>18:45:59</code> – <code>18:59:31</code> PDT, <code>2026-10-29</code>, <code>13m 32.03s</code>) Full-Suite Conformance (<code>260 / 260</code> <code>100.00%</code> PASS): Exhaustive <code>3 × 18 = 54</code> Attestation Format Matrix (<code>P-06</code>), Dedicated <code>mtcDebug.js</code> Suite (<code>7 / 7</code> PASS), Strict ASN.1 DER <code>SPKI</code> Parsing &amp; Authenticated <code>metadata.mtcTrustAnchors</code> Verification</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#00000000001-run-28-test-suite-breakdown-authr-makecred-resp-1js-mtcdebugjs-entepriseattestationjs" class="hover:underline">&sect;0.000000000.1 Run 28 Test Suite Breakdown (<code>Authr-MakeCred-Resp-1.js</code>, <code>mtcDebug.js</code> &amp; <code>EntepriseAttestation.js</code>)</a></div>
+          </div>
         </li>
         <li>
           <a href="#section-0-00000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000000 Run 27 (<code>20:56:32</code> – <code>21:07:43</code> PDT, <code>2026-10-27</code>, <code>11m 11.17s</code>) &amp; Run 26 Full-Suite Conformance (<code>252 / 252</code> <code>100.00%</code> PASS): P-384 (<code>ES384</code>) Certificate over P-256 (<code>ES256</code>) Batch Key for Non-Post-Quantum, Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) Root CA over <code>ML-DSA-44</code> <code>fmt: "mtc"</code>, &amp; <code>/tmp/totalphase.csv</code> Hardware USB Telemetry</a>
@@ -216,10 +226,6 @@
             <div><a href="#00004-run-21-complete-conformance-suite-summary-094600-101128-pdt" class="hover:underline">&sect;0.000.4 Run 21 Complete Conformance Suite Summary (<code>09:46:00</code> – <code>10:11:28</code> PDT)</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00 Run 20 (<code>250 / 250</code> <code>100.00%</code> Pass) Deep Dive: RFC 8554 / NIST SP 800-208 HSS/LMS Certificate Hierarchy, Post-Quantum MTC Subtree Checkpoints (<code>alg: -46</code>) &amp; All 18 Algorithms Across <code>fido_conformance_debug.log</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -229,6 +235,10 @@
             <div><a href="#0004-run-20-complete-37-suite-conformance-summary-231301-235836-pdt" class="hover:underline">&sect;0.00.4 Run 20 Complete 37-Suite Conformance Summary (<code>23:13:01</code> – <code>23:58:36</code> PDT)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0 Run 19 (<code>250 / 250</code> <code>100%</code> Pass) &amp; Run 18 Deep Dive: All 18 Algorithms Including Draft NIST FIPS 206 (<code>FN-DSA-512</code> <code>alg: -60</code> &amp; <code>FN-DSA-1024</code> <code>alg: -61</code>) Across <code>fido_conformance_debug.log</code>, <code>totalphase.csv</code> &amp; <code>fidont_rtt.log</code></a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -278,7 +288,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of the Last 11 Test Runs (<code>Runs 17–27</code>: 18 Algorithms, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, <code>"mtc-debug"</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, P-384 Certificate over P-256 Batch Key, Dual Hardware/VCOM User Presence &amp; <code>/tmp/totalphase.csv</code> Telemetry)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of the Last 12 Test Runs (<code>Runs 17–28</code>: 18 Algorithms, <code>3×18</code> Attestation Format Matrix <code>P-06</code>, Dedicated <code>mtcDebug.js</code> Suite, Strict ASN.1 DER <code>SPKI</code> &amp; <code>mtcTrustAnchors</code> Verification, <code>perCredMgmtRO</code>, 2-Field <code>mtcKeyRef</code>, Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CAs, Dual Hardware/VCOM UP &amp; <code>/tmp/totalphase.csv</code> Telemetry)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -382,13 +392,131 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>252 Passed / 31 Skipped / 0 Failed</code> across <code>283</code> unique tests / <code>37</code> suites in <code>18m 27.46s</code>)</strong> — <strong><code>+2</code> newly executed &amp; passing tests (<code>250</code> $\to$ <code>252</code> Passed) via real UP &amp; <code>has_display=false</code>; <code>100%</code> PASS across all 18 algorithms in <code>Authr-MakeCred-Resp-1</code> (<code>6/6</code>) and <code>EntepriseAttestation.js</code> (<code>6/6</code>, <code>4,448 B</code> Enterprise <code>fmt: "mtc"</code> with <code>ML-DSA-87</code> Root CA checkpoint verification); <code>3 / 3</code> (<code>100%</code>) automated MCU resets (<code>393–440 ms</code>) with zero manual dialogs; <code>0</code> panics/OOMs across <code>269,469</code> <code>opensk_rtt.log</code> lines!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 27 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 27</strong></td>
 <td class="p-3 align-top text-left"><code>L387515–L436854</code> (<code>49,340</code> lines) &amp; <code>/tmp/totalphase.csv</code> (<code>25,926</code> lines / <code>67,983</code> USB bus records)</td>
 <td class="p-3 align-top text-left"><code>20:56:32.57</code> – <code>21:07:43.74</code> PDT (<code>11m 11.17s</code>)</td>
 <td class="p-3 align-top text-left"><strong>Release Build + P-384 (<code>ES384</code>, <code>alg: -35</code>) Root CA Certificate over P-256 (<code>ES256</code>, <code>alg: -7</code>) Batch Key (<code>600 B</code> DER <code>x5c</code>) for All 7 Non-Post-Quantum Algorithms + Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) Root CA over <code>ML-DSA-44</code> (<code>alg: -48</code>) 2-Field <code>mtcKeyRef</code> (<code>19 B</code>) for All 11 Post-Quantum Algorithms + Simultaneous <code>/tmp/totalphase.csv</code> Hardware USB Protocol Analyzer Capture</strong></td>
 <td class="p-3 align-top text-left"><strong><code>252</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>252 Passed / 31 Skipped / 0 Failed</code> in <code>11m 11.17s</code> — <code>7m 16.29s</code> faster than Run 26!)</strong> — <strong>Verified P-384 Root CA cert over P-256 batch key (<code>1,000.17–2,132.31 ms</code> total USB exchange time across all 7 classical algorithms) and <code>ML-DSA-44</code> <code>fmt: "mtc"</code> (<code>1,284.20–3,208.44 ms</code> across all 11 PQ algorithms), <code>0</code> USB bus errors across <code>67,983</code> records (<code>4,962</code> <code>OUT</code> / <code>7,814</code> <code>IN</code>, <code>1,094</code> <code>CTAPHID_CBOR</code> exchanges), and <code>3 / 3</code> automated power-cycle resets!</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 28 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><code>L1–L38373</code> (<code>38,373</code> lines, post-clear)</td>
+<td class="p-3 align-top text-left"><code>18:45:59.37</code> – <code>18:59:31.40</code> PDT (<code>13m 32.03s</code>, <code>2026-10-29</code>)</td>
+<td class="p-3 align-top text-left"><strong>Expanded <code>260</code>-Test Suite (<code>+8</code> New Tests): Exhaustive <code>Authr-MakeCred-Resp-1</code> <code>P-06</code> (<code>3 Formats ["none", "mtc", "packed"] × 18 Algorithms = 54</code> Registrations) + Dedicated <code>CTAP2/Protocol/Extensions/mtcDebug.js</code> (<code>7 / 7</code> PASS: <code>P-1</code>..<code>P-3</code>, <code>F-1</code> <code>"none"</code> Gate, <code>F-2</code> <code>"packed"</code> Gate, <code>F-3</code> Enterprise Fallback Privacy Gate, <code>F-4</code> Unsolicited Extension Gate) + Strict ASN.1 DER <code>SubjectPublicKeyInfo</code> (<code>SPKI</code>) Parsing (<code>cryptodep.js</code>) + Authenticated <code>metadata.mtcTrustAnchors</code> Subtree &amp; Checkpoint Verification Across All Verifiers</strong></td>
+<td class="p-3 align-top text-left"><strong><code>260</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>260 Passed / 31 Skipped / 0 Failed</code> across <code>291</code> unique tests / <code>38</code> suites in <code>13m 32.03s</code>)</strong> — <strong>All <code>54</code> format $\times$ algorithm registrations in <code>Authr-MakeCred-Resp-1</code> <code>P-06</code> (<code>18</code> <code>"none"</code>, <code>18</code> <code>"mtc"</code>, <code>18</code> <code>"packed"</code>), all <code>18</code> default-format registrations in <code>P-01</code>..<code>P-04</code> (verified strictly against <code>metadata.attestationRootCertificates</code> and <code>metadata.mtcTrustAnchors</code> without <code>mtc-debug</code>), all <code>7</code> <code>mtcDebug.js</code> extension tests (<code>P-1</code>..<code>F-4</code>), and all <code>6</code> Enterprise Attestation tests (<code>EntepriseAttestation.js</code> <code>P-1</code>..<code>P-3</code>, <code>F-4</code>..<code>F-6</code>) passed <code>100%</code>!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-0-000000000 -->
+    <!-- ===================================================================== -->
+    <section id="section-0-000000000" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 28 (<code>18:45:59</code> – <code>18:59:31</code> PDT, <code>2026-10-29</code>, <code>13m 32.03s</code>) Full-Suite Conformance (<code>260 / 260</code> <code>100.00%</code> PASS): Exhaustive <code>3 × 18 = 54</code> Attestation Format Matrix (<code>P-06</code>), Dedicated <code>mtcDebug.js</code> Suite (<code>7 / 7</code> PASS), Strict ASN.1 DER <code>SPKI</code> Parsing &amp; Authenticated <code>metadata.mtcTrustAnchors</code> Verification</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Expanded <code>260 / 260</code> (<code>100.00%</code>) Conformance Across <code>38</code> CTAP 2.3 Suites (<code>+8</code> New Tests Over Run 27)</strong>: Run 28 (<code>fido_conformance_debug.log</code> <code>L1–L38373</code>, <code>13m 32.03s</code> on <code>2026-10-29</code>) verified four major conformance-tool and firmware enhancements against Fidont / OpenSK (<code>AAGUID: deadbeef-0000-0000-0000-deadbeef0000</code>, <code>firmwareVersion: 256</code> / <code>0x0100</code>):</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Strict ASN.1 DER <code>SubjectPublicKeyInfo</code> (<code>SPKI</code>) Extraction (<code>dependencies/cryptodep.js:462-583</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Replaced byte-pattern scanning in <code>extractMldsaPubKeyFromPem()</code> with structural ASN.1 DER traversal (<code>readDerTlv</code>, <code>parseSpkiDer</code>, <code>extractSpkiFromCertOrSpkiDer</code>) that distinguishes <code>"CERTIFICATE"</code> vs <code>"PUBLIC KEY"</code> PEM labels, walks the outer X.509 <code>Certificate</code> <code>SEQUENCE</code> $\to$ <code>TBSCertificate</code> <code>SEQUENCE</code> (<code>version [0]</code>, <code>serialNumber</code>, <code>signature</code>, <code>issuer</code>, <code>validity</code>, <code>subject</code>, <code>subjectPublicKeyInfo</code>), and enforces zero trailing bytes and <code>0x00</code> unused bits on the <code>ML-DSA-44/65/87</code> <code>BIT STRING</code>.</li>
+<li>Rejects malformed DER wrapped in <code>PUBLIC KEY</code> PEM labels, bare SPKIs wrapped in <code>CERTIFICATE</code> labels, and certificates carrying an <code>ML-DSA</code> SPKI inside an unrelated X.509 extension.</li>
+</ul></li>
+<li><strong>Separation of Diagnostic <code>mtc-debug</code> Consistency from Authenticated Issuer Trust (<code>metadata.mtcTrustAnchors</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Across <code>mtcDebug.js</code>, <code>Authr-MakeCred-Resp-1.js</code> (<code>P-04</code> &amp; <code>P-06</code>), and <code>EntepriseAttestation.js</code> (<code>P-2</code>, <code>P-3</code>, <code>F-6</code>), every MTC verifier now requires a matching <code>trustAnchor</code> in <code>metadata.mtcTrustAnchors</code> for <code>mtcCert.caId</code>, checks <code>trustAnchor.revokedSerials</code>, compares <code>mtc-debug.pubKey</code> against <code>trustAnchor.batchKeys</code> whenever a <code>batchKey</code> entry exists for <code>serial</code>, requires any Merkle inclusion proof root hash to match an authorized <code>[start, end)</code> subtree in <code>trustAnchor.subtrees</code> (in addition to <code>mtc-debug.rootHash</code>), and verifies the <code>FIDO-MTC-SUBTREE-CHECKPOINT-V1</code> Root CA checkpoint signature (<code>ML-DSA-87</code>, <code>alg: -50</code>) against <code>metadata.attestationRootCertificates</code>.</li>
+<li>Removed <code>mtc-debug</code> from <code>Authr-MakeCred-Resp-1.js</code> (<code>P-01</code>..<code>P-06</code>, <code>F-01</code>) so baseline registration tests verify <code>"packed"</code> and <code>"mtc"</code> responses strictly against <code>metadata.attestationRootCertificates</code> and <code>metadata.mtcTrustAnchors</code> without requesting <code>mtc-debug</code>.</li>
+</ul></li>
+<li><strong>Exhaustive <code>3 Formats × 18 Algorithms = 54</code> Registration Matrix (<code>Authr-MakeCred-Resp-1.js</code> <code>P-06</code>, <code>L7967–L14775</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Iterates through <code>"none"</code> and all formats listed in <code>authenticatorGetInfo.attestationFormats</code> (<code>"mtc"</code>, <code>"packed"</code>) across all <strong>18 supported algorithms</strong> (<code>54</code> <code>MakeCredential</code> ceremonies in <code>1m 59.92s</code>), verifying that <code>Response.fmt</code> equals the requested format and that <code>Response.attStmt</code> passes full cryptographic verification for every <code>(format, algorithm)</code> pair.</li>
+</ul></li>
+<li><strong>Dedicated <code>CTAP2/Protocol/Extensions/mtcDebug.js</code> Suite (<code>7 / 7</code> PASS, <code>L30774–L31684</code>) &amp; Firmware Format Gate (<code>OpenSK/libraries/opensk/src/ctap/mod.rs:1288-1326</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>OpenSK resolves <code>selected_format</code> (<code>Mtc</code>, <code>Packed</code>, <code>NoneFormat</code>) prior to constructing <code>authData.extensions</code> (<code>let include_mtc_debug = extensions.mtc_debug &amp;&amp; selected_format == SelectedAttestationFormat::Mtc;</code>), ensuring <code>mtc-debug</code> is suppressed whenever <code>fmt</code> is <code>"none"</code> (<code>F-1</code>) or <code>"packed"</code> (<code>F-2</code>).</li>
+</ul></li>
+</ol></div>
+<h3 id="00000000001-run-28-test-suite-breakdown-authr-makecred-resp-1js-mtcdebugjs-entepriseattestationjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.000000000.1 Run 28 Test Suite Breakdown (<code>Authr-MakeCred-Resp-1.js</code>, <code>mtcDebug.js</code> &amp; <code>EntepriseAttestation.js</code>)</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Suite &amp; Test ID</th>
+<th class="p-3 font-semibold align-bottom text-left">Log Line (<code>Timestamp</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Test Scope &amp; Cryptographic / Protocol Assertions Verified</th>
+<th class="p-3 font-semibold align-bottom text-center">Outcome</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong><code>Authr-MakeCred-Resp-1</code> — <code>P-01</code>..<code>P-03</code></strong></td>
+<td class="p-3 align-top text-left"><code>L6431–L6508</code> (<code>18:48:08.78</code>)</td>
+<td class="p-3 align-top text-left">Default <code>MakeCredential</code> across all 18 algorithms (<code>attestationFormatsPreference</code> unset, <code>extensions</code> unset): verified <code>fmt</code> $\in$ <code>{"packed", "mtc"}</code>, <code>authData</code> ($\ge 113\text{ B}$), <code>AAGUID</code>, <code>rpIdHash</code>, <code>UP=1</code>, <code>AT=1</code>, <code>ED=0</code>, and COSE key structure across all 18 algorithms.</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>Authr-MakeCred-Resp-1</code> — <code>P-04</code></strong></td>
+<td class="p-3 align-top text-left"><code>L7966</code> (<code>18:48:08.84</code>)</td>
+<td class="p-3 align-top text-left"><strong>Attestation Verification Without <code>mtc-debug</code></strong>:<br/>• <strong><code>"packed"</code> (<code>x5c</code>):</strong> Verified X.509 v3 leaf certificate chain and signature against <code>metadata.attestationRootCertificates</code>.<br/>• <strong><code>"mtc"</code> (<code>mtcCert</code>):</strong> Resolved <code>caId</code> (<code>06082b06010401868d1f07</code>) and <code>serial</code> (<code>4097</code> / <code>0x1001</code>) directly from <code>metadata.mtcTrustAnchors[0].batchKeys</code> and verified COSE batch attestation signatures over <code>authData || clientDataHash</code>.</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>Authr-MakeCred-Resp-1</code> — <code>P-06</code></strong></td>
+<td class="p-3 align-top text-left"><code>L14775</code> (<code>18:50:08.76</code>)</td>
+<td class="p-3 align-top text-left"><strong>Exhaustive <code>3 Formats × 18 Algorithms = 54</code> Registration Matrix (<code>1m 59.92s</code>)</strong>:<br/>• <code>attestationFormatsPreference: ["none"]</code> $\times$ 18 algs $\to$ <code>fmt == "none"</code>, <code>attStmt == {}</code><br/>• <code>attestationFormatsPreference: ["mtc"]</code> $\times$ 18 algs $\to$ <code>fmt == "mtc"</code>, <code>attStmt.mtcCert</code> verified against <code>metadata.mtcTrustAnchors</code><br/>• <code>attestationFormatsPreference: ["packed"]</code> $\times$ 18 algs $\to$ <code>fmt == "packed"</code>, <code>attStmt.x5c</code> verified against <code>metadata.attestationRootCertificates</code></td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>Authr-MakeCred-Resp-1</code> — <code>F-01</code></strong></td>
+<td class="p-3 align-top text-left"><code>L14793</code> (<code>18:50:08.76</code>)</td>
+<td class="p-3 align-top text-left">Verified <code>unsignedExtensionOutputs (0x06)</code> is <code>undefined</code> when no extensions are requested.</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>P-1</code></strong></td>
+<td class="p-3 align-top text-left"><code>L30774</code> (<code>18:56:43.76</code>)</td>
+<td class="p-3 align-top text-left"><code>GetInfo</code> consistency: <code>"mtc-debug"</code> in <code>extensions (0x02)</code> paired with <code>"mtc"</code> in <code>attestationFormats (0x16)</code>.</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>P-2</code></strong></td>
+<td class="p-3 align-top text-left"><code>L30927</code> (<code>18:56:46.69</code>)</td>
+<td class="p-3 align-top text-left">Non-Enterprise <code>MakeCredential</code> (<code>extensions: {"mtc-debug": true}</code>, <code>attestationFormatsPreference: ["mtc"]</code>): verified <code>ED=1</code>, 6-field <code>mtc-debug</code> map (<code>deviceSerial === undefined</code>), <code>mtc-debug.pubKey</code> match against <code>metadata.mtcTrustAnchors[0].batchKeys</code> (<code>serial: 4097</code>), RFC 9162 Merkle inclusion proof against both <code>mtc-debug.rootHash</code> and <code>metadata.mtcTrustAnchors[0].subtrees</code> (<code>[4096, 4098)</code>), and <code>ML-DSA-87</code> (<code>alg: -50</code>) <code>FIDO-MTC-SUBTREE-CHECKPOINT-V1</code> signature against <code>metadata.attestationRootCertificates</code>.</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>P-3</code></strong></td>
+<td class="p-3 align-top text-left"><code>L31220</code> (<code>18:56:52.79</code>)</td>
+<td class="p-3 align-top text-left">Enterprise <code>MakeCredential</code> (<code>epAtt = 0x01</code> &amp; <code>0x02</code>, <code>rp.id = "enterprisetest.certinfra.fidoalliance.org"</code>, <code>extensions: {"mtc-debug": true}</code>, <code>attestationFormatsPreference: ["mtc"]</code>): verified <code>epAtt === true</code>, 7-field <code>mtc-debug</code> map with <code>deviceSerial: "123456"</code> matching <code>mtcProof.extensions</code>, RFC 9162 Merkle inclusion proof (<code>serial: 8192</code>) against <code>metadata.mtcTrustAnchors[0].subtrees</code> (<code>[8192, 8193)</code>), and <code>ML-DSA-87</code> (<code>alg: -50</code>) checkpoint signature against <code>metadata.attestationRootCertificates</code>.</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>F-1</code></strong></td>
+<td class="p-3 align-top text-left"><code>L31306</code> (<code>18:56:54.61</code>)</td>
+<td class="p-3 align-top text-left"><strong>Attestation Format Gate (<code>"none"</code>):</strong> With <code>extensions: {"mtc-debug": true}</code> and <code>attestationFormatsPreference: ["none"]</code>, verified <code>fmt == "none"</code> and <strong><code>mtc-debug</code> is suppressed</strong> (<code>ED=0</code>, <code>extensionsData === undefined</code>).</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>F-2</code></strong></td>
+<td class="p-3 align-top text-left"><code>L31404</code> (<code>18:56:57.23</code>)</td>
+<td class="p-3 align-top text-left"><strong>Attestation Format Gate (<code>"packed"</code>):</strong> With <code>extensions: {"mtc-debug": true}</code> and <code>attestationFormatsPreference: ["packed"]</code>, verified <code>fmt == "packed"</code> and <strong><code>mtc-debug</code> is suppressed</strong> (<code>ED=0</code>, <code>extensionsData === undefined</code>).</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>F-3</code></strong></td>
+<td class="p-3 align-top text-left"><code>L31558</code> (<code>18:57:00.06</code>)</td>
+<td class="p-3 align-top text-left"><strong>Enterprise Fallback Privacy Gate:</strong> Unauthorized <code>rp.id</code> with <code>epAtt = 0x01</code>, <code>extensions: {"mtc-debug": true}</code>, <code>attestationFormatsPreference: ["mtc"]</code> downgraded to non-Enterprise batch MTC (<code>epAtt</code> omitted, <code>deviceSerial</code> omitted, empty <code>mtcProof.extensions</code>, verified against <code>metadata.mtcTrustAnchors</code>).</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>mtcDebug.js</code> — <code>F-4</code></strong></td>
+<td class="p-3 align-top text-left"><code>L31684</code> (<code>18:57:03.32</code>)</td>
+<td class="p-3 align-top text-left"><strong>Unsolicited Extension Gate:</strong> <code>MakeCredential</code> with <code>attestationFormatsPreference: ["mtc"]</code> and no <code>mtc-debug</code> request omitted <code>mtc-debug</code> (<code>ED=0</code>).</td>
+<td class="p-3 align-top text-center"><strong><code>PASS</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>EntepriseAttestation.js</code> — <code>P-1</code>..<code>P-3</code>, <code>F-4</code>..<code>F-6</code></strong></td>
+<td class="p-3 align-top text-left"><code>L21709–L22360</code> (<code>18:54:06–18:54:23</code>)</td>
+<td class="p-3 align-top text-left">Full Enterprise Attestation option suite (<code>epAtt = 0x01</code>, <code>epAtt = 0x02</code>, invalid type/value rejection <code>0x11</code> / <code>0x2C</code>, and unauthorized RPID privacy downgrade) verified against <code>metadata.attestationRootCertificates</code> and <code>metadata.mtcTrustAnchors</code>.</td>
+<td class="p-3 align-top text-center"><strong><code>6 / 6 PASS</code></strong></td>
 </tr>
 </tbody></table></div>
     </section>
