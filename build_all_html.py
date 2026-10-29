@@ -342,15 +342,17 @@ DOCUMENT_CONFIGS = {
         "title": "FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CA Hierarchy, All 8 Extensions (incl. \"mtc-debug\"), persistentPinUvAuthToken (perCredMgmtRO), Enterprise Attestation, Dual Hardware/VCOM User Presence & Consolidated Post-Quantum fmt: \"mtc\"",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("Run 28: 260 / 260 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("18 Algorithms & 3x18 Format Matrix (P-06)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("Stateless ML-DSA-87 & ES384 Root CAs", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("Dedicated mtcDebug Suite (7/7 PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Run 30: 260 / 260 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Unified js/mtc-validation.js Verifier", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Cross-Format Wire Size & Timing (P-06)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Last 10 Runs (Runs 21–30)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 12 conformance runs (Runs 17–28), highlighted by Run 28 (260 / 260 100.00% PASS, 31 Skipped, 0 Failed in 13m 32.03s across 38,373 debug log lines) adding the exhaustive Authr-MakeCred-Resp-1 P-06 (3 formats × 18 algorithms = 54 registrations) matrix, the dedicated mtcDebug.js suite (7 / 7 PASS including \"none\" and \"packed\" format gates), strict ASN.1 DER SubjectPublicKeyInfo parsing in cryptodep.js, and authenticated metadata.mtcTrustAnchors subtree/checkpoint verification across all MTC verifiers.",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 21–30), highlighted by Run 30 (260 / 260 100.00% PASS, 31 Skipped, 0 Failed in 13m 41.92s across 37,907 debug log lines) featuring the unified js/mtc-validation.js attestation verification pipeline (verifyMtc, verifyPacked, verifyAttestationByFmt, bootstrapMtcTrustState, decodeCborLossless) and a comprehensive attestation wire-size (BCNT, 64B HID frames, authData, attStmt) and timing (ms) benchmark across \"none\", \"mtc\" (19B mtcKeyRef, 3,351B ML-DSA-65 batch / 2,462B ML-DSA-44 enterprise attStmt), \"packed\" Classical X.509 (600B cert, 690–692B attStmt), \"packed\" Post-Quantum ML-DSA-65 X.509 (7,004B cert, 10,335B attStmt), and \"mtc\" + \"mtc-debug\" across all 18 supported algorithms.",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-0-000000000" if "0.000000000" in title else
+            "section-0-00000000000" if "0.00000000000" in title else
+            ("section-0-0000000000" if "0.0000000000" in title else
+            ("section-0-000000000" if "0.000000000" in title else
             ("section-0-00000000" if "0.00000000" in title else
             ("section-0-0000000" if "0.0000000" in title else
             ("section-0-000000" if "0.000000" in title else
@@ -361,7 +363,7 @@ DOCUMENT_CONFIGS = {
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title))))))))))))
+            (f"section-{num}" if num else slug(title))))))))))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {

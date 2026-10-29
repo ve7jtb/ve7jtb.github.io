@@ -110,8 +110,8 @@ def build_index():
           <a href="#sec-fido-conformance" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">100% PASS Telemetry</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Run 28)</div>
-              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">260/260 PASS across 18 algorithms, 3x18 format matrix (P-06), mtcDebug suite &amp; stateless Root CAs.</p>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 21–30)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">260/260 PASS across 18 algorithms, unified js/mtc-validation.js verifier &amp; cross-format wire size &amp; timing benchmark.</p>
             </div>
           </a>
 
@@ -391,13 +391,13 @@ def build_index():
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Run 28: 260 / 260 (100.00% PASS)
+            Run 30: 260 / 260 (100.00% PASS)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            18 Algorithms &amp; 3x18 Format Matrix (P-06)
+            Unified js/mtc-validation.js Verifier
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Stateless ML-DSA-87 &amp; ES384 Root CAs
+            Last 10 Runs (Runs 21–30)
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
@@ -410,7 +410,7 @@ def build_index():
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 12 test runs (Runs 17–28), highlighted by <strong>Run 28 (<code>260 / 260</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>13m 32.03s</code>)</strong> adding the exhaustive <code>Authr-MakeCred-Resp-1</code> <code>P-06</code> (<code>3 formats &times; 18 algorithms = 54</code> registrations) matrix, the dedicated <code>mtcDebug.js</code> suite (<code>7 / 7</code> PASS including <code>"none"</code> and <code>"packed"</code> format gates), strict ASN.1 DER <code>SubjectPublicKeyInfo</code> parsing in <code>cryptodep.js</code>, and authenticated <code>metadata.mtcTrustAnchors</code> subtree/checkpoint verification across all MTC verifiers, alongside <strong>Run 27 (<code>252 / 252</code> PASS in <code>11m 11.17s</code> with <code>/tmp/totalphase.csv</code> USB bus telemetry)</strong> and <strong>Run 26 (<code>252 / 252</code> PASS with <code>269,469</code> RTT lines)</strong>.
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 21–30), highlighted by <strong>Run 30 (<code>260 / 260</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>13m 41.92s</code>)</strong> featuring the unified, strict reusable <code>js/mtc-validation.js</code> attestation verification module (<code>verifyMtc</code>, <code>verifyPacked</code>, <code>verifyAttestationByFmt</code>, <code>bootstrapMtcTrustState</code>, <code>decodeCborLossless</code>) and a comprehensive attestation wire-size (<code>BCNT</code>, <code>64 B</code> HID frames, <code>authData</code>, <code>attStmt</code>) and timing (<code>ms</code>) benchmark across <code>"none"</code>, <code>"mtc"</code> (<code>19 B</code> <code>mtcKeyRef</code>, <code>3,351 B</code> <code>ML-DSA-65</code> batch <code>attStmt</code>, saving <code>6,979 B</code> / <code>118–119</code> frames and <code>1,151.8 ms</code> vs PQ <code>"packed"</code>), <code>"packed"</code> Classical X.509 (<code>600 B</code> cert), <code>"packed"</code> Post-Quantum <code>ML-DSA-65</code> X.509 (<code>7,004 B</code> cert, <code>10,335 B</code> <code>attStmt</code>), and <code>"mtc"</code> + <code>"mtc-debug"</code> across all 18 supported algorithms.
         </p>
       </div>
 
@@ -433,14 +433,14 @@ def build_index():
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./fido_ctap23_conformance_report.html#section-0-000000000"
+          <a href="./fido_ctap23_conformance_report.html#section-0-00000000000"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000 (Latest — Run 28: 260 / 260 100.00% PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000000 (Latest — Run 30: 260 / 260 100.00% PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 28 (<code>260 / 260</code> <code>100.00%</code> PASS in <code>13m 32.03s</code>): Exhaustive <code>3 &times; 18 = 54</code> Attestation Format Matrix (<code>P-06</code>), Dedicated <code>mtcDebug.js</code> Suite (<code>7 / 7</code> PASS), Strict ASN.1 DER <code>SPKI</code> Parsing &amp; Authenticated <code>metadata.mtcTrustAnchors</code> Verification
+              Run 30 (<code>260 / 260</code> <code>100.00%</code> PASS in <code>13m 41.92s</code>): Unified <code>js/mtc-validation.js</code> Attestation Verification Pipeline &amp; Cross-Format Attestation Wire Size and Timing Analysis (<code>ML-DSA-65</code> Batch &amp; <code>ML-DSA-44</code> Enterprise)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Full 260-test conformance verification across all 38 CTAP 2.3 suites, including <code>P-06</code> format &times; algorithm matrix, <code>mtcDebug.js</code> format/privacy gates, and strict <code>metadata.mtcTrustAnchors</code> subtree &amp; checkpoint validation.
+              End-to-end verification of the unified 8-step <code>verifyMtc</code> &amp; <code>verifyAttestationByFmt</code> pipeline and side-by-side wire size (<code>BCNT</code>, <code>64 B</code> HID frames, <code>authData</code>, <code>attStmt</code>) and timing (<code>ms</code>) benchmark across all 18 algorithms and all attestation modes, demonstrating <code>-6,979 B</code> (<code>-53.2%</code> to <code>-60.4%</code>, <code>-118</code> to <code>-119</code> frames) wire savings and <code>-1,151.8 ms</code> (<code>-42.6%</code>) faster registration for post-quantum <code>fmt: "mtc"</code> vs. post-quantum <code>fmt: "packed"</code>.
             </p>
           </a>
 
