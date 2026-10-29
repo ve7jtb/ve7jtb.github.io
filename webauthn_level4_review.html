@@ -9249,42 +9249,48 @@ resulting in a signature mismatch at the <a data-link-type="dfn" href="#relying-
        <p>If <code>mtc-debug</code> is <code>true</code> in the authenticator extension inputs:</p>
        <ol>
         <li data-md>
-         <p>Let <var>output</var> be a new CBOR map.</p>
+         <p>If the <a data-link-type="dfn" href="#attestation-statement-format">attestation statement format</a> (<code>fmt</code>) selected by the authenticator for this registration operation is <code>"none"</code> or any format other than <code>"mtc"</code>, the authenticator MUST ignore this extension input and MUST NOT include <code>mtc-debug</code> in the <a data-link-type="dfn" href="#authenticator-extension-output">authenticator extension outputs</a> (<code>authenticatorData.extensions</code>).</p>
         <li data-md>
-         <p>Let <var>pubKey</var> be the canonical CBOR-encoded <code>COSE_Key</code> structure (per <a data-link-type="biblio" href="#biblio-rfc9052" title="CBOR Object Signing and Encryption (COSE): Structures and Process">[RFC9052]</a> Section 7, matching the <code>coseKey</code> format in <code>mtcTrustAnchors[].batchKeys[]</code>) of the authenticator’s active attestation public key. Set <code><var>output</var>["pubKey"] = <var>pubKey</var></code>.</p>
-        <li data-md>
-         <p>If Enterprise Attestation was requested and granted for this operation:</p>
+         <p>Otherwise (when the selected <a data-link-type="dfn" href="#attestation-statement-format">attestation statement format</a> <code>fmt</code> is <code>"mtc"</code>):</p>
          <ol>
           <li data-md>
-           <p>Let <var>serial</var> be the device serial number text string. Set <code><var>output</var>["deviceSerial"] = <var>serial</var></code>.</p>
+           <p>Let <var>output</var> be a new CBOR map.</p>
+          <li data-md>
+           <p>Let <var>pubKey</var> be the canonical CBOR-encoded <code>COSE_Key</code> structure (per <a data-link-type="biblio" href="#biblio-rfc9052" title="CBOR Object Signing and Encryption (COSE): Structures and Process">[RFC9052]</a> Section 7, matching the <code>coseKey</code> format in <code>mtcTrustAnchors[].batchKeys[]</code>) of the authenticator’s active attestation public key. Set <code><var>output</var>["pubKey"] = <var>pubKey</var></code>.</p>
+          <li data-md>
+           <p>If Enterprise Attestation was requested and granted for this operation:</p>
+           <ol>
+            <li data-md>
+             <p>Let <var>serial</var> be the device serial number text string. Set <code><var>output</var>["deviceSerial"] = <var>serial</var></code>.</p>
+           </ol>
+          <li data-md>
+           <p>Otherwise:</p>
+           <ol>
+            <li data-md>
+             <p>The authenticator MUST NOT include <code>deviceSerial</code> if Enterprise Attestation was not granted.</p>
+           </ol>
+          <li data-md>
+           <p>Populate the MTC leaf descriptor and Merkle inclusion proof fields (enabling autonomous offline verification of the 2-field <code>mtcKeyRef</code> in <code>attStmt.mtcCert</code>):</p>
+           <ol>
+            <li data-md>
+             <p>If known to the authenticator, set <code><var>output</var>["notBefore"]</code> to the earliest Unix timestamp at which the key is valid.</p>
+            <li data-md>
+             <p>If known to the authenticator, set <code><var>output</var>["notAfter"]</code> to the Unix timestamp at which the key expires, or <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code> per <a data-link-type="biblio" href="#biblio-rfc5280" title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</a> Section 4.1.2.5) if the attestation on the device never expires.</p>
+            <li data-md>
+             <p>If the authenticator commits a firmware version in the MTC leaf entry (matching <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a> <code>authenticatorGetInfo</code> parameter <code>0x0E</code>), set <code><var>output</var>["firmwareVersion"]</code> to that unsigned integer.</p>
+            <li data-md>
+             <p>If the authenticator maintains the Merkle inclusion proof for <code>serial</code>, set <code><var>output</var>["mtcProof"]</code> to the binary RFC 9162 inclusion proof byte array.</p>
+            <li data-md>
+             <p>If the authenticator maintains the trust anchor or landmark subtree root hash, set <code><var>output</var>["rootHash"]</code> to that 32-byte root hash.</p>
+           </ol>
+          <li data-md>
+           <p>Return <var>output</var> as the authenticator extension output.</p>
          </ol>
-        <li data-md>
-         <p>Otherwise:</p>
-         <ol>
-          <li data-md>
-           <p>The authenticator MUST NOT include <code>deviceSerial</code> if Enterprise Attestation was not granted.</p>
-         </ol>
-        <li data-md>
-         <p>Populate the MTC leaf descriptor and Merkle inclusion proof fields (enabling autonomous offline verification of the 2-field <code>mtcKeyRef</code> in <code>attStmt.mtcCert</code>):</p>
-         <ol>
-          <li data-md>
-           <p>If known to the authenticator, set <code><var>output</var>["notBefore"]</code> to the earliest Unix timestamp at which the key is valid.</p>
-          <li data-md>
-           <p>If known to the authenticator, set <code><var>output</var>["notAfter"]</code> to the Unix timestamp at which the key expires, or <code>253402300799</code> (<code>9999-12-31T23:59:59Z</code> per <a data-link-type="biblio" href="#biblio-rfc5280" title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</a> Section 4.1.2.5) if the attestation on the device never expires.</p>
-          <li data-md>
-           <p>If the authenticator commits a firmware version in the MTC leaf entry (matching <a data-link-type="biblio" href="#biblio-fido-ctap" title="Client to Authenticator Protocol (CTAP)">[FIDO-CTAP]</a> <code>authenticatorGetInfo</code> parameter <code>0x0E</code>), set <code><var>output</var>["firmwareVersion"]</code> to that unsigned integer.</p>
-          <li data-md>
-           <p>If the authenticator maintains the Merkle inclusion proof for <code>serial</code>, set <code><var>output</var>["mtcProof"]</code> to the binary RFC 9162 inclusion proof byte array.</p>
-          <li data-md>
-           <p>If the authenticator maintains the trust anchor or landmark subtree root hash, set <code><var>output</var>["rootHash"]</code> to that 32-byte root hash.</p>
-         </ol>
-        <li data-md>
-         <p>Return <var>output</var> as the authenticator extension output.</p>
        </ol>
      </ol>
     <dt data-md>Authenticator extension output
     <dd data-md>
-     <p>A CBOR map conforming to the following CDDL:</p>
+     <p>A CBOR map conforming to the following CDDL (permitted ONLY when the <a data-link-type="dfn" href="#attestation-statement-format">attestation statement format</a> <code>fmt</code> is <code>"mtc"</code> and explicitly disallowed when <code>fmt</code> is <code>"none"</code> or any other format):</p>
 <pre>$$extension-output //= (
     mtc-debug: MtcDebugAuthOutput
 )
@@ -9306,35 +9312,48 @@ MtcDebugAuthOutput = {
        <p>In <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create" id="ref-for-dom-credentialscontainer-create③⑦">create()</a></code>, if <code>options.publicKey.extensions.mtcDebug</code> is <code>true</code>:</p>
        <ol>
         <li data-md>
-         <p>Include <code>mtc-debug: true</code> in the authenticator extension inputs when invoking the authenticator.</p>
-        <li data-md>
-         <p>Upon receiving the authenticator response, if the authenticator data contains an extension output for <code>mtc-debug</code>:</p>
+         <p>If <code>options.publicKey.attestation</code> is <code>"none"</code> (including when omitted and defaulting to <code>"none"</code>), if the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent">user agent</a> replaces the attestation conveyance preference with <code>"none"</code> (e.g., due to user consent or policy), or if <code>options.publicKey.attestationFormats</code> is present, non-empty, and does not contain <code>"mtc"</code>:</p>
          <ol>
           <li data-md>
-           <p>Let <var>rawOutput</var> be the decoded map for <code>mtc-debug</code>.</p>
+           <p>The <a data-link-type="dfn" href="#client">client</a> MUST NOT include <code>mtc-debug</code> in the authenticator extension inputs when invoking the authenticator.</p>
+         </ol>
+        <li data-md>
+         <p>Otherwise, include <code>mtc-debug: true</code> in the authenticator extension inputs when invoking the authenticator.</p>
+        <li data-md>
+         <p>Upon receiving the authenticator response, if the authenticator data (<code>authenticatorData.extensions</code>) contains an extension output for <code>mtc-debug</code>:</p>
+         <ol>
           <li data-md>
-           <p>Set <code>clientExtensionResults.mtcDebug</code> to a dictionary containing:</p>
-           <ul>
+           <p>If the <a data-link-type="dfn" href="#attestation-statement-format">attestation statement format</a> (<code>fmt</code>) in the returned <code>attestationObject</code> is <code>"none"</code> or is not <code>"mtc"</code>, or if the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent">user agent</a> replaces the <a data-link-type="dfn" href="#attestation-statement">attestation statement</a> with a <a data-link-type="dfn" href="#none">None</a> <a data-link-type="dfn" href="#attestation-statement">attestation statement</a> (<a href="#sctn-none-attestation">§ 8.9 None Attestation Statement Format</a>), the <a data-link-type="dfn" href="#client">client</a> MUST NOT expose <code>clientExtensionResults.mtcDebug</code> and MUST treat the authenticator response as invalid (aborting the operation with a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException">DOMException</a></code>), because <code>authenticatorData.extensions["mtc-debug"]</code> MUST NOT be conveyed to the <a data-link-type="dfn" href="#relying-party">Relying Party</a> unless the <a data-link-type="dfn" href="#attestation-statement-format">attestation statement format</a> is <code>"mtc"</code>.</p>
+          <li data-md>
+           <p>Otherwise (when <code>fmt</code> is <code>"mtc"</code>):</p>
+           <ol>
             <li data-md>
-             <p><code>pubKey</code>: <code><var>rawOutput</var>["pubKey"]</code>.</p>
+             <p>Let <var>rawOutput</var> be the decoded map for <code>mtc-debug</code>.</p>
             <li data-md>
-             <p><code>deviceSerial</code>: <code><var>rawOutput</var>["deviceSerial"]</code>, if present.</p>
-            <li data-md>
-             <p><code>notBefore</code>: <code><var>rawOutput</var>["notBefore"]</code>, if present.</p>
-            <li data-md>
-             <p><code>notAfter</code>: <code><var>rawOutput</var>["notAfter"]</code>, if present.</p>
-            <li data-md>
-             <p><code>firmwareVersion</code>: <code><var>rawOutput</var>["firmwareVersion"]</code>, if present.</p>
-            <li data-md>
-             <p><code>mtcProof</code>: <code><var>rawOutput</var>["mtcProof"]</code>, if present.</p>
-            <li data-md>
-             <p><code>rootHash</code>: <code><var>rawOutput</var>["rootHash"]</code>, if present.</p>
-           </ul>
+             <p>Set <code>clientExtensionResults.mtcDebug</code> to a dictionary containing:</p>
+             <ul>
+              <li data-md>
+               <p><code>pubKey</code>: <code><var>rawOutput</var>["pubKey"]</code>.</p>
+              <li data-md>
+               <p><code>deviceSerial</code>: <code><var>rawOutput</var>["deviceSerial"]</code>, if present.</p>
+              <li data-md>
+               <p><code>notBefore</code>: <code><var>rawOutput</var>["notBefore"]</code>, if present.</p>
+              <li data-md>
+               <p><code>notAfter</code>: <code><var>rawOutput</var>["notAfter"]</code>, if present.</p>
+              <li data-md>
+               <p><code>firmwareVersion</code>: <code><var>rawOutput</var>["firmwareVersion"]</code>, if present.</p>
+              <li data-md>
+               <p><code>mtcProof</code>: <code><var>rawOutput</var>["mtcProof"]</code>, if present.</p>
+              <li data-md>
+               <p><code>rootHash</code>: <code><var>rawOutput</var>["rootHash"]</code>, if present.</p>
+             </ul>
+           </ol>
          </ol>
         <li data-md>
          <p>When <code class="idl"><a data-link-type="idl" href="#dom-publickeycredential-tojson" id="ref-for-dom-publickeycredential-tojson②">toJSON()</a></code> is invoked on a <code class="idl"><a data-link-type="idl" href="#publickeycredential" id="ref-for-publickeycredential③⑤">PublicKeyCredential</a></code> containing an <code>mtcDebug</code> client extension output, serialize <code>clientExtensionResults.mtcDebug</code> into a <code class="idl"><a data-link-type="idl" href="#dictdef-mtcdebugextensionoutputjson" id="ref-for-dictdef-mtcdebugextensionoutputjson">MtcDebugExtensionOutputJSON</a></code> dictionary by base64url encoding the <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer②⑨">ArrayBuffer</a></code> members <code>pubKey</code>, <code>mtcProof</code> (if present), and <code>rootHash</code> (if present) into <code class="idl"><a data-link-type="idl" href="#typedefdef-base64urlstring" id="ref-for-typedefdef-base64urlstring②②">Base64URLString</a></code> values per <a href="#sctn-json-types"></a>.</p>
        </ol>
      </ol>
+     <p class="note" role="note"><span class="marker">Note:</span> During <a data-link-type="dfn" href="#registration">registration</a> verification, if <code>authenticatorData.extensions</code> contains <code>"mtc-debug"</code> (or <code>clientExtensionResults.mtcDebug</code> is present) when the <a data-link-type="dfn" href="#attestation-statement-format">attestation statement format</a> <code>fmt</code> is <code>"none"</code> or any format other than <code>"mtc"</code>, the <a data-link-type="dfn" href="#relying-party">Relying Party</a> MUST fail the <a data-link-type="dfn" href="#registration-ceremony">registration ceremony</a>.</p>
     <dt data-md>Client extension output
     <dd data-md>
 <pre class="def highlight idl"><c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-mtcdebugextensionoutput"><code><c- g>MtcDebugExtensionOutput</c-></code></dfn> {

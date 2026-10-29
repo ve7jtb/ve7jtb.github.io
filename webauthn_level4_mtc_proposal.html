@@ -368,23 +368,34 @@ MtcDebugExtensionOutput = {
     ? rootHash: bytes                 ; OPTIONAL: 32-byte expected Landmark/Trust Anchor root hash
 }</code></pre></div>
 <h3 id="33-processing-rules" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">3.3 Processing Rules</h3>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong><code>mtcDebug</code> (<code>mtc-debug</code>) Permitted Only When <code>fmt: "mtc"</code> (Explicitly Disallowed for <code>"none"</code> and Other Formats):</strong> Because <code>authenticatorData.extensions["mtc-debug"]</code> is embedded inside <code>authenticatorData</code> (which is exposed to the Relying Party even when <code>fmt</code> is <code>"none"</code>), <code>mtc-debug</code> <strong>MUST NOT</strong> be requested, emitted, or accepted when <code>attestation</code> or <code>fmt</code> is <code>"none"</code> or any format other than <code>"mtc"</code>.</p></div>
 <h4 id="client-browserplatform-processing" class="text-base font-semibold text-[var(--foreground)]">Client (Browser/Platform) Processing:</h4>
-<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>In <code>navigator.credentials.create()</code>, if <code>extensions.mtcDebug === true</code>, pass <code>mtc-debug: true</code> into CTAP2 <code>authenticatorMakeCredential</code>.</li>
-<li>Upon receiving the response, parse <code>authenticatorData.extensions["mtc-debug"]</code> and expose <code>pubKey</code>, <code>deviceSerial</code>, <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, <code>mtcProof</code>, and <code>rootHash</code> in <code>clientExtensionResults.mtcDebug</code>.</li>
-</ul>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Request Gate (<code>navigator.credentials.create()</code>):</strong> If <code>extensions.mtcDebug === true</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If <code>options.publicKey.attestation</code> is <code>"none"</code> (including when omitted and defaulting to <code>"none"</code>), if the platform/user agent replaces the attestation conveyance preference with <code>"none"</code> (e.g., due to user consent or policy), or if <code>options.publicKey.attestationFormats</code> is present, non-empty, and does not contain <code>"mtc"</code>, the platform <strong>MUST NOT</strong> pass <code>mtc-debug</code> in the CTAP2 <code>authenticatorMakeCredential</code> extension inputs.</li>
+<li>Otherwise, pass <code>mtc-debug: true</code> into CTAP2 <code>authenticatorMakeCredential</code>.</li>
+</ul></li>
+<li><strong>Response Gate:</strong> Upon receiving the authenticator response, if <code>authenticatorData.extensions</code> contains <code>"mtc-debug"</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>If the attestation statement format (<code>fmt</code>) in <code>attestationObject</code> is <code>"none"</code> or is not <code>"mtc"</code>, or if the platform replaces the attestation statement with <code>"none"</code>, the platform <strong>MUST NOT</strong> expose <code>clientExtensionResults.mtcDebug</code> and <strong>MUST</strong> reject the response (aborting the ceremony with <code>NotAllowedError</code>), ensuring <code>authenticatorData.extensions["mtc-debug"]</code> is never returned to the Relying Party when <code>fmt !== "mtc"</code>.</li>
+<li>Otherwise (when <code>fmt === "mtc"</code>), parse <code>authenticatorData.extensions["mtc-debug"]</code> and expose <code>pubKey</code>, <code>deviceSerial</code>, <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, <code>mtcProof</code>, and <code>rootHash</code> in <code>clientExtensionResults.mtcDebug</code>.</li>
+</ul></li>
+</ol>
 <h4 id="authenticator-processing" class="text-base font-semibold text-[var(--foreground)]">Authenticator Processing:</h4>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li>If <code>mtc-debug</code> is requested:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Attestation Format Gate:</strong> If the attestation statement format (<code>fmt</code>) selected by the authenticator for this registration operation is <code>"none"</code> or any format other than <code>"mtc"</code>, the authenticator <strong>MUST</strong> ignore <code>mtc-debug</code> and <strong>MUST NOT</strong> include <code>"mtc-debug"</code> in <code>authenticatorData.extensions</code>.</li>
+<li>Otherwise (when <code>fmt</code> is <code>"mtc"</code>):<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Set bit 7 (<code>ED</code>, <code>0x80</code>) in <code>authenticatorData.flags</code>.</li>
 <li>Include the active attestation <code>pubKey</code> (batch key if non-enterprise, single-device key if enterprise).</li>
 <li>If Enterprise Attestation is active (<code>0x0A = 1</code> or <code>2</code>), include <code>deviceSerial</code>.</li>
 <li><strong>Privacy Gate:</strong> If Enterprise Attestation is <strong>not</strong> active, the authenticator <strong>MUST NOT</strong> include <code>deviceSerial</code>.</li>
 <li><strong>Offline Manifest &amp; Diagnostic Mode Support:</strong> If configured for diagnostic output or autonomous offline verification in proof-less <code>mtcKeyRef</code> environments, include <code>notBefore</code>, <code>notAfter</code> (<code>253402300799</code> / <code>9999-12-31T23:59:59Z</code> per RFC 5280 §4.1.2.5 when the device attestation never expires), <code>firmwareVersion</code> (matching parameter <code>0x0E</code> in <code>authenticatorGetInfo</code>), <code>mtcProof</code>, and <code>rootHash</code>.</li>
 </ul></li>
+</ul></li>
 </ol>
 <h4 id="relying-party-verifier-processing" class="text-base font-semibold text-[var(--foreground)]">Relying Party / Verifier Processing:</h4>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Attestation Format Gate:</strong> If <code>authenticatorData.extensions</code> contains <code>"mtc-debug"</code> (or <code>clientExtensionResults.mtcDebug</code> is present) when <code>attObj.fmt</code> is <code>"none"</code> or any format other than <code>"mtc"</code>, the Relying Party <strong>MUST</strong> fail the registration ceremony.</li>
 <li>Test fixtures and automated certification suites inspect <code>mtcDebug.pubKey</code> to perform immediate offline cryptographic verification of <code>attStmt.sig</code> without connecting to external MDS3 infrastructure.</li>
 <li>In proof-less <code>mtcKeyRef</code> environments, verifiers use <code>notBefore</code>, <code>notAfter</code>, <code>firmwareVersion</code>, and <code>pubKey</code> from <code>mtcDebug</code> to reconstruct the leaf preimage, verify the inclusion proof against <code>rootHash</code>, and authenticate the device completely offline.</li>
 </ul>

@@ -884,17 +884,21 @@ MtcDebugAuthOutput = {
 
 #### 8.7.3 Processing Rules
 
-1. **Client Processing (`navigator.credentials.create()`)**:
-   - If `options.publicKey.extensions?.mtcDebug === true`, the browser/platform client sets `mtc-debug: true` in the CTAP2 `authenticatorMakeCredential` extensions parameter.
-   - Upon receiving the response, the client validates that `deviceSerial` is present only if Enterprise Attestation (`ep = 1` or `2`) was requested (cancelling the ceremony with an error otherwise) and populates `clientExtensionResults.mtcDebug` (and base64url-encoded `MtcDebugExtensionOutputJSON` when `cred.toJSON()` is called).
+1. **Client / Platform Processing (`navigator.credentials.create()`)**:
+   - **Pre-Invocation Request Gate (`fmt: "mtc"` only; explicitly disallowed for `"none"`):** If `options.publicKey.extensions?.mtcDebug === true`, the browser/platform client **MUST NOT** pass `mtc-debug` to the authenticator if `options.publicKey.attestation` is `"none"` (including when omitted and defaulting to `"none"`, or when downgraded to `"none"` by user consent or platform policy) or if `options.publicKey.attestationFormats` is present, non-empty, and does not contain `"mtc"`. Only when effective attestation conveyance is not `"none"` and `"mtc"` is permitted does the platform set `mtc-debug: true` in the CTAP2 `authenticatorMakeCredential` extensions parameter.
+   - **Post-Invocation Response Gate:** Upon receiving the response, if `authenticatorData.extensions` contains `"mtc-debug"` and the returned attestation statement format (`attObj.fmt`) is `"none"` or any format other than `"mtc"` (or if the platform replaces the attestation statement with `"none"`), the client **MUST NOT** expose `clientExtensionResults.mtcDebug` and **MUST** reject the response (`NotAllowedError`), ensuring `authenticatorData.extensions["mtc-debug"]` is never returned to the Relying Party unless `fmt === "mtc"`.
+   - When `fmt === "mtc"`, the client also validates that `deviceSerial` is present only if Enterprise Attestation (`ep = 1` or `2`) was requested (cancelling the ceremony with an error otherwise) and populates `clientExtensionResults.mtcDebug` (and base64url-encoded `MtcDebugExtensionOutputJSON` when `cred.toJSON()` is called).
 2. **Authenticator Processing**:
    - If `mtc-debug` is requested and enabled in firmware:
-     - Set bit 7 (`ED`, `0x80`) in `authenticatorData.flags`.
-     - Extract the canonical CBOR `COSE_Key` of the active attestation key: the shared batch key (`AttestationId::Batch`) if `!ep_att`, or the single-device key (`AttestationId::Enterprise`) if `ep_att`.
-     - **Conditional `deviceSerial`**: If Enterprise Attestation was negotiated and granted (`0x0A = 1` or `2`), populate `deviceSerial` with the hardware serial number. If Enterprise Attestation is **not** active, the authenticator **MUST NOT** include `deviceSerial`.
-     - **Offline Manifest & Inclusion Proof Fields**: If configured to support autonomous offline verification in proof-less `mtcKeyRef` environments, include `notBefore`, `notAfter` (`253402300799` if non-expiring), `firmwareVersion`, `mtcProof`, and `rootHash`.
+     - **Attestation Format Gate:** If the attestation statement format (`fmt`) selected by the authenticator for this `authenticatorMakeCredential` operation is `"none"` or any format other than `"mtc"` (e.g., `"packed"`), the authenticator **MUST** ignore the `mtc-debug` extension request and **MUST NOT** include `"mtc-debug"` in `authenticatorData.extensions`.
+     - Otherwise (when `fmt` is `"mtc"`):
+       - Set bit 7 (`ED`, `0x80`) in `authenticatorData.flags`.
+       - Extract the canonical CBOR `COSE_Key` of the active attestation key: the shared batch key (`AttestationId::Batch`) if `!ep_att`, or the single-device key (`AttestationId::Enterprise`) if `ep_att`.
+       - **Conditional `deviceSerial`**: If Enterprise Attestation was negotiated and granted (`0x0A = 1` or `2`), populate `deviceSerial` with the hardware serial number. If Enterprise Attestation is **not** active, the authenticator **MUST NOT** include `deviceSerial`.
+       - **Offline Manifest & Inclusion Proof Fields**: If configured to support autonomous offline verification in proof-less `mtcKeyRef` environments, include `notBefore`, `notAfter` (`253402300799` if non-expiring), `firmwareVersion`, `mtcProof`, and `rootHash`.
 3. **Relying Party / Test Harness Validation**:
-   - The RP decodes `pubKey` directly from `extensions["mtc-debug"]` and immediately verifies `attStmt.sig` over `SHA-256(authenticatorData || clientDataHash)` without requiring an out-of-band MDS or manifest lookup.
+   - **Attestation Format Gate:** If `authenticatorData.extensions` contains `"mtc-debug"` (or `clientExtensionResults.mtcDebug` is present) when `attObj.fmt` is `"none"` or any format other than `"mtc"`, the Relying Party **MUST** fail the registration ceremony.
+   - When `attObj.fmt === "mtc"`, the RP decodes `pubKey` directly from `extensions["mtc-debug"]` and immediately verifies `attStmt.sig` over `authenticatorData || clientDataHash` without requiring an out-of-band MDS or manifest lookup.
    - If `mtcProof` and `rootHash` are present, the verifier reconstructs `FidoMtcLogEntry` using `notBefore`, `notAfter`, `firmwareVersion`, and `SHA-256(pubKey)` and verifies Merkle inclusion against `rootHash`.
 
 #### 8.7.4 Privacy & Wire Framing Considerations

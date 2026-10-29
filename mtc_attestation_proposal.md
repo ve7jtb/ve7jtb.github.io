@@ -72,6 +72,7 @@ In public FIDO MDS3, the Enterprise `MtcTrustAnchor` (e.g., `caId: "g5k_AQI"`) p
        }
        ```
      - **Client output (`clientExtensionResults.mtcDebug`):** wired into [`AuthenticatorRegistrationExtensionOutputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/AuthenticatorRegistrationExtensionOutputs.java) and [`ClientRegistrationExtensionOutputs`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/data/ClientRegistrationExtensionOutputs.java).
+     - **Attestation Format Gate (`fmt: "mtc"` only; explicitly disallowed for `"none"`):** in [`StartRegistrationOptions`](https://github.com/Yubico/java-webauthn-server/blob/main/webauthn-server-core/src/main/java/com/yubico/webauthn/StartRegistrationOptions.java) / `RelyingParty`, omit `mtcDebug` when `attestation == NONE`. During `FinishRegistrationSteps`, if `authData.extensions["mtc-debug"]` or `clientExtensionResults.mtcDebug` is present when the attestation statement format `fmt` is `"none"` or any format other than `"mtc"`, fail registration validation immediately.
      - **Dual-layer privacy gate validation (`FinishRegistrationSteps.Step17`):** if either `authData.extensions["mtc-debug"]` or `clientExtensionResults.mtcDebug` contains `deviceSerial` when the RP did not request `AttestationConveyancePreference.ENTERPRISE`, fail validation immediately.
 
 ### 2.2 New Package `com.yubico.webauthn.attestation.mtc`
