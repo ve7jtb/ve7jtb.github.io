@@ -96,8 +96,8 @@
           <a href="#sec-fido-conformance" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">100% PASS Telemetry</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 21–30)</div>
-              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">260/260 PASS across 18 algorithms, unified js/mtc-validation.js verifier &amp; cross-format wire size &amp; timing benchmark.</p>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 22–31)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">260/260 PASS across 18 algorithms, ES256 vs. ML-DSA-44 / 65 / 87 batch key wire size &amp; timing comparison, &amp; unified js/mtc-validation.js verifier.</p>
             </div>
           </a>
 
@@ -377,13 +377,13 @@
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Run 30: 260 / 260 (100.00% PASS)
+            Run 31: 260 / 260 (100.00% PASS)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Unified js/mtc-validation.js Verifier
+            ES256 / ML-DSA-44 / ML-DSA-65 / ML-DSA-87 Batch Keys
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Last 10 Runs (Runs 21–30)
+            Last 10 Runs (Runs 22–31)
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
@@ -392,11 +392,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CA Hierarchy, All 8 Extensions (incl. <code>"mtc-debug"</code>), <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation, Dual Hardware/VCOM User Presence &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
+            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), Multi-Batch-Key Comparison (<code>ES256</code> vs. <code>ML-DSA-44</code> vs. <code>ML-DSA-65</code> vs. <code>ML-DSA-87</code>), Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CA Hierarchy, All 8 Extensions (incl. <code>"mtc-debug"</code>) &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 21–30), highlighted by <strong>Run 30 (<code>260 / 260</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>13m 41.92s</code>)</strong> featuring the unified, strict reusable <code>js/mtc-validation.js</code> attestation verification module (<code>verifyMtc</code>, <code>verifyPacked</code>, <code>verifyAttestationByFmt</code>, <code>bootstrapMtcTrustState</code>, <code>decodeCborLossless</code>) and a comprehensive attestation wire-size (<code>BCNT</code>, <code>64 B</code> HID frames, <code>authData</code>, <code>attStmt</code>) and timing (<code>ms</code>) benchmark across <code>"none"</code>, <code>"mtc"</code> (<code>19 B</code> <code>mtcKeyRef</code>, <code>3,351 B</code> <code>ML-DSA-65</code> batch <code>attStmt</code>, saving <code>6,979 B</code> / <code>118–119</code> frames and <code>1,151.8 ms</code> vs PQ <code>"packed"</code>), <code>"packed"</code> Classical X.509 (<code>600 B</code> cert), <code>"packed"</code> Post-Quantum <code>ML-DSA-65</code> X.509 (<code>7,004 B</code> cert, <code>10,335 B</code> <code>attStmt</code>), and <code>"mtc"</code> + <code>"mtc-debug"</code> across all 18 supported algorithms.
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 22–31), highlighted by <strong>Run 31 (<code>ML-DSA-87</code> NIST Level 5 Batch Key, <code>260 / 260</code> <code>100.00%</code> PASS, <code>0</code> Lockups in <code>16m 09.10s</code>)</strong>, <strong>Run 30 (<code>ML-DSA-65</code> NIST Level 3 Batch Key, <code>260 / 260</code> PASS in <code>13m 41.92s</code>)</strong>, and <strong>Run 29 (<code>ML-DSA-44</code> NIST Level 2 Batch Key, <code>259 / 259</code> PASS in <code>13m 19.96s</code>)</strong>. Features a complete side-by-side comparison across all 4 batch key configurations (<code>ES256</code> P-256, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), demonstrating how <code>fmt: "mtc"</code> (<code>19 B</code> <code>mtcKeyRef</code>) cuts post-quantum attestation wire size by <strong><code>6,339 B</code> (<code>107.4</code> frames) at <code>ML-DSA-44</code></strong>, <strong><code>6,979 B</code> (<code>118.3</code> frames) at <code>ML-DSA-65</code></strong>, and <strong><code>7,619 B</code> (<code>129.3</code> frames, <code>5,892–7,449 B</code> vs. <code>13,511–15,068 B</code>) at <code>ML-DSA-87</code></strong> compared to post-quantum <code>fmt: "packed"</code>.
         </p>
       </div>
 
@@ -419,36 +419,36 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000000000"
+          <a href="./fido_ctap23_conformance_report.html#section-run31"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000000 (Latest — Run 30: 260 / 260 100.00% PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000 (Latest — Run 31: ML-DSA-87 Batch Key &amp; 4-Tier Batch Key Comparison)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 30 (<code>260 / 260</code> <code>100.00%</code> PASS in <code>13m 41.92s</code>): Unified <code>js/mtc-validation.js</code> Attestation Verification Pipeline &amp; Cross-Format Attestation Wire Size and Timing Analysis (<code>ML-DSA-65</code> Batch &amp; <code>ML-DSA-44</code> Enterprise)
+              Run 31 (<code>260 / 260</code> <code>100.00%</code> PASS in <code>16m 09.10s</code>): <code>ML-DSA-87</code> (<code>alg: -50</code>) Batch Attestation &amp; Side-by-Side Comparison Across All Batch Key Sizes (<code>ES256</code> vs. <code>ML-DSA-44</code> vs. <code>ML-DSA-65</code> vs. <code>ML-DSA-87</code>)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              End-to-end verification of the unified 8-step <code>verifyMtc</code> &amp; <code>verifyAttestationByFmt</code> pipeline and side-by-side wire size (<code>BCNT</code>, <code>64 B</code> HID frames, <code>authData</code>, <code>attStmt</code>) and timing (<code>ms</code>) benchmark across all 18 algorithms and all attestation modes, demonstrating <code>-6,979 B</code> (<code>-53.2%</code> to <code>-60.4%</code>, <code>-118</code> to <code>-119</code> frames) wire savings and <code>-1,151.8 ms</code> (<code>-42.6%</code>) faster registration for post-quantum <code>fmt: "mtc"</code> vs. post-quantum <code>fmt: "packed"</code>.
+              Complete 4-tier batch key comparison across <code>159</code> <code>MakeCredential</code> ceremonies per run: proves that as the batch key scales from <code>ML-DSA-44</code> (Run 29) &rarr; <code>ML-DSA-65</code> (Run 30) &rarr; <code>ML-DSA-87</code> (Run 31), post-quantum <code>fmt: "packed"</code> balloons from <code>10.0–11.6 KB</code> (<code>170–197f</code>) to <code>13.5–15.1 KB</code> (<code>230–256f</code>), whereas <code>fmt: "mtc"</code> (<code>19 B</code> <code>mtcKeyRef</code>) saves <code>6,339 B</code> (<code>107.4f</code>), <code>6,979 B</code> (<code>118.3f</code>), and <code>7,619 B</code> (<code>129.3f</code>) on every registration, plus <code>ThirdPartyPayment</code> / <code>LargeBlobs</code> lockup fixes and Default Optional <code>UP</code> UX validation.
             </p>
           </a>
 
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000000"
+          <a href="./fido_ctap23_conformance_report.html#section-run30"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Runs 27 &amp; 26: 252 / 252 PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000000 (Run 30: ML-DSA-65 Batch Key, 260 / 260 PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 27 (<code>11m 11.17s</code>, <code>totalphase.csv</code>) &amp; Run 26 (<code>269,469</code> RTT Lines): 18-Algorithm USB &amp; MCU Timing Deep Dive
+              Run 30 (<code>13m 41.92s</code>): Unified <code>js/mtc-validation.js</code> Verifier &amp; <code>ML-DSA-65</code> (<code>alg: -49</code>) Batch Benchmark
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Correlated hardware USB protocol analyzer timings across all 18 credential key algorithms, dual <code>P0.11</code>/<code>P0.08</code> UP, and zero-dialog MCU resets.
+              Unified 8-step <code>verifyMtc</code> / <code>verifyAttestationByFmt</code> verification pipeline and <code>ML-DSA-65</code> batch key benchmark (<code>3,351 B</code> <code>mtc</code> vs. <code>10,335 B</code> <code>packed</code>, saving <code>6,979 B</code> and <code>1,151.8 ms</code> per registration).
             </p>
           </a>
 
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000"
+          <a href="./fido_ctap23_conformance_report.html#section-run29"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Run 23)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000000 (Run 29: ML-DSA-44 Batch Key, 259 / 259 PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 23: Enterprise Attestation (6/6 PASS) &amp; <code>mtc-debug</code> Gate
+              Run 29 (<code>13m 19.96s</code>): Sub-Task Algorithm-Sweep Progress Bars &amp; <code>ML-DSA-44</code> (<code>alg: -48</code>) Batch Benchmark
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Verification of Enterprise Attestation (EP 1 and 2) privacy gates and strict <code>deviceSerial</code> elision on standard makeCredential.
+              <code>ML-DSA-44</code> batch key benchmark across all 18 algorithms (<code>2,462 B</code> <code>mtc</code> vs. <code>8,806 B</code> <code>packed</code>, saving <code>6,339 B</code> / <code>107.4</code> frames and <code>571.0 ms</code> per registration).
             </p>
           </a>
         </div>
