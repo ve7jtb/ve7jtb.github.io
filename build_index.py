@@ -110,8 +110,8 @@ def build_index():
           <a href="#sec-fido-conformance" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">100% PASS Telemetry</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 21–30)</div>
-              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">260/260 PASS across 18 algorithms, unified js/mtc-validation.js verifier &amp; cross-format wire size &amp; timing benchmark.</p>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 41–50)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">302/302 PASS across all 20 categories (incl. previewSign v4 19/19 &amp; v5 23/23), 18 algorithms &amp; fmt: "mtc" telemetry.</p>
             </div>
           </a>
 
@@ -391,26 +391,26 @@ def build_index():
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Run 30: 260 / 260 (100.00% PASS)
+            Run 50: 302 / 302 (100.00% PASS across 20 Categories)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Unified js/mtc-validation.js Verifier
+            ExtensionPreviewSign (v4 19/19) &amp; ExtensionPreviewSign5 (v5 23/23)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Last 10 Runs (Runs 21–30)
+            Last 10 Runs (Runs 41–50)
           </span>
         </div>
-        <span class="text-xs text-[var(--muted-foreground)] font-mono">October 2026</span>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">November 2026</span>
       </div>
 
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), Stateless <code>ML-DSA-87</code> (<code>alg: -50</code>) &amp; <code>ES384</code> (<code>alg: -35</code>) Root CA Hierarchy, All 8 Extensions (incl. <code>"mtc-debug"</code>), <code>persistentPinUvAuthToken</code> (<code>perCredMgmtRO</code>), Enterprise Attestation, Dual Hardware/VCOM User Presence &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
+            FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (<code>302 / 302</code> <code>100.00%</code> PASS), 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 10 Extensions (incl. <code>"previewSign"</code> <code>v4</code>, <code>"previewSign5"</code> <code>v5</code> &amp; <code>"mtc-debug"</code>), Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CA Hierarchy, Enterprise Attestation &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 21–30), highlighted by <strong>Run 30 (<code>260 / 260</code> <code>100.00%</code> PASS, <code>31</code> Skipped, <code>0</code> Failed in <code>13m 41.92s</code>)</strong> featuring the unified, strict reusable <code>js/mtc-validation.js</code> attestation verification module (<code>verifyMtc</code>, <code>verifyPacked</code>, <code>verifyAttestationByFmt</code>, <code>bootstrapMtcTrustState</code>, <code>decodeCborLossless</code>) and a comprehensive attestation wire-size (<code>BCNT</code>, <code>64 B</code> HID frames, <code>authData</code>, <code>attStmt</code>) and timing (<code>ms</code>) benchmark across <code>"none"</code>, <code>"mtc"</code> (<code>19 B</code> <code>mtcKeyRef</code>, <code>3,351 B</code> <code>ML-DSA-65</code> batch <code>attStmt</code>, saving <code>6,979 B</code> / <code>118–119</code> frames and <code>1,151.8 ms</code> vs PQ <code>"packed"</code>), <code>"packed"</code> Classical X.509 (<code>600 B</code> cert), <code>"packed"</code> Post-Quantum <code>ML-DSA-65</code> X.509 (<code>7,004 B</code> cert, <code>10,335 B</code> <code>attStmt</code>), and <code>"mtc"</code> + <code>"mtc-debug"</code> across all 18 supported algorithms.
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 41–50), highlighted by three consecutive full 20-category <strong><code>302 / 302</code> (<code>100.00%</code> PASS)</strong> runs in <strong>Runs 48, 49 &amp; 50 (<code>302</code> Passed, <code>32</code> Skipped, <code>0</code> Failed in <code>32m 05.34s</code> in Run 50)</strong> featuring <code>ExtensionPreviewSign</code> (<code>v4</code>, <code>19/19</code>) and <code>ExtensionPreviewSign5</code> (<code>v5</code>, <code>23/23</code>) with strict <code>P1</code> <code>verifyP256Signature</code> cryptographic verification (<code>ESP256</code> <code>-9</code>, <code>ES256</code> <code>-7</code>, <code>ESP256-split</code>, and <code>ESP256-split-ARKG</code> under <code>ARKG-P256</code> <code>-65700</code>), automated Total Phase <code>Data Center</code> single-socket proxy capture, and cross-batch-key attestation wire-size (<code>BCNT</code>, <code>64 B</code> HID frames) and Host USB + MCU RTT timing benchmarks across <code>ML-DSA-44</code> (<code>alg: -48</code>), <code>ML-DSA-65</code> (<code>alg: -49</code>), and <code>ML-DSA-87</code> (<code>alg: -50</code>) batch certificates.
         </p>
       </div>
 
@@ -433,36 +433,36 @@ def build_index():
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000000000"
+          <a href="./fido_ctap23_conformance_report.html#section-run50"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000000 (Latest — Run 30: 260 / 260 100.00% PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000000000000000000000 (Latest — Run 50: 302 / 302 100.00% PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 30 (<code>260 / 260</code> <code>100.00%</code> PASS in <code>13m 41.92s</code>): Unified <code>js/mtc-validation.js</code> Attestation Verification Pipeline &amp; Cross-Format Attestation Wire Size and Timing Analysis (<code>ML-DSA-65</code> Batch &amp; <code>ML-DSA-44</code> Enterprise)
+              Run 50 (<code>302 / 302</code> <code>100.00%</code> PASS in <code>32m 05.34s</code>): Single Contiguous Full 20-Category CTAP 2.3 Suite Including <code>ExtensionPreviewSign</code> (<code>v4</code>, <code>19/19</code>), <code>ExtensionPreviewSign5</code> (<code>v5</code>, <code>23/23</code>) &amp; <code>ML-DSA-44</code> Batch Attestation
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              End-to-end verification of the unified 8-step <code>verifyMtc</code> &amp; <code>verifyAttestationByFmt</code> pipeline and side-by-side wire size (<code>BCNT</code>, <code>64 B</code> HID frames, <code>authData</code>, <code>attStmt</code>) and timing (<code>ms</code>) benchmark across all 18 algorithms and all attestation modes, demonstrating <code>-6,979 B</code> (<code>-53.2%</code> to <code>-60.4%</code>, <code>-118</code> to <code>-119</code> frames) wire savings and <code>-1,151.8 ms</code> (<code>-42.6%</code>) faster registration for post-quantum <code>fmt: "mtc"</code> vs. post-quantum <code>fmt: "packed"</code>.
+              Complete single-log verification of all 20 CTAP 2.3 categories with strict <code>P1</code> <code>verifyP256Signature</code> verification, automated Total Phase <code>datacenter_ctl.py</code> proxy daemon capture stop, and 18-algorithm attestation benchmark saving <code>6,344.0 B</code> (<code>107.5</code> HID frames, <code>-58.0%</code>) and <code>547.9 ms</code> (<code>-57.8%</code>) USB transfer overhead per PQ registration with <code>ML-DSA-44</code> (<code>alg: -48</code>) <code>fmt: "mtc"</code> vs. <code>fmt: "packed"</code>.
             </p>
           </a>
 
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000000"
+          <a href="./fido_ctap23_conformance_report.html#section-run46"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000000 (Runs 27 &amp; 26: 252 / 252 PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000000000000000000000 (Run 46: 302 / 302 PASS — ML-DSA-87)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 27 (<code>11m 11.17s</code>, <code>totalphase.csv</code>) &amp; Run 26 (<code>269,469</code> RTT Lines): 18-Algorithm USB &amp; MCU Timing Deep Dive
+              Run 46 (<code>302 / 302</code> PASS): Full 20-Category Suite with <code>ML-DSA-87</code> (<code>alg: -50</code>, NIST Level 5) Batch Certificates
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Correlated hardware USB protocol analyzer timings across all 18 credential key algorithms, dual <code>P0.11</code>/<code>P0.08</code> UP, and zero-dialog MCU resets.
+              18-algorithm attestation benchmark with <code>ML-DSA-87</code> batch keys (<code>4,669 B</code> <code>mtc</code> vs. <code>12,293 B</code> <code>packed</code>, saving <code>7,619 B</code> / <code>129.1</code> HID frames per PQ registration).
             </p>
           </a>
 
-          <a href="./fido_ctap23_conformance_report.html#section-0-00000"
+          <a href="./fido_ctap23_conformance_report.html#section-run45"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.00000 (Run 23)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000000000000000 (Run 45: 3-Way Total Phase USB Capture)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 23: Enterprise Attestation (6/6 PASS) &amp; <code>mtc-debug</code> Gate
+              Run 45 (<code>260 / 260</code> PASS): 3-Way Host IPC + Total Phase Hardware USB Analyzer + MCU RTT Alignment
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Verification of Enterprise Attestation (EP 1 and 2) privacy gates and strict <code>deviceSerial</code> elision on standard makeCredential.
+              <code>103,034</code> hardware USB bus records in <code>/tmp/totalphase_run45.csv</code> verifying <code>100.00%</code> byte-for-byte CBOR payload identity across all <code>154</code> registrations.
             </p>
           </a>
         </div>
