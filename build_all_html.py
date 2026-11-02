@@ -339,18 +339,20 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else ("abstract" if "abstract" in title.lower() else slug(title)),
     },
     "fido_ctap23_conformance_report": {
-        "title": "FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (313 / 313 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. \"previewSign\", \"previewSign5\" & \"mtc-debug\"), §6.4 & §6.6 Post-Reset encIdentifier & encCredStoreState Plaintext Regeneration & pcmr Rotation, AuthenticatorConfig Negative Matrix (F-1..F-6) & §6.11.4 Token Invalidation, pcmr Enforcement, Enterprise Attestation & Consolidated Post-Quantum fmt: \"mtc\"",
+        "title": "FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (322 / 322 100.00% PASS, 401 Total), §6.8.7 RP Identifier Truncation (P-7) & RP-Scoped cm(0x04) permissionsRPID Enforcement (+9 CredManAPI Tests), §6.4 & §6.6 Post-Reset encIdentifier & encCredStoreState Plaintext Regeneration & pcmr Rotation, AuthenticatorConfig Negative Matrix (F-1..F-6) & §6.11.4 Token Invalidation, 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. \"previewSign\", \"previewSign5\" & \"mtc-debug\"), Enterprise Attestation & Consolidated Post-Quantum fmt: \"mtc\"",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("Run 55: 313 / 313 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Run 56: 322 / 322 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("§6.8.7 RP Truncation P-7 + RP-Scoped cm (+9 Tests)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("§6.4/§6.6 Post-Reset Plaintext + AuthenticatorConfig F-1..F-6", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("ExtensionPreviewSign (v4 19/19) & v5 (23/23)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("Last 10 Runs (Runs 46–55)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Last 11 Runs (Runs 46–56)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 46–55), highlighted by Run 55 (313 / 313 100.00% PASS, 79 Skipped, 0 Failed in 19m 27.21s active bus time across 49,960 debug log lines and 81,501 direct native arm64 Beagle USB 12 records in totalphase_fidont_ctap23.csv) featuring CTAP 2.3 §6.4 and §6.6 post-reset encIdentifier (Authr-GetInfo P-4) and encCredStoreState (Authr-GetInfo P-5) decrypted 128-bit plaintext regeneration, persistent pcmr(0x40) token rotation (postResetPpuat !== preResetPpuat), and post-reset read-only stability across getInfo3 and getInfo4, alongside the CTAP 2.3 §6.11 and §6.11.4 AuthenticatorConfig raw-command negative matrix (F-1..F-6), §6.11.4 Step 7 immediate invalidation of pre-issued ordinary and persistent pcmr (0x40) tokens when authenticatorConfig forces a PIN change (AuthenticatorConfig P-3/P-5 and ClientPin2-NewPin P-3/P-4), decrypted 128-bit encCredStoreState plaintext mutation & read-only stability assertions (§6.4, §6.1.2, §6.8.5, §6.8.6), persistent read-only credential management (pcmr, 0x40) negative conformance tests, ExtensionPreviewSign v4 (19/19) and v5 (23/23), and cross-batch-key attestation wire-size and Host USB + MCU RTT timing benchmarks across all 18 supported algorithms.",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 11 conformance runs (Runs 46–56), highlighted by Run 56 (322 / 322 100.00% PASS, 79 Skipped, 0 Failed, 401 Total in 20m 24.33s across 52,426 debug log lines) featuring +9 new CredManAPI tests (13 -> 22 passed): CTAP 2.3 §6.8.7 RP Identifier Truncation (P-7 in CredentialManagement-EnumerateRPs.js verifying 32-byte boundary invariance, 82-byte suffix-sharing domain RP non-collision, scheme-prefix preservation, maybe_truncate_rpid formatting, and full-RP hashing/comparison in enumerateCredentialsBegin, permissionsRPID, and GetAssertion) and RP-scoped cm(0x04) token permissionsRPID enforcement across subcommands 0x01..0x07 (EnumerateRPs F-1..F-2, EnumerateCredentials P-4 & F-1..F-2, UpdateAndDelete P-3 & F-3..F-4), alongside 4-part AuthenticatorConfig F-6 (F-6a, F-6b-1, F-6b-2, F-6c) & NFC-safe compact F-5 overflow validation, CTAP 2.3 §6.4 and §6.6 post-reset encIdentifier (Authr-GetInfo P-4) and encCredStoreState (Authr-GetInfo P-5) decrypted 128-bit plaintext regeneration & persistent pcmr(0x40) token rotation, §6.11.4 Step 7 immediate invalidation of pre-issued ordinary and persistent pcmr (0x40) tokens when authenticatorConfig forces a PIN change, decrypted 128-bit encCredStoreState plaintext mutation & read-only stability assertions, ExtensionPreviewSign v4 (19/19) and v5 (23/23), and cross-batch-key attestation wire-size and Host USB + MCU RTT timing benchmarks across all 18 supported algorithms.",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-run55" if "Run 55" in title else
+            "section-run56" if "Run 56" in title else
+            ("section-run55" if "Run 55" in title else
             ("section-run54" if "Run 54" in title else
             ("section-run53" if "Run 53" in title else
             ("section-run52" if "Run 52" in title else
@@ -370,7 +372,7 @@ DOCUMENT_CONFIGS = {
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title)))))))))))))))))))))
+            (f"section-{num}" if num else slug(title))))))))))))))))))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {
