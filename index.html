@@ -96,8 +96,8 @@
           <a href="#sec-fido-conformance" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">100% PASS Telemetry</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 42–51)</div>
-              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">307/307 PASS across all 20 categories (incl. pcmr read-only enforcement, previewSign v4 19/19 &amp; v5 23/23), 18 algorithms &amp; fmt: "mtc" telemetry.</p>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">FIDO CTAP 2.3 Conformance (Runs 43–52)</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">307/307 PASS across all 20 categories (incl. decrypted 128-bit encCredStoreState plaintext assertions, pcmr enforcement, previewSign v4 19/19 &amp; v5 23/23), 18 algorithms &amp; fmt: "mtc" telemetry.</p>
             </div>
           </a>
 
@@ -377,13 +377,13 @@
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Run 51: 307 / 307 (100.00% PASS across 20 Categories)
+            Run 52: 307 / 307 (100.00% PASS across 20 Categories)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            pcmr Read-Only Enforcement + ExtensionPreviewSign (v4 19/19 &amp; v5 23/23)
+            encCredStoreState Plaintext + pcmr Read-Only Enforcement + ExtensionPreviewSign (v4 19/19 &amp; v5 23/23)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Last 10 Runs (Runs 42–51)
+            Last 10 Runs (Runs 43–52)
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">November 2026</span>
@@ -392,11 +392,11 @@
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (<code>307 / 307</code> <code>100.00%</code> PASS), Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement, 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 10 Extensions (incl. <code>"previewSign"</code> <code>v4</code>, <code>"previewSign5"</code> <code>v5</code> &amp; <code>"mtc-debug"</code>), Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CA Hierarchy, Enterprise Attestation &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
+            FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (<code>307 / 307</code> <code>100.00%</code> PASS), Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification, Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement, 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 10 Extensions (incl. <code>"previewSign"</code> <code>v4</code>, <code>"previewSign5"</code> <code>v5</code> &amp; <code>"mtc-debug"</code>), Stateless <code>ML-DSA-87</code> &amp; <code>ES384</code> Root CA Hierarchy, Enterprise Attestation &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 42–51), highlighted by <strong>Run 51 (<code>307 / 307</code> <code>100.00%</code> PASS, <code>79</code> Skipped, <code>0</code> Failed in <code>18m 27.22s</code> with <code>92,870</code> direct native <code>arm64</code> Beagle USB 12 records in <code>totalphase_fidont_ctap23.csv</code>)</strong> featuring <code>+10</code> new persistent read-only credential management (<code>pcmr</code>, <code>0x40</code>) negative conformance tests (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) in <code>ClientPin2</code> (<code>26/26</code>) and <code>CredManAPI</code> (<code>14/14</code>), <code>ExtensionPreviewSign</code> (<code>v4</code>, <code>19/19</code>) and <code>ExtensionPreviewSign5</code> (<code>v5</code>, <code>23/23</code>) with strict <code>P1</code> <code>verifyP256Signature</code> cryptographic verification, and cross-batch-key attestation wire-size (<code>BCNT</code>, <code>64 B</code> HID frames) and Host USB + MCU RTT timing benchmarks across <code>ML-DSA-44</code> (<code>alg: -48</code>), <code>ML-DSA-65</code> (<code>alg: -49</code>), and <code>ML-DSA-87</code> (<code>alg: -50</code>) batch certificates.
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 43–52), highlighted by <strong>Run 52 (<code>307 / 307</code> <code>100.00%</code> PASS, <code>79</code> Skipped, <code>0</code> Failed in <code>18m 28.64s</code> with <code>93,835</code> direct native <code>arm64</code> Beagle USB 12 records in <code>totalphase_fidont_ctap23.csv</code>)</strong> featuring decrypted 128-bit <code>encCredStoreState</code> plaintext mutation and read-only stability assertions (§6.4, §6.1.2, §6.8.5, §6.8.6) in <code>OptionsRK</code> (<code>P-5</code>) and <code>CredManAPI</code> (<code>P-1</code>, <code>P-2</code>, <code>F-1</code>, <code>F-2</code>), persistent read-only credential management (<code>pcmr</code>, <code>0x40</code>) negative conformance tests in <code>ClientPin2</code> (<code>26/26</code>) and <code>CredManAPI</code> (<code>14/14</code>), <code>ExtensionPreviewSign</code> (<code>v4</code>, <code>19/19</code>) and <code>ExtensionPreviewSign5</code> (<code>v5</code>, <code>23/23</code>) with strict <code>P1</code> <code>verifyP256Signature</code> cryptographic verification, and cross-batch-key attestation wire-size (<code>BCNT</code>, <code>64 B</code> HID frames) and Host USB + MCU RTT timing benchmarks across <code>ML-DSA-44</code> (<code>alg: -48</code>), <code>ML-DSA-65</code> (<code>alg: -49</code>), and <code>ML-DSA-87</code> (<code>alg: -50</code>) batch certificates.
         </p>
       </div>
 
@@ -419,14 +419,25 @@
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./fido_ctap23_conformance_report.html#section-run51"
+          <a href="./fido_ctap23_conformance_report.html#section-run52"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000000000000000000 (Latest — Run 51: 307 / 307 100.00% PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000000000000000000000000 (Latest — Run 52: 307 / 307 100.00% PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 51 (<code>307 / 307</code> <code>100.00%</code> PASS in <code>18m 27.22s</code>): Expanded Full 20-Category CTAP 2.3 Suite With Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>92,870</code> USB Records)
+              Run 52 (<code>307 / 307</code> <code>100.00%</code> PASS in <code>18m 28.64s</code>): Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification Across <code>OptionsRK</code> &amp; <code>CredManAPI</code> With <code>ML-DSA-44</code> Batch &amp; Enterprise Attestation &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>93,835</code> USB Records)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Verifies <code>CTAP2_ERR_UNAUTHORIZED_PERMISSION(0x40)</code> when combining <code>pcmr(0x40)</code> with <code>cm(0x04)</code>, <code>mc(0x01)</code>, or <code>ga(0x02)</code> (§6.5.5.7.2 / §6.5.5.7.3) and <code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code> with full credential-immutability verification on <code>updateUserInformation(0x07)</code> and <code>deleteCredential(0x06)</code> using a <code>pcmr</code>-only token (§6.8.5 / §6.8.6), alongside <code>ML-DSA-44</code> batch &amp; enterprise attestation and direct native <code>arm64</code> Beagle USB 12 capture.
+              Retains a persistent <code>pcmr</code> token and derives the 256-bit AES-CBC decryption key via <code>HKDF-SHA-256(salt=0x00^32, IKM=pinUvAuthToken, info="CTAP2 credStoreState key", L=32)</code> (§6.5.5.7.1.3) to decrypt 32-byte <code>encCredStoreState</code> (<code>IV_16 || CT_16</code>) snapshots and verify that the underlying 128-bit <code>credStoreState</code> plaintext strictly mutates on <code>makeCredential</code> (<code>rk=true</code>), <code>updateUserInformation(0x07)</code>, and <code>deleteCredential(0x06)</code> while remaining identical across read-only <code>getCredsMetadata(0x01)</code> calls with fresh random 16-byte IVs.
+            </p>
+          </a>
+
+          <a href="./fido_ctap23_conformance_report.html#section-run51"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000000000000000000 (Run 51: 307 / 307 100.00% PASS)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Run 51 (<code>307 / 307</code> <code>100.00%</code> PASS in <code>18m 27.22s</code>): Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Verifies <code>CTAP2_ERR_UNAUTHORIZED_PERMISSION(0x40)</code> when combining <code>pcmr(0x40)</code> with <code>cm(0x04)</code>, <code>mc(0x01)</code>, or <code>ga(0x02)</code> (§6.5.5.7.2 / §6.5.5.7.3) and <code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code> on mutating <code>CredManAPI</code> commands with a <code>pcmr</code>-only token (§6.8.5 / §6.8.6).
             </p>
           </a>
 
@@ -438,17 +449,6 @@
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
               18-algorithm attestation benchmark with <code>ML-DSA-44</code> batch keys (<code>2,462 B</code> <code>mtc</code> vs. <code>8,806 B</code> <code>packed</code>, saving <code>6,344 B</code> / <code>107.5</code> HID frames and <code>429.7 ms</code> USB transfer overhead per PQ registration).
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-run46"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000000000000000000000 (Run 46: 302 / 302 PASS — ML-DSA-87)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 46 (<code>302 / 302</code> PASS): Full 20-Category Suite with <code>ML-DSA-87</code> (<code>alg: -50</code>, NIST Level 5) Batch Certificates
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              18-algorithm attestation benchmark with <code>ML-DSA-87</code> batch keys (<code>4,669 B</code> <code>mtc</code> vs. <code>12,293 B</code> <code>packed</code>, saving <code>7,619 B</code> / <code>129.1</code> HID frames per PQ registration).
             </p>
           </a>
         </div>

@@ -339,18 +339,19 @@ DOCUMENT_CONFIGS = {
         "section_id_fn": lambda num, title: f"section-{num}" if num else ("abstract" if "abstract" in title.lower() else slug(title)),
     },
     "fido_ctap23_conformance_report": {
-        "title": "FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (307 / 307 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. \"previewSign\", \"previewSign5\" & \"mtc-debug\"), persistentPinUvAuthToken (perCredMgmtRO / pcmr Enforcement), Enterprise Attestation & Consolidated Post-Quantum fmt: \"mtc\"",
+        "title": "FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (307 / 307 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 & FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) & ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. \"previewSign\", \"previewSign5\" & \"mtc-debug\"), persistentPinUvAuthToken (perCredMgmtRO / pcmr Enforcement & Decrypted 128-Bit encCredStoreState Plaintext Mutation/Stability Verification), Enterprise Attestation & Consolidated Post-Quantum fmt: \"mtc\"",
         "badges": [
             ("FIDO2 CTAP 2.3 Conformance Report", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
-            ("Run 51: 307 / 307 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("pcmr Read-Only & Permission Enforcement", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Run 52: 307 / 307 (100.00% PASS)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("encCredStoreState Plaintext + pcmr Enforcement", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
             ("ExtensionPreviewSign (v4 19/19) & v5 (23/23)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
-            ("Last 10 Runs (Runs 42–51)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("Last 10 Runs (Runs 43–52)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
         ],
-        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 42–51), highlighted by Run 51 (307 / 307 100.00% PASS, 79 Skipped, 0 Failed in 18m 27.22s across 45,718 debug log lines and 92,870 direct native arm64 Beagle USB 12 records in totalphase_fidont_ctap23.csv) featuring +10 new persistent read-only credential management (pcmr, 0x40) negative conformance tests (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) in ClientPin2 (26/26) and CredManAPI (14/14), ExtensionPreviewSign v4 (19/19) and v5 (23/23), and cross-batch-key attestation wire-size (BCNT, 64B HID frames) and Host USB + MCU RTT timing benchmarks across all 18 supported algorithms.",
+        "desc": "Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 43–52), highlighted by Run 52 (307 / 307 100.00% PASS, 79 Skipped, 0 Failed in 18m 28.64s across 46,183 debug log lines and 93,835 direct native arm64 Beagle USB 12 records in totalphase_fidont_ctap23.csv) featuring decrypted 128-bit encCredStoreState plaintext mutation & read-only stability assertions (§6.4, §6.1.2, §6.8.5, §6.8.6) in OptionsRK (P-5) and CredManAPI (P-1, P-2, F-1, F-2), persistent read-only credential management (pcmr, 0x40) negative conformance tests in ClientPin2 (26/26) and CredManAPI (14/14), ExtensionPreviewSign v4 (19/19) and v5 (23/23), and cross-batch-key attestation wire-size (BCNT, 64B HID frames) and Host USB + MCU RTT timing benchmarks across all 18 supported algorithms.",
         "attribution": "Fidont is an authenticator simulator designed for prototyping new specifications and testing authenticator conformance tools. It is based on the Google OpenSK Rust codebase. Fidont is not suitable for production security use outside of certification, conformance testing, and prototyping new features.",
         "section_id_fn": lambda num, title: (
-            "section-run51" if "Run 51" in title else
+            "section-run52" if "Run 52" in title else
+            ("section-run51" if "Run 51" in title else
             ("section-run50" if "Run 50" in title else
             ("section-run46" if "Run 46" in title else
             ("section-run45" if "Run 45" in title else
@@ -367,7 +368,7 @@ DOCUMENT_CONFIGS = {
             ("section-0-0" if "0.0 " in title else
             ("section-0" if title.strip().startswith("0.") else
             ("overview" if "overview" in title.lower() else
-            (f"section-{num}" if num else slug(title))))))))))))))))))
+            (f"section-{num}" if num else slug(title)))))))))))))))))))
         ),
     },
     "enterprise_attestation_mtc_vs_lmots_comparison": {

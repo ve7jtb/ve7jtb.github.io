@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (307 / 307 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. &quot;previewSign&quot;, &quot;previewSign5&quot; &amp; &quot;mtc-debug&quot;), persistentPinUvAuthToken (perCredMgmtRO / pcmr Enforcement), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: &quot;mtc&quot;</title>
+  <title>FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (307 / 307 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. &quot;previewSign&quot;, &quot;previewSign5&quot; &amp; &quot;mtc-debug&quot;), persistentPinUvAuthToken (perCredMgmtRO / pcmr Enforcement &amp; Decrypted 128-Bit encCredStoreState Plaintext Mutation/Stability Verification), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: &quot;mtc&quot;</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -64,10 +64,10 @@
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
       <div class="flex flex-wrap items-center gap-2">
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">FIDO2 CTAP 2.3 Conformance Report</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Run 51: 307 / 307 (100.00% PASS)</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">pcmr Read-Only &amp; Permission Enforcement</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Run 52: 307 / 307 (100.00% PASS)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">encCredStoreState Plaintext + pcmr Enforcement</span>
         <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">ExtensionPreviewSign (v4 19/19) &amp; v5 (23/23)</span>
-        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Last 10 Runs (Runs 42–51)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">Last 10 Runs (Runs 43–52)</span>
       </div>
       <div class="flex items-center gap-4">
         <a href="./fido_ctap23_conformance_report.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
@@ -75,10 +75,10 @@
       </div>
     </div>
     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-      FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (307 / 307 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. "previewSign", "previewSign5" &amp; "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO / pcmr Enforcement), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
+      FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (307 / 307 100.00% PASS), 18 Algorithms (Including Draft NIST FIPS 206 FN-DSA-512 &amp; FN-DSA-1024), Stateless ML-DSA-87 (alg: -50) &amp; ES384 (alg: -35) Root CA Hierarchy, All 10 Extensions (incl. "previewSign", "previewSign5" &amp; "mtc-debug"), persistentPinUvAuthToken (perCredMgmtRO / pcmr Enforcement &amp; Decrypted 128-Bit encCredStoreState Plaintext Mutation/Stability Verification), Enterprise Attestation &amp; Consolidated Post-Quantum fmt: "mtc"
     </h1>
     <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
-      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 42–51), highlighted by Run 51 (307 / 307 100.00% PASS, 79 Skipped, 0 Failed in 18m 27.22s across 45,718 debug log lines and 92,870 direct native arm64 Beagle USB 12 records in totalphase_fidont_ctap23.csv) featuring +10 new persistent read-only credential management (pcmr, 0x40) negative conformance tests (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) in ClientPin2 (26/26) and CredManAPI (14/14), ExtensionPreviewSign v4 (19/19) and v5 (23/23), and cross-batch-key attestation wire-size (BCNT, 64B HID frames) and Host USB + MCU RTT timing benchmarks across all 18 supported algorithms.
+      Multi-log hardware verification on the Nordic nRF52840 DK running Fidont across the last 10 conformance runs (Runs 43–52), highlighted by Run 52 (307 / 307 100.00% PASS, 79 Skipped, 0 Failed in 18m 28.64s across 46,183 debug log lines and 93,835 direct native arm64 Beagle USB 12 records in totalphase_fidont_ctap23.csv) featuring decrypted 128-bit encCredStoreState plaintext mutation &amp; read-only stability assertions (§6.4, §6.1.2, §6.8.5, §6.8.6) in OptionsRK (P-5) and CredManAPI (P-1, P-2, F-1, F-2), persistent read-only credential management (pcmr, 0x40) negative conformance tests in ClientPin2 (26/26) and CredManAPI (14/14), ExtensionPreviewSign v4 (19/19) and v5 (23/23), and cross-batch-key attestation wire-size (BCNT, 64B HID frames) and Host USB + MCU RTT timing benchmarks across all 18 supported algorithms.
     </p>
 
     <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
@@ -98,7 +98,11 @@
         </a>
         <a href="#overview" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Overview</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of the Last 10 Test Runs (<code>Runs 42–51</code>: Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture, [P2] WebAuthn Level 4 Credential Public Key Policy Enforcement (<code>validateCredentialPublicKeyCose</code> Across <code>verifyAttestationByFmt</code>, <code>verifyMtc</code>, <code>verifyPacked</code>, <code>P-02</code> &amp; <code>P-06</code>), [P2] Generic <code>EdDSA</code> (<code>Ed25519</code> vs. <code>Ed448</code>) Provider Parity &amp; Algorithm Context Separation (<code>JOSE</code> vs. <code>Credential</code> vs. <code>Generic COSE</code>), [P1/P2] Imported <code>alg</code> Descriptor Boundary &amp; Private Brand Enforcement, Algorithm Descriptor (<code>PS256</code> PSS, <code>ieee-p1363</code> vs. <code>der</code>, <code>COSE_Key</code> &amp; <code>crit</code> Header Binding), Production <code>cryptodep.js</code> JWS Bridge + Electron Smoke Test, P1 Signed-Envelope Binding, <code>sandbox.js</code> Proxy + <code>GetNextAssertion</code> UP Fix, Multi-Batch-Key Comparison (<code>ES256</code>, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), Unified <code>js/mtc-validation.js</code> Attestation Verifier &amp; <code>3×18</code> Attestation Matrix <code>P-06</code>)</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Overview of the Last 10 Test Runs (<code>Runs 43–52</code>: Decrypted <code>encCredStoreState</code> 128-Bit Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6), Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture, [P2] WebAuthn Level 4 Credential Public Key Policy Enforcement (<code>validateCredentialPublicKeyCose</code> Across <code>verifyAttestationByFmt</code>, <code>verifyMtc</code>, <code>verifyPacked</code>, <code>P-02</code> &amp; <code>P-06</code>), [P2] Generic <code>EdDSA</code> (<code>Ed25519</code> vs. <code>Ed448</code>) Provider Parity &amp; Algorithm Context Separation (<code>JOSE</code> vs. <code>Credential</code> vs. <code>Generic COSE</code>), [P1/P2] Imported <code>alg</code> Descriptor Boundary &amp; Private Brand Enforcement, Algorithm Descriptor (<code>PS256</code> PSS, <code>ieee-p1363</code> vs. <code>der</code>, <code>COSE_Key</code> &amp; <code>crit</code> Header Binding), Production <code>cryptodep.js</code> JWS Bridge + Electron Smoke Test, P1 Signed-Envelope Binding, <code>sandbox.js</code> Proxy + <code>GetNextAssertion</code> UP Fix, Multi-Batch-Key Comparison (<code>ES256</code>, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), Unified <code>js/mtc-validation.js</code> Attestation Verifier &amp; <code>3×18</code> Attestation Matrix <code>P-06</code>)</div>
+        </a>
+        <a href="#section-run52" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 0.0000000000000000000000000000</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Run 52 (<code>16:20:47</code> – <code>16:39:27</code> PST / <code>00:20:47</code> – <code>00:39:27</code> UTC, <code>2026-11-01</code>, <code>18m 28.64s</code>) Full 20-Category CTAP 2.3 Conformance (<code>307 / 307</code> <code>100.00%</code> PASS) With Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>93,835</code> USB Records)</div>
         </a>
         <a href="#section-run51" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">Section 0.000000000000000000000000000</div>
@@ -222,8 +226,14 @@
 
         </li>
         <li>
-          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of the Last 10 Test Runs (<code>Runs 42–51</code>: Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture, [P2] WebAuthn Level 4 Credential Public Key Policy Enforcement (<code>validateCredentialPublicKeyCose</code> Across <code>verifyAttestationByFmt</code>, <code>verifyMtc</code>, <code>verifyPacked</code>, <code>P-02</code> &amp; <code>P-06</code>), [P2] Generic <code>EdDSA</code> (<code>Ed25519</code> vs. <code>Ed448</code>) Provider Parity &amp; Algorithm Context Separation (<code>JOSE</code> vs. <code>Credential</code> vs. <code>Generic COSE</code>), [P1/P2] Imported <code>alg</code> Descriptor Boundary &amp; Private Brand Enforcement, Algorithm Descriptor (<code>PS256</code> PSS, <code>ieee-p1363</code> vs. <code>der</code>, <code>COSE_Key</code> &amp; <code>crit</code> Header Binding), Production <code>cryptodep.js</code> JWS Bridge + Electron Smoke Test, P1 Signed-Envelope Binding, <code>sandbox.js</code> Proxy + <code>GetNextAssertion</code> UP Fix, Multi-Batch-Key Comparison (<code>ES256</code>, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), Unified <code>js/mtc-validation.js</code> Attestation Verifier &amp; <code>3×18</code> Attestation Matrix <code>P-06</code>)</a>
+          <a href="#overview" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">Overview of the Last 10 Test Runs (<code>Runs 43–52</code>: Decrypted <code>encCredStoreState</code> 128-Bit Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6), Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture, [P2] WebAuthn Level 4 Credential Public Key Policy Enforcement (<code>validateCredentialPublicKeyCose</code> Across <code>verifyAttestationByFmt</code>, <code>verifyMtc</code>, <code>verifyPacked</code>, <code>P-02</code> &amp; <code>P-06</code>), [P2] Generic <code>EdDSA</code> (<code>Ed25519</code> vs. <code>Ed448</code>) Provider Parity &amp; Algorithm Context Separation (<code>JOSE</code> vs. <code>Credential</code> vs. <code>Generic COSE</code>), [P1/P2] Imported <code>alg</code> Descriptor Boundary &amp; Private Brand Enforcement, Algorithm Descriptor (<code>PS256</code> PSS, <code>ieee-p1363</code> vs. <code>der</code>, <code>COSE_Key</code> &amp; <code>crit</code> Header Binding), Production <code>cryptodep.js</code> JWS Bridge + Electron Smoke Test, P1 Signed-Envelope Binding, <code>sandbox.js</code> Proxy + <code>GetNextAssertion</code> UP Fix, Multi-Batch-Key Comparison (<code>ES256</code>, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), Unified <code>js/mtc-validation.js</code> Attestation Verifier &amp; <code>3×18</code> Attestation Matrix <code>P-06</code>)</a>
 
+        </li>
+        <li>
+          <a href="#section-run52" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000000000000000000000000000 Run 52 (<code>16:20:47</code> – <code>16:39:27</code> PST / <code>00:20:47</code> – <code>00:39:27</code> UTC, <code>2026-11-01</code>, <code>18m 28.64s</code>) Full 20-Category CTAP 2.3 Conformance (<code>307 / 307</code> <code>100.00%</code> PASS) With Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>93,835</code> USB Records)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#000000000000000000000000000001-run-52-decrypted-enccredstorestate-128-bit-plaintext-mutation-stability-verification-table" class="hover:underline">&sect;0.0000000000000000000000000000.1 Run 52 Decrypted <code>encCredStoreState</code> 128-Bit Plaintext Mutation &amp; Stability Verification Table</a></div>
+          </div>
         </li>
         <li>
           <a href="#section-run51" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000000000000000000000000000 Run 51 (<code>14:21:06</code> – <code>14:39:42</code> PST / <code>22:21:06</code> – <code>22:39:42</code> UTC, <code>2026-11-01</code>, <code>18m 27.22s</code>) Expanded Full 20-Category CTAP 2.3 Conformance (<code>307 / 307</code> <code>100.00%</code> PASS) With Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Negative Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>92,870</code> USB Records)</a>
@@ -282,6 +292,10 @@
             <div><a href="#00000000000000000000003-run-42-mtc-mtc-debug-diagnostic-enterprise-attestation-breakdown" class="hover:underline">&sect;0.000000000000000000000.3 Run 42 <code>"mtc"</code> + <code>"mtc-debug"</code> Diagnostic &amp; Enterprise Attestation Breakdown</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00000000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.00000000000000000000 Run 41 (<code>22:24:31</code> – <code>22:38:25</code> UTC, <code>2026-10-30</code>, <code>13m 54.02s</code>) Full-Suite Conformance (<code>260 / 260</code> <code>100.00%</code> PASS): Electron 45 Dependency Update, HID Path Re-Resolution &amp; Re-Provisioned <code>ML-DSA-65</code> Batch (<code>--mtc-x5c</code>) / <code>ML-DSA-44</code> Enterprise Keys + Simultaneous Host USB &amp; MCU RTT Timing</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -290,10 +304,6 @@
             <div><a href="#0000000000000000000003-run-41-mtc-mtc-debug-diagnostic-enterprise-attestation-breakdown" class="hover:underline">&sect;0.00000000000000000000.3 Run 41 <code>"mtc"</code> + <code>"mtc-debug"</code> Diagnostic &amp; Enterprise Attestation Breakdown</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-00000000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000000000000000000 Run 40 (<code>12:46:37</code> – <code>13:00:29</code> UTC, <code>2026-10-30</code>, <code>13m 52.50s</code>) Full-Suite Conformance (<code>260 / 260</code> <code>100.00%</code> PASS): Fresh-Rebuild Confirmation of WebAuthn Level 4 Credential Policy Enforcement + Simultaneous Host USB &amp; MCU RTT Attestation Timing (<code>ML-DSA-65</code> Batch Key)</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -368,6 +378,10 @@
             <div><a href="#0000000000004-run-30-mtc-mtc-debug-diagnostic-enterprise-attestation-wire-size-timing-breakdown-entepriseattestationjs-l21220l21841-mtcdebugjs-l30293l31130" class="hover:underline">&sect;0.00000000000.4 Run 30 <code>"mtc"</code> + <code>"mtc-debug"</code> Diagnostic &amp; Enterprise Attestation Wire Size &amp; Timing Breakdown (<code>EntepriseAttestation.js</code> <code>L21220–L21841</code> &amp; <code>mtcDebug.js</code> <code>L30293–L31130</code>)</a></div>
           </div>
         </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-0000000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.0000000000 Run 29 (<code>20:10:48</code> – <code>20:24:08</code> PDT, <code>2026-10-29</code>, <code>13m 19.96s</code>) Full-Suite Conformance (<code>259 / 259</code> <code>100.00%</code> PASS): Sub-Task Algorithm-Sweep Progress Bars &amp; Comprehensive Attestation Wire Size and Timing Analysis Across Formats (<code>"none"</code>, <code>"mtc"</code>, <code>"packed"</code> Classical X.509, <code>"packed"</code> Post-Quantum <code>ML-DSA-44</code> X.509 &amp; <code>"mtc-debug"</code>)</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -378,10 +392,6 @@
             <div><a href="#000000000005-key-architectural-takeaways-from-cross-format-attestation-benchmarking" class="hover:underline">&sect;0.0000000000.5 Key Architectural Takeaways from Cross-Format Attestation Benchmarking</a></div>
           </div>
         </li>
-          </ul>
-        </div>
-        <div class="space-y-3">
-          <ul class="space-y-2 text-[var(--muted-foreground)]">
         <li>
           <a href="#section-0-000000000" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">0.000000000 Run 28 (<code>18:45:59</code> – <code>18:59:31</code> PDT, <code>2026-10-29</code>, <code>13m 32.03s</code>) Full-Suite Conformance (<code>260 / 260</code> <code>100.00%</code> PASS): Exhaustive <code>3 × 18 = 54</code> Attestation Format Matrix (<code>P-06</code>), Dedicated <code>mtcDebug.js</code> Suite (<code>7 / 7</code> PASS), Strict ASN.1 DER <code>SPKI</code> Parsing &amp; Authenticated <code>metadata.mtcTrustAnchors</code> Verification</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
@@ -466,7 +476,7 @@
     <section id="overview" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
       <div class="border-b border-[var(--border)] pb-4">
         
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of the Last 10 Test Runs (<code>Runs 42–51</code>: Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture, [P2] WebAuthn Level 4 Credential Public Key Policy Enforcement (<code>validateCredentialPublicKeyCose</code> Across <code>verifyAttestationByFmt</code>, <code>verifyMtc</code>, <code>verifyPacked</code>, <code>P-02</code> &amp; <code>P-06</code>), [P2] Generic <code>EdDSA</code> (<code>Ed25519</code> vs. <code>Ed448</code>) Provider Parity &amp; Algorithm Context Separation (<code>JOSE</code> vs. <code>Credential</code> vs. <code>Generic COSE</code>), [P1/P2] Imported <code>alg</code> Descriptor Boundary &amp; Private Brand Enforcement, Algorithm Descriptor (<code>PS256</code> PSS, <code>ieee-p1363</code> vs. <code>der</code>, <code>COSE_Key</code> &amp; <code>crit</code> Header Binding), Production <code>cryptodep.js</code> JWS Bridge + Electron Smoke Test, P1 Signed-Envelope Binding, <code>sandbox.js</code> Proxy + <code>GetNextAssertion</code> UP Fix, Multi-Batch-Key Comparison (<code>ES256</code>, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), Unified <code>js/mtc-validation.js</code> Attestation Verifier &amp; <code>3×18</code> Attestation Matrix <code>P-06</code>)</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Overview of the Last 10 Test Runs (<code>Runs 43–52</code>: Decrypted <code>encCredStoreState</code> 128-Bit Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6), Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture, [P2] WebAuthn Level 4 Credential Public Key Policy Enforcement (<code>validateCredentialPublicKeyCose</code> Across <code>verifyAttestationByFmt</code>, <code>verifyMtc</code>, <code>verifyPacked</code>, <code>P-02</code> &amp; <code>P-06</code>), [P2] Generic <code>EdDSA</code> (<code>Ed25519</code> vs. <code>Ed448</code>) Provider Parity &amp; Algorithm Context Separation (<code>JOSE</code> vs. <code>Credential</code> vs. <code>Generic COSE</code>), [P1/P2] Imported <code>alg</code> Descriptor Boundary &amp; Private Brand Enforcement, Algorithm Descriptor (<code>PS256</code> PSS, <code>ieee-p1363</code> vs. <code>der</code>, <code>COSE_Key</code> &amp; <code>crit</code> Header Binding), Production <code>cryptodep.js</code> JWS Bridge + Electron Smoke Test, P1 Signed-Envelope Binding, <code>sandbox.js</code> Proxy + <code>GetNextAssertion</code> UP Fix, Multi-Batch-Key Comparison (<code>ES256</code>, <code>ML-DSA-44</code>, <code>ML-DSA-65</code>, <code>ML-DSA-87</code>), Unified <code>js/mtc-validation.js</code> Attestation Verifier &amp; <code>3×18</code> Attestation Matrix <code>P-06</code>)</h2>
       </div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -479,15 +489,6 @@
 <th class="p-3 font-semibold align-bottom text-left">Failed</th>
 <th class="p-3 font-semibold align-bottom text-left">Outcome &amp; Summary</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
-<tr>
-<td class="p-3 align-top text-left"><strong>Run 42</strong></td>
-<td class="p-3 align-top text-left"><code>fido_conformance_debug.log</code> <code>L1–L37838</code> &amp; <code>opensk_rtt.log</code> <code>L133955–L143074</code> (<code>9,120</code> lines)</td>
-<td class="p-3 align-top text-left"><code>22:52:32.60</code> – <code>23:06:29.65</code> UTC (<code>13m 57.04s</code>, <code>2026-10-30</code>)</td>
-<td class="p-3 align-top text-left"><strong>Electron <code>45.1.0</code> → <code>45.2.0</code> patch update (<code>electron</code> <code>45.2.0</code>, native modules <code>node-hid</code>, <code>usb</code>, <code>@stoprocent/noble</code>, <code>pcsclite</code> rebuilt for <code>45.2.0</code>) with the Run 41 dependency set, <code>hiddep.js</code> HID path re-resolution and <code>ML-DSA-65</code> batch (<code>--mtc --mtc-x5c</code>) / <code>ML-DSA-44</code> enterprise keys</strong></td>
-<td class="p-3 align-top text-left"><strong><code>260</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>260 Passed / 30 Skipped / 0 Failed / 0 Lockups</code>, <code>0</code> <code>[ASSERTION FAILED]</code>, <code>0</code> <code>status: false</code> waits, <code>0</code> MCU warnings/errors/panics, USB HID only)</strong> — <strong>Reproduced Run 41 on Electron <code>45.2.0</code>: the <code>hiddep.js</code> fix rebound the HID path <code>5</code> times; PQ <code>"packed"</code> <code>12,469.3 B</code> vs. <code>"mtc"</code> <code>5,490.3 B</code> mean <code>BCNT</code> (<code>-6,979 B</code> / <code>118.3</code> frames), Host USB <code>1,977.9 ms</code> vs. <code>2,551.7 ms</code> mean (<code>573.8 ms</code> / <code>-22.5%</code>) and <code>477.9 ms</code> less pure USB transfer overhead per PQ registration.</strong></td>
-</tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Run 43</strong></td>
 <td class="p-3 align-top text-left"><code>fido_conformance_debug.log</code> <code>L2974–L40783</code> (<code>37,810</code> lines), <code>/tmp/totalphase.csv</code> (<code>39,105</code> lines / <code>102,959</code> USB records) &amp; <code>opensk_rtt.log</code> <code>L143077–L152196</code> (<code>9,120</code> lines)</td>
@@ -561,13 +562,115 @@
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>302 Passed / 32 Skipped / 0 Failed / 0 HID Timeouts / 0 Lockups</code> in a single contiguous <code>32m 05.34s</code> run across all <code>20</code> CTAP 2.3 categories, including <code>19 / 19</code> in <code>ExtensionPreviewSign</code> (<code>v4</code>) and <code>23 / 23</code> in <code>ExtensionPreviewSign5</code> (<code>v5</code>), <code>4 / 4</code> clean MCU resets, automatic Total Phase <code>Data Center</code> capture stop on completion, and <code>100%</code> Host == MCU RTT <code>CTAPHID_CBOR</code> alignment)</strong> — <strong>With <code>ML-DSA-44</code> (<code>alg: -48</code>) batch attestation (<code>2,462 B</code> <code>"mtc"</code> <code>attStmt</code> vs. <code>8,806 B</code> <code>"packed"</code> <code>attStmt</code>), PQ <code>"mtc"</code> (<code>4,601.3 B</code> / <code>78.5f</code>) vs. PQ <code>"packed"</code> (<code>10,945.3 B</code> / <code>186.0f</code>) saved <code>6,344.0 B</code> (<code>107.5</code> frames, <code>-58.0%</code>), <code>271.1 ms</code> (<code>-16.6%</code>) mean / <code>203.3 ms</code> (<code>-14.0%</code>) median Host USB time (<code>1,366.5 ms</code> vs. <code>1,637.6 ms</code>), and <code>429.7 ms</code> (<code>-55.6%</code>, <code>343.5 ms</code> vs. <code>773.2 ms</code>) pure USB HID wire transfer overhead per PQ registration!</strong></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Run 51 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><strong>Run 51</strong></td>
 <td class="p-3 align-top text-left"><a href="./fido_conformance_debug.log" class="text-[var(--primary)] hover:underline"><code>fido_conformance_debug.log</code></a> <code>L1–L45718</code> (<code>45,718</code> lines), <a href="./totalphase_fidont_ctap23.csv" class="text-[var(--primary)] hover:underline"><code>totalphase_fidont_ctap23.csv</code></a> (<code>92,877</code> lines / <code>92,870</code> USB records, <code>8.55 MB</code>) &amp; <a href="./opensk_rtt.log" class="text-[var(--primary)] hover:underline"><code>opensk_rtt.log</code></a> <code>L293865+</code></td>
 <td class="p-3 align-top text-left"><code>14:21:06.10</code> – <code>14:39:42.90</code> PST (<code>22:21:06</code> – <code>22:39:42</code> UTC, <code>18m 27.22s</code>, <code>2026-11-01</code>)</td>
 <td class="p-3 align-top text-left"><strong>Expanded Full 20-Category CTAP 2.3 Suite (<code>307</code> Active Tests / <code>386</code> Total across <code>44</code> Mocha Suites) Featuring <code>+10</code> Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Negative Tests (§6.5.5.7.2, §6.5.5.7.3, §6.8.5, §6.8.6) in <code>ClientPin2</code> (<code>F-2..F-5</code> PIN + <code>F-1..F-4</code> UV) and <code>CredentialManagement-UpdateAndDelete.js</code> (<code>F-1</code> <code>updateUserInformation</code> + <code>F-2</code> <code>deleteCredential</code>), Patched OpenSK <a href="./client_pin.rs#L409-L427" class="text-[var(--primary)] hover:underline"><code>client_pin.rs</code></a> (<code>CTAP2_ERR_UNAUTHORIZED_PERMISSION</code>), <code>ML-DSA-44</code> (<code>alg: -48</code>) Batch &amp; Enterprise Attestation, and Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>beagle-api-macos-arm64-v6.00</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong><code>307</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>307 Passed / 79 Skipped / 0 Failed / 0 HID Timeouts / 0 Lockups</code> in <code>18m 27.22s</code> across all <code>20</code> CTAP 2.3 categories, including <code>26 / 26</code> in <code>ClientPin2</code>, <code>14 / 14</code> in <code>CredManAPI</code>, <code>19 / 19</code> in <code>ExtensionPreviewSign</code> (<code>v4</code>), <code>23 / 23</code> in <code>ExtensionPreviewSign5</code> (<code>v5</code>), and <code>92,870</code> indexed USB bus records in <code>totalphase_fidont_ctap23.csv</code>)</strong> — <strong>Verified both <code>CTAP2_ERR_UNAUTHORIZED_PERMISSION(0x40)</code> when combining <code>pcmr(0x40)</code> with <code>cm(0x04)</code>, <code>mc(0x01)</code>, or <code>ga(0x02)</code> (<code>0x44</code>, <code>0x41</code>, <code>0x42</code>) and <code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code> with full credential-immutability verification when attempting <code>updateUserInformation(0x07)</code> or <code>deleteCredential(0x06)</code> using a <code>pcmr</code>-only token!</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Run 52 (Latest)</strong></td>
+<td class="p-3 align-top text-left"><a href="./fido_conformance_debug.log" class="text-[var(--primary)] hover:underline"><code>fido_conformance_debug.log</code></a> <code>L1–L46183</code> (<code>46,183</code> lines), <a href="./totalphase_fidont_ctap23.csv" class="text-[var(--primary)] hover:underline"><code>totalphase_fidont_ctap23.csv</code></a> (<code>93,842</code> lines / <code>93,835</code> USB records, <code>8.64 MB</code>) &amp; <a href="./opensk_rtt.log" class="text-[var(--primary)] hover:underline"><code>opensk_rtt.log</code></a></td>
+<td class="p-3 align-top text-left"><code>16:20:47</code> – <code>16:39:27</code> PST (<code>00:20:47</code> – <code>00:39:27</code> UTC, <code>18m 28.64s</code>, <code>2026-11-01</code> / <code>2026-11-02</code>)</td>
+<td class="p-3 align-top text-left"><strong>Full 20-Category CTAP 2.3 Suite (<code>307</code> Active Tests / <code>386</code> Total across <code>44</code> Mocha Suites) Featuring Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6) Across <a href="./ResidentKey.js#L556-L652" class="text-[var(--primary)] hover:underline"><code>ResidentKey.js</code></a> <code>P-5</code> and <a href="./CredentialManagement-UpdateAndDelete.js#L181-L667" class="text-[var(--primary)] hover:underline"><code>CredentialManagement-UpdateAndDelete.js</code></a> <code>P-1</code>, <code>P-2</code>, <code>F-1</code>, <code>F-2</code> (<code>HKDF-SHA-256(pcmrToken, 0x00^32, "encCredStoreState", 16)</code> + AES-128-CBC Decryption), <code>+10</code> <code>pcmr</code> Negative Tests, <code>ML-DSA-44</code> (<code>alg: -48</code>) Batch &amp; Enterprise Attestation, and Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>93,835</code> USB Records)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>307</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>100.00%</code> PASS (<code>307 Passed / 79 Skipped / 0 Failed / 0 HID Timeouts / 0 Lockups</code> in <code>18m 28.64s</code> across all <code>20</code> CTAP 2.3 categories, including <code>OptionsRK</code> <code>P-5</code>, <code>CredManAPI</code> <code>P-1</code>, <code>P-2</code>, <code>F-1</code>, <code>F-2</code>, <code>ClientPin2</code> <code>26/26</code>, <code>ExtensionPreviewSign</code> <code>19/19</code>, <code>ExtensionPreviewSign5</code> <code>23/23</code>, and <code>93,835</code> indexed USB bus records in <code>totalphase_fidont_ctap23.csv</code>)</strong> — <strong>Closed the single-block AES-128-CBC (<code>C = E_K(P XOR IV)</code>) assertion gap by retaining a valid persistent <code>pcmr(0x40)</code> token across store mutations, decrypting <code>encCredStoreState</code> snapshots via <code>HKDF-SHA-256(..., info="encCredStoreState")</code>, and proving that the 128-bit plaintext <code>credStoreState</code> remains stable across non-mutating reads (and rejected <code>pcmr</code>-only writes in <code>F-1</code>/<code>F-2</code>) while changing after every discoverable credential creation (<code>P-5</code>), user update (<code>P-1</code>), and credential deletion (<code>P-2</code>)!</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-run52 -->
+    <!-- ===================================================================== -->
+    <section id="section-run52" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000000000000000000000000</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Run 52 (<code>16:20:47</code> – <code>16:39:27</code> PST / <code>00:20:47</code> – <code>00:39:27</code> UTC, <code>2026-11-01</code>, <code>18m 28.64s</code>) Full 20-Category CTAP 2.3 Conformance (<code>307 / 307</code> <code>100.00%</code> PASS) With Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification (§§6.4, 6.1.2, 6.8.5, 6.8.6) &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>93,835</code> USB Records)</h2>
+      </div>
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Executive Summary of Run 52 (<a href="./fido_conformance_debug.log" class="text-[var(--primary)] hover:underline"><code>fido_conformance_debug.log</code></a> <code>L1–L46183</code>, <a href="./totalphase_fidont_ctap23.csv" class="text-[var(--primary)] hover:underline"><code>totalphase_fidont_ctap23.csv</code></a> <code>93,835</code> USB records &amp; <a href="./opensk_rtt.log" class="text-[var(--primary)] hover:underline"><code>opensk_rtt.log</code></a>, <code>307 Passed / 79 Skipped / 0 Failed</code> across all <code>20</code> CTAP 2.3 Categories in <code>18m 28.64s</code>)</strong>:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Closing the <code>encCredStoreState</code> Single-Block AES-128-CBC Ciphertext Assertion Gap (CTAP 2.3 §§6.4, 6.1.2, 6.8.5 &amp; 6.8.6)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Cryptographic Gap in Existing Suite</strong>: Previously, <a href="./ResidentKey.js#L556-L652" class="text-[var(--primary)] hover:underline"><code>ResidentKey.js</code></a> <code>P-5</code> and <a href="./CredentialManagement-UpdateAndDelete.js#L181-L448" class="text-[var(--primary)] hover:underline"><code>CredentialManagement-UpdateAndDelete.js</code></a> <code>P-1</code> / <code>P-2</code> only asserted <code>ivNew !== ivOld</code> and <code>ctNew !== ctOld</code> after discoverable credential creation, <code>updateUserInformation(0x07)</code>, and <code>deleteCredential(0x06)</code>. Because <code>encCredStoreState</code> is a single 16-byte AES-128-CBC block (<code>encCredStoreState = IV || E_K(credStoreState XOR IV)</code>), and <code>E_K</code> is a bijective permutation over 128-bit blocks, any change in the 16-byte <code>IV</code> (<code>IV_1 !== IV_2</code>) mathematically guarantees a different 16-byte ciphertext (<code>E_K(P XOR IV_1) !== E_K(P XOR IV_2)</code>) even when the underlying 128-bit plaintext <code>P = credStoreState</code> never changed.</li>
+<li><strong>Decryption &amp; Plaintext Mutation Assertions Added</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Added <code>parseAndDecryptEncCredStoreState(encCredStoreStateHex, pcmrPinUvAuthToken)</code> using <a href="./cryptodep.js#L1386-L1403" class="text-[var(--primary)] hover:underline"><code>window.navigator.fido.fido2.crypto.decryptAES128CBC(raw, pcmrPinUvAuthToken, "encCredStoreState")</code></a> (<code>HKDF-SHA-256(IKM=pcmrToken, salt=0x00^32, info="encCredStoreState", L=16)</code> per CTAP 2.3 §6.4).</li>
+<li>Retained a valid persistent <code>pinUvAuthToken</code> with <code>pcmr</code> (<code>0x40</code>) permission across subsequent transient <code>mc</code> (<code>0x01</code>) and <code>cm</code> (<code>0x04</code>) token acquisitions (which per CTAP 2.3 §6.5.5.7.2 do not invalidate the persistent <code>pcmr</code> token).</li>
+<li>Verified in <code>ResidentKey.js</code> <code>P-5</code> (<code>MakeCredential</code> with <code>rk: true</code>), <code>CredentialManagement-UpdateAndDelete.js</code> <code>P-1</code> (<code>updateUserInformation(0x07)</code>), and <code>P-2</code> (<code>deleteCredential(0x06)</code>):<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Pre-mutation read stability</strong>: Two consecutive <code>authenticatorGetInfo</code> calls before mutation produce fresh IVs (<code>snap2.iv !== snap1.iv</code>) and identical 128-bit plaintext (<code>snap2.ptHex === snap1.ptHex</code>).</li>
+<li><strong>Post-mutation plaintext change</strong>: After the credential store mutation, <code>authenticatorGetInfo</code> decrypted with the <strong>same retained <code>pcmr</code> token</strong> produces a fresh IV (<code>snap3.iv !== snap2.iv</code>), changed ciphertext (<code>snap3.ct !== snap2.ct</code>), and a <strong>new 128-bit plaintext <code>credStoreState</code> (<code>snap3.ptHex !== snap2.ptHex</code>)</strong>.</li>
+<li><strong>Post-mutation read stability</strong>: A subsequent <code>authenticatorGetInfo</code> call with no further mutation produces a fresh IV (<code>snap4.iv !== snap3.iv</code>) while preserving the new 128-bit plaintext (<code>snap4.ptHex === snap3.ptHex</code>).</li>
+</ol></li>
+<li>Verified in <code>CredentialManagement-UpdateAndDelete.js</code> <code>F-1</code> and <code>F-2</code> that rejected <code>pcmr</code>-only <code>updateUserInformation(0x07)</code> and <code>deleteCredential(0x06)</code> attempts (<code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code>) generate a fresh IV (<code>snapAfter.iv !== snapBefore.iv</code>) while leaving the decrypted 128-bit plaintext <code>credStoreState</code> unchanged (<code>snapAfter.ptHex === snapBefore.ptHex</code>).</li>
+</ul></li>
+</ul></li>
+<li><strong>Rebuilt &amp; Provisioned <code>ML-DSA-44</code> Batch &amp; Enterprise Attestation Keys + Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>93,835</code> USB Records)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Rebuilt <code>runner-nordic</code> (<code>nrf52840dk</code> with <code>debug</code> enabled), provisioned <code>ML-DSA-44</code> (<code>alg: -48</code>) batch and enterprise keys via <a href="./configure.py" class="text-[var(--primary)] hover:underline"><code>tools/configure.py</code></a>, and captured <code>93,835</code> hardware USB bus records (<code>8,636,658</code> bytes) in <a href="./totalphase_fidont_ctap23.csv" class="text-[var(--primary)] hover:underline"><code>totalphase_fidont_ctap23.csv</code></a> via <code>capture_usb12</code>.</li>
+</ul></li>
+</ol></div>
+<h3 id="000000000000000000000000000001-run-52-decrypted-enccredstorestate-128-bit-plaintext-mutation-stability-verification-table" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">0.0000000000000000000000000000.1 Run 52 Decrypted <code>encCredStoreState</code> 128-Bit Plaintext Mutation &amp; Stability Verification Table</h3>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Suite</th>
+<th class="p-3 font-semibold align-bottom text-center">Test ID</th>
+<th class="p-3 font-semibold align-bottom text-center">CTAP 2.3 Section</th>
+<th class="p-3 font-semibold align-bottom text-left">Store Operation Under Test</th>
+<th class="p-3 font-semibold align-bottom text-center">Pre-Mutation Stability (<code>iv2 !== iv1</code>, <code>pt2 === pt1</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">Post-Mutation Plaintext Change (<code>pt3 !== pt2</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">Post-Mutation Stability (<code>iv4 !== iv3</code>, <code>pt4 === pt3</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 52 Outcome &amp; Debug Log Lines</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><a href="./ResidentKey.js#L556-L652" class="text-[var(--primary)] hover:underline"><code>ResidentKey.js</code></a></td>
+<td class="p-3 align-top text-center"><strong><code>P-5</code></strong></td>
+<td class="p-3 align-top text-center">§§6.1.2, 6.4</td>
+<td class="p-3 align-top text-left"><code>authenticatorMakeCredential(0x01)</code> with <code>options: { rk: true }</code></td>
+<td class="p-3 align-top text-center">Verified (<code>pt2 === pt1</code>)</td>
+<td class="p-3 align-top text-center"><strong>Verified (<code>pt3 !== pt2</code>)</strong></td>
+<td class="p-3 align-top text-center">Verified (<code>pt4 === pt3</code>)</td>
+<td class="p-3 align-top text-left"><strong>PASS</strong> (<code>L19773–L20022</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><a href="./CredentialManagement-UpdateAndDelete.js#L181-L315" class="text-[var(--primary)] hover:underline"><code>CredentialManagement-UpdateAndDelete.js</code></a></td>
+<td class="p-3 align-top text-center"><strong><code>P-1</code></strong></td>
+<td class="p-3 align-top text-center">§§6.4, 6.8.6</td>
+<td class="p-3 align-top text-left"><code>authenticatorCredentialManagement(0x0A)</code> — <code>updateUserInformation(0x07)</code> (<code>cm</code> token)</td>
+<td class="p-3 align-top text-center">Verified (<code>pt2 === pt1</code>)</td>
+<td class="p-3 align-top text-center"><strong>Verified (<code>pt3 !== pt2</code>)</strong></td>
+<td class="p-3 align-top text-center">Verified (<code>pt4 === pt3</code>)</td>
+<td class="p-3 align-top text-left"><strong>PASS</strong> (<code>L43245–L43630</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><a href="./CredentialManagement-UpdateAndDelete.js#L318-L448" class="text-[var(--primary)] hover:underline"><code>CredentialManagement-UpdateAndDelete.js</code></a></td>
+<td class="p-3 align-top text-center"><strong><code>P-2</code></strong></td>
+<td class="p-3 align-top text-center">§§6.4, 6.8.5</td>
+<td class="p-3 align-top text-left"><code>authenticatorCredentialManagement(0x0A)</code> — <code>deleteCredential(0x06)</code> (<code>cm</code> token)</td>
+<td class="p-3 align-top text-center">Verified (<code>pt2 === pt1</code>)</td>
+<td class="p-3 align-top text-center"><strong>Verified (<code>pt3 !== pt2</code>)</strong></td>
+<td class="p-3 align-top text-center">Verified (<code>pt4 === pt3</code>)</td>
+<td class="p-3 align-top text-left"><strong>PASS</strong> (<code>L43631–L43941</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><a href="./CredentialManagement-UpdateAndDelete.js#L452-L545" class="text-[var(--primary)] hover:underline"><code>CredentialManagement-UpdateAndDelete.js</code></a></td>
+<td class="p-3 align-top text-center"><strong><code>F-1</code></strong></td>
+<td class="p-3 align-top text-center">§§6.4, 6.8.6</td>
+<td class="p-3 align-top text-left">Rejected <code>updateUserInformation(0x07)</code> with <code>pcmr</code>-only token (<code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code>)</td>
+<td class="p-3 align-top text-center">—</td>
+<td class="p-3 align-top text-center"><strong>Unchanged (<code>ptAfter === ptBefore</code>)</strong></td>
+<td class="p-3 align-top text-center">Verified (<code>ivAfter !== ivBefore</code>)</td>
+<td class="p-3 align-top text-left"><strong>PASS</strong> (<code>L43942–L44289</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><a href="./CredentialManagement-UpdateAndDelete.js#L547-L667" class="text-[var(--primary)] hover:underline"><code>CredentialManagement-UpdateAndDelete.js</code></a></td>
+<td class="p-3 align-top text-center"><strong><code>F-2</code></strong></td>
+<td class="p-3 align-top text-center">§§6.4, 6.8.5</td>
+<td class="p-3 align-top text-left">Rejected <code>deleteCredential(0x06)</code> with <code>pcmr</code>-only token (<code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code>)</td>
+<td class="p-3 align-top text-center">—</td>
+<td class="p-3 align-top text-center"><strong>Unchanged (<code>ptAfter === ptBefore</code>)</strong></td>
+<td class="p-3 align-top text-center">Verified (<code>ivAfter !== ivBefore</code>)</td>
+<td class="p-3 align-top text-left"><strong>PASS</strong> (<code>L44290–L44607</code>)</td>
 </tr>
 </tbody></table></div>
     </section>
