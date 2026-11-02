@@ -391,13 +391,13 @@ def build_index():
             Conformance &amp; Hardware Telemetry Report
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Run 54: 313 / 313 (100.00% PASS across 20 Categories)
+            Run 55: 313 / 313 (100.00% PASS across 20 Categories)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            §6.11/§6.11.4 AuthenticatorConfig Negative Matrix (F-1..F-6) + §6.11.4 Token Invalidation
+            §6.4/§6.6 Post-Reset Plaintext + §6.11/§6.11.4 AuthenticatorConfig (F-1..F-6)
           </span>
           <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            Last 10 Runs (Runs 45–54)
+            Last 10 Runs (Runs 46–55)
           </span>
         </div>
         <span class="text-xs text-[var(--muted-foreground)] font-mono">November 2026</span>
@@ -406,11 +406,11 @@ def build_index():
       <div class="space-y-3">
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
           <a href="./fido_ctap23_conformance_report.html" class="hover:underline">
-            FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (<code>313 / 313</code> <code>100.00%</code> PASS), §6.11 &amp; §6.11.4 <code>AuthenticatorConfig</code> Raw-Command Negative Matrix (<code>F-1..F-6</code>) &amp; State Non-Mutation Verification, §6.11.4 Step 7 Immediate Ordinary &amp; Persistent Token Invalidation on <code>forcePINChange</code>, Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification, Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement, 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 10 Extensions (incl. <code>"previewSign"</code> <code>v4</code>, <code>"previewSign5"</code> <code>v5</code> &amp; <code>"mtc-debug"</code>) &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
+            FIDO CTAP 2.3 Conformance Test Report — All 20 Categories (<code>313 / 313</code> <code>100.00%</code> PASS), §6.4 &amp; §6.6 Post-Reset <code>encIdentifier</code> &amp; <code>encCredStoreState</code> 128-Bit Plaintext Regeneration &amp; Persistent <code>pcmr</code> Token Rotation, §6.11 &amp; §6.11.4 <code>AuthenticatorConfig</code> Raw-Command Negative Matrix (<code>F-1..F-6</code>) &amp; State Non-Mutation Verification, §6.11.4 Step 7 Immediate Ordinary &amp; Persistent Token Invalidation on <code>forcePINChange</code>, Decrypted 128-Bit <code>encCredStoreState</code> Plaintext Mutation &amp; Stability Verification, Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement, 18 Algorithms (Including Draft NIST FIPS 206 <code>FN-DSA-512</code> &amp; <code>FN-DSA-1024</code>), All 10 Extensions (incl. <code>"previewSign"</code> <code>v4</code>, <code>"previewSign5"</code> <code>v5</code> &amp; <code>"mtc-debug"</code>) &amp; Consolidated Post-Quantum <code>fmt: "mtc"</code>
           </a>
         </h2>
         <p class="text-sm text-[var(--muted-foreground)]">
-          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 45–54), highlighted by <strong>Run 54 (<code>313 / 313</code> <code>100.00%</code> PASS, <code>79</code> Skipped, <code>0</code> Failed in <code>19m 21.48s</code> with <code>99,222</code> direct native <code>arm64</code> Beagle USB 12 records in <code>totalphase_fidont_ctap23.csv</code>)</strong> featuring the CTAP 2.3 §6.11 &amp; §6.11.4 <code>AuthenticatorConfig</code> raw-command negative matrix (<code>F-1</code> through <code>F-6</code>: missing/tampered <code>pinUvAuthParam</code>, missing <code>acfg(0x20)</code> permission for ordinary &amp; persistent <code>pcmr</code> tokens, <code>setMinPINLength</code> decrease/out-of-range violations, <code>minPinLengthRPIDs</code> capacity overflow &amp; atomic rollback verification, and malformed subcommands) with state non-mutation assertions, CTAP 2.3 §6.11.4 Step 7 immediate invalidation of pre-issued ordinary &amp; persistent tokens on <code>forcePINChange</code>, and decrypted 128-bit <code>encCredStoreState</code> plaintext mutation and stability assertions.
+          Multi-log hardware conformance and bus-level telemetry report for the <strong>Fidont</strong> CTAP 2.3 authenticator simulator on the Nordic nRF52840 DK across the last 10 test runs (Runs 46–55), highlighted by <strong>Run 55 (<code>313 / 313</code> <code>100.00%</code> PASS, <code>79</code> Skipped, <code>0</code> Failed in <code>19m 27.21s</code> active bus time with <code>81,501</code> direct native <code>arm64</code> Beagle USB 12 records in <code>totalphase_fidont_ctap23.csv</code>)</strong> featuring CTAP 2.3 §6.4 &amp; §6.6 post-reset <code>encIdentifier</code> (<code>Authr-GetInfo</code> <code>P-4</code>) and <code>encCredStoreState</code> (<code>Authr-GetInfo</code> <code>P-5</code>) decrypted 128-bit plaintext regeneration, persistent <code>pcmr(0x40)</code> token rotation (<code>postResetPpuat !== preResetPpuat</code>), and post-reset read-only stability across <code>getInfo3</code> and <code>getInfo4</code>, alongside the CTAP 2.3 §6.11 &amp; §6.11.4 <code>AuthenticatorConfig</code> raw-command negative matrix (<code>F-1</code> through <code>F-6</code>) with state non-mutation assertions, CTAP 2.3 §6.11.4 Step 7 immediate invalidation of pre-issued ordinary &amp; persistent tokens on <code>forcePINChange</code>, and decrypted 128-bit <code>encCredStoreState</code> plaintext mutation and stability assertions.
         </p>
       </div>
 
@@ -433,14 +433,25 @@ def build_index():
           Report Sections &amp; Direct Deep Links
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="./fido_ctap23_conformance_report.html#section-run54"
+          <a href="./fido_ctap23_conformance_report.html#section-run55"
              class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition md:col-span-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000000000000000000000 (Latest — Run 54: 313 / 313 100.00% PASS)</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.0000000000000000000000000000000 (Latest — Run 55: 313 / 313 100.00% PASS)</div>
             <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 54 (<code>313 / 313</code> <code>100.00%</code> PASS in <code>19m 21.48s</code>): CTAP 2.3 §6.11 &amp; §6.11.4 <code>AuthenticatorConfig</code> Raw-Command Negative Matrix (<code>F-1..F-6</code>), State Non-Mutation Verification &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>99,222</code> USB Records)
+              Run 55 (<code>313 / 313</code> <code>100.00%</code> PASS in <code>19m 27.21s</code>): CTAP 2.3 §6.4 &amp; §6.6 Post-Reset <code>encIdentifier</code> (<code>P-4</code>) &amp; <code>encCredStoreState</code> (<code>P-5</code>) 128-Bit Plaintext Regeneration, Persistent <code>pcmr</code> Token Rotation &amp; Direct Native <code>arm64</code> Beagle USB 12 Capture (<code>81,501</code> USB Records)
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Adds six negative test cases (<code>F-1</code> through <code>F-6</code>, expanding active tests from <code>307</code> to <code>313</code> and <code>Authr-AuthenticatorConfig</code> from <code>5/5</code> to <code>11/11</code>) testing missing/partial authorization, tampered <code>pinUvAuthParam</code> and parameter-binding replay across all supported protocols, missing <code>acfg(0x20)</code> permission for ordinary and persistent <code>pcmr</code> tokens, <code>setMinPINLength</code> policy violations, <code>minPinLengthRPIDs</code> capacity overflow (<code>9 &gt; 8</code>) with atomic rollback verification, and malformed subcommands, verifying configuration state invariance after every rejected request.
+              Acquires the post-reset persistent <code>pcmr(0x40)</code> token after <code>authenticatorReset(0x07)</code> in <code>Authr-GetInfo</code> <code>P-4</code> and <code>P-5</code>, verifies <code>resetPersistentPinUvAuthToken()</code> rotation (<code>postResetPpuat !== preResetPpuat</code>), decrypts the post-reset <code>encIdentifier</code> and <code>encCredStoreState</code> values via <code>HKDF-SHA-256</code> &amp; <code>AES-256-CBC</code> (§6.4) to assert 128-bit plaintext regeneration (<code>postResetPlaintext !== preResetPlaintext</code>), and verifies post-reset read-only stability across <code>getInfo3</code> and <code>getInfo4</code>.
+            </p>
+          </a>
+
+          <a href="./fido_ctap23_conformance_report.html#section-run54"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000000000000000000000 (Run 54: 313 / 313 100.00% PASS)</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Run 54 (<code>313 / 313</code> <code>100.00%</code> PASS in <code>19m 21.48s</code>): CTAP 2.3 §6.11 &amp; §6.11.4 <code>AuthenticatorConfig</code> Raw-Command Negative Matrix (<code>F-1..F-6</code>) &amp; State Non-Mutation Verification
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Adds six negative test cases (<code>F-1</code> through <code>F-6</code>, expanding active tests from <code>307</code> to <code>313</code> and <code>Authr-AuthenticatorConfig</code> from <code>5/5</code> to <code>11/11</code>) testing missing/partial authorization, tampered <code>pinUvAuthParam</code>, missing <code>acfg(0x20)</code> permission for ordinary and persistent <code>pcmr</code> tokens, <code>setMinPINLength</code> policy violations, <code>minPinLengthRPIDs</code> capacity overflow (<code>9 &gt; 8</code>) with atomic rollback verification, and malformed subcommands.
             </p>
           </a>
 
@@ -463,17 +474,6 @@ def build_index():
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
               Retains a persistent <code>pcmr</code> token and decrypts 32-byte <code>encCredStoreState</code> snapshots via <code>HKDF-SHA-256</code> (§6.4) to verify that the 128-bit <code>credStoreState</code> plaintext mutates on <code>makeCredential</code> (<code>rk=true</code>), <code>updateUserInformation(0x07)</code>, and <code>deleteCredential(0x06)</code> while remaining stable across unmutated reads.
-            </p>
-          </a>
-
-          <a href="./fido_ctap23_conformance_report.html#section-run51"
-             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 0.000000000000000000000000000 (Run 51: 307 / 307 100.00% PASS)</div>
-            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
-              Run 51 (<code>307 / 307</code> <code>100.00%</code> PASS in <code>18m 27.22s</code>): Persistent Read-Only Credential Management (<code>pcmr</code>, <code>0x40</code>) Enforcement
-            </h3>
-            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-              Verifies <code>CTAP2_ERR_UNAUTHORIZED_PERMISSION(0x40)</code> when combining <code>pcmr(0x40)</code> with <code>cm(0x04)</code>, <code>mc(0x01)</code>, or <code>ga(0x02)</code> (§6.5.5.7.2 / §6.5.5.7.3) and <code>CTAP2_ERR_PIN_AUTH_INVALID(0x33)</code> on mutating <code>CredManAPI</code> commands with a <code>pcmr</code>-only token (§6.8.5 / §6.8.6).
             </p>
           </a>
         </div>
