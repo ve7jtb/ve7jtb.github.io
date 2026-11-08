@@ -7,6 +7,8 @@
 
 ![Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad](./touchly.png)
 
+![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) on YubiKey 6 NFC](./touchly-browser.mp4)
+
 ---
 
 ## 1. End-to-End Architecture

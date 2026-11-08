@@ -55,7 +55,7 @@ def inline(text):
         if src.startswith("/") and not src.startswith("//"):
             src = "./" + src.rsplit("/", 1)[-1]
         if src.lower().endswith((".mp4", ".webm", ".mov")):
-            return stash(f'<video controls playsinline preload="metadata" class="rounded-xl border border-[var(--border)] max-h-[540px] w-full max-w-4xl mx-auto shadow-sm bg-black"><source src="{html.escape(src)}" type="video/mp4" /></video>')
+            return stash(f'<video src="{html.escape(src)}#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="{html.escape(src)}" type="video/mp4" /></video>')
         return stash(f'<img src="{html.escape(src)}" alt="{html.escape(alt)}" class="inline-block rounded-lg border border-[var(--border)] max-h-96" />')
 
     def link(m):
@@ -232,7 +232,7 @@ def parse_blocks(lines):
                 src = "./" + src.rsplit("/", 1)[-1]
             caption_html = f'<figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">{inline(alt)}</figcaption>' if alt else ""
             if src.lower().endswith((".mp4", ".webm", ".mov")):
-                media_html = f'<video controls playsinline preload="metadata" class="rounded-xl border border-[var(--border)] max-h-[540px] w-full max-w-4xl mx-auto shadow-sm bg-black"><source src="{html.escape(src)}" type="video/mp4" /></video>'
+                media_html = f'<video src="{html.escape(src)}#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="{html.escape(src)}" type="video/mp4" /></video>'
             else:
                 media_html = f'<img src="{html.escape(src)}" alt="{html.escape(alt)}" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" />'
             out.append(f'<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm">{media_html}{caption_html}</figure>')
