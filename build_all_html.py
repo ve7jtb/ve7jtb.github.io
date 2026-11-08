@@ -49,12 +49,20 @@ def inline(text):
     # <br/> passthrough
     text = re.sub(r"<br\s*/?>", lambda m: stash("<br/>"), text)
 
+    def img(m):
+        alt, url = m.group(1), m.group(2)
+        src, _ = map_url(url)
+        if src.startswith("/") and not src.startswith("//"):
+            src = "./" + src.rsplit("/", 1)[-1]
+        return stash(f'<img src="{html.escape(src)}" alt="{html.escape(alt)}" class="inline-block rounded-lg border border-[var(--border)] max-h-96" />')
+
     def link(m):
         label, url = m.group(1), m.group(2)
         href, external = map_url(url)
         tgt = ' target="_blank" rel="noopener noreferrer"' if external else ""
         return stash(f'<a href="{html.escape(href)}"{tgt} {LINK}>') + label + stash("</a>")
 
+    text = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", img, text)
     text = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, text)
     text = html.escape(text, quote=False)
     text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
@@ -210,6 +218,17 @@ def parse_blocks(lines):
         # display math block on its own line
         if s.startswith("$$") and s.endswith("$$") and len(s) > 4:
             out.append(f'<div class="overflow-x-auto py-1 text-sm my-2">$${html.escape(s[2:-2], quote=False)}$$</div>')
+            i += 1
+            continue
+        # standalone image
+        im = re.match(r"^!\[([^\]]*)\]\(([^)\s]+)\)$", s)
+        if im:
+            alt, url = im.group(1), im.group(2)
+            src, _ = map_url(url)
+            if src.startswith("/") and not src.startswith("//"):
+                src = "./" + src.rsplit("/", 1)[-1]
+            caption_html = f'<figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">{inline(alt)}</figcaption>' if alt else ""
+            out.append(f'<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><img src="{html.escape(src)}" alt="{html.escape(alt)}" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" />{caption_html}</figure>')
             i += 1
             continue
         # list
@@ -486,6 +505,18 @@ DOCUMENT_CONFIGS = {
         ],
         "desc": "Root-cause diagnostic analysis, stack trace disassembly, and two-layer fix (WebUI debounce + C++ re-entrancy protection) for a fatal SIGABRT crash in SecurityKeysCredentialHandler::HandleDelete during FIDO credential management deletion.",
         "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
+    },
+    "touchly": {
+        "title": "Touchly — Hands-Free YubiKey Capacitive Touch Driver Architecture (GPIO21 / libyk_chirp.so)",
+        "badges": [
+            ("Hardware Automation & USB Telemetry", "bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold"),
+            ("BCM2837 GPIO21 & libyk_chirp.so", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("YubiKey 6 NFC (1050:0406)", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+            ("1.61 ms Pre-Armed UP Trigger", "bg-[var(--secondary)] text-[var(--secondary-foreground)]"),
+        ],
+        "desc": "Hands-free capacitive touch driver and session-scoped USB bus monitor for YubiKey 6 NFC (6.0.0 B0 Enterprise Profile) on Raspberry Pi 3B+ BCM GPIO21 using a compiled C /dev/gpiomem logarithmic frequency chirp (500 kHz to 2 kHz), sub-12 ms High-Z release synchronization over /dev/usbmon1, and host-triggered (first_up_needed) vs. Pi pre-armed (pi_prearmed_first_up) hardware benchmarks.",
+        "render_lead": True,
+        "section_id_fn": lambda num, title: f"section-{num}" if num else slug(title),
     }
 }
 
@@ -539,9 +570,12 @@ def build_page(doc_name):
         clean_title = re.sub(r"[`*_]", "", s['title']).strip()
         short_title = clean_title[:45] + ("..." if len(clean_title) > 45 else "")
 
+        nav_title_md = re.sub(r"\[([^\]]+)\]\([^)\s]+\)", r"\1", s['title'])
+        raw_title_md = re.sub(r"\[([^\]]+)\]\([^)\s]+\)", r"\1", s['raw_title'])
+
         nav_cards.append(f'''        <a href="#{s['id']}" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
           <div class="font-bold text-[var(--primary)]">{card_label}</div>
-          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">{inline(s['title'])}</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">{inline(nav_title_md)}</div>
         </a>''')
 
         # Find subheadings inside section lines for TOC
@@ -553,8 +587,8 @@ def build_page(doc_name):
             if not in_code:
                 sm = re.match(r"^###\s+(.+)$", l.strip())
                 if sm:
-                    sub_title = sm.group(1).strip()
-                    sub_slug = slug(sub_title)
+                    sub_title = re.sub(r"\[([^\]]+)\]\([^)\s]+\)", r"\1", sm.group(1).strip())
+                    sub_slug = slug(sm.group(1).strip())
                     subheadings.append((sub_title, sub_slug))
 
         sub_html = ""
@@ -565,7 +599,7 @@ def build_page(doc_name):
           </div>'''
 
         toc_items.append(f'''        <li>
-          <a href="#{s['id']}" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">{inline(s['raw_title'])}</a>
+          <a href="#{s['id']}" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">{inline(raw_title_md)}</a>
 {sub_html}
         </li>''')
 
@@ -591,6 +625,13 @@ def build_page(doc_name):
         optional_blocks.append(f'''    <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs text-[var(--muted-foreground)] mb-6">
       <strong class="text-[var(--foreground)]">Attribution &amp; Scope of Fidont:</strong>
       {html.escape(cfg["attribution"])}
+    </div>''')
+    if cfg.get("render_lead") and lead_lines:
+        body_lead = [l for l in lead_lines if not l.strip().startswith("# ")]
+        rendered_lead = parse_blocks(body_lead)
+        if rendered_lead.strip():
+            optional_blocks.append(f'''    <div class="mb-6 space-y-4">
+{rendered_lead}
     </div>''')
     extra_lead = "\n".join(optional_blocks)
 

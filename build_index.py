@@ -204,6 +204,15 @@ def build_index():
               <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">RFC 9180 HPKE, Hierarchical PPUAT derivation, downgrade integrity &amp; encrypted extensions.</p>
             </div>
           </a>
+
+          <!-- Item 13: Touchly -->
+          <a href="#sec-touchly" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Hardware Automation</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">Touchly — YubiKey Capacitive Touch Driver</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">BCM2837 GPIO21 logarithmic frequency chirp (libyk_chirp.so), sub-12 ms High-Z release &amp; 1.61 ms pre-armed UP trigger.</p>
+            </div>
+          </a>
         </div>
       </div>
     </header>
@@ -1416,6 +1425,101 @@ def build_index():
             </h3>
             <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
               Token-bound <code>1: keyAgreement</code> elision in <code>hmac-secret</code> (saving 1.1–1.5 KB), encrypting <code>largeBlobKey</code>, and securing the WebAuthn <code>sign</code> extension + ARKG.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 13: Touchly — Hands-Free YubiKey Capacitive Touch Driver Architecture -->
+    <section id="sec-touchly" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white">
+            Hardware Automation &amp; USB Bus Telemetry
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            BCM2837 GPIO21 &amp; libyk_chirp.so
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            YubiKey 6 NFC (1050:0406)
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-medium bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            1.61 ms Pre-Armed UP Trigger (77.4x Faster)
+          </span>
+        </div>
+        <span class="text-xs text-[var(--muted-foreground)] font-mono">November 2026</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        <div class="md:col-span-2 space-y-3">
+          <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">
+            <a href="./touchly.html" class="hover:underline">
+              Touchly — Hands-Free YubiKey Capacitive Touch Driver Architecture (<code>GPIO21</code> / <code>libyk_chirp.so</code>)
+            </a>
+          </h2>
+          <p class="text-sm text-[var(--muted-foreground)]">
+            Drives the <strong>YubiKey 6 NFC (<code>6.0.0 B0</code> Enterprise Profile, <code>VID: 0x1050</code>, <code>PID: 0x0406</code>)</strong> capacitive touch sensor hands-free from Raspberry Pi 3B+ BCM <strong><code>GPIO21</code></strong> by sweeping a compiled C <code>/dev/gpiomem</code> logarithmic push-pull frequency chirp (<code>500 kHz &rarr; 2 kHz</code>) across the sensor&rsquo;s <code>385 Hz</code> charge-transfer excitation carrier and releasing the pin to High-Z (<code>PUD_OFF</code>) within <code>&le; 12 ms</code> of User Presence (<code>UP</code>) satisfaction via <code>/dev/usbmon1</code>. Validated across the full 20-category FIDO CTAP 2.3 conformance suite (<strong><code>410</code> tests, <code>198</code> consecutive UP touches, <code>35</code> USB hub power cycles, <code>0</code> touch retries</strong>) and benchmarked side-by-side between Host-Triggered (<code>first_up_needed</code>) and Pi Pre-Armed (<code>pi_prearmed_first_up</code>, <strong><code>1.61 ms</code> median <code>usbmon</code>-to-GPIO-edge latency, <code>77.4x</code> faster</strong>).
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <a href="./touchly.html"
+               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">
+              <span>Read Full HTML Report</span>
+              <span>&rarr;</span>
+            </a>
+            <a href="./touchly.md"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
+              <span>View Markdown Source (<code>.md</code>)</span>
+            </a>
+          </div>
+        </div>
+
+        <a href="./touchly.html" class="block rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--content)] p-2 hover:border-[var(--primary)] transition shadow-sm">
+          <img src="./touchly.png" alt="Touchly Hardware Setup — Raspberry Pi 3B+ with YubiKey 6 NFC and GPIO21 capacitive electrode" class="rounded-lg w-full h-48 object-cover" />
+          <div class="text-[11px] text-center text-[var(--muted-foreground)] mt-1.5">
+            Raspberry Pi 3B+ (<code>pi1</code>), YubiKey 6 NFC &amp; <code>GPIO21</code> copper-tape electrode
+          </div>
+        </a>
+      </div>
+
+      <!-- Deep Links -->
+      <div class="pt-4 border-t border-[var(--border)]">
+        <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+          Report Sections &amp; Direct Deep Links
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a href="./touchly.html#section-1"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 1–2</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              End-to-End Architecture &amp; Capacitive Coupling Physics (<code>GPIO21</code>)
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Why static DC levels clamp the sensor baseline, <code>8.35 MSa/s</code> <code>GPLEV0</code> capture of the <code>156 ns</code> / <code>385 Hz</code> excitation bursts, and coherent AC injection via a <code>500 kHz &rarr; 2 kHz</code> logarithmic chirp.
+            </p>
+          </a>
+
+          <a href="./touchly.html#section-3"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Sections 3–4</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              <code>libyk_chirp.so</code> Waveform Engine, Session Protocol &amp; Trigger Modes
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Core trigger band dwell boost (<code>90..250 &mu;s @ 14 ms/step</code>), <code>/dev/usbmon1</code> channel/generation/phase tracking, <code>first_up_needed</code> vs. <code>pi_prearmed_first_up</code> (<code>ARM</code>), and consolidated timeout validation.
+            </p>
+          </a>
+
+          <a href="./touchly.html#section-5"
+             class="block p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</div>
+            <h3 class="text-base font-semibold text-[var(--foreground)] mt-0.5">
+              Hardware Benchmarks: Unloaded, Under Load, Chromium WebAuthn &amp; Mode 1 vs. Mode 2
+            </h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+              Matched-budget (<code>55s</code> hard / <code>25s</code> touch) comparison showing <code>1.61 ms</code> vs. <code>124.49 ms</code> <code>usbmonToFirstEdgeUs</code> (<code>77.4x</code> faster) and <code>817.7 ms</code> vs. <code>952.9 ms</code> median <code>upToResponseMs</code>.
             </p>
           </a>
         </div>

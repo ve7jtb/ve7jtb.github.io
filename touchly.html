@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Touchly — Hands-Free YubiKey Capacitive Touch Driver Architecture (GPIO21 / libyk_chirp.so)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --content: #f1f5f9;
+      --border: #e2e8f0;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #1e293b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b0f19;
+        --foreground: #f1f5f9;
+        --card: #111827;
+        --content: #1e293b;
+        --border: #334155;
+        --muted-foreground: #94a3b8;
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+        --secondary: #1e293b;
+        --secondary-foreground: #e2e8f0;
+      }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    main td code, main th code, main li code, main p code {
+      background: var(--content);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+    main table td, main table th {
+      min-width: 6rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],ignoredClasses:['nokatex','mermaid'],throwOnError:false});"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default", securityLevel: "loose" });
+  </script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6 md:p-10 leading-relaxed">
+
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto mb-8 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold">Hardware Automation &amp; USB Telemetry</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">BCM2837 GPIO21 &amp; libyk_chirp.so</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">YubiKey 6 NFC (1050:0406)</span>
+        <span class="px-3 py-1 rounded-full text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)]">1.61 ms Pre-Armed UP Trigger</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./touchly.md" class="text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:underline">Markdown Source (.md)</a>
+        <a href="./index.html" class="text-xs font-semibold text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+      </div>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
+      Touchly — Hands-Free YubiKey Capacitive Touch Driver Architecture (GPIO21 / libyk_chirp.so)
+    </h1>
+    <p class="text-sm md:text-base text-[var(--muted-foreground)] mb-4">
+      Hands-free capacitive touch driver and session-scoped USB bus monitor for YubiKey 6 NFC (6.0.0 B0 Enterprise Profile) on Raspberry Pi 3B+ BCM GPIO21 using a compiled C /dev/gpiomem logarithmic frequency chirp (500 kHz to 2 kHz), sub-12 ms High-Z release synchronization over /dev/usbmon1, and host-triggered (first_up_needed) vs. Pi pre-armed (pi_prearmed_first_up) hardware benchmarks.
+    </p>
+
+    <div class="mb-6 space-y-4">
+<div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Overview:</strong> <strong>Touchly</strong> (<a href="./touch.py" class="text-[var(--primary)] hover:underline">touch.py</a> + <code>/home/jbradley/yubikey-control/libyk_chirp.so</code>) drives the YubiKey 6 NFC (<code>VID: 0x1050</code>, <code>PID: 0x0406</code>) capacitive touch sensor hands-free from Raspberry Pi BCM <strong><code>GPIO21</code></strong> by sweeping a compiled C <code>/dev/gpiomem</code> logarithmic push-pull frequency chirp (<code>500 kHz</code> $\rightarrow$ <code>2 kHz</code>) across the sensor's excitation carrier and releasing the pin to High-Z (<code>PUD_OFF</code>) within <code>12 ms</code> of User Presence (<code>UP</code>) satisfaction.</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Validated across the full 20-category FIDO CTAP 2.3 conformance suite (<strong><code>410</code> tests, <code>198</code> consecutive User Presence touches, <code>35</code> USB hub power cycles, <code>0</code> touch retries or frame drops</strong>).</li>
+</ul></div>
+<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><img src="./touchly.png" alt="Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" /><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Touchly Hardware Setup — Raspberry Pi 3B+ (<code>pi1</code>) with Ethernet (<code>eth0</code>), YubiKey 6 NFC, and <code>GPIO21</code> lead routed to the copper-tape capacitive electrode on the touch pad</figcaption></figure>
+    </div>
+
+    <!-- Quick Navigation Grid -->
+    <div class="pt-4 border-t border-[var(--border)]">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-3">
+        Specification Sections &amp; Quick Jump
+      </div>
+      <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 text-xs">
+        <a href="#section-1" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 1</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">End-to-End Architecture</div>
+        </a>
+        <a href="#section-2" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 2</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Physical &amp; Electrical Coupling (<code>GPIO21</code> $\leftrightarrow$ YubiKey Touch Pad)</div>
+        </a>
+        <a href="#section-3" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 3</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Waveform Generation (<code>libyk_chirp.so</code> inside touch.py)</div>
+        </a>
+        <a href="#section-4" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 4</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Sub-<code>12 ms</code> Stop Synchronization &amp; Session-Scoped Protocol</div>
+        </a>
+        <a href="#section-5" class="block p-2.5 rounded-xl bg-[var(--content)] hover:border-[var(--primary)] border border-[var(--border)] transition">
+          <div class="font-bold text-[var(--primary)]">Section 5</div>
+          <div class="font-semibold text-[var(--foreground)] mt-0.5 truncate">Post-Hardening Hardware Performance Baselines</div>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Complete Table of Contents (Collapsible / Expandable) -->
+    <details open class="mt-4 pt-4 border-t border-[var(--border)] group">
+      <summary class="cursor-pointer text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--primary)] flex items-center justify-between select-none">
+        <span>Detailed Table of Contents &amp; Subsections</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] group-open:hidden">(click to expand)</span>
+        <span class="text-[10px] font-normal lowercase tracking-normal text-[var(--muted-foreground)] hidden group-open:inline">(click to collapse)</span>
+      </summary>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-3 text-xs">
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-1" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">1. End-to-End Architecture</a>
+
+        </li>
+        <li>
+          <a href="#section-2" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">2. Physical &amp; Electrical Coupling (<code>GPIO21</code> $\leftrightarrow$ YubiKey Touch Pad)</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Waveform Generation (<code>libyk_chirp.so</code> inside touch.py)</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#idle-released-state-yk_releasefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl113-l127" class="hover:underline">&sect;Idle / Released State (<code>yk_release</code>)</a></div>
+            <div><a href="#calibrated-burst-band-0-with-full-sweep-fallback-band-1-yk_chirp_oncefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl117-l202" class="hover:underline">&sect;Calibrated Burst (<code>band == 0</code>) with Full-Sweep Fallback (<code>band &gt;= 1</code>) (<code>yk_chirp_once</code>)</a></div>
+          </div>
+        </li>
+        <li>
+          <a href="#section-4" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">4. Sub-<code>12 ms</code> Stop Synchronization &amp; Session-Scoped Protocol</a>
+
+        </li>
+          </ul>
+        </div>
+        <div class="space-y-3">
+          <ul class="space-y-2 text-[var(--muted-foreground)]">
+        <li>
+          <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Post-Hardening Hardware Performance Baselines</a>
+          <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
+            <div><a href="#51-unloaded-baseline-n-24-benchmark_hw_baselinejsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_baselinejs" class="hover:underline">&sect;5.1 Unloaded Baseline (<code>N = 24</code>, benchmark_hw_baseline.js)</a></div>
+            <div><a href="#52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_under_loadjs" class="hover:underline">&sect;5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, benchmark_hw_under_load.js)</a></div>
+            <div><a href="#53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtest_mode2_chromiumjs" class="hover:underline">&sect;5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, test_mode2_chromium.js)</a></div>
+            <div><a href="#54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2jsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchcompare_mode1_vs_mode2js" class="hover:underline">&sect;5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (compare_mode1_vs_mode2.js)</a></div>
+          </div>
+        </li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </header>
+
+  <main class="max-w-6xl mx-auto space-y-10">
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-1 -->
+    <!-- ===================================================================== -->
+    <section id="section-1" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 1</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">End-to-End Architecture</h2>
+      </div>
+<div class="rounded-xl border border-[var(--border)] bg-white dark:bg-[var(--content)] p-4 overflow-x-auto my-3"><pre class="mermaid">sequenceDiagram
+    participant FIDO as FIDO Conformance Suite (macOS)
+    participant Preload as preload.js / nodehid.fork.js
+    participant Daemon as touch.py daemon + libyk_chirp.so (Pi)
+    participant GPIO as BCM2837 /dev/gpiomem (GPIO21)
+    participant YK as YubiKey 6 NFC Touch Pad &amp; USB
+    participant Usbmon as usbmon_capture.py (/dev/usbmon1)
+
+    FIDO-&gt;&gt;YK: CTAPHID_CBOR (MakeCredential / GetAssertion)
+    YK--&gt;&gt;Preload: CTAPHID_KEEPALIVE (0xBB, status=0x02 UP_NEEDED)
+    YK--&gt;&gt;Usbmon: USB IN 0xBB 0x02 (arms UP_NEEDED state)
+    Preload-&gt;&gt;Daemon: Write "START 25.000\n" over persistent SSH stdin
+    Daemon-&gt;&gt;GPIO: yk_release(21) -&gt; High-Z (PUD_OFF) for 120 ms
+    Daemon-&gt;&gt;GPIO: yk_chirp_once(21, 1700, rem_ms, band, 1, fd) -&gt; 500 kHz..2 kHz sweep
+    GPIO-&gt;&gt;YK: AC current I = C_couple * dV/dt crosses f_c
+    YK--&gt;&gt;Usbmon: USB IN transitions to 0xBB 0x01 (PROCESSING) or 0x90 (CBOR)
+    Usbmon-&gt;&gt;Daemon: Creates /home/jbradley/.cache/yubikey_up_satisfied
+    YK--&gt;&gt;Preload: CTAPHID_KEEPALIVE (0x01) / CTAPHID_CBOR (0x90)
+    Preload-&gt;&gt;Daemon: Write "STOP\n" over persistent SSH stdin
+    Daemon-&gt;&gt;GPIO: Aborts chirp within &lt;= 12 ms &amp; calls yk_release(21) (High-Z)</pre></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-2 -->
+    <!-- ===================================================================== -->
+    <section id="section-2" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 2</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Physical &amp; Electrical Coupling (<code>GPIO21</code> $\leftrightarrow$ YubiKey Touch Pad)</h2>
+      </div>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Capacitive Series Electrode ($C_{\text{couple}}$)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Raspberry Pi BCM <strong><code>GPIO21</code></strong> (physical header pin 40) is connected to a copper-tape electrode adhered over the YubiKey's gold capacitive touch contact.</li>
+<li>Because the tape adhesive acts as a dielectric between the copper foil and the YubiKey's gold pad, the interface forms a <strong>series coupling capacitor</strong> ($C_{\text{couple}} \approx \text{few pF}$) rather than a direct galvanic connection.</li>
+</ul></li>
+<li><strong>Why Static DC Signals Fail</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Current through a series capacitor is governed by:<div class="overflow-x-auto py-1 text-sm my-2">$$I(t) = C_{\text{couple}} \frac{dV(t)}{dt}$$</div></li>
+<li>Driving a static DC level (<code>0 V</code> or <code>3.3 V</code>) charges $C_{\text{couple}}$ within microseconds, after which $I(t) = 0$.</li>
+<li>Worse, if <code>GPIO21</code> is left in <code>OUTPUT LOW</code> (<code>21: op -- -- | lo</code>) when the YubiKey powers on or recalibrates its baseline, the low-impedance path to ground clamps the pad's baseline capacitance and prevents subsequent touches from registering.</li>
+</ul></li>
+<li><strong>YubiKey Touch Controller Excitation Waveform</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Sampling <code>GPLEV0</code> bit 21 at <strong><code>8.35 MSa/s</code></strong> via <code>/dev/gpiomem</code> while <code>UP_NEEDED</code> is active revealed that the YubiKey's internal capacitive touch sensor emits <strong><code>156 ns</code> charge-transfer excitation pulses</strong> grouped in <strong><code>385 Hz</code> scan bursts</strong>, integrating demodulated charge through a narrow baseband low-pass filter (<code>~10–50 Hz</code>).</li>
+</ul></li>
+<li><strong>Why a Logarithmic Frequency Sweep (Chirp) Is Essential</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The touch sensor's relaxation oscillator frequency:<div class="overflow-x-auto py-1 text-sm my-2">$$f_c = \frac{1}{2 R C_{\text{total}}}$$</div>
+<p class="text-sm my-2">shifts whenever the external ground-return impedance changes (for instance, connecting a Gigabit Ethernet cable between macOS <code>en9</code> and Raspberry Pi <code>eth0</code> couples their ground planes and shifts $C_{\text{total}}$).</p></li>
+<li>Fixed-rate Python toggle loops miss $f_c$ whenever $f_c$ drifts outside the demodulator's narrow passband (<code>|f_drive - n * f_c| &gt; 50 Hz</code> averages to zero).</li>
+<li>A <strong>continuous logarithmic frequency chirp (<code>500 kHz</code> $\rightarrow$ <code>2 kHz</code>)</strong> sweeps smoothly across the entire sense spectrum on every pulse, guaranteeing coherent charge injection as it crosses $f_c$ and its odd harmonics regardless of ground topology or temperature drift.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-3 -->
+    <!-- ===================================================================== -->
+    <section id="section-3" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 3</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Waveform Generation (<code>libyk_chirp.so</code> inside <a href="./touch.py" class="text-[var(--primary)] hover:underline">touch.py</a>)</h2>
+      </div>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Component</th>
+<th class="p-3 font-semibold align-bottom text-left">Location</th>
+<th class="p-3 font-semibold align-bottom text-left">Responsibility</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Python Daemon &amp; CLI</strong></td>
+<td class="p-3 align-top text-left"><a href="./touch.py" class="text-[var(--primary)] hover:underline">touch.py</a> (<code>/home/jbradley/yubikey-control/touch.py</code>)</td>
+<td class="p-3 align-top text-left">Compiles/loads <code>libyk_chirp.so</code> via <code>ctypes</code>, binds <code>/tmp/yubikey_up.sock</code>, manages flock concurrency lock, handles <code>SIGPIPE</code>/<code>SIGTERM</code>, and runs the session-scoped <code>START &lt;id&gt; &lt;duration_sec&gt;</code> / <code>STOP &lt;id&gt;</code> / <code>DONE &lt;id&gt; &lt;reason&gt;</code> loop.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>C <code>/dev/gpiomem</code> Engine</strong></td>
+<td class="p-3 align-top text-left"><code>/home/jbradley/yubikey-control/libyk_chirp.so</code> (<a href="./touch.py#L64-L202" class="text-[var(--primary)] hover:underline"><code>C_SOURCE</code></a>)</td>
+<td class="p-3 align-top text-left">Maps BCM2837 GPIO registers (<code>GPFSEL2</code>, <code>GPSET0</code>, <code>GPCLR0</code>, <code>GPPUD</code>, <code>GPPUDCLK0</code>) and executes nanosecond-timed calibrated/full frequency sweeps with monotonic deadlines.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>USB Bus Monitor</strong></td>
+<td class="p-3 align-top text-left"><a href="./pi_usbmon_capture.py#L131-L250" class="text-[var(--primary)] hover:underline">pi_usbmon_capture.py</a> (<code>/home/jbradley/yubikey-control/usbmon_capture.py</code>)</td>
+<td class="p-3 align-top text-left">Watches <code>/dev/usbmon1</code> on the Pi, tracks <code>(devnum, ep_addr, cid, req_gen)</code>, and sends a local UNIX datagram (<code>UP_SATISFIED</code>) to <code>/tmp/yubikey_up.sock</code> the instant <code>UP_NEEDED</code> clears on the matching channel/generation.</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Transport Hook</strong></td>
+<td class="p-3 align-top text-left"><a href="./preload.js#L189-L429" class="text-[var(--primary)] hover:underline">preload.js</a> &amp; <a href="./nodehid.fork.js#L395-L647" class="text-[var(--primary)] hover:underline">nodehid.fork.js</a></td>
+<td class="p-3 align-top text-left">Waits for <code>READY</code> over a persistent SSH connection to <code>169.254.81.201</code>, sends <code>START &lt;id&gt; &lt;duration_sec&gt;\n</code> on <code>0xBB 0x02</code> (<code>UP_NEEDED</code>) or U2F <code>0x6985</code>, sends <code>STOP &lt;id&gt;\n</code> when the waveform is no longer needed, and validates <code>DONE &lt;id&gt; &lt;reason&gt;</code> against the active session ID.</td>
+</tr>
+</tbody></table></div>
+<h3 id="idle-released-state-yk_releasefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl113-l127" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Idle / Released State (<a href="./touch.py#L113-L127" class="text-[var(--primary)] hover:underline"><code>yk_release</code></a>)</h3>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Clears <code>GPFSEL2</code> bits <code>3..5</code> to configure <code>GPIO21</code> as an <strong>Input</strong> (<code>21: ip -- | lo</code>) and clocks <code>GPPUD = 0</code> (<code>PUD_OFF</code>) through <code>GPPUDCLK0</code>.</li>
+<li>Presents a true High-Z floating termination during USB hub power cycles (<code>uhubctl</code>), idle intervals, and the configurable <code>--interval 0.45</code> (<code>450 ms</code>) release gap between pulses so the YubiKey's state machine sees a distinct finger release before each touch.</li>
+<li>Signal handlers for <code>SIGINT</code>, <code>SIGTERM</code>, <code>SIGHUP</code>, and <code>SIGPIPE</code> (<a href="./touch.py#L510-L519" class="text-[var(--primary)] hover:underline"><code>handle_signal</code></a>) ensure <code>yk_release(21)</code> always executes even if an SSH client disconnects mid-chirp.</li>
+</ul>
+<h3 id="calibrated-burst-band-0-with-full-sweep-fallback-band-1-yk_chirp_oncefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl117-l202" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Calibrated Burst (<code>band == 0</code>) with Full-Sweep Fallback (<code>band &gt;= 1</code>) (<a href="./touch.py#L117-L202" class="text-[var(--primary)] hover:underline"><code>yk_chirp_once</code></a>)</h3>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">c</div><pre class="text-xs leading-relaxed"><code>#define CALIBRATED_START_HALF_NS 4500
+#define CORE_BAND_START_HALF_NS  90000
+#define END_HALF_NS              250000
+#define FULL_START_HALF_NS       1000
+
+// Validated cancellation flag set by Python ONLY after drain_up_socket / drain_commands
+// confirms a genuine session termination event.
+static volatile int g_cancel = 0;
+
+void yk_clear_cancel(void) {
+    __atomic_store_n(&amp;g_cancel, 0, __ATOMIC_RELEASE);
+}
+
+void yk_cancel(void) {
+    __atomic_store_n(&amp;g_cancel, 1, __ATOMIC_RELEASE);
+}
+
+int yk_chirp_once(
+    int pin,
+    int duration_ms,
+    int rem_deadline_ms,
+    int band
+) {
+    if (yk_init() &lt; 0) return -1;
+    uint32_t mask = (1u &lt;&lt; pin);
+
+    int start_half_ns = (band == 0) ? CALIBRATED_START_HALF_NS : FULL_START_HALF_NS;
+    int end_half_ns   = END_HALF_NS;
+
+    uint64_t t_start = now_ns();
+    uint64_t pulse_budget_ms = (duration_ms &gt; 0) ? ((uint64_t)duration_ms + 250ULL) : 0ULL;
+    uint64_t hold_deadline_ns = (pulse_budget_ms &gt; 0)
+        ? (t_start + pulse_budget_ms * 1000000ULL) : 0ULL;
+    uint64_t rem_deadline_ns = (rem_deadline_ms &gt; 0)
+        ? (t_start + (uint64_t)rem_deadline_ms * 1000000ULL) : 0ULL;
+    uint64_t effective_deadline_ns = hold_deadline_ns;
+    if (rem_deadline_ns &gt; 0 &amp;&amp; (effective_deadline_ns == 0 || rem_deadline_ns &lt; effective_deadline_ns)) {
+        effective_deadline_ns = rem_deadline_ns;
+    }
+
+    set_out(pin);
+    for (int half_ns = start_half_ns; half_ns &lt;= end_half_ns; half_ns += (half_ns / 25 + 10)) {
+        if (__atomic_load_n(&amp;g_cancel, __ATOMIC_ACQUIRE)) {
+            yk_release(pin);
+            return 1;
+        }
+        if (effective_deadline_ns &gt; 0 &amp;&amp; now_ns() &gt;= effective_deadline_ns) {
+            yk_release(pin);
+            return 2;
+        }
+        uint64_t step_ns = 12000000ULL;
+        if (band == 0 &amp;&amp; half_ns &gt;= CORE_BAND_START_HALF_NS) {
+            step_ns = 14000000ULL;
+        }
+        int cycles = (int)(step_ns / (uint64_t)(2 * half_ns));
+        if (cycles &lt; 2) cycles = 2;
+        for (int c = 0; c &lt; cycles; c++) {
+            if ((c &amp; 15) == 0 &amp;&amp; __atomic_load_n(&amp;g_cancel, __ATOMIC_ACQUIRE)) {
+                yk_release(pin);
+                return 1;
+            }
+            gpio[GPSET0] = mask;
+            spin_ns((uint64_t)half_ns);
+            gpio[GPCLR0] = mask;
+            spin_ns((uint64_t)half_ns);
+        }
+    }
+    yk_release(pin);
+    return 0;
+}</code></pre></div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Dedicated Validated Cancellation Signal, Distinct Outcome Codes, &amp; Exception-Safe Worker Cleanup (<code>yk_cancel()</code> / <code>g_cancel</code>, <a href="./touch.py#L683-L725" class="text-[var(--primary)] hover:underline"><code>pulse_pin</code></a>, <a href="./touch.py#L728-L789" class="text-[var(--primary)] hover:underline"><code>run_validated_chirp</code></a>)</strong>: Rather than polling raw <code>up_sock_fd</code> / <code>stdin_fd</code> readability inside C (which previously caused <code>UP_NEEDED</code> metadata or rejected <code>UP_SATISFIED</code> / <code>TX_DONE</code> / <code>STOP &lt;wrong_id&gt;</code> events to abort Pass 0 mid-chirp and release GPIO), <a href="./touch.py#L728-L789" class="text-[var(--primary)] hover:underline"><code>run_validated_chirp</code></a> runs <code>lib.yk_chirp_once</code> on a worker thread (since <code>ctypes.CDLL</code> releases the GIL) while the main Python thread validates <code>/tmp/yubikey_up.sock</code> and <code>stdin</code> events and calls <a href="./touch.py#L675-L680" class="text-[var(--primary)] hover:underline"><code>cancel_chirp</code></a> (<code>lib.yk_cancel()</code>) <strong>only</strong> when a validated stop condition occurs. Both <a href="./touch.py#L683-L725" class="text-[var(--primary)] hover:underline"><code>pulse_pin</code></a> and <a href="./touch.py#L728-L789" class="text-[var(--primary)] hover:underline"><code>run_validated_chirp</code></a> raise an explicit <code>RuntimeError</code> if <code>yk_chirp_once</code> returns <code>&lt; 0</code> (<code>-1</code> on <code>/dev/gpiomem</code> init error), preserve distinct <code>CHIRP_COMPLETED</code> (<code>0</code>), <code>CHIRP_CANCELLED</code> (<code>1</code>), and <code>CHIRP_DEADLINE</code> (<code>2</code>) results, and enforce <code>_PY_CANCEL</code> and <code>rem_deadline</code> in the pure-Python GPIO fallback. A <code>try/finally</code> around the polling loop guarantees that <code>cancel_chirp()</code> and <code>t.join()</code> always complete before <code>release_pin(pin)</code> runs, and any exception raised on the worker thread is propagated to the caller.</li>
+<li><strong>10-Touch Full-Sweep Trigger Distribution (<a href="./measure_chirp_trigger.js" class="text-[var(--primary)] hover:underline">measure_chirp_trigger.js</a>)</strong>: Across 10 consecutive full-sweep (<code>half_ns = 1,000 .. 250,000 ns</code>, 136 steps) touches, <strong>10/10 triggers (100%) occurred in steps <code>110..135/136</code> (<code>half_ns = 92,412 .. 250,000 ns</code>, <code>5.41 kHz -&gt; 2.00 kHz</code>)</strong>, with 4/10 occurring at the very bottom of the sweep (<code>steps 132..135</code>, <code>2.28 kHz -&gt; 2.00 kHz</code>).</li>
+<li><strong>Why Full <code>12 ms</code>/step Pre-Bias from <code>4,500 ns</code> (<code>111 kHz</code>) Is Required</strong>: Testing an abbreviated pre-bias starting at <code>12,000 ns</code> (<code>41.7 kHz</code>) at <code>4 ms</code>/step caused Pass 0 to miss 10/10 times (<code>avg = 7,495 ms</code>), because the YubiKey's <code>385 Hz</code> baseline/AGC tracker requires <code>~550 ms</code> (<code>&gt; 200</code> scan periods) of continuous push-pull drive (<code>111 kHz -&gt; 16.3 kHz</code>) before entering the recognition band.</li>
+<li><strong>Core Trigger Band Dwell Boost (<code>CORE_BAND_START_HALF_NS = 90000</code> @ <code>14 ms</code>/step) &amp; Unclipped Tail (<code>duration_ms + 250</code>)</strong>: Preserving the <code>12 ms</code>/step pre-bias from <code>4,500 ns</code> (<code>111 kHz</code>) while increasing dwell to <code>14 ms</code>/step (<code>5.4</code> scan bursts per step) across <code>half_ns = 90,000 .. 250,000 ns</code> (<code>5.56 kHz -&gt; 2.00 kHz</code>) and adding <code>250 ms</code> of pulse budget headroom so <code>steps 110..135</code> are never clipped reduced the 10-touch average latency from <strong><code>6,093 ms</code></strong> (full sweep) down to <strong><code>3,392 ms</code></strong> (<code>times = [960, 694, 1383, 7920, 3427, 3432, 3330, 3554, 5644, 3575] ms</code>), achieving sub-second (<code>694 ms</code>, <code>960 ms</code>) and single-pass (<code>1,383 ms</code>) triggers on Pass 0.</li>
+<li><strong>Monotonic Hold Deadline &amp; Configurable Release Interval (<code>--hold 1.70</code>, <code>--interval 0.45</code>)</strong>: Both <code>duration_ms</code> (<code>--hold</code>) and <code>rem_deadline_ms</code> are enforced via <code>CLOCK_MONOTONIC</code> inside <code>yk_chirp_once</code>, followed by a configurable <code>--interval 0.45</code> (<code>450 ms</code>) High-Z release gap resolved via <a href="./touch.py#L283-L292" class="text-[var(--primary)] hover:underline"><code>resolve_release_gap</code></a>.</li>
+<li><strong>Single Shared Monotonic Request Deadline (<code>START &lt;id&gt; &lt;remainingSec&gt; cid=&lt;8hex&gt;\n</code> / <code>PI_TOUCH_MAX_DURATION_MS = 25000</code>)</strong>: <a href="./preload.js#L187-L216" class="text-[var(--primary)] hover:underline">preload.js</a> defines <a href="./preload.js#L187-L194" class="text-[var(--primary)] hover:underline"><code>monotonicNowMs</code></a> (<code>performance.now()</code> with <code>Number(process.hrtime.bigint()) / 1e6</code> fallback) and anchors <code>piTouchRequestDeadlineMs = monotonicNowMs() + PI_TOUCH_MAX_DURATION_MS</code> on the first touch trigger of each CTAP request (reset by <a href="./preload.js#L445-L449" class="text-[var(--primary)] hover:underline"><code>global.beginUserPresenceRequest</code></a> in <a href="./hiddep.js#L235-L240" class="text-[var(--primary)] hover:underline">hiddep.js</a> and <a href="./preload.js#L456-L463" class="text-[var(--primary)] hover:underline"><code>global.cancelUserPresenceTrigger</code></a>). Subsequent touch attempts within the same CTAP request pass only the remaining monotonic budget (<code>(piTouchRequestDeadlineMs - monotonicNowMs()) / 1000</code>), and <code>DONE &lt;id&gt; timeout</code> expires the request deadline and clears <code>global.upRequestActive</code> so neither wall-clock adjustments nor timeouts can extend or restart the 25-second budget.</li>
+</ul>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-4 -->
+    <!-- ===================================================================== -->
+    <section id="section-4" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 4</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Sub-<code>12 ms</code> Stop Synchronization &amp; Session-Scoped Protocol</h2>
+      </div>
+<p class="text-sm my-2">To prevent GPIO toggling from continuing after User Presence is satisfied and to eliminate race conditions between consecutive touch sessions:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Monitor-Instance (<code>mon</code>), Channel (<code>dev</code>, <code>cid</code>), Generation (<code>gen</code>), and Phase (<code>phase</code>) Validation over Local UNIX Datagram Socket (<code>0 ms</code> Network Latency)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><a href="./pi_usbmon_capture.py#L137-L340" class="text-[var(--primary)] hover:underline">pi_usbmon_capture.py</a> generates a unique monitor-instance ID (<code>mon_id</code>) at startup, resolves USB <code>vid=&lt;4hex&gt; pid=&lt;4hex&gt; [serial=&lt;token&gt;]</code> from <code>/sys/bus/usb/devices</code> via <a href="./pi_usbmon_capture.py#L59-L97" class="text-[var(--primary)] hover:underline"><code>lookup_sysfs_usb_identity</code></a>, and inspects 64-byte USB HID transfers on <code>/dev/usbmon1</code>, tracking <code>(devnum, cid_bytes)</code> request generation counters (<code>gen</code>), presence-phase IDs (<code>phase = 1, 2, ...</code>), and active pending presence phases (<code>up_pending_by_chan[(devnum, cid_bytes)] = (ep_addr, cur_gen, cur_phase)</code>) independently per transaction channel. When <code>CTAPHID_KEEPALIVE</code> (<code>0xBB</code>) with status <code>0x02</code> (<code>UP_NEEDED</code>) arrives on the Interrupt IN endpoint (<code>ep=05</code>), it emits <code>UP_NEEDED mon=&lt;mon_id&gt; dev=&lt;devnum&gt; ep=&lt;ep_addr&gt; cid=&lt;cid_hex&gt; gen=&lt;cur_gen&gt; phase=&lt;cur_phase&gt; vid=&lt;vid&gt; pid=&lt;pid&gt; [serial=&lt;serial&gt;]\n</code> to <code>/tmp/yubikey_up.sock</code>.</li>
+<li>When the channel's active presence phase transitions to <code>PROCESSING</code> (<code>0xBB</code> status <code>0x01</code>), <code>pi_usbmon_capture.py</code> emits <code>UP_SATISFIED mon=&lt;mon_id&gt; ... gen=&lt;cur_gen&gt; phase=&lt;cur_phase&gt; final=0 ...\n</code>; when a terminal response (<code>0x90 CTAPHID_CBOR</code>, <code>0x83 CTAPHID_MSG != 0x6985</code>, or <code>0xBF CTAPHID_ERROR</code>) arrives, it emits <code>UP_SATISFIED mon=&lt;mon_id&gt; ... final=1 ...\n</code> (or <code>TX_DONE mon=&lt;mon_id&gt; ... gen=&lt;cur_gen&gt; ...\n</code> if the waveform was already stopped on <code>PROCESSING</code>).</li>
+<li>In <a href="./touch.py#L270-L855" class="text-[var(--primary)] hover:underline">touch.py</a>, <a href="./touch.py#L270-L290" class="text-[var(--primary)] hover:underline"><code>make_up_state</code></a>, <a href="./touch.py#L293-L364" class="text-[var(--primary)] hover:underline"><code>resolve_sysfs_devnum</code></a>, <a href="./touch.py#L396-L411" class="text-[var(--primary)] hover:underline"><code>is_identity_ambiguous</code></a>, <a href="./touch.py#L414-L430" class="text-[var(--primary)] hover:underline"><code>find_channel_candidate</code></a>, <a href="./touch.py#L441-L463" class="text-[var(--primary)] hover:underline"><code>retire_generation</code></a>, and <a href="./touch.py#L549-L855" class="text-[var(--primary)] hover:underline"><code>drain_up_socket</code></a> key all generation, phase, transaction (<code>active_tx</code>), and needed (<code>needed_by_chan</code>) caches consistently by <code>(mon, dev, cid)</code>, filter by <code>(mon, dev, cid, vid, pid, serial)</code>, and <strong>reject ambiguous matches</strong> whenever multiple distinct <code>(mon, dev, cid)</code> channels match <code>req_identity</code>: <a href="./touch.py#L1169-L1182" class="text-[var(--primary)] hover:underline"><code>run_daemon</code></a> refuses <code>START</code> before driving GPIO (<code>DONE &lt;id&gt; ambiguous_identity</code>), and if ambiguity appears mid-session, <a href="./touch.py#L631-L819" class="text-[var(--primary)] hover:underline"><code>drain_up_socket</code></a> returns <code>'ambiguous_identity'</code> to cancel the waveform immediately. If the USB monitor restarts with a new <code>mon_id</code>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>The previous monitor instance is permanently added to <code>state['retired_mons']</code> so delayed datagrams from the old monitor are always rejected and can never switch <code>current_mon</code> back.</li>
+<li>If a touch session is currently active when monitor replacement occurs, <code>drain_up_socket</code> invalidates <code>active_identity</code> and returns <code>'monitor_restarted'</code>, causing <code>stop_session</code> to release <code>GPIO21</code> and emit <code>DONE &lt;id&gt; monitor_restarted</code>.</li>
+<li>The new <code>(mon, dev, cid)</code> namespace accepts <code>gen=1</code> cleanly on previously used channels.</li>
+</ul></li>
+<li>Endpoint-specific <code>UP_SATISFIED</code> datagrams must match <code>(mon, dev, ep, cid, gen, phase)</code> (<code>final=0</code> advances only <code>min_valid_phase[(mon, dev, cid, gen)] = phase + 1</code>; <code>gen</code> is retired <strong>only</strong> when the transaction finishes). Transaction-level <code>TX_DONE</code> datagrams are validated against <code>(mon, dev, cid, gen)</code> (ignoring <code>ep</code>, so <code>TX_DONE ... ep=0</code> on <code>CTAPHID_CANCEL</code> or command replacement matches a session bound to IN <code>ep=5</code>), releasing <code>GPIO21</code> and emitting <code>DONE &lt;id&gt; transaction_finished</code>.</li>
+</ul></li>
+<li><strong>Session-Scoped Commands (<code>START &lt;id&gt; &lt;duration_sec&gt;</code>, <code>STOP &lt;id&gt;</code>, <code>DONE &lt;id&gt; &lt;reason&gt;</code>), Per-Session Backend Selection &amp; Recovery, Request-Deduplicated Telemetry, and Bounded Retention</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><a href="./touch.py#L226-L282" class="text-[var(--primary)] hover:underline"><code>get_chirp_lib</code></a>, <a href="./touch.py#L288-L313" class="text-[var(--primary)] hover:underline"><code>get_backend_diagnostics</code></a>, <a href="./touch.py#L316-L330" class="text-[var(--primary)] hover:underline"><code>select_session_backend</code></a>, and <a href="./touch.py#L333-L348" class="text-[var(--primary)] hover:underline"><code>format_ready_banner</code></a> in <a href="./touch.py" class="text-[var(--primary)] hover:underline">touch.py</a> emit backend-specific waveform metadata on <code>stdout</code> at daemon startup (and in <code>touch.py status</code>): <code>READY backend=native_c profile=core_band_sweep_v2 pass0=4500..250000ns(core=90000..250000ns@14ms) fallback=band1+_repeat_until_deadline(1000..250000ns) pin=21 hold=1.70 interval=0.45 max_duration=25.0</code> when <code>libyk_chirp.so</code> is active, versus <code>READY backend=python_gpio profile=python_uncalibrated_toggle_v1 pass0=uncalibrated_gpio_toggle(no_sweep) fallback=repeat_until_deadline(uncalibrated_gpio_toggle) ... fallback_reason=...</code> (plus a <code>stderr</code> warning) when falling back to pure-Python GPIO toggling. If native C compilation or <code>/dev/gpiomem</code> initialization fails, <a href="./touch.py#L226-L282" class="text-[var(--primary)] hover:underline"><code>get_chirp_lib</code></a> caches <code>_LIB_INIT_FAILED_AT</code> for <code>LIB_RETRY_COOLDOWN_SEC</code> (<code>30.0 s</code>) unless <code>force_retry=True</code> or <a href="./touch.py#L218-L223" class="text-[var(--primary)] hover:underline"><code>reset_chirp_lib_cache</code></a> is called.</li>
+<li><strong>Per-Session Backend Selection, Between-Session Recovery, &amp; Deadline Deduction</strong>: <a href="./touch.py#L316-L330" class="text-[var(--primary)] hover:underline"><code>select_session_backend</code></a> checks <code>get_chirp_lib(allow_init=True)</code> <strong>only between sessions</strong> (never while <code>in_chirp</code> is active; <a href="./touch.py#L358-L365" class="text-[var(--primary)] hover:underline"><code>release_pin</code></a>, <a href="./touch.py#L1006-L1011" class="text-[var(--primary)] hover:underline"><code>clear_cancel_chirp</code></a>, and <a href="./touch.py#L1014-L1019" class="text-[var(--primary)] hover:underline"><code>cancel_chirp</code></a> pass <code>allow_init=False</code>, and <a href="./touch.py#L1069-L1139" class="text-[var(--primary)] hover:underline"><code>run_validated_chirp</code></a> passes <code>lib=session_lib, use_session_lib=True</code> to <a href="./touch.py#L1022-L1066" class="text-[var(--primary)] hover:underline"><code>pulse_pin</code></a>), locking <code>(session_lib, session_diag)</code> for the entire session and recording <code>session_diag['backend']</code> and <code>session_diag['profile']</code> in <code>done_meta</code> so sessions after native recovery accurately report <code>backend=native_c profile=core_band_sweep_v2</code>. When <code>START</code> arrives (<a href="./touch.py#L1281-L1470" class="text-[var(--primary)] hover:underline">touch.py</a>), <code>start_received_mono = time.monotonic()</code> and <code>start_deadline_mono = start_received_mono + dur_sec</code> are anchored <strong>before</strong> <code>select_session_backend</code> runs, so any native compilation/initialization recovery time is deducted from the session deadline before pulsing.</li>
+<li><a href="./preload.js#L800-L833" class="text-[var(--primary)] hover:underline">preload.js</a> parses the <code>READY</code> banner tokens (<code>piTouchDaemonBackend</code>, <code>piTouchDaemonProfile</code>), warns if <code>backend=python_gpio</code> is active, and waits for <code>READY</code> before flushing any queued command.</li>
+<li>Each touch trigger increments <code>piTouchSessionSeq</code>, sets <code>piTouchActiveSessionId = sessionId</code>, extracts the selected authenticator's identity via <a href="./preload.js#L658-L680" class="text-[var(--primary)] hover:underline"><code>extractPiTouchDeviceIdentity</code></a> (populated from <code>deviceInfo</code> passed to <a href="./preload.js#L1008-L1032" class="text-[var(--primary)] hover:underline"><code>global.beginUserPresenceRequest</code></a> in <a href="./hiddep.js#L235-L269" class="text-[var(--primary)] hover:underline">hiddep.js</a>), and passes <code>{ type: 'START', sessionId, deadlineMs: piTouchRequestDeadlineMs, cid, ...devIdentity }</code> to <a href="./preload.js#L688-L739" class="text-[var(--primary)] hover:underline"><code>sendPiTouchCommand</code></a>, which calculates <code>durationSec = ((deadlineMs - monotonicNowMs()) / 1000).toFixed(3)</code> immediately before writing <code>START &lt;id&gt; &lt;duration_sec&gt; cid=&lt;8hex&gt; [dev=&lt;int&gt;] [vid=&lt;4hex&gt; pid=&lt;4hex&gt;] [serial=&lt;token&gt;]\n</code>.</li>
+<li>When a session finishes, <a href="./touch.py#L1200-L1227" class="text-[var(--primary)] hover:underline"><code>stop_session</code></a> queues <code>(session_id, reason, done_meta)</code> (<code>up_satisfied</code>, <code>transaction_finished</code>, <code>monitor_restarted</code>, <code>ambiguous_identity</code>, <code>stopped</code>, <code>timeout</code>, or <code>superseded</code>) while <code>in_chirp</code> is active and defers both <a href="./touch.py#L358-L365" class="text-[var(--primary)] hover:underline"><code>release_pin(pin)</code></a> and <a href="./touch.py#L1182-L1198" class="text-[var(--primary)] hover:underline"><code>flush_pending_dones()</code></a> (<code>DONE &lt;id&gt; &lt;reason&gt; backend=&lt;backend&gt; profile=&lt;profile&gt; pass=&lt;idx&gt; passes=&lt;count&gt; elapsed_ms=&lt;ms&gt;\n</code>) until <a href="./touch.py#L1069-L1139" class="text-[var(--primary)] hover:underline"><code>run_validated_chirp</code></a> has joined the worker thread and completed final GPIO release.</li>
+<li><strong>Request-Deduplicated Latency, Separate Session Statistics, Bounded Retention, &amp; Retryable Async Batched File Export (<a href="./preload.js#L211-L670" class="text-[var(--primary)] hover:underline">preload.js</a>)</strong>: <a href="./preload.js" class="text-[var(--primary)] hover:underline">preload.js</a> registers each session in <code>piTouchSessionsById</code> at <code>START</code> time bound to its owning request context (<code>_requestCtx</code>), classifies outcomes via <a href="./preload.js#L275-L294" class="text-[var(--primary)] hover:underline"><code>classifyPiTouchOutcome</code></a>, deduplicates <code>upToResponseMs</code> and request outcome counts (<code>requestCount</code>, <code>requestSuccessCount</code>, <code>requestFailureCount</code>, <code>requestFailureRate</code>) by <code>requestId</code> in <a href="./preload.js#L578-L670" class="text-[var(--primary)] hover:underline"><code>global.getPiTouchMetricsSummary</code></a> while keeping per-session statistics (<code>sessions.total</code>, <code>sessions.pass0Rate</code>, <code>sessions.fallbackRate</code>, <code>sessions.daemonElapsedMs</code>) separate, and evicts completed or grace-expired records (<code>PI_TOUCH_DONE_GRACE_MS = 30000</code>, <code>PI_TOUCH_MAX_RETAINED_METRICS = 200</code>) via <a href="./preload.js#L516-L572" class="text-[var(--primary)] hover:underline"><code>prunePiTouchTelemetry</code></a>. <a href="./preload.js#L440-L488" class="text-[var(--primary)] hover:underline"><code>exportPiTouchRecordIfReady</code></a> and <a href="./preload.js#L347-L426" class="text-[var(--primary)] hover:underline"><code>flushPiTouchFileQueueAsync</code></a> maintain separate in-memory <code>_exportQueued</code> and <code>_exportPersisted</code> states (omitting <code>persisted</code> from the JSONL payload in <a href="./preload.js#L323-L344" class="text-[var(--primary)] hover:underline"><code>serializePiTouchRecord</code></a>), move in-flight batches into <code>piTouchInFlightFileBatch</code> separate from <code>piTouchPendingFileQueue</code> so in-flight entries are protected from overflow eviction and completion never removes newly arrived unwritten records, expose any disk errors on <code>r._exportError</code> / <code>global.piTouchLastExportError</code> / <code>global.piTouchExportErrors</code>, restore failed batches to the front of <code>piTouchPendingFileQueue</code> for retry on subsequent flushes (<a href="./preload.js#L507-L512" class="text-[var(--primary)] hover:underline"><code>global.flushPiTouchTelemetryFile</code></a>), and prefer evicting already-persisted records first.</li>
+</ul></li>
+<li><strong>Separation of Waveform vs. Transaction State</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Per <a href="https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline">CTAP 2.3 §11.2.9.1.2 (<code>CTAPHID_KEEPALIVE</code>)</a>, keepalive frames (<code>0xBB</code>) do not end a CTAP transaction:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Waveform Stop (<a href="./preload.js#L368-L380" class="text-[var(--primary)] hover:underline"><code>global.stopUserPresenceWaveform</code></a>)</strong>: When <code>CTAPHID_KEEPALIVE</code> transitions from <code>UP_NEEDED (0x02)</code> to <code>PROCESSING (0x01)</code> in <a href="./nodehid.fork.js#L395-L401" class="text-[var(--primary)] hover:underline">nodehid.fork.js</a>, <a href="./fido2dep.js#L44-L53" class="text-[var(--primary)] hover:underline">fido2dep.js</a> invokes <code>global.stopUserPresenceWaveform()</code>, writing <code>STOP &lt;id&gt;\n</code> to stop the GPIO21 chirp while keeping <code>global.upRequestActive = true</code> in case the same transaction requests <code>UP_NEEDED</code> again.</li>
+<li><strong>Transaction End (<a href="./preload.js#L495-L502" class="text-[var(--primary)] hover:underline"><code>global.cancelUserPresenceTrigger</code></a>)</strong>: Clears <code>global.upRequestActive = false</code> and stops any active waveform only when the CTAP request completes, errors/times out (<a href="./hiddep.js#L220-L225" class="text-[var(--primary)] hover:underline">hiddep.js</a>), or is explicitly cancelled (<a href="./hiddep.js#L317-L325" class="text-[var(--primary)] hover:underline"><code>sendHIDCancel</code></a>).</li>
+</ul></li>
+</ul></li>
+<li><strong>Asynchronous HID Reads, Centralized Completion (<code>settleRequest</code>), Recovery Read Invalidation, &amp; Immutable Hard Deadline (<a href="./nodehid.fork.js#L694-L1023" class="text-[var(--primary)] hover:underline"><code>sendRequestAndWaitForResponse</code></a>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><a href="./nodehid.fork.js#L62-L69" class="text-[var(--primary)] hover:underline"><code>monotonicNowMs</code></a> (<code>performance.now()</code> with <code>Number(process.hrtime.bigint()) / 1e6</code> fallback) governs all elapsed-time budgets in <a href="./nodehid.fork.js" class="text-[var(--primary)] hover:underline">nodehid.fork.js</a>, matching the touch controller in <a href="./preload.js#L187-L194" class="text-[var(--primary)] hover:underline">preload.js</a>.</li>
+<li><a href="./nodehid.fork.js#L939-L1009" class="text-[var(--primary)] hover:underline"><code>pumpAsyncRead</code></a> and <a href="./nodehid.fork.js#L875-L936" class="text-[var(--primary)] hover:underline"><code>handleIncomingPacket</code></a> replace the synchronous <code>readTimeout(300)</code> and <code>readTimeout(200)</code> calls inside the <code>25 ms</code> <code>setInterval</code> timer with asynchronous <code>device.read((err, raw) =&gt; ...)</code> callbacks guarded by <code>asyncReadInFlight</code> and <code>readGeneration</code> (falling back to non-blocking <code>device.readTimeout(0)</code> only when <code>typeof device.read !== 'function'</code>), and check <code>if (settled) return;</code> immediately after the initial <code>pumpAsyncRead()</code> call (<a href="./nodehid.fork.js#L1011-L1017" class="text-[var(--primary)] hover:underline">nodehid.fork.js</a>) so an immediate synchronous read failure or response never installs an orphaned polling timer.</li>
+<li><a href="./nodehid.fork.js#L345-L418" class="text-[var(--primary)] hover:underline"><code>writeHIDBuffers</code></a> accepts <code>(deviceInfo, buffers, skipDrain, cancelAsyncRead, logPackets)</code>: when <code>skipDrain</code> is <code>true</code> (an asynchronous read is in flight), both the normal write path and the <code>catch (writeErr)</code> recovery path avoid calling synchronous <code>drainPendingInput(device, 64)</code> against the active handle; instead, recovery invokes <code>cancelAsyncRead()</code> (<a href="./nodehid.fork.js#L794-L797" class="text-[var(--primary)] hover:underline"><code>invalidateAsyncRead</code></a>) and closes the old handle first before reopening and draining synchronously on the fresh handle. When re-resolving a stale OS HID path in <a href="./nodehid.fork.js#L122-L159" class="text-[var(--primary)] hover:underline"><code>resolveActiveDevicePath</code></a>, it matches <code>vendorId</code>, <code>productId</code>, and <code>serialNumber</code> and rebinds <strong>only</strong> when <code>matches.length === 1</code> (consistent with <a href="./hiddep.js#L182-L199" class="text-[var(--primary)] hover:underline"><code>getDeviceState</code></a> in <code>hiddep.js</code>).</li>
+<li><a href="./nodehid.fork.js#L752-L783" class="text-[var(--primary)] hover:underline"><code>settleRequest</code></a> centralizes all asynchronous resolve/reject paths across <code>device.read</code> callbacks, incomplete-continuation retry writes in <a href="./nodehid.fork.js#L792-L849" class="text-[var(--primary)] hover:underline"><code>checkDeadlines</code></a>, command-resend writes in the <code>25 ms</code> <code>setInterval</code> timer, and <a href="./nodehid.fork.js#L855-L872" class="text-[var(--primary)] hover:underline"><code>handleHidReadError</code></a> (which uses <a href="./nodehid.fork.js#L451-L491" class="text-[var(--primary)] hover:underline"><code>isRecoverableHidReadError</code></a> to distinguish transient <code>EAGAIN</code>/<code>EINTR</code>/<code>ETIMEDOUT</code> errors from terminal disconnect/I/O errors).</li>
+<li>Automatic command replay on incomplete continuation frames (<code>HIDFORK: INCOMPLETE CONT FRAMES</code>) is disabled by default (since receiving an initialization frame indicates the authenticator already executed the command) and permitted only when explicitly opted in via <code>options.allowIncompleteReplay</code> or <code>options.retryIncompleteCont</code> (<a href="./nodehid.fork.js#L716-L718" class="text-[var(--primary)] hover:underline"><code>allowIncompleteReplay</code></a>). All iteration-based retry/resend counters (<code>incompleteRetries</code>, <code>resendCounter</code>, and Wasefire re-enumeration attempts) are replaced with monotonic elapsed-time deadlines (<code>lastFrameTimeMs + INCOMPLETE_CONT_TIMEOUT_MS</code> (<code>600 ms</code>), <code>retryBudgetDeadlineMs = Math.min(hardDeadlineMs, lastFrameTimeMs + RETRY_BUDGET_MS)</code> (<code>1,800 ms</code>), <code>nextResendDeadlineMs = nowMs + RESEND_INTERVAL_MS</code> (<code>250 ms</code>), and <code>reenumDeadlineMs</code> (<code>2,250 ms</code>)).</li>
+<li><code>requestStartTime</code> and <code>hardDeadlineMs = requestStartTime + maxWallClockTimeout</code> are immutable (<code>const</code>) across incomplete-continuation retries (which reset only per-attempt <code>startTime</code>, <code>lastFrameTimeMs</code>, and <code>nextResendDeadlineMs</code>), and <a href="./nodehid.fork.js#L842-L902" class="text-[var(--primary)] hover:underline"><code>checkDeadlines</code></a> checks <code>nowMs &gt; hardDeadlineMs</code> <strong>first</strong> before incomplete-continuation (<code>600 ms</code>) and idle (<code>timeout</code>) checks, before early packet-filtering returns (ZLPs and wrong-channel <code>!matchesCID(data)</code> packets), and before allowing a late <code>CTAPHID_KEEPALIVE</code> frame to refresh <code>startTime</code>.</li>
+<li><strong>Optional Full Packet Logging &amp; Per-Request Timing/Counter Summaries (<a href="./nodehid.fork.js#L332-L336" class="text-[var(--primary)] hover:underline"><code>shouldLogHidPackets</code></a>, <a href="./nodehid.fork.js#L801-L845" class="text-[var(--primary)] hover:underline"><code>settleRequest</code></a>, <a href="./hiddep.js#L204-L255" class="text-[var(--primary)] hover:underline">hiddep.js</a>)</strong>: Full per-frame hex packet logging is disabled by default during performance and conformance runs (and can be opted into via <code>FIDO_VERBOSE_HID_PACKETS=1</code>, <code>VERBOSE_HID_PACKETS=1</code>, <code>global.VERBOSE_HID_PACKETS = true</code>, or <code>options: { logPackets: true }</code>), <code>WAITING FOR TEST OF USER PRESENCE...</code> is logged only once when transitioning into <code>upActive</code>, and <a href="./nodehid.fork.js#L801-L845" class="text-[var(--primary)] hover:underline"><code>settleRequest</code></a> emits a single <code>[HID SUMMARY] status=ok|err cid=&lt;hex&gt; cmd=&lt;hex&gt; tx=&lt;n&gt; rx=&lt;resp&gt;/&lt;total&gt; ka=&lt;total&gt;(up=&lt;up&gt;,proc=&lt;proc&gt;) ignored=&lt;n&gt; resends=&lt;n&gt; first_up=&lt;ms&gt; first_resp=&lt;ms&gt; up_to_resp=&lt;ms&gt; elapsed=&lt;ms&gt;</code> summary line at request completion.</li>
+</ul></li>
+<li><strong>Optional <code>UP_NEEDED</code> Trigger Modes (<code>first_up_needed</code>, <code>pi_prearmed_first_up</code>, &amp; <code>manual</code>), Keepalive/Deadline Validation, &amp; Separated Pre-Arm Budget</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Pre-Trigger Keepalive, Packet-Length, CID, &amp; Deadline Validation (<a href="./nodehid.fork.js#L430-L438" class="text-[var(--primary)] hover:underline"><code>isValidFrameForCurrentCid</code></a>, <a href="./nodehid.fork.js#L443-L450" class="text-[var(--primary)] hover:underline"><code>isValidKeepaliveFrame</code></a>, <a href="./nodehid.fork.js#L458-L558" class="text-[var(--primary)] hover:underline"><code>responseIsOK</code></a>, <a href="./nodehid.fork.js#L1038-L1150" class="text-[var(--primary)] hover:underline"><code>handleIncomingPacket</code></a>)</strong>: <a href="./nodehid.fork.js#L1038-L1065" class="text-[var(--primary)] hover:underline"><code>handleIncomingPacket</code></a> enforces <a href="./nodehid.fork.js#L975-L1036" class="text-[var(--primary)] hover:underline"><code>checkDeadlines()</code></a>, <code>data.length === HID_PACKET_SIZE</code> (<code>64</code> bytes), and 4-byte <code>matchesCID(data)</code> <strong>before</strong> calling <code>responseIsOK()</code>, and <a href="./nodehid.fork.js#L458-L558" class="text-[var(--primary)] hover:underline"><code>responseIsOK</code></a> independently verifies <code>isDeadlineExpired()</code>, <code>data.length === 64</code>, 4-byte <code>currentReqCidBytes</code>, and <code>BCNT === 1</code> (<code>(data[5] &lt;&lt; 8) + data[6] === 1</code>, status <code>0x01</code> or <code>0x02</code>) for <code>CTAPHID_KEEPALIVE</code> (<code>0xBB</code>) or <code>BCNT === 2</code> for U2F <code>0x6985</code> before invoking <code>onUserPresenceTest</code>. In <a href="./preload.js#L1301-L1540" class="text-[var(--primary)] hover:underline">preload.js</a>, <a href="./preload.js#L1301-L1364" class="text-[var(--primary)] hover:underline"><code>global.onHidKeepaliveUpNeeded</code></a> and <a href="./preload.js#L1416-L1540" class="text-[var(--primary)] hover:underline"><code>global.triggerOpenSKUserPresence</code></a> also verify non-manual mode, non-expired <code>requestDeadlineMs</code> / <code>piTouchRequestDeadlineMs</code>, 8-hex <code>cid</code>, <code>packetLength === 64</code>, and <code>status === 0x02</code> before issuing touch commands.</li>
+<li><strong>Mode 1 (<code>first_up_needed</code> — Host-Side Single-Shot Keepalive Trigger on Selected Request's First <code>UP_NEEDED</code>)</strong>: Enabled via <code>options: { touchTriggerMode: 'first_up_needed' }</code> (or <code>options: { firstUpNeededOnly: true }</code>), <code>global.setPiTouchTriggerMode('first_up_needed')</code>, or <code>PI_TOUCH_TRIGGER_MODE=first_up_needed</code>. <a href="./nodehid.fork.js#L458-L558" class="text-[var(--primary)] hover:underline"><code>responseIsOK</code></a> tags every <code>'up'</code> IPC notification with <code>{ cid: currentReqCidHex, isFirstUpNeeded, upCount, status: 0x02, packetLength: 64 }</code> (forwarded through <a href="./nodehid-ipc.js#L62-L77" class="text-[var(--primary)] hover:underline">nodehid-ipc.js</a> and <a href="./fido2dep.js#L41-L48" class="text-[var(--primary)] hover:underline">fido2dep.js</a>), and <a href="./preload.js#L1416-L1540" class="text-[var(--primary)] hover:underline"><code>global.triggerOpenSKUserPresence</code></a> starts at most one touch session per request strictly on its first <code>UP_NEEDED</code> (with opt-in <code>PI_TOUCH_AUTO_KEEPALIVE=1</code> / <code>global.PI_TOUCH_AUTO_KEEPALIVE = true</code> in <a href="./preload.js#L1301-L1364" class="text-[var(--primary)] hover:underline"><code>global.onHidKeepaliveUpNeeded</code></a> for standalone scripts outside <code>broadcastUserPresence()</code>).</li>
+<li><strong>Mode 2 (<code>pi_prearmed_first_up</code> — Pi-Side Pre-Armed Trigger on First <code>UP_NEEDED</code> with Separated Pre-Arm &amp; Touch Deadlines)</strong>: Enabled via <code>options: { touchTriggerMode: 'pi_prearmed_first_up' }</code> (or <code>options: { piPrearmedFirstUp: true }</code>), <code>global.setPiTouchTriggerMode('pi_prearmed_first_up')</code>, or <code>PI_TOUCH_TRIGGER_MODE=pi_prearmed_first_up</code>. <a href="./preload.js#L1164-L1290" class="text-[var(--primary)] hover:underline"><code>global.beginUserPresenceRequest</code></a> and <a href="./preload.js#L801-L868" class="text-[var(--primary)] hover:underline"><code>sendPiTouchCommand</code></a> send <code>ARM &lt;id&gt; &lt;touchBudgetSec&gt; arm_timeout=&lt;armTimeoutSec&gt; req_deadline=&lt;reqDeadlineSec&gt; cid=&lt;8hex&gt; ...</code> to <a href="./touch.py#L1200-L1690" class="text-[var(--primary)] hover:underline"><code>run_daemon</code></a> in <a href="./touch.py" class="text-[var(--primary)] hover:underline">touch.py</a>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>While waiting in High-Z (<code>armed_waiting_up = True</code>), <code>deadline</code> is bounded by <code>arm_wait_deadline_mono</code> (<code>PI_TOUCH_ARM_TIMEOUT_MS = 30000</code> / <code>arm_timeout=&lt;sec&gt;</code>).</li>
+<li>When <code>pi_usbmon_capture.py</code> delivers the selected request's first <code>UP_NEEDED</code> (<code>phase=1</code>), <a href="./touch.py#L1292-L1308" class="text-[var(--primary)] hover:underline"><code>check_armed_first_up_trigger</code></a> anchors a fresh 25-second touch budget (<code>first_up_mono + max(0, arm_duration_sec - arm_recovery_elapsed_sec)</code>) capped by <code>arm_req_deadline_mono</code> (<code>req_deadline=&lt;sec&gt;</code>), so a request that spends 20 seconds processing before <code>UP_NEEDED</code> still receives its full 25-second touch budget.</li>
+<li>Once <code>GPIO21</code> has been settled in High-Z for <code>&gt;= 120 ms</code> while pre-armed, <code>touch.py</code> skips the redundant <code>120 ms</code> Pass 0 pre-release delay; <code>pi_usbmon_capture.py</code> stamps <code>UP_NEEDED</code> datagrams with <code>usbmon_ns=&lt;time.monotonic_ns()&gt;</code>, C <code>yk_chirp_once</code> records the exact <code>CLOCK_MONOTONIC</code> timestamp of the first physical <code>gpio[GPSET0] = mask</code> register write via <code>yk_last_first_edge_ns()</code>, and <code>DONE &lt;id&gt; ...</code> emits <code>usbmon_to_edge_us=&lt;us&gt;</code> and <code>sock_to_edge_us=&lt;us&gt;</code>.</li>
+</ul></li>
+<li><strong>Manual / Off Mode (<code>'manual'</code> / <code>'off'</code> / <code>'disabled'</code>)</strong>: <a href="./preload.js#L708-L751" class="text-[var(--primary)] hover:underline"><code>getPiTouchTriggerMode</code></a> and <a href="./preload.js#L753-L769" class="text-[var(--primary)] hover:underline"><code>global.setPiTouchTriggerMode</code></a> recognize <code>'manual'</code>, <code>'off'</code>, <code>'disabled'</code>, <code>'none'</code>, <code>false</code>, and <code>0</code>, treat unrecognized mode strings as <code>'manual'</code> (with a warning) rather than falling back to automatic touch, and immediately stop any active or pre-armed session (<code>global.stopUserPresenceWaveform()</code>) when switched to <code>'manual'</code>.</li>
+</ul></li>
+</ol>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION section-5 -->
+    <!-- ===================================================================== -->
+    <section id="section-5" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-5 leading-relaxed">
+      <div class="border-b border-[var(--border)] pb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Post-Hardening Hardware Performance Baselines</h2>
+      </div>
+<h3 id="51-unloaded-baseline-n-24-benchmark_hw_baselinejsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_baselinejs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Unloaded Baseline (<code>N = 24</code>, <a href="./benchmark_hw_baseline.js" class="text-[var(--primary)] hover:underline">benchmark_hw_baseline.js</a>)</h3>
+<p class="text-sm my-2">With all transport and daemon control-flow hardening in place, an initial unloaded baseline was measured across two 12-transaction runs (<code>N = 24</code> live <code>CTAPHID_CBOR</code> <code>authenticatorMakeCredential</code> transactions on the YubiKey 6 NFC <code>6.0.0 B0</code> over VirtualHere + Raspberry Pi 3B+ <code>169.254.81.201</code>):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric Category</th>
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 1 (<code>N = 12</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 2 (<code>N = 12</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Combined (<code>N = 24</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Completion &amp; Pass Rate</strong></td>
+<td class="p-3 align-top text-left"><strong>Overall Touch Success Rate (<code>&lt; 25 s</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>12 / 12</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>12 / 12</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>24 / 24</code> (<strong><code>100.0%</code></strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>First-Pass Recognition (<code>Pass 0</code>, <code>band=0</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>2 / 12</code> (<code>16.7%</code>)</td>
+<td class="p-3 align-top text-left"><code>1 / 12</code> (<code>8.3%</code>)</td>
+<td class="p-3 align-top text-left"><code>3 / 24</code> (<code>12.5%</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Multi-Band Fallback Rate (<code>Pass 1+</code>, <code>band &gt;= 1</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>10 / 12</code> (<code>83.3%</code>)</td>
+<td class="p-3 align-top text-left"><code>11 / 12</code> (<code>91.7%</code>)</td>
+<td class="p-3 align-top text-left"><code>21 / 24</code> (<code>87.5%</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Resolved Within <code>&lt;= 3</code> Passes (<code>Pass 0..2</code>, <code>&lt; 5.7 s</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>8 / 12</code> (<code>66.7%</code>)</td>
+<td class="p-3 align-top text-left"><code>9 / 12</code> (<code>75.0%</code>)</td>
+<td class="p-3 align-top text-left"><code>17 / 24</code> (<strong><code>70.8%</code></strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Touch-to-Response Latency (<code>ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>1,098.3 ms</code></td>
+<td class="p-3 align-top text-left"><code>1,446.2 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1,098.3 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>5,318.9 ms</code></td>
+<td class="p-3 align-top text-left"><code>5,445.4 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>5,430.8 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>6,394.4 ms</code></td>
+<td class="p-3 align-top text-left"><code>7,033.2 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>6,713.8 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>14,846.7 ms</code></td>
+<td class="p-3 align-top text-left"><code>16,947.7 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>19,611.4 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>20,888.3 ms</code></td>
+<td class="p-3 align-top text-left"><code>22,536.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>22,536.0 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Cancellation-to-GPIO-Release (<code>CLOCK_MONOTONIC</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>498.5 us</code> (<code>0.50 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>279.5 us</code> (<code>0.28 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>279.5 us</code> (<code>0.28 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,909.9 us</code> (<code>1.91 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>1,560.4 us</code> (<code>1.56 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,560.4 us</code> (<code>1.56 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>2,215.8 us</code> (<code>2.22 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>1,972.9 us</code> (<code>1.97 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,972.9 us</code> (<code>1.97 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>4,063.4 us</code> (<code>4.06 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>3,965.0 us</code> (<code>3.97 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>3,965.0 us</code> (<code>3.97 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>4,293.1 us</code> (<code>4.29 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>5,430.9 us</code> (<code>5.43 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>5,430.9 us</code> (<code>5.43 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi 3B+ CPU Load (<code>4x Cortex-A53</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Idle System CPU</strong></td>
+<td class="p-3 align-top text-left"><code>0.0%</code></td>
+<td class="p-3 align-top text-left"><code>0.0%</code></td>
+<td class="p-3 align-top text-left"><strong><code>0.0%</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Active Chirp Process CPU (<code>touch.py</code> + <code>libyk_chirp.so</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>100.1%</code> (1 core)</td>
+<td class="p-3 align-top text-left"><code>100.1%</code> (1 core)</td>
+<td class="p-3 align-top text-left"><strong><code>100.1%</code> (1 core)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Active Chirp Total System CPU (4 cores)</strong></td>
+<td class="p-3 align-top text-left"><code>25.9%</code></td>
+<td class="p-3 align-top text-left"><code>25.8%</code></td>
+<td class="p-3 align-top text-left"><strong><code>25.85%</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>USB Reconnection</strong></td>
+<td class="p-3 align-top text-left"><strong><code>power cycle</code> -&gt; VirtualHere -&gt; macOS Re-Enumeration</strong></td>
+<td class="p-3 align-top text-left"><code>4,052 ms</code></td>
+<td class="p-3 align-top text-left"><code>4,186 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>4,119 ms</code> mean</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Repeated Presence Phases</strong></td>
+<td class="p-3 align-top text-left"><strong>Phase 1 (<code>final=0</code>) / Stale Phase 1 Rejected / Phase 2 (<code>final=1</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,053 ms</code> / <code>Yes</code> / <code>1,553 ms</code></td>
+<td class="p-3 align-top text-left"><code>1,039 ms</code> / <code>Yes</code> / <code>1,560 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>100%</code> pass</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Hardware <code>CTAPHID_CANCEL (0x91)</code></strong></td>
+<td class="p-3 align-top text-left"><strong>Mid-Chirp Cancel -&gt; <code>TX_DONE</code> -&gt; High-Z <code>GPIO21 = input</code></strong></td>
+<td class="p-3 align-top text-left"><code>385 ms</code> (<code>status=0x2d</code>)</td>
+<td class="p-3 align-top text-left"><code>606.6 us</code> (<code>0.61 ms</code> release)</td>
+<td class="p-3 align-top text-left"><strong><code>21: ip -- | lo</code></strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_under_loadjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, <a href="./benchmark_hw_under_load.js" class="text-[var(--primary)] hover:underline">benchmark_hw_under_load.js</a>)</h3>
+<p class="text-sm my-2">Prior to any pulse-timing or core-dwell adjustments, <a href="./benchmark_hw_under_load.js" class="text-[var(--primary)] hover:underline"><code>benchmark_hw_under_load.js</code></a> measured <code>N = 10</code> live <code>CTAPHID_CBOR</code> touches under nominal conditions followed by <code>N = 10</code> touches under concurrent Raspberry Pi 3B+ CPU + USB load (3 worker processes saturating CPU cores plus continuous <code>/sys/bus/usb/devices/*</code> descriptor/status reads while VirtualHere forwarded CTAPHID traffic and <code>touch.py</code> drove <code>GPIO21</code>).</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Daemon Startup Diagnostics</strong>: <code>READY backend=native_c profile=core_band_sweep_v2 pass0=4500..250000ns(core=90000..250000ns@14ms) fallback=band1+_repeat_until_deadline(1000..250000ns) pin=21 hold=1.70 interval=0.45 max_duration=25.0</code></li>
+</ul>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric Category</th>
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Nominal (<code>N = 10</code>, Unloaded)</th>
+<th class="p-3 font-semibold align-bottom text-left">Under CPU + USB Load (<code>N = 10</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Combined (<code>N = 20</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Backend &amp; Waveform Profile</strong></td>
+<td class="p-3 align-top text-left"><strong>Active Backend / Profile</strong></td>
+<td class="p-3 align-top text-left"><code>native_c</code> / <code>core_band_sweep_v2</code></td>
+<td class="p-3 align-top text-left"><code>native_c</code> / <code>core_band_sweep_v2</code></td>
+<td class="p-3 align-top text-left"><code>native_c</code> / <code>core_band_sweep_v2</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi 3B+ System &amp; Process Load</strong></td>
+<td class="p-3 align-top text-left"><strong>4-Core System CPU (<code>median</code> / <code>p95</code> / <code>max</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>26.0%</code> / <code>26.2%</code> / <code>26.5%</code></td>
+<td class="p-3 align-top text-left"><strong><code>98.9%</code> / <code>99.8%</code> / <code>100.0%</code></strong></td>
+<td class="p-3 align-top text-left"><code>26.0%</code> nominal vs. <code>98.9%</code> loaded</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong><code>touch.py</code> Process CPU (<code>median</code> / <code>mean</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>100.1%</code> / <code>100.1%</code></td>
+<td class="p-3 align-top text-left"><code>95.1%</code> / <code>92.8%</code></td>
+<td class="p-3 align-top text-left"><code>100.1%</code> vs. <code>95.1%</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Outcome &amp; Pass Distribution</strong></td>
+<td class="p-3 align-top text-left"><strong>Success / Failure / Unknown Rate</strong></td>
+<td class="p-3 align-top text-left"><code>10 / 10</code> (<strong><code>100.0%</code></strong>) / <code>0%</code> / <code>0%</code></td>
+<td class="p-3 align-top text-left"><code>10 / 10</code> (<strong><code>100.0%</code></strong>) / <code>0%</code> / <code>0%</code></td>
+<td class="p-3 align-top text-left"><code>20 / 20</code> (<strong><code>100.0%</code></strong>) / <code>0%</code> / <code>0%</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>First-Pass Success (<code>pass == 0</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>3 / 10</code> (<strong><code>30.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>3 / 10</code> (<strong><code>30.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>6 / 20</code> (<strong><code>30.0%</code></strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Fallback Frequency (<code>pass &gt;= 1</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>7 / 10</code> (<strong><code>70.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>7 / 10</code> (<strong><code>70.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>14 / 20</code> (<strong><code>70.0%</code></strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Resolved Within <code>&lt;= 3</code> Passes (<code>pass 0..2</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>7 / 10</code> (<code>70.0%</code>)</td>
+<td class="p-3 align-top text-left"><code>8 / 10</code> (<code>80.0%</code>)</td>
+<td class="p-3 align-top text-left"><code>15 / 20</code> (<strong><code>75.0%</code></strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Pass Number Distribution (<code>pass: count</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>{ 0: 3, 1: 1, 2: 3, 4: 1, 6: 1, 8: 1 }</code></td>
+<td class="p-3 align-top text-left"><code>{ 0: 3, 1: 2, 2: 3, 3: 2 }</code></td>
+<td class="p-3 align-top text-left"><code>{ 0: 6, 1: 3, 2: 6, 3: 2, 4: 1, 6: 1, 8: 1 }</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>UP_NEEDED</code>-to-Response (<code>upToResponseMs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>1,245.7 ms</code></td>
+<td class="p-3 align-top text-left"><code>1,105.4 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1,105.4 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>5,555.3 ms</code></td>
+<td class="p-3 align-top text-left"><code>5,090.4 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>5,322.9 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>6,676.7 ms</code></td>
+<td class="p-3 align-top text-left"><code>4,799.7 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>5,738.2 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>16,470.2 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>8,761.7 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>16,470.2 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>18,312.0 ms</code></td>
+<td class="p-3 align-top text-left"><code>9,109.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>18,312.0 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Daemon Session Elapsed (<code>daemonElapsedMs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>1,084.6 ms</code></td>
+<td class="p-3 align-top text-left"><code>880.8 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>880.8 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>5,333.5 ms</code></td>
+<td class="p-3 align-top text-left"><code>4,885.9 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>5,109.7 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>6,467.3 ms</code></td>
+<td class="p-3 align-top text-left"><code>4,579.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>5,523.2 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>16,251.3 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>8,527.2 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>16,251.3 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>18,076.5 ms</code></td>
+<td class="p-3 align-top text-left"><code>8,883.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>18,076.5 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Cancellation-to-GPIO-Release (<code>CLOCK_MONOTONIC</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>922.3 us</code> (<code>0.92 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>338.1 us</code> (<code>0.34 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>338.1 us</code> (<code>0.34 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>2,248.6 us</code> (<code>2.25 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>2,610.8 us</code> (<code>2.61 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>2,429.7 us</code> (<code>2.43 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>2,386.2 us</code> (<code>2.39 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>2,838.8 us</code> (<code>2.84 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>2,612.5 us</code> (<code>2.61 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>3,925.6 us</code> (<code>3.93 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>5,169.0 us</code> (<code>5.17 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>5,169.0 us</code> (<code>5.17 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>4,535.3 us</code> (<code>4.54 ms</code>)</td>
+<td class="p-3 align-top text-left"><code>5,659.0 us</code> (<code>5.66 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>5,659.0 us</code> (<code>5.66 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Post-Run Pin Verification</strong></td>
+<td class="p-3 align-top text-left"><strong><code>pinctrl get 21</code></strong></td>
+<td class="p-3 align-top text-left"><code>21: ip -- | lo</code> (<code>GPIO21 = input</code>)</td>
+<td class="p-3 align-top text-left"><code>21: ip -- | lo</code> (<code>GPIO21 = input</code>)</td>
+<td class="p-3 align-top text-left"><strong>Verified High-Z Input</strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtest_mode2_chromiumjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, <a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline">test_mode2_chromium.js</a>)</h3>
+<p class="text-sm my-2"><a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline"><code>test_mode2_chromium.js</code></a> tested Mode 2 (<code>ARM &lt;id&gt; 25.000 arm_timeout=30.000 req_deadline=55.000 vid=1050 pid=0406</code>) end-to-end with Chromium (<code>/Users/jbradley/.gemini/antigravity/scratch/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium</code>) executing live <code>navigator.credentials.create()</code> and <code>navigator.credentials.get()</code> operations (<code>3x ES256 (-7)</code> pairs + <code>1x ML-DSA-65 (-49)</code> pair) against the physical YubiKey 6 NFC (<code>1050:0406</code>). Pre-flight <code>CTAPHID_INIT</code> and <code>authenticatorGetInfo</code> <code>TX_DONE</code> events were retired in High-Z without aborting the pre-arm (<a href="./touch.py#L740-L748" class="text-[var(--primary)] hover:underline"><code>drain_up_socket</code></a>), and <code>touch.py</code> measured the Pi-side software <code>CLOCK_MONOTONIC</code> breakdown from <code>pi_usbmon_capture.py</code> observing <code>UP_NEEDED (phase=1)</code> (<code>usbmon_ns</code>) to the userspace timestamp captured immediately after the first <code>gpio[GPSET0] = mask</code> register write in C (<code>yk_last_first_edge_ns()</code>, a software GPIO-write measurement rather than an external oscilloscope/logic-analyzer capture):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric Category</th>
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Value (<code>N = 8</code> Chromium WebAuthn Trials)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Completion &amp; Pass Rate</strong></td>
+<td class="p-3 align-top text-left"><strong>Overall WebAuthn Success (<code>ES256</code> &amp; <code>ML-DSA-65</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>8 / 8</code> (<strong><code>100.0%</code></strong>, <code>DONE &lt;id&gt; up_satisfied</code>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>First-Pass Recognition (<code>pass == 0</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>2 / 8</code> (<strong><code>25.0%</code></strong>, including <code>492.1 ms</code> <code>ES256</code> GetAssertion &amp; <code>1,086.1 ms</code> <code>ML-DSA-65</code> MakeCredential)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Fallback Frequency (<code>pass &gt;= 1</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>6 / 8</code> (<strong><code>75.0%</code></strong>)</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>UP_NEEDED</code> -&gt; First Software GPIO Write (<code>usbmon_to_edge_us</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,821.2 us</code> (<code>1.82 ms</code>) / <code>1,934.9 us</code> (<code>1.93 ms</code>) / <code>2,857.4 us</code> (<code>2.86 ms</code>) / <code>3,326.1 us</code> (<code>3.33 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>UNIX Socket <code>recv</code> -&gt; First Software GPIO Write (<code>sock_to_edge_us</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,632.8 us</code> (<code>1.63 ms</code>) / <code>1,743.2 us</code> (<code>1.74 ms</code>) / <code>2,606.0 us</code> (<code>2.61 ms</code>) / <code>3,036.0 us</code> (<code>3.04 ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Daemon <code>drain_up_socket</code> Exit -&gt; <code>run_validated_chirp</code> Entry (<code>zeroRttTriggerUs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
+<td class="p-3 align-top text-left"><strong><code>250.2 us</code> / <code>293.1 us</code> (<code>0.29 ms</code>) / <code>442.5 us</code> / <code>447.6 us</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Daemon Session Elapsed (<code>daemonElapsedMs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
+<td class="p-3 align-top text-left"><strong><code>492.1 ms</code> / <code>5,282.3 ms</code> / <code>19,196.2 ms</code> / <code>24,379.0 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>End-to-End Chromium WebAuthn (<code>webauthnElapsedMs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
+<td class="p-3 align-top text-left"><strong><code>713.5 ms</code> / <code>5,767.8 ms</code> / <code>19,649.3 ms</code> / <code>24,790.8 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Cancellation-to-GPIO-Release (<code>CLOCK_MONOTONIC</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
+<td class="p-3 align-top text-left"><strong><code>832.5 us</code> / <code>1,815.2 us</code> (<code>1.82 ms</code>) / <code>4,107.9 us</code> (<code>4.11 ms</code>) / <code>4,703.0 us</code> (<code>4.70 ms</code>)</strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2jsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchcompare_mode1_vs_mode2js" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (<a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline">compare_mode1_vs_mode2.js</a>)</h3>
+<p class="text-sm my-2">Prior to any waveform timing changes, <a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline"><code>compare_mode1_vs_mode2.js</code></a> executed <code>N = 16</code> live <code>CTAPHID_CBOR</code> (<code>authenticatorMakeCredential</code>) transactions (<code>8</code> in <code>first_up_needed</code> and <code>8</code> in <code>pi_prearmed_first_up</code>) against the YubiKey 6 NFC (<code>1050:0406</code>) with identical explicit timeout and touch-budget parameters (<code>idleTimeoutMs: 15000</code>, <code>hardTimeoutMs: 55000</code>, <code>armTimeoutMs: 30000</code>, <code>touchBudgetMs: 25000</code>) in both modes using:</p>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Deadline-guarded <a href="./touch.py#L1284-L1656" class="text-[var(--primary)] hover:underline"><code>touch.py</code></a></strong>: Verifies <code>_arm_wait_deadline_mono</code> and <code>_arm_req_deadline_mono</code> before processing <code>_first_up_triggered</code> so expired pre-arm sessions terminate with <code>DONE &lt;id&gt; timeout</code>, and calls <code>reset_arm_state()</code> on <code>stop_session()</code>, <code>ambiguous_identity</code>, and <code>START</code> acceptance so a previous <code>ARM</code> session's <code>arm_req_deadline_mono</code> never caps a subsequent <code>START</code> session when backend selection is deferred (<code>not session_backend_selected</code>).</li>
+<li><strong>Consolidated timeout &amp; trigger-mode normalization with finite-number validation (<a href="./touch-config.js" class="text-[var(--primary)] hover:underline"><code>touch-config.js</code></a>)</strong>: Shared across <a href="./preload.js#L723-L845" class="text-[var(--primary)] hover:underline"><code>preload.js</code></a>, <a href="./hiddep.js#L221-L250" class="text-[var(--primary)] hover:underline"><code>hiddep.js</code></a>, and <a href="./nodehid.fork.js#L810-L895" class="text-[var(--primary)] hover:underline"><code>nodehid.fork.js</code></a>. Requires <code>typeof v === 'number' &amp;&amp; Number.isFinite(v) &amp;&amp; v &gt; 0</code> (<code>isPositiveFiniteMs</code>) for all duration options (<code>idleTimeoutMs</code>, <code>hardTimeoutMs</code>, <code>armTimeoutMs</code>, <code>touchBudgetMs</code>), rejecting <code>Infinity</code> / <code>NaN</code>, and propagates <code>reqCtx.touchBudgetMs</code> through <code>ARM</code>, first-UP deadline anchoring, and subsequent <code>START</code> sessions.</li>
+<li><strong>Software GPIO-write latency telemetry (<code>usbmonToFirstEdgeUs</code>, <code>sockToFirstEdgeUs</code>)</strong>: Measures the elapsed <code>CLOCK_MONOTONIC</code> time on the Pi from <code>usbmon</code> capture / UNIX socket receipt of <code>UP_NEEDED</code> to the userspace timestamp immediately following the first <code>gpio[GPSET0] = mask</code> register write (<code>yk_last_first_edge_ns()</code>):</li>
+</ul>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric Category</th>
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Mode 1: Host-Triggered (<code>first_up_needed</code>, <code>N = 8</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Mode 2: Pi Pre-Armed (<code>pi_prearmed_first_up</code>, <code>N = 8</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Delta (<code>Mode 2</code> vs. <code>Mode 1</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Trigger Mode &amp; Budgets</strong></td>
+<td class="p-3 align-top text-left"><strong><code>triggerMode</code> / <code>hardTimeoutMs</code> / <code>touchBudgetMs</code></strong></td>
+<td class="p-3 align-top text-left"><code>'first_up_needed'</code> / <code>55,000 ms</code> / <code>25,000 ms</code></td>
+<td class="p-3 align-top text-left"><code>'pi_prearmed_first_up'</code> / <code>55,000 ms</code> / <code>25,000 ms</code></td>
+<td class="p-3 align-top text-left">Matched <code>55s</code> hard limit &amp; <code>25s</code> touch budget</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Request / Session Failure Rate</strong></td>
+<td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0.0%</code> failure in both modes</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>First-Pass Recognition (<code>pass == 0</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>8 / 8</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>8 / 8</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>100.0%</code> Pass 0 recognition in both modes</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Fallback Frequency (<code>pass &gt;= 1</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0.0%</code> fallback rate in both modes</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>UP_NEEDED</code> -&gt; First Software GPIO Write (<code>usbmonToFirstEdgeUs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>123,489.8 us</code> (<code>123.49 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,488.1 us</code> (<code>1.49 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-122.00 ms</code> (<code>83.0x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>124,486.9 us</code> (<code>124.49 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,609.2 us</code> (<code>1.61 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-122.88 ms</code> (<code>77.4x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>124,548.5 us</code> (<code>124.55 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,863.9 us</code> (<code>1.86 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-122.68 ms</code> (<code>66.8x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>125,634.6 us</code> (<code>125.63 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>2,683.5 us</code> (<code>2.68 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-122.95 ms</code> (<code>46.8x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>125,989.2 us</code> (<code>125.99 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>2,686.9 us</code> (<code>2.69 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-123.30 ms</code> (<code>46.9x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>UNIX Socket <code>recv</code> -&gt; First Software GPIO Write (<code>sockToFirstEdgeUs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>121,459.9 us</code> (<code>121.46 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,299.7 us</code> (<code>1.30 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-120.16 ms</code> (skips <code>120 ms</code> pre-release)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>121,501.2 us</code> (<code>121.50 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>1,424.7 us</code> (<code>1.42 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-120.08 ms</code> (<code>85.3x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>122,402.3 us</code> (<code>122.40 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>2,417.7 us</code> (<code>2.42 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-119.98 ms</code> (<code>50.6x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>122,739.6 us</code> (<code>122.74 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>2,428.0 us</code> (<code>2.43 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-120.31 ms</code> (<code>50.6x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Host <code>UP_NEEDED</code> -&gt; CTAP Response (<code>upToResponseMs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>530.3 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>559.1 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>+28.8 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>952.9 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>817.7 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-135.2 ms</code> (<code>-14.2%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>1,099.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>817.8 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-281.3 ms</code> (<code>-25.6%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,839.7 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1,073.4 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-766.3 ms</code> (<code>-41.7%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>2,186.4 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1,097.3 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-1,089.1 ms</code> (<code>-49.8%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Daemon Session Elapsed (<code>daemonElapsedMs</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong>Minimum</strong></td>
+<td class="p-3 align-top text-left"><code>293.7 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>394.1 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>+100.4 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>787.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>591.5 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-195.5 ms</code> (<code>-24.8%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Mean</strong></td>
+<td class="p-3 align-top text-left"><code>747.7 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>604.3 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-143.4 ms</code> (<code>-19.2%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>949.3 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>853.8 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-95.5 ms</code> (<code>-10.1%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"></td>
+<td class="p-3 align-top text-left"><strong>Maximum</strong></td>
+<td class="p-3 align-top text-left"><code>984.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>887.8 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>-96.3 ms</code> (<code>-9.8%</code>)</strong></td>
+</tr>
+</tbody></table></div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-[var(--muted-foreground)]">
+    Generated from <a href="./touchly.md" class="text-[var(--primary)] hover:underline">touchly.md</a> &middot; <a href="./index.html" class="text-[var(--primary)] hover:underline">&larr; Back to Index</a>
+  </footer>
+</body>
+</html>
