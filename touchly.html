@@ -83,7 +83,7 @@
     <div class="mb-6 space-y-4">
 <div class="rounded-xl border border-violet-500/40 bg-violet-500/5 p-4 text-sm space-y-2 my-3"><div class="text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">Important</div><p class="text-sm my-2"><strong>Overview:</strong> <strong>Touchly</strong> (<a href="./touch.py" class="text-[var(--primary)] hover:underline">touch.py</a> + <code>/home/jbradley/yubikey-control/libyk_chirp.so</code>) drives the YubiKey 6 NFC (<code>VID: 0x1050</code>, <code>PID: 0x0406</code>) capacitive touch sensor hands-free from Raspberry Pi BCM <strong><code>GPIO21</code></strong> by sweeping a compiled C <code>/dev/gpiomem</code> logarithmic push-pull frequency chirp (<code>500 kHz</code> $\rightarrow$ <code>2 kHz</code>) across the sensor's excitation carrier and releasing the pin to High-Z (<code>PUD_OFF</code>) within <code>12 ms</code> of User Presence (<code>UP</code>) satisfaction.</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>Validated across the full 20-category FIDO CTAP 2.3 conformance suite (<strong><code>410</code> tests, <code>198</code> consecutive User Presence touches, <code>35</code> USB hub power cycles, <code>0</code> touch retries or frame drops</strong>).</li>
+<li>Validated across the full 20-category FIDO CTAP 2.3 conformance suite (<strong><code>410</code> tests in <code>8m 22.22s</code> (<code>502,221 ms</code>, <code>3.77x</code> faster than the <code>31m 32.52s</code> pre-hardening run), <code>190 / 190</code> (<code>100.0%</code>) First-Pass (<code>Pass 0</code>) User Presence touches (<code>994.5 ms</code> median / <code>1,915.6 ms</code> max <code>up_to_resp</code>), <code>20</code> automated USB hub power cycles, <code>0</code> touch retries or frame drops</strong>).</li>
 </ul></div>
 <figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><img src="./touchly.png" alt="Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" /><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Touchly Hardware Setup — Raspberry Pi 3B+ (<code>pi1</code>) with Ethernet (<code>eth0</code>), YubiKey 6 NFC, and <code>GPIO21</code> lead routed to the copper-tape capacitive electrode on the touch pad</figcaption></figure>
 <figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><video src="./touchly-browser.mp4#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="./touchly-browser.mp4" type="video/mp4" /></video><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Live Chromium WebAuthn Operations (<code>navigator.credentials.create()</code> &amp; <code>navigator.credentials.get()</code>) Driven Hands-Free by Touchly Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>) on YubiKey 6 NFC</figcaption></figure>
@@ -162,6 +162,7 @@
             <div><a href="#52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjs" class="hover:underline">&sect;5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, benchmark_hw_under_load.js)</a></div>
             <div><a href="#53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjs" class="hover:underline">&sect;5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, test_mode2_chromium.js)</a></div>
             <div><a href="#54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2js" class="hover:underline">&sect;5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (compare_mode1_vs_mode2.js)</a></div>
+            <div><a href="#55-full-20-category-fido-ctap-23-conformance-suite-benchmark-410-tests-run-6-post-hardening-vs-run-5-pre-hardening" class="hover:underline">&sect;5.5 Full 20-Category FIDO CTAP 2.3 Conformance Suite Benchmark (<code>410</code> Tests, <code>Run 6</code> Post-Hardening vs. <code>Run 5</code> Pre-Hardening)</a></div>
           </div>
         </li>
           </ul>
@@ -1088,6 +1089,53 @@ int yk_chirp_once(
 <td class="p-3 align-top text-left"><code>984.1 ms</code></td>
 <td class="p-3 align-top text-left"><strong><code>887.8 ms</code></strong></td>
 <td class="p-3 align-top text-left"><strong><code>-96.3 ms</code> (<code>-9.8%</code>)</strong></td>
+</tr>
+</tbody></table></div>
+<h3 id="55-full-20-category-fido-ctap-23-conformance-suite-benchmark-410-tests-run-6-post-hardening-vs-run-5-pre-hardening" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.5 Full 20-Category FIDO CTAP 2.3 Conformance Suite Benchmark (<code>410</code> Tests, <code>Run 6</code> Post-Hardening vs. <code>Run 5</code> Pre-Hardening)</h3>
+<p class="text-sm my-2">Running the complete 20-category FIDO CTAP 2.3 conformance suite (<a href="./yubikey_usb_ctap23_config.json" class="text-[var(--primary)] hover:underline"><code>yubikey_usb_ctap23_config.json</code></a>) against the YubiKey 6 NFC (<code>6.0.0 B0</code>, <code>1050:0406</code>) after all transport and Touchly hardening (<a href="./fido_conformance_debug.log" class="text-[var(--primary)] hover:underline">fido_conformance_debug.log</a>, <a href="./usbmon_yubikey_ctap23.csv" class="text-[var(--primary)] hover:underline">usbmon_yubikey_ctap23.csv</a>) reduced total suite execution time from <strong><code>31m 32.52s</code></strong> down to <strong><code>8m 22.22s</code></strong> (<strong><code>3.77x</code> faster / <code>-23m 10.30s</code></strong>), with <strong>100% (<code>190 / 190</code>) of User Presence touches resolving on Pass 0</strong> (<code>max = 1,915.6 ms</code>):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 5 (Initial C Chirp, Pre-Hardening)</th>
+<th class="p-3 font-semibold align-bottom text-left">Run 6 (Post-Hardening Touchly)</th>
+<th class="p-3 font-semibold align-bottom text-left">Improvement (<code>Run 6</code> vs. <code>Run 5</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Total Suite Duration (<code>20</code> Categories, <code>410</code> Tests)</strong></td>
+<td class="p-3 align-top text-left"><code>31m 32.52s</code> (<code>1,892,516 ms</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>8m 22.22s</code> (<code>502,221 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>-23m 10.30s</code> (<code>3.77x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Touch &amp; Transport Reliability</strong></td>
+<td class="p-3 align-top text-left"><code>198 / 198</code> (<code>100.0%</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>190 / 190</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>0</code> touch failures, <code>0</code> retries</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Total <code>CTAPHID</code> Commands Executed (<code>[HID SUMMARY]</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>~3,200</code></td>
+<td class="p-3 align-top text-left"><strong><code>3,180</code></strong> (<code>16,574</code> <code>usbmon</code> records, <code>5.61 MB</code>)</td>
+<td class="p-3 align-top text-left"><strong><code>0</code> transport timeouts or frame drops</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Total Hands-Free <code>GPIO21</code> UP Touches</strong></td>
+<td class="p-3 align-top text-left"><code>198</code></td>
+<td class="p-3 align-top text-left"><strong><code>190</code></strong> (<code>0</code> duplicate/spurious triggers)</td>
+<td class="p-3 align-top text-left"><strong><code>190 / 190</code> (<code>100.0%</code>) resolved on <code>Pass 0</code> (<code>&lt; 1.92 s</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>UP_NEEDED</code> $\rightarrow$ CTAP Response (<code>up_to_resp</code>)</strong></td>
+<td class="p-3 align-top text-left">Multi-pass tail up to <code>~22 s</code></td>
+<td class="p-3 align-top text-left"><strong>Min <code>340.4 ms</code> / Median <code>994.5 ms</code> / Mean <code>963.7 ms</code> / <code>P95</code> <code>1,336.5 ms</code> / Max <code>1,915.6 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>0%</code> fallback rate (<code>100%</code> single-pass)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Automated <code>uhubctl</code> USB Hub Power Cycles</strong></td>
+<td class="p-3 align-top text-left"><code>35</code></td>
+<td class="p-3 align-top text-left"><strong><code>20 / 20</code> (<code>100.0%</code> clean re-enumeration)</strong></td>
+<td class="p-3 align-top text-left"><code>-15</code> redundant power cycles eliminated</td>
 </tr>
 </tbody></table></div>
     </section>

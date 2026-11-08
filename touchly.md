@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Overview:**
 > **Touchly** ([touch.py](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/touch.py) + `/home/jbradley/yubikey-control/libyk_chirp.so`) drives the YubiKey 6 NFC (`VID: 0x1050`, `PID: 0x0406`) capacitive touch sensor hands-free from Raspberry Pi BCM **`GPIO21`** by sweeping a compiled C `/dev/gpiomem` logarithmic push-pull frequency chirp (`500 kHz` $\rightarrow$ `2 kHz`) across the sensor's excitation carrier and releasing the pin to High-Z (`PUD_OFF`) within `12 ms` of User Presence (`UP`) satisfaction.
-> - Validated across the full 20-category FIDO CTAP 2.3 conformance suite (**`410` tests, `198` consecutive User Presence touches, `35` USB hub power cycles, `0` touch retries or frame drops**).
+> - Validated across the full 20-category FIDO CTAP 2.3 conformance suite (**`410` tests in `8m 22.22s` (`502,221 ms`, `3.77x` faster than the `31m 32.52s` pre-hardening run), `190 / 190` (`100.0%`) First-Pass (`Pass 0`) User Presence touches (`994.5 ms` median / `1,915.6 ms` max `up_to_resp`), `20` automated USB hub power cycles, `0` touch retries or frame drops**).
 
 ![Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad](./touchly.png)
 
@@ -330,3 +330,18 @@ Prior to any waveform timing changes, [`compare_mode1_vs_mode2.js`](file:///User
 | | **Mean** | `747.7 ms` | **`604.3 ms`** | **`-143.4 ms` (`-19.2%`)** |
 | | **95th Percentile (`P95`)** | `949.3 ms` | **`853.8 ms`** | **`-95.5 ms` (`-10.1%`)** |
 | | **Maximum** | `984.1 ms` | **`887.8 ms`** | **`-96.3 ms` (`-9.8%`)** |
+
+---
+
+### 5.5 Full 20-Category FIDO CTAP 2.3 Conformance Suite Benchmark (`410` Tests, `Run 6` Post-Hardening vs. `Run 5` Pre-Hardening)
+
+Running the complete 20-category FIDO CTAP 2.3 conformance suite ([`yubikey_usb_ctap23_config.json`](file:///Users/jbradley/.gemini/antigravity/scratch/yubikey_usb_ctap23_config.json)) against the YubiKey 6 NFC (`6.0.0 B0`, `1050:0406`) after all transport and Touchly hardening ([fido_conformance_debug.log](file:///Users/jbradley/.gemini/antigravity/scratch/fido_conformance_debug.log), [usbmon_yubikey_ctap23.csv](file:///Users/jbradley/.gemini/antigravity/scratch/usbmon_yubikey_ctap23.csv)) reduced total suite execution time from **`31m 32.52s`** down to **`8m 22.22s`** (**`3.77x` faster / `-23m 10.30s`**), with **100% (`190 / 190`) of User Presence touches resolving on Pass 0** (`max = 1,915.6 ms`):
+
+| Metric | Run 5 (Initial C Chirp, Pre-Hardening) | Run 6 (Post-Hardening Touchly) | Improvement (`Run 6` vs. `Run 5`) |
+| :--- | :--- | :--- | :--- |
+| **Total Suite Duration (`20` Categories, `410` Tests)** | `31m 32.52s` (`1,892,516 ms`) | **`8m 22.22s` (`502,221 ms`)** | **`-23m 10.30s` (`3.77x` faster)** |
+| **Touch & Transport Reliability** | `198 / 198` (`100.0%`) | **`190 / 190` (`100.0%`)** | **`0` touch failures, `0` retries** |
+| **Total `CTAPHID` Commands Executed (`[HID SUMMARY]`)** | `~3,200` | **`3,180`** (`16,574` `usbmon` records, `5.61 MB`) | **`0` transport timeouts or frame drops** |
+| **Total Hands-Free `GPIO21` UP Touches** | `198` | **`190`** (`0` duplicate/spurious triggers) | **`190 / 190` (`100.0%`) resolved on `Pass 0` (`< 1.92 s`)** |
+| **`UP_NEEDED` $\rightarrow$ CTAP Response (`up_to_resp`)** | Multi-pass tail up to `~22 s` | **Min `340.4 ms` / Median `994.5 ms` / Mean `963.7 ms` / `P95` `1,336.5 ms` / Max `1,915.6 ms`** | **`0%` fallback rate (`100%` single-pass)** |
+| **Automated `uhubctl` USB Hub Power Cycles** | `35` | **`20 / 20` (`100.0%` clean re-enumeration)** | `-15` redundant power cycles eliminated |
