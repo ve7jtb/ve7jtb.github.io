@@ -1469,6 +1469,10 @@ def build_index():
               <span>Read Full HTML Report</span>
               <span>&rarr;</span>
             </a>
+            <a href="./touchly.html#53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjs"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm transition">
+              <span>&#9654; Watch Chromium WebAuthn Video</span>
+            </a>
             <a href="./touchly.md"
                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">
               <span>View Markdown Source (<code>.md</code>)</span>

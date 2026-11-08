@@ -54,6 +54,8 @@ def inline(text):
         src, _ = map_url(url)
         if src.startswith("/") and not src.startswith("//"):
             src = "./" + src.rsplit("/", 1)[-1]
+        if src.lower().endswith((".mp4", ".webm", ".mov")):
+            return stash(f'<video controls playsinline preload="metadata" class="rounded-xl border border-[var(--border)] max-h-[540px] w-full max-w-4xl mx-auto shadow-sm bg-black"><source src="{html.escape(src)}" type="video/mp4" /></video>')
         return stash(f'<img src="{html.escape(src)}" alt="{html.escape(alt)}" class="inline-block rounded-lg border border-[var(--border)] max-h-96" />')
 
     def link(m):
@@ -75,6 +77,7 @@ def inline(text):
 
 def slug(s):
     """GitHub-style heading anchor."""
+    s = re.sub(r"\[([^\]]+)\]\([^)\s]+\)", r"\1", s)
     s = re.sub(r"<[^>]+>", "", s).strip().lower()
     s = re.sub(r"[^\w\s-]", "", s)
     return re.sub(r"\s+", "-", s)
@@ -220,7 +223,7 @@ def parse_blocks(lines):
             out.append(f'<div class="overflow-x-auto py-1 text-sm my-2">$${html.escape(s[2:-2], quote=False)}$$</div>')
             i += 1
             continue
-        # standalone image
+        # standalone image or video
         im = re.match(r"^!\[([^\]]*)\]\(([^)\s]+)\)$", s)
         if im:
             alt, url = im.group(1), im.group(2)
@@ -228,7 +231,11 @@ def parse_blocks(lines):
             if src.startswith("/") and not src.startswith("//"):
                 src = "./" + src.rsplit("/", 1)[-1]
             caption_html = f'<figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">{inline(alt)}</figcaption>' if alt else ""
-            out.append(f'<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><img src="{html.escape(src)}" alt="{html.escape(alt)}" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" />{caption_html}</figure>')
+            if src.lower().endswith((".mp4", ".webm", ".mov")):
+                media_html = f'<video controls playsinline preload="metadata" class="rounded-xl border border-[var(--border)] max-h-[540px] w-full max-w-4xl mx-auto shadow-sm bg-black"><source src="{html.escape(src)}" type="video/mp4" /></video>'
+            else:
+                media_html = f'<img src="{html.escape(src)}" alt="{html.escape(alt)}" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" />'
+            out.append(f'<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm">{media_html}{caption_html}</figure>')
             i += 1
             continue
         # list

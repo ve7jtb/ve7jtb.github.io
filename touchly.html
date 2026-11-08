@@ -142,8 +142,8 @@
         <li>
           <a href="#section-3" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">3. Waveform Generation (<code>libyk_chirp.so</code> inside touch.py)</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
-            <div><a href="#idle-released-state-yk_releasefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl113-l127" class="hover:underline">&sect;Idle / Released State (<code>yk_release</code>)</a></div>
-            <div><a href="#calibrated-burst-band-0-with-full-sweep-fallback-band-1-yk_chirp_oncefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl117-l202" class="hover:underline">&sect;Calibrated Burst (<code>band == 0</code>) with Full-Sweep Fallback (<code>band &gt;= 1</code>) (<code>yk_chirp_once</code>)</a></div>
+            <div><a href="#idle-released-state-yk_release" class="hover:underline">&sect;Idle / Released State (<code>yk_release</code>)</a></div>
+            <div><a href="#calibrated-burst-band-0-with-full-sweep-fallback-band-1-yk_chirp_once" class="hover:underline">&sect;Calibrated Burst (<code>band == 0</code>) with Full-Sweep Fallback (<code>band &gt;= 1</code>) (<code>yk_chirp_once</code>)</a></div>
           </div>
         </li>
         <li>
@@ -157,10 +157,10 @@
         <li>
           <a href="#section-5" class="font-semibold text-[var(--foreground)] hover:text-[var(--primary)]">5. Post-Hardening Hardware Performance Baselines</a>
           <div class="text-[11px] pl-3 space-y-0.5 mt-1 text-[var(--muted-foreground)]">
-            <div><a href="#51-unloaded-baseline-n-24-benchmark_hw_baselinejsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_baselinejs" class="hover:underline">&sect;5.1 Unloaded Baseline (<code>N = 24</code>, benchmark_hw_baseline.js)</a></div>
-            <div><a href="#52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_under_loadjs" class="hover:underline">&sect;5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, benchmark_hw_under_load.js)</a></div>
-            <div><a href="#53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtest_mode2_chromiumjs" class="hover:underline">&sect;5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, test_mode2_chromium.js)</a></div>
-            <div><a href="#54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2jsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchcompare_mode1_vs_mode2js" class="hover:underline">&sect;5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (compare_mode1_vs_mode2.js)</a></div>
+            <div><a href="#51-unloaded-baseline-n-24-benchmark_hw_baselinejs" class="hover:underline">&sect;5.1 Unloaded Baseline (<code>N = 24</code>, benchmark_hw_baseline.js)</a></div>
+            <div><a href="#52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjs" class="hover:underline">&sect;5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, benchmark_hw_under_load.js)</a></div>
+            <div><a href="#53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjs" class="hover:underline">&sect;5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, test_mode2_chromium.js)</a></div>
+            <div><a href="#54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2js" class="hover:underline">&sect;5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (compare_mode1_vs_mode2.js)</a></div>
           </div>
         </li>
           </ul>
@@ -267,13 +267,13 @@
 <td class="p-3 align-top text-left">Waits for <code>READY</code> over a persistent SSH connection to <code>169.254.81.201</code>, sends <code>START &lt;id&gt; &lt;duration_sec&gt;\n</code> on <code>0xBB 0x02</code> (<code>UP_NEEDED</code>) or U2F <code>0x6985</code>, sends <code>STOP &lt;id&gt;\n</code> when the waveform is no longer needed, and validates <code>DONE &lt;id&gt; &lt;reason&gt;</code> against the active session ID.</td>
 </tr>
 </tbody></table></div>
-<h3 id="idle-released-state-yk_releasefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl113-l127" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Idle / Released State (<a href="./touch.py#L113-L127" class="text-[var(--primary)] hover:underline"><code>yk_release</code></a>)</h3>
+<h3 id="idle-released-state-yk_release" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Idle / Released State (<a href="./touch.py#L113-L127" class="text-[var(--primary)] hover:underline"><code>yk_release</code></a>)</h3>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Clears <code>GPFSEL2</code> bits <code>3..5</code> to configure <code>GPIO21</code> as an <strong>Input</strong> (<code>21: ip -- | lo</code>) and clocks <code>GPPUD = 0</code> (<code>PUD_OFF</code>) through <code>GPPUDCLK0</code>.</li>
 <li>Presents a true High-Z floating termination during USB hub power cycles (<code>uhubctl</code>), idle intervals, and the configurable <code>--interval 0.45</code> (<code>450 ms</code>) release gap between pulses so the YubiKey's state machine sees a distinct finger release before each touch.</li>
 <li>Signal handlers for <code>SIGINT</code>, <code>SIGTERM</code>, <code>SIGHUP</code>, and <code>SIGPIPE</code> (<a href="./touch.py#L510-L519" class="text-[var(--primary)] hover:underline"><code>handle_signal</code></a>) ensure <code>yk_release(21)</code> always executes even if an SSH client disconnects mid-chirp.</li>
 </ul>
-<h3 id="calibrated-burst-band-0-with-full-sweep-fallback-band-1-yk_chirp_oncefileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtouchpyl117-l202" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Calibrated Burst (<code>band == 0</code>) with Full-Sweep Fallback (<code>band &gt;= 1</code>) (<a href="./touch.py#L117-L202" class="text-[var(--primary)] hover:underline"><code>yk_chirp_once</code></a>)</h3>
+<h3 id="calibrated-burst-band-0-with-full-sweep-fallback-band-1-yk_chirp_once" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">Calibrated Burst (<code>band == 0</code>) with Full-Sweep Fallback (<code>band &gt;= 1</code>) (<a href="./touch.py#L117-L202" class="text-[var(--primary)] hover:underline"><code>yk_chirp_once</code></a>)</h3>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">c</div><pre class="text-xs leading-relaxed"><code>#define CALIBRATED_START_HALF_NS 4500
 #define CORE_BAND_START_HALF_NS  90000
 #define END_HALF_NS              250000
@@ -418,7 +418,7 @@ int yk_chirp_once(
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Section 5</span>
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)] mt-1">Post-Hardening Hardware Performance Baselines</h2>
       </div>
-<h3 id="51-unloaded-baseline-n-24-benchmark_hw_baselinejsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_baselinejs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Unloaded Baseline (<code>N = 24</code>, <a href="./benchmark_hw_baseline.js" class="text-[var(--primary)] hover:underline">benchmark_hw_baseline.js</a>)</h3>
+<h3 id="51-unloaded-baseline-n-24-benchmark_hw_baselinejs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.1 Unloaded Baseline (<code>N = 24</code>, <a href="./benchmark_hw_baseline.js" class="text-[var(--primary)] hover:underline">benchmark_hw_baseline.js</a>)</h3>
 <p class="text-sm my-2">With all transport and daemon control-flow hardening in place, an initial unloaded baseline was measured across two 12-transaction runs (<code>N = 24</code> live <code>CTAPHID_CBOR</code> <code>authenticatorMakeCredential</code> transactions on the YubiKey 6 NFC <code>6.0.0 B0</code> over VirtualHere + Raspberry Pi 3B+ <code>169.254.81.201</code>):</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -570,7 +570,7 @@ int yk_chirp_once(
 <td class="p-3 align-top text-left"><strong><code>21: ip -- | lo</code></strong></td>
 </tr>
 </tbody></table></div>
-<h3 id="52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchbenchmark_hw_under_loadjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, <a href="./benchmark_hw_under_load.js" class="text-[var(--primary)] hover:underline">benchmark_hw_under_load.js</a>)</h3>
+<h3 id="52-pre-tuning-nominal-vs-active-cpu-usb-load-benchmark-n-20-benchmark_hw_under_loadjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.2 Pre-Tuning Nominal vs. Active CPU + USB Load Benchmark (<code>N = 20</code>, <a href="./benchmark_hw_under_load.js" class="text-[var(--primary)] hover:underline">benchmark_hw_under_load.js</a>)</h3>
 <p class="text-sm my-2">Prior to any pulse-timing or core-dwell adjustments, <a href="./benchmark_hw_under_load.js" class="text-[var(--primary)] hover:underline"><code>benchmark_hw_under_load.js</code></a> measured <code>N = 10</code> live <code>CTAPHID_CBOR</code> touches under nominal conditions followed by <code>N = 10</code> touches under concurrent Raspberry Pi 3B+ CPU + USB load (3 worker processes saturating CPU cores plus continuous <code>/sys/bus/usb/devices/*</code> descriptor/status reads while VirtualHere forwarded CTAPHID traffic and <code>touch.py</code> drove <code>GPIO21</code>).</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Daemon Startup Diagnostics</strong>: <code>READY backend=native_c profile=core_band_sweep_v2 pass0=4500..250000ns(core=90000..250000ns@14ms) fallback=band1+_repeat_until_deadline(1000..250000ns) pin=21 hold=1.70 interval=0.45 max_duration=25.0</code></li>
@@ -753,8 +753,111 @@ int yk_chirp_once(
 <td class="p-3 align-top text-left"><strong>Verified High-Z Input</strong></td>
 </tr>
 </tbody></table></div>
-<h3 id="53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchtest_mode2_chromiumjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, <a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline">test_mode2_chromium.js</a>)</h3>
+<h3 id="53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, <a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline">test_mode2_chromium.js</a>)</h3>
+<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><video controls playsinline preload="metadata" class="rounded-xl border border-[var(--border)] max-h-[540px] w-full max-w-4xl mx-auto shadow-sm bg-black"><source src="./touchly-browser.mp4" type="video/mp4" /></video><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Live Chromium WebAuthn Operations (<code>navigator.credentials.create()</code> &amp; <code>navigator.credentials.get()</code>) Driven Hands-Free by Touchly Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>) Across <code>ES256 (-7)</code> and Post-Quantum <code>ML-DSA-65 (-49)</code> on YubiKey 6 NFC</figcaption></figure>
 <p class="text-sm my-2"><a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline"><code>test_mode2_chromium.js</code></a> tested Mode 2 (<code>ARM &lt;id&gt; 25.000 arm_timeout=30.000 req_deadline=55.000 vid=1050 pid=0406</code>) end-to-end with Chromium (<code>/Users/jbradley/.gemini/antigravity/scratch/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium</code>) executing live <code>navigator.credentials.create()</code> and <code>navigator.credentials.get()</code> operations (<code>3x ES256 (-7)</code> pairs + <code>1x ML-DSA-65 (-49)</code> pair) against the physical YubiKey 6 NFC (<code>1050:0406</code>). Pre-flight <code>CTAPHID_INIT</code> and <code>authenticatorGetInfo</code> <code>TX_DONE</code> events were retired in High-Z without aborting the pre-arm (<a href="./touch.py#L740-L748" class="text-[var(--primary)] hover:underline"><code>drain_up_socket</code></a>), and <code>touch.py</code> measured the Pi-side software <code>CLOCK_MONOTONIC</code> breakdown from <code>pi_usbmon_capture.py</code> observing <code>UP_NEEDED (phase=1)</code> (<code>usbmon_ns</code>) to the userspace timestamp captured immediately after the first <code>gpio[GPSET0] = mask</code> register write in C (<code>yk_last_first_edge_ns()</code>, a software GPIO-write measurement rather than an external oscilloscope/logic-analyzer capture):</p>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-center">Trial</th>
+<th class="p-3 font-semibold align-bottom text-left">Operation</th>
+<th class="p-3 font-semibold align-bottom text-center">Algorithm</th>
+<th class="p-3 font-semibold align-bottom text-center">Pass (<code>pass</code> / <code>passes</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center"><code>usbmon_to_edge_us</code></th>
+<th class="p-3 font-semibold align-bottom text-center"><code>sock_to_edge_us</code></th>
+<th class="p-3 font-semibold align-bottom text-center"><code>daemonElapsedMs</code></th>
+<th class="p-3 font-semibold align-bottom text-center"><code>webauthnElapsedMs</code></th>
+<th class="p-3 font-semibold align-bottom text-center"><code>cancelToReleaseUs</code></th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-center"><strong>1</strong></td>
+<td class="p-3 align-top text-left"><code>MakeCredential #1</code></td>
+<td class="p-3 align-top text-center"><code>ES256 (-7)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>3,191.0 us</code> (<code>3.19 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>2,900.3 us</code> (<code>2.90 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>295.8 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>922.2 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>700.0 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>2</strong></td>
+<td class="p-3 align-top text-left"><code>GetAssertion #1</code></td>
+<td class="p-3 align-top text-center"><code>ES256 (-7)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>1,966.0 us</code> (<code>1.97 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,768.9 us</code> (<code>1.77 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>690.1 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>975.2 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>1,551.0 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>3</strong></td>
+<td class="p-3 align-top text-left"><code>MakeCredential #2</code></td>
+<td class="p-3 align-top text-center"><code>ES256 (-7)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>2,072.2 us</code> (<code>2.07 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,830.7 us</code> (<code>1.83 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>395.0 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>902.5 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>729.9 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>4</strong></td>
+<td class="p-3 align-top text-left"><code>GetAssertion #2</code></td>
+<td class="p-3 align-top text-center"><code>ES256 (-7)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>1,995.1 us</code> (<code>2.00 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,808.4 us</code> (<code>1.81 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>592.3 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>816.0 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>1,187.4 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>5</strong></td>
+<td class="p-3 align-top text-left"><code>MakeCredential #3</code></td>
+<td class="p-3 align-top text-center"><code>ES256 (-7)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>1,864.7 us</code> (<code>1.86 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,663.5 us</code> (<code>1.66 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>692.2 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>1,122.8 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>737.0 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>6</strong></td>
+<td class="p-3 align-top text-left"><code>GetAssertion #3</code></td>
+<td class="p-3 align-top text-center"><code>ES256 (-7)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>1,870.7 us</code> (<code>1.87 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,660.4 us</code> (<code>1.66 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>494.1 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>790.9 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>948.8 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>7</strong></td>
+<td class="p-3 align-top text-left"><code>MakeCredential #4</code></td>
+<td class="p-3 align-top text-center"><code>ML-DSA-65 (-49)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>1,910.1 us</code> (<code>1.91 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,699.0 us</code> (<code>1.70 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>789.1 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>1,322.6 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>702.8 us</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>8</strong></td>
+<td class="p-3 align-top text-left"><code>GetAssertion #4</code></td>
+<td class="p-3 align-top text-center"><code>ML-DSA-65 (-49)</code></td>
+<td class="p-3 align-top text-center"><code>0 / 1</code> (<strong>Pass 0</strong>)</td>
+<td class="p-3 align-top text-center"><code>1,869.8 us</code> (<code>1.87 ms</code>)</td>
+<td class="p-3 align-top text-center"><code>1,664.6 us</code> (<code>1.66 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>690.2 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>1,862.0 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>657.1 us</code></td>
+</tr>
+</tbody></table></div>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
@@ -770,45 +873,45 @@ int yk_chirp_once(
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>First-Pass Recognition (<code>pass == 0</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>2 / 8</code> (<strong><code>25.0%</code></strong>, including <code>492.1 ms</code> <code>ES256</code> GetAssertion &amp; <code>1,086.1 ms</code> <code>ML-DSA-65</code> MakeCredential)</td>
+<td class="p-3 align-top text-left"><code>8 / 8</code> (<strong><code>100.0%</code></strong>, <code>295.8 ms</code> to <code>789.1 ms</code> across <code>3x ES256</code> &amp; <code>1x ML-DSA-65</code> pairs)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Fallback Frequency (<code>pass &gt;= 1</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>6 / 8</code> (<strong><code>75.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>UP_NEEDED</code> -&gt; First Software GPIO Write (<code>usbmon_to_edge_us</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
-<td class="p-3 align-top text-left"><strong><code>1,821.2 us</code> (<code>1.82 ms</code>) / <code>1,934.9 us</code> (<code>1.93 ms</code>) / <code>2,857.4 us</code> (<code>2.86 ms</code>) / <code>3,326.1 us</code> (<code>3.33 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,864.7 us</code> (<code>1.86 ms</code>) / <code>1,938.0 us</code> (<code>1.94 ms</code>) / <code>2,799.4 us</code> (<code>2.80 ms</code>) / <code>3,191.0 us</code> (<code>3.19 ms</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>UNIX Socket <code>recv</code> -&gt; First Software GPIO Write (<code>sock_to_edge_us</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
-<td class="p-3 align-top text-left"><strong><code>1,632.8 us</code> (<code>1.63 ms</code>) / <code>1,743.2 us</code> (<code>1.74 ms</code>) / <code>2,606.0 us</code> (<code>2.61 ms</code>) / <code>3,036.0 us</code> (<code>3.04 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,660.4 us</code> (<code>1.66 ms</code>) / <code>1,734.0 us</code> (<code>1.73 ms</code>) / <code>2,525.9 us</code> (<code>2.53 ms</code>) / <code>2,900.3 us</code> (<code>2.90 ms</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Daemon <code>drain_up_socket</code> Exit -&gt; <code>run_validated_chirp</code> Entry (<code>zeroRttTriggerUs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
-<td class="p-3 align-top text-left"><strong><code>250.2 us</code> / <code>293.1 us</code> (<code>0.29 ms</code>) / <code>442.5 us</code> / <code>447.6 us</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>256.6 us</code> / <code>285.0 us</code> (<code>0.29 ms</code>) / <code>437.4 us</code> / <code>455.1 us</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Daemon Session Elapsed (<code>daemonElapsedMs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
-<td class="p-3 align-top text-left"><strong><code>492.1 ms</code> / <code>5,282.3 ms</code> / <code>19,196.2 ms</code> / <code>24,379.0 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>295.8 ms</code> / <code>641.2 ms</code> / <code>755.2 ms</code> / <code>789.1 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>End-to-End Chromium WebAuthn (<code>webauthnElapsedMs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
-<td class="p-3 align-top text-left"><strong><code>713.5 ms</code> / <code>5,767.8 ms</code> / <code>19,649.3 ms</code> / <code>24,790.8 ms</code></strong></td>
+<td class="p-3 align-top text-left"><strong><code>790.9 ms</code> / <code>948.7 ms</code> / <code>1,673.2 ms</code> / <code>1,862.0 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Cancellation-to-GPIO-Release (<code>CLOCK_MONOTONIC</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Min / Median (<code>P50</code>) / <code>P95</code> / Max</strong></td>
-<td class="p-3 align-top text-left"><strong><code>832.5 us</code> / <code>1,815.2 us</code> (<code>1.82 ms</code>) / <code>4,107.9 us</code> (<code>4.11 ms</code>) / <code>4,703.0 us</code> (<code>4.70 ms</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>657.1 us</code> (<code>0.66 ms</code>) / <code>733.5 us</code> (<code>0.73 ms</code>) / <code>1,423.7 us</code> (<code>1.42 ms</code>) / <code>1,551.0 us</code> (<code>1.55 ms</code>)</strong></td>
 </tr>
 </tbody></table></div>
-<h3 id="54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2jsfileusersjbradleygeminiantigravitybrainaf74f763-3e64-4a5f-b0cf-8e00c20c3671scratchcompare_mode1_vs_mode2js" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (<a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline">compare_mode1_vs_mode2.js</a>)</h3>
+<h3 id="54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2js" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (<a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline">compare_mode1_vs_mode2.js</a>)</h3>
 <p class="text-sm my-2">Prior to any waveform timing changes, <a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline"><code>compare_mode1_vs_mode2.js</code></a> executed <code>N = 16</code> live <code>CTAPHID_CBOR</code> (<code>authenticatorMakeCredential</code>) transactions (<code>8</code> in <code>first_up_needed</code> and <code>8</code> in <code>pi_prearmed_first_up</code>) against the YubiKey 6 NFC (<code>1050:0406</code>) with identical explicit timeout and touch-budget parameters (<code>idleTimeoutMs: 15000</code>, <code>hardTimeoutMs: 55000</code>, <code>armTimeoutMs: 30000</code>, <code>touchBudgetMs: 25000</code>) in both modes using:</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Deadline-guarded <a href="./touch.py#L1284-L1656" class="text-[var(--primary)] hover:underline"><code>touch.py</code></a></strong>: Verifies <code>_arm_wait_deadline_mono</code> and <code>_arm_req_deadline_mono</code> before processing <code>_first_up_triggered</code> so expired pre-arm sessions terminate with <code>DONE &lt;id&gt; timeout</code>, and calls <code>reset_arm_state()</code> on <code>stop_session()</code>, <code>ambiguous_identity</code>, and <code>START</code> acceptance so a previous <code>ARM</code> session's <code>arm_req_deadline_mono</code> never caps a subsequent <code>START</code> session when backend selection is deferred (<code>not session_backend_selected</code>).</li>

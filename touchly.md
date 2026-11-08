@@ -267,19 +267,32 @@ Prior to any pulse-timing or core-dwell adjustments, [`benchmark_hw_under_load.j
 
 ### 5.3 Live Chromium WebAuthn Benchmark with Mode 2 (`pi_prearmed_first_up` / `ARM`, `N = 8`, [test_mode2_chromium.js](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/test_mode2_chromium.js))
 
+![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) Across `ES256 (-7)` and Post-Quantum `ML-DSA-65 (-49)` on YubiKey 6 NFC](./touchly-browser.mp4)
+
 [`test_mode2_chromium.js`](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/test_mode2_chromium.js) tested Mode 2 (`ARM <id> 25.000 arm_timeout=30.000 req_deadline=55.000 vid=1050 pid=0406`) end-to-end with Chromium (`/Users/jbradley/.gemini/antigravity/scratch/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium`) executing live `navigator.credentials.create()` and `navigator.credentials.get()` operations (`3x ES256 (-7)` pairs + `1x ML-DSA-65 (-49)` pair) against the physical YubiKey 6 NFC (`1050:0406`). Pre-flight `CTAPHID_INIT` and `authenticatorGetInfo` `TX_DONE` events were retired in High-Z without aborting the pre-arm ([`drain_up_socket`](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/touch.py#L740-L748)), and `touch.py` measured the Pi-side software `CLOCK_MONOTONIC` breakdown from `pi_usbmon_capture.py` observing `UP_NEEDED (phase=1)` (`usbmon_ns`) to the userspace timestamp captured immediately after the first `gpio[GPSET0] = mask` register write in C (`yk_last_first_edge_ns()`, a software GPIO-write measurement rather than an external oscilloscope/logic-analyzer capture):
+
+| Trial | Operation | Algorithm | Pass (`pass` / `passes`) | `usbmon_to_edge_us` | `sock_to_edge_us` | `daemonElapsedMs` | `webauthnElapsedMs` | `cancelToReleaseUs` |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1** | `MakeCredential #1` | `ES256 (-7)` | `0 / 1` (**Pass 0**) | `3,191.0 us` (`3.19 ms`) | `2,900.3 us` (`2.90 ms`) | **`295.8 ms`** | **`922.2 ms`** | `700.0 us` |
+| **2** | `GetAssertion #1` | `ES256 (-7)` | `0 / 1` (**Pass 0**) | `1,966.0 us` (`1.97 ms`) | `1,768.9 us` (`1.77 ms`) | **`690.1 ms`** | **`975.2 ms`** | `1,551.0 us` |
+| **3** | `MakeCredential #2` | `ES256 (-7)` | `0 / 1` (**Pass 0**) | `2,072.2 us` (`2.07 ms`) | `1,830.7 us` (`1.83 ms`) | **`395.0 ms`** | **`902.5 ms`** | `729.9 us` |
+| **4** | `GetAssertion #2` | `ES256 (-7)` | `0 / 1` (**Pass 0**) | `1,995.1 us` (`2.00 ms`) | `1,808.4 us` (`1.81 ms`) | **`592.3 ms`** | **`816.0 ms`** | `1,187.4 us` |
+| **5** | `MakeCredential #3` | `ES256 (-7)` | `0 / 1` (**Pass 0**) | `1,864.7 us` (`1.86 ms`) | `1,663.5 us` (`1.66 ms`) | **`692.2 ms`** | **`1,122.8 ms`** | `737.0 us` |
+| **6** | `GetAssertion #3` | `ES256 (-7)` | `0 / 1` (**Pass 0**) | `1,870.7 us` (`1.87 ms`) | `1,660.4 us` (`1.66 ms`) | **`494.1 ms`** | **`790.9 ms`** | `948.8 us` |
+| **7** | `MakeCredential #4` | `ML-DSA-65 (-49)` | `0 / 1` (**Pass 0**) | `1,910.1 us` (`1.91 ms`) | `1,699.0 us` (`1.70 ms`) | **`789.1 ms`** | **`1,322.6 ms`** | `702.8 us` |
+| **8** | `GetAssertion #4` | `ML-DSA-65 (-49)` | `0 / 1` (**Pass 0**) | `1,869.8 us` (`1.87 ms`) | `1,664.6 us` (`1.66 ms`) | **`690.2 ms`** | **`1,862.0 ms`** | `657.1 us` |
 
 | Metric Category | Metric | Value (`N = 8` Chromium WebAuthn Trials) |
 | :--- | :--- | :--- |
 | **Completion & Pass Rate** | **Overall WebAuthn Success (`ES256` & `ML-DSA-65`)** | `8 / 8` (**`100.0%`**, `DONE <id> up_satisfied`) |
-| | **First-Pass Recognition (`pass == 0`)** | `2 / 8` (**`25.0%`**, including `492.1 ms` `ES256` GetAssertion & `1,086.1 ms` `ML-DSA-65` MakeCredential) |
-| | **Fallback Frequency (`pass >= 1`)** | `6 / 8` (**`75.0%`**) |
-| **Pi `usbmon` `UP_NEEDED` -> First Software GPIO Write (`usbmon_to_edge_us`)** | **Min / Median (`P50`) / `P95` / Max** | **`1,821.2 us` (`1.82 ms`) / `1,934.9 us` (`1.93 ms`) / `2,857.4 us` (`2.86 ms`) / `3,326.1 us` (`3.33 ms`)** |
-| **UNIX Socket `recv` -> First Software GPIO Write (`sock_to_edge_us`)** | **Min / Median (`P50`) / `P95` / Max** | **`1,632.8 us` (`1.63 ms`) / `1,743.2 us` (`1.74 ms`) / `2,606.0 us` (`2.61 ms`) / `3,036.0 us` (`3.04 ms`)** |
-| **Daemon `drain_up_socket` Exit -> `run_validated_chirp` Entry (`zeroRttTriggerUs`)** | **Min / Median (`P50`) / `P95` / Max** | **`250.2 us` / `293.1 us` (`0.29 ms`) / `442.5 us` / `447.6 us`** |
-| **Daemon Session Elapsed (`daemonElapsedMs`)** | **Min / Median (`P50`) / `P95` / Max** | **`492.1 ms` / `5,282.3 ms` / `19,196.2 ms` / `24,379.0 ms`** |
-| **End-to-End Chromium WebAuthn (`webauthnElapsedMs`)** | **Min / Median (`P50`) / `P95` / Max** | **`713.5 ms` / `5,767.8 ms` / `19,649.3 ms` / `24,790.8 ms`** |
-| **Cancellation-to-GPIO-Release (`CLOCK_MONOTONIC`)** | **Min / Median (`P50`) / `P95` / Max** | **`832.5 us` / `1,815.2 us` (`1.82 ms`) / `4,107.9 us` (`4.11 ms`) / `4,703.0 us` (`4.70 ms`)** |
+| | **First-Pass Recognition (`pass == 0`)** | `8 / 8` (**`100.0%`**, `295.8 ms` to `789.1 ms` across `3x ES256` & `1x ML-DSA-65` pairs) |
+| | **Fallback Frequency (`pass >= 1`)** | `0 / 8` (**`0.0%`**) |
+| **Pi `usbmon` `UP_NEEDED` -> First Software GPIO Write (`usbmon_to_edge_us`)** | **Min / Median (`P50`) / `P95` / Max** | **`1,864.7 us` (`1.86 ms`) / `1,938.0 us` (`1.94 ms`) / `2,799.4 us` (`2.80 ms`) / `3,191.0 us` (`3.19 ms`)** |
+| **UNIX Socket `recv` -> First Software GPIO Write (`sock_to_edge_us`)** | **Min / Median (`P50`) / `P95` / Max** | **`1,660.4 us` (`1.66 ms`) / `1,734.0 us` (`1.73 ms`) / `2,525.9 us` (`2.53 ms`) / `2,900.3 us` (`2.90 ms`)** |
+| **Daemon `drain_up_socket` Exit -> `run_validated_chirp` Entry (`zeroRttTriggerUs`)** | **Min / Median (`P50`) / `P95` / Max** | **`256.6 us` / `285.0 us` (`0.29 ms`) / `437.4 us` / `455.1 us`** |
+| **Daemon Session Elapsed (`daemonElapsedMs`)** | **Min / Median (`P50`) / `P95` / Max** | **`295.8 ms` / `641.2 ms` / `755.2 ms` / `789.1 ms`** |
+| **End-to-End Chromium WebAuthn (`webauthnElapsedMs`)** | **Min / Median (`P50`) / `P95` / Max** | **`790.9 ms` / `948.7 ms` / `1,673.2 ms` / `1,862.0 ms`** |
+| **Cancellation-to-GPIO-Release (`CLOCK_MONOTONIC`)** | **Min / Median (`P50`) / `P95` / Max** | **`657.1 us` (`0.66 ms`) / `733.5 us` (`0.73 ms`) / `1,423.7 us` (`1.42 ms`) / `1,551.0 us` (`1.55 ms`)** |
 
 ---
 
