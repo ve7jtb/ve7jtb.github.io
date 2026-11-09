@@ -382,16 +382,16 @@ sudo nmcli connection up <SSID>
 
 #### 4. Multi-Transport Inter-Frame Jitter & Touch Performance Comparison
 
-| Metric | Direct Gigabit Ethernet (`eth0`) | Direct Wi-Fi (`wlan0`, Default) | Direct Wi-Fi (`wlan0`, Mitigated) | Tailscale + Wi-Fi (`tailscale0`, Run 1) | Tailscale + Wi-Fi (`tailscale0`, Run 2) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **802.11 Power Save / 5 GHz BSSID Lock** | N/A (Wired) | `on` / Unlocked | **`off` / Locked (`5785 MHz`)** | `on` / Unlocked | `on` / Unlocked |
-| **Pi `usbmon` `CTAPHID_CONT IN` Frames Analyzed** | `4,982` | `5,050` | `5,008` | `5,070` | `5,423` |
-| **Pi `usbmon` Inter-Frame Delta — `Min`** | `1.98 ms` | `5.96 ms` | `5.97 ms` | `6.99 ms` | `7.00 ms` |
-| **Pi `usbmon` Inter-Frame Delta — `P50` (Median)** | **`2.00 ms`** | **`7.00 ms`** | **`8.00 ms`** | **`11.00 ms`** | **`11.01 ms`** |
-| **Pi `usbmon` Inter-Frame Delta — `Mean`** | **`2.14 ms`** | `9.35 ms` | `9.69 ms` | `13.22 ms` | `13.53 ms` |
-| **Pi `usbmon` Inter-Frame Delta — `P95`** | **`3.00 ms`** | `13.00 ms` | `14.00 ms` | `18.00 ms` | `18.00 ms` |
-| **Pi `usbmon` Inter-Frame Delta — `P99` (Tail Jitter)** | **`4.01 ms`** | `60.00 ms` | **`34.01 ms` (`-43.3%`)** | `64.00 ms` | `68.00 ms` |
-| **Pi `usbmon` Inter-Frame Delta — `Max`** | `19.01 ms` | `430.00 ms` | **`374.00 ms`** | `441.01 ms` | `460.99 ms` |
-| **Mac VirtualHere Mean Inter-Frame Delta (`P50` / `Mean` / `P95`)** | `2.05` / `2.21` / `3.10 ms` | `7.30` / `9.94` / `13.54 ms` | **`7.63` / `10.20` / `15.50 ms`** | `11.30` / `14.78` / `20.90 ms` | `11.34` / `13.36` / `16.60 ms` |
-| **Touchly `Pass 0` Touch Resolution Rate** | **`190 / 190` (`100.0%`)** | **`150 / 150` (`100.0%`)** | **`149 / 149` (`100.0%`)** | **`149 / 149` (`100.0%`)** | **`151 / 151` (`100.0%`)** |
-| **`UP_NEEDED` $\rightarrow$ CTAP Response (`up_to_resp` `P50` / `Mean` / `P95`)** | `892.0` / `921.4` / `1,312.0 ms` | `996.8` / `972.6` / `1,389.8 ms` | **`956.0` / `973.6` / `1,460.2 ms`** | `1,024.6` / `1,046.6` / `1,483.6 ms` | `1,073.2` / `1,086.2` / `1,743.8 ms` |
+| Metric | Direct Gigabit Ethernet (`eth0`) | Direct Wi-Fi (`wlan0`, Default) | Direct Wi-Fi (`wlan0`, Mitigated) | Tailscale + Wi-Fi (`tailscale0`, Run 1) | Tailscale + Wi-Fi (`tailscale0`, Run 2) | Tailscale + Wi-Fi (`tailscale0`, Mitigated) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **802.11 Power Save / 5 GHz BSSID Lock** | N/A (Wired) | `on` / Unlocked | **`off` / Locked (`5785 MHz`)** | `on` / Unlocked | `on` / Unlocked | **`off` / Locked (`5785 MHz`)** |
+| **Pi `usbmon` `CTAPHID_CONT IN` Frames Analyzed** | `4,982` | `5,050` | `5,008` | `5,070` | `5,423` | `5,231` |
+| **Pi `usbmon` Inter-Frame Delta — `Min`** | `1.98 ms` | `5.96 ms` | `5.97 ms` | `6.99 ms` | `7.00 ms` | `7.00 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `P50` (Median)** | **`2.00 ms`** | **`7.00 ms`** | **`8.00 ms`** | **`11.00 ms`** | **`11.01 ms`** | **`11.00 ms`** |
+| **Pi `usbmon` Inter-Frame Delta — `Mean`** | **`2.14 ms`** | `9.35 ms` | `9.69 ms` | `13.22 ms` | `13.53 ms` | `14.09 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `P95`** | **`3.00 ms`** | `13.00 ms` | `14.00 ms` | `18.00 ms` | `18.00 ms` | `27.00 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `P99` (Tail Jitter)** | **`4.01 ms`** | `60.00 ms` | **`34.01 ms` (`-43.3%`)** | `64.00 ms` | `68.00 ms` | `67.00 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `Max`** | `19.01 ms` | `430.00 ms` | **`374.00 ms`** | `441.01 ms` | `460.99 ms` | **`399.00 ms`** |
+| **Mac VirtualHere Mean Inter-Frame Delta (`P50` / `Mean` / `P95`)** | `2.05` / `2.21` / `3.10 ms` | `7.30` / `9.94` / `13.54 ms` | **`7.63` / `10.20` / `15.50 ms`** | `11.30` / `14.78` / `20.90 ms` | `11.34` / `13.36` / `16.60 ms` | `11.35` / `14.20` / `24.10 ms` |
+| **Touchly `Pass 0` Touch Resolution Rate** | **`190 / 190` (`100.0%`)** | **`150 / 150` (`100.0%`)** | **`149 / 149` (`100.0%`)** | **`149 / 149` (`100.0%`)** | **`151 / 151` (`100.0%`)** | **`146 / 146` (`100.0%`)** |
+| **`UP_NEEDED` $\rightarrow$ CTAP Response (`up_to_resp` `P50` / `Mean` / `P95`)** | `892.0` / `921.4` / `1,312.0 ms` | `996.8` / `972.6` / `1,389.8 ms` | **`956.0` / `973.6` / `1,460.2 ms`** | `1,024.6` / `1,046.6` / `1,483.6 ms` | `1,073.2` / `1,086.2` / `1,743.8 ms` | `1,048.5` / `1,068.4` / `1,589.2 ms` |

@@ -1180,6 +1180,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <th class="p-3 font-semibold align-bottom text-center">Direct Wi-Fi (<code>wlan0</code>, Mitigated)</th>
 <th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Run 1)</th>
 <th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Run 2)</th>
+<th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Mitigated)</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
 <td class="p-3 align-top text-left"><strong>802.11 Power Save / 5 GHz BSSID Lock</strong></td>
@@ -1188,6 +1189,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>off</code> / Locked (<code>5785 MHz</code>)</strong></td>
 <td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
 <td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
+<td class="p-3 align-top text-center"><strong><code>off</code> / Locked (<code>5785 MHz</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>CTAPHID_CONT IN</code> Frames Analyzed</strong></td>
@@ -1196,6 +1198,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><code>5,008</code></td>
 <td class="p-3 align-top text-center"><code>5,070</code></td>
 <td class="p-3 align-top text-center"><code>5,423</code></td>
+<td class="p-3 align-top text-center"><code>5,231</code></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Min</code></strong></td>
@@ -1203,6 +1206,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><code>5.96 ms</code></td>
 <td class="p-3 align-top text-center"><code>5.97 ms</code></td>
 <td class="p-3 align-top text-center"><code>6.99 ms</code></td>
+<td class="p-3 align-top text-center"><code>7.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>7.00 ms</code></td>
 </tr>
 <tr>
@@ -1212,6 +1216,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>8.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>11.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>11.01 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>11.00 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Mean</code></strong></td>
@@ -1220,6 +1225,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><code>9.69 ms</code></td>
 <td class="p-3 align-top text-center"><code>13.22 ms</code></td>
 <td class="p-3 align-top text-center"><code>13.53 ms</code></td>
+<td class="p-3 align-top text-center"><code>14.09 ms</code></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P95</code></strong></td>
@@ -1228,6 +1234,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><code>14.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>18.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>18.00 ms</code></td>
+<td class="p-3 align-top text-center"><code>27.00 ms</code></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P99</code> (Tail Jitter)</strong></td>
@@ -1236,6 +1243,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>34.01 ms</code> (<code>-43.3%</code>)</strong></td>
 <td class="p-3 align-top text-center"><code>64.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>68.00 ms</code></td>
+<td class="p-3 align-top text-center"><code>67.00 ms</code></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Max</code></strong></td>
@@ -1244,6 +1252,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>374.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>441.01 ms</code></td>
 <td class="p-3 align-top text-center"><code>460.99 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>399.00 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Mac VirtualHere Mean Inter-Frame Delta (<code>P50</code> / <code>Mean</code> / <code>P95</code>)</strong></td>
@@ -1252,6 +1261,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>7.63</code> / <code>10.20</code> / <code>15.50 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>11.30</code> / <code>14.78</code> / <code>20.90 ms</code></td>
 <td class="p-3 align-top text-center"><code>11.34</code> / <code>13.36</code> / <code>16.60 ms</code></td>
+<td class="p-3 align-top text-center"><code>11.35</code> / <code>14.20</code> / <code>24.10 ms</code></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Touchly <code>Pass 0</code> Touch Resolution Rate</strong></td>
@@ -1260,6 +1270,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>149 / 149</code> (<code>100.0%</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>149 / 149</code> (<code>100.0%</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>151 / 151</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>146 / 146</code> (<code>100.0%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong><code>UP_NEEDED</code> $\rightarrow$ CTAP Response (<code>up_to_resp</code> <code>P50</code> / <code>Mean</code> / <code>P95</code>)</strong></td>
@@ -1268,6 +1279,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-center"><strong><code>956.0</code> / <code>973.6</code> / <code>1,460.2 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>1,024.6</code> / <code>1,046.6</code> / <code>1,483.6 ms</code></td>
 <td class="p-3 align-top text-center"><code>1,073.2</code> / <code>1,086.2</code> / <code>1,743.8 ms</code></td>
+<td class="p-3 align-top text-center"><code>1,048.5</code> / <code>1,068.4</code> / <code>1,589.2 ms</code></td>
 </tr>
 </tbody></table></div>
     </section>
