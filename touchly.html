@@ -1177,7 +1177,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <th class="p-3 font-semibold align-bottom text-left">Metric</th>
 <th class="p-3 font-semibold align-bottom text-center">Direct Gigabit Ethernet (<code>eth0</code>)</th>
 <th class="p-3 font-semibold align-bottom text-center">Direct Wi-Fi (<code>wlan0</code>, Default)</th>
-<th class="p-3 font-semibold align-bottom text-center">Direct Wi-Fi (<code>wlan0</code>, Mitigated)</th>
+<th class="p-3 font-semibold align-bottom text-center">Direct Wi-Fi (<code>wlan0</code>, Mitigated <code>10x</code> Aggregate)</th>
 <th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Run 1)</th>
 <th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Run 2)</th>
 <th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Mitigated)</th>
@@ -1186,7 +1186,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>802.11 Power Save / 5 GHz BSSID Lock</strong></td>
 <td class="p-3 align-top text-center">N/A (Wired)</td>
 <td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
-<td class="p-3 align-top text-center"><strong><code>off</code> / Locked (<code>5785 MHz</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>off</code> / Locked (<code>5785 MHz</code>, <code>N = 10</code> Runs)</strong></td>
 <td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
 <td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
 <td class="p-3 align-top text-center"><strong><code>off</code> / Locked (<code>5785 MHz</code>)</strong></td>
@@ -1195,7 +1195,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>CTAPHID_CONT IN</code> Frames Analyzed</strong></td>
 <td class="p-3 align-top text-center"><code>4,982</code></td>
 <td class="p-3 align-top text-center"><code>5,050</code></td>
-<td class="p-3 align-top text-center"><code>5,008</code></td>
+<td class="p-3 align-top text-center"><strong><code>49,671</code> (<code>170,023</code> USB records)</strong></td>
 <td class="p-3 align-top text-center"><code>5,070</code></td>
 <td class="p-3 align-top text-center"><code>5,423</code></td>
 <td class="p-3 align-top text-center"><code>5,231</code></td>
@@ -1204,7 +1204,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Min</code></strong></td>
 <td class="p-3 align-top text-center"><code>1.98 ms</code></td>
 <td class="p-3 align-top text-center"><code>5.96 ms</code></td>
-<td class="p-3 align-top text-center"><code>5.97 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>5.94 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>6.99 ms</code></td>
 <td class="p-3 align-top text-center"><code>7.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>7.00 ms</code></td>
@@ -1213,7 +1213,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P50</code> (Median)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>2.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>7.00 ms</code></strong></td>
-<td class="p-3 align-top text-center"><strong><code>8.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>7.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>11.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>11.01 ms</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>11.00 ms</code></strong></td>
@@ -1222,7 +1222,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Mean</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>2.14 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>9.35 ms</code></td>
-<td class="p-3 align-top text-center"><code>9.69 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>8.35 ms</code> (<code>-10.7%</code>)</strong></td>
 <td class="p-3 align-top text-center"><code>13.22 ms</code></td>
 <td class="p-3 align-top text-center"><code>13.53 ms</code></td>
 <td class="p-3 align-top text-center"><code>14.09 ms</code></td>
@@ -1231,7 +1231,7 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P95</code></strong></td>
 <td class="p-3 align-top text-center"><strong><code>3.00 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>13.00 ms</code></td>
-<td class="p-3 align-top text-center"><code>14.00 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>11.00 ms</code> (<code>-15.4%</code>)</strong></td>
 <td class="p-3 align-top text-center"><code>18.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>18.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>27.00 ms</code></td>
@@ -1240,34 +1240,25 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P99</code> (Tail Jitter)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>4.01 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>60.00 ms</code></td>
-<td class="p-3 align-top text-center"><strong><code>34.01 ms</code> (<code>-43.3%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>14.00 ms</code> (<code>-76.7%</code>)</strong></td>
 <td class="p-3 align-top text-center"><code>64.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>68.00 ms</code></td>
 <td class="p-3 align-top text-center"><code>67.00 ms</code></td>
 </tr>
 <tr>
-<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Max</code></strong></td>
-<td class="p-3 align-top text-center"><code>19.01 ms</code></td>
-<td class="p-3 align-top text-center"><code>430.00 ms</code></td>
-<td class="p-3 align-top text-center"><strong><code>374.00 ms</code></strong></td>
-<td class="p-3 align-top text-center"><code>441.01 ms</code></td>
-<td class="p-3 align-top text-center"><code>460.99 ms</code></td>
-<td class="p-3 align-top text-center"><strong><code>399.00 ms</code></strong></td>
-</tr>
-<tr>
-<td class="p-3 align-top text-left"><strong>Mac VirtualHere Mean Inter-Frame Delta (<code>P50</code> / <code>Mean</code> / <code>P95</code>)</strong></td>
-<td class="p-3 align-top text-center"><code>2.05</code> / <code>2.21</code> / <code>3.10 ms</code></td>
-<td class="p-3 align-top text-center"><code>7.30</code> / <code>9.94</code> / <code>13.54 ms</code></td>
-<td class="p-3 align-top text-center"><strong><code>7.63</code> / <code>10.20</code> / <code>15.50 ms</code></strong></td>
-<td class="p-3 align-top text-center"><code>11.30</code> / <code>14.78</code> / <code>20.90 ms</code></td>
-<td class="p-3 align-top text-center"><code>11.34</code> / <code>13.36</code> / <code>16.60 ms</code></td>
-<td class="p-3 align-top text-center"><code>11.35</code> / <code>14.20</code> / <code>24.10 ms</code></td>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Sequence-Gap Rate (<code>&gt;= 100 ms</code> Stalls)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>0.00%</code></strong></td>
+<td class="p-3 align-top text-center"><code>0.79%</code> (<code>13 / 1,641</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>0.54%</code> (<code>88 / 16,230</code>, <code>-31.4%</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>1.78%</code> (<code>29 / 1,630</code>)</td>
+<td class="p-3 align-top text-center"><code>1.52%</code> (<code>26 / 1,711</code>)</td>
+<td class="p-3 align-top text-center"><code>1.47%</code> (<code>24 / 1,636</code>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Touchly <code>Pass 0</code> Touch Resolution Rate</strong></td>
 <td class="p-3 align-top text-center"><strong><code>190 / 190</code> (<code>100.0%</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>150 / 150</code> (<code>100.0%</code>)</strong></td>
-<td class="p-3 align-top text-center"><strong><code>149 / 149</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>1,912 / 1,912</code> (<code>100.0%</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>149 / 149</code> (<code>100.0%</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>151 / 151</code> (<code>100.0%</code>)</strong></td>
 <td class="p-3 align-top text-center"><strong><code>146 / 146</code> (<code>100.0%</code>)</strong></td>
@@ -1276,10 +1267,146 @@ sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
 <td class="p-3 align-top text-left"><strong><code>UP_NEEDED</code> $\rightarrow$ CTAP Response (<code>up_to_resp</code> <code>P50</code> / <code>Mean</code> / <code>P95</code>)</strong></td>
 <td class="p-3 align-top text-center"><code>892.0</code> / <code>921.4</code> / <code>1,312.0 ms</code></td>
 <td class="p-3 align-top text-center"><code>996.8</code> / <code>972.6</code> / <code>1,389.8 ms</code></td>
-<td class="p-3 align-top text-center"><strong><code>956.0</code> / <code>973.6</code> / <code>1,460.2 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>991.3</code> / <code>985.0</code> / <code>1,417.8 ms</code></strong></td>
 <td class="p-3 align-top text-center"><code>1,024.6</code> / <code>1,046.6</code> / <code>1,483.6 ms</code></td>
 <td class="p-3 align-top text-center"><code>1,073.2</code> / <code>1,086.2</code> / <code>1,743.8 ms</code></td>
 <td class="p-3 align-top text-center"><code>1,048.5</code> / <code>1,068.4</code> / <code>1,589.2 ms</code></td>
+</tr>
+</tbody></table></div>
+<h4 id="5-10-run-direct-wi-fi-1000201-mitigated-repeatability-breakdown-wifi_10x_summaryjson" class="text-base font-semibold text-[var(--foreground)]">5. 10-Run Direct Wi-Fi (<code>10.0.0.201</code>, Mitigated) Repeatability Breakdown (<a href="./wifi_10x_summary.json" class="text-[var(--primary)] hover:underline">wifi_10x_summary.json</a>)</h4>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-center">Run</th>
+<th class="p-3 font-semibold align-bottom text-center">Duration</th>
+<th class="p-3 font-semibold align-bottom text-center"><code>CTAPHID</code> Requests</th>
+<th class="p-3 font-semibold align-bottom text-center"><code>usbmon</code> Records</th>
+<th class="p-3 font-semibold align-bottom text-center"><code>CTAPHID_CONT</code> Frames</th>
+<th class="p-3 font-semibold align-bottom text-center"><code>usbmon</code> Delta <code>P50</code> / <code>Mean</code> / <code>P95</code> / <code>P99</code> (<code>ms</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">Sequence Gaps (<code>Rate</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">UP Touches (<code>Pass 0</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center"><code>up_to_resp</code> <code>P50</code> / <code>Mean</code> / <code>P95</code> (<code>ms</code>)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-center"><strong>1</strong></td>
+<td class="p-3 align-top text-center"><code>9m 52.6s</code></td>
+<td class="p-3 align-top text-center"><code>3,221</code></td>
+<td class="p-3 align-top text-center"><code>16,763</code></td>
+<td class="p-3 align-top text-center"><code>4,934</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.47</code> / <code>11.00</code> / <code>14.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>7 / 1,612</code> (<code>0.43%</code>)</td>
+<td class="p-3 align-top text-center"><code>192</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>961.6</code> / <code>935.4</code> / <code>1,374.0</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>2</strong></td>
+<td class="p-3 align-top text-center"><code>9m 48.1s</code></td>
+<td class="p-3 align-top text-center"><code>3,260</code></td>
+<td class="p-3 align-top text-center"><code>17,278</code></td>
+<td class="p-3 align-top text-center"><code>5,159</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.23</code> / <code>11.00</code> / <code>14.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>8 / 1,635</code> (<code>0.49%</code>)</td>
+<td class="p-3 align-top text-center"><code>196</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>967.2</code> / <code>971.4</code> / <code>1,360.2</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>3</strong></td>
+<td class="p-3 align-top text-center"><code>9m 46.9s</code></td>
+<td class="p-3 align-top text-center"><code>3,278</code></td>
+<td class="p-3 align-top text-center"><code>17,160</code></td>
+<td class="p-3 align-top text-center"><code>5,053</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.15</code> / <code>11.00</code> / <code>14.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>8 / 1,644</code> (<code>0.49%</code>)</td>
+<td class="p-3 align-top text-center"><code>191</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>993.6</code> / <code>990.0</code> / <code>1,373.2</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>4</strong></td>
+<td class="p-3 align-top text-center"><code>10m 12.7s</code></td>
+<td class="p-3 align-top text-center"><code>3,281</code></td>
+<td class="p-3 align-top text-center"><code>17,359</code></td>
+<td class="p-3 align-top text-center"><code>5,234</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.30</code> / <code>11.00</code> / <code>14.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>11 / 1,639</code> (<code>0.67%</code>)</td>
+<td class="p-3 align-top text-center"><code>197</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>972.1</code> / <code>949.6</code> / <code>1,379.5</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>5</strong></td>
+<td class="p-3 align-top text-center"><code>10m 08.6s</code></td>
+<td class="p-3 align-top text-center"><code>3,342</code></td>
+<td class="p-3 align-top text-center"><code>17,465</code></td>
+<td class="p-3 align-top text-center"><code>5,101</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>9.04</code> / <code>11.00</code> / <code>71.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>15 / 1,671</code> (<code>0.90%</code>)</td>
+<td class="p-3 align-top text-center"><code>190</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>1,020.1</code> / <code>998.4</code> / <code>1,395.8</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>6</strong></td>
+<td class="p-3 align-top text-center"><code>12m 32.4s</code></td>
+<td class="p-3 align-top text-center"><code>3,003</code></td>
+<td class="p-3 align-top text-center"><code>15,559</code></td>
+<td class="p-3 align-top text-center"><code>4,188</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.35</code> / <code>11.00</code> / <code>14.01</code></strong></td>
+<td class="p-3 align-top text-center"><code>6 / 1,502</code> (<code>0.40%</code>)</td>
+<td class="p-3 align-top text-center"><code>183</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>995.1</code> / <code>978.2</code> / <code>1,404.1</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>7</strong></td>
+<td class="p-3 align-top text-center"><code>9m 56.8s</code></td>
+<td class="p-3 align-top text-center"><code>3,222</code></td>
+<td class="p-3 align-top text-center"><code>16,863</code></td>
+<td class="p-3 align-top text-center"><code>4,921</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.01</code> / <code>11.00</code> / <code>13.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>8 / 1,604</code> (<code>0.50%</code>)</td>
+<td class="p-3 align-top text-center"><code>185</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>1,025.3</code> / <code>1,012.2</code> / <code>1,430.8</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>8</strong></td>
+<td class="p-3 align-top text-center"><code>10m 04.8s</code></td>
+<td class="p-3 align-top text-center"><code>3,292</code></td>
+<td class="p-3 align-top text-center"><code>17,444</code></td>
+<td class="p-3 align-top text-center"><code>5,129</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.27</code> / <code>11.00</code> / <code>14.00</code></strong></td>
+<td class="p-3 align-top text-center"><code>9 / 1,651</code> (<code>0.55%</code>)</td>
+<td class="p-3 align-top text-center"><code>200</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>1,041.3</code> / <code>1,014.1</code> / <code>1,433.5</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>9</strong></td>
+<td class="p-3 align-top text-center"><code>9m 52.7s</code></td>
+<td class="p-3 align-top text-center"><code>3,271</code></td>
+<td class="p-3 align-top text-center"><code>17,059</code></td>
+<td class="p-3 align-top text-center"><code>4,992</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.20</code> / <code>11.00</code> / <code>13.99</code></strong></td>
+<td class="p-3 align-top text-center"><code>7 / 1,639</code> (<code>0.43%</code>)</td>
+<td class="p-3 align-top text-center"><code>190</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>993.8</code> / <code>995.5</code> / <code>1,438.3</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>10</strong></td>
+<td class="p-3 align-top text-center"><code>10m 18.5s</code></td>
+<td class="p-3 align-top text-center"><code>3,266</code></td>
+<td class="p-3 align-top text-center"><code>17,073</code></td>
+<td class="p-3 align-top text-center"><code>4,960</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.45</code> / <code>11.00</code> / <code>14.99</code></strong></td>
+<td class="p-3 align-top text-center"><code>9 / 1,633</code> (<code>0.55%</code>)</td>
+<td class="p-3 align-top text-center"><code>188</code> (<code>100%</code>)</td>
+<td class="p-3 align-top text-center"><code>998.6</code> / <code>1,006.7</code> / <code>1,446.1</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-center"><strong>Total / Aggregate</strong></td>
+<td class="p-3 align-top text-center"><strong><code>102m 16.9s</code> (<code>10m 13.7s</code> avg)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>32,436</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>170,023</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>49,671</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>7.00</code> / <code>8.35</code> / <code>11.00</code> / <code>14.00</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>88 / 16,230</code> (<code>0.54%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>1,912 / 1,912</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>991.3</code> / <code>985.0</code> / <code>1,417.8</code></strong></td>
 </tr>
 </tbody></table></div>
     </section>
