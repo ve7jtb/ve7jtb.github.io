@@ -85,8 +85,8 @@
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>Validated across the full 20-category FIDO CTAP 2.3 conformance suite (<strong><code>410</code> tests in <code>8m 22.22s</code> (<code>502,221 ms</code>, <code>3.77x</code> faster than the <code>31m 32.52s</code> pre-hardening run), <code>190 / 190</code> (<code>100.0%</code>) First-Pass (<code>Pass 0</code>) User Presence touches (<code>994.5 ms</code> median / <code>1,915.6 ms</code> max <code>up_to_resp</code>), <code>20</code> automated USB hub power cycles, <code>0</code> touch retries or frame drops</strong>).</li>
 </ul></div>
-<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><img src="./touchly.png" alt="Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" /><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Touchly Hardware Setup — Raspberry Pi 3B+ (<code>pi1</code>) with Ethernet (<code>eth0</code>), YubiKey 6 NFC, and <code>GPIO21</code> lead routed to the copper-tape capacitive electrode on the touch pad</figcaption></figure>
-<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><video src="./touchly-browser.mp4#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="./touchly-browser.mp4" type="video/mp4" /></video><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Live Chromium WebAuthn Operations (<code>navigator.credentials.create()</code> &amp; <code>navigator.credentials.get()</code>) Driven Hands-Free by Touchly Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>) on YubiKey 6 NFC</figcaption></figure>
+<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><img src="touchly.png" alt="Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad" class="rounded-xl border border-[var(--border)] max-h-[520px] w-auto mx-auto object-contain shadow-sm" /><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Touchly Hardware Setup — Raspberry Pi 3B+ (<code>pi1</code>) with Ethernet (<code>eth0</code>), YubiKey 6 NFC, and <code>GPIO21</code> lead routed to the copper-tape capacitive electrode on the touch pad</figcaption></figure>
+<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><video src="touchly-browser.mp4#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="touchly-browser.mp4" type="video/mp4" /></video><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Live Chromium WebAuthn Operations (<code>navigator.credentials.create()</code> &amp; <code>navigator.credentials.get()</code>) Driven Hands-Free by Touchly Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>) on YubiKey 6 NFC</figcaption></figure>
     </div>
 
     <!-- Quick Navigation Grid -->
@@ -163,6 +163,7 @@
             <div><a href="#53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjs" class="hover:underline">&sect;5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, test_mode2_chromium.js)</a></div>
             <div><a href="#54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2js" class="hover:underline">&sect;5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (compare_mode1_vs_mode2.js)</a></div>
             <div><a href="#55-full-20-category-fido-ctap-23-conformance-suite-benchmark-410-tests-run-6-post-hardening-vs-run-5-pre-hardening" class="hover:underline">&sect;5.5 Full 20-Category FIDO CTAP 2.3 Conformance Suite Benchmark (<code>410</code> Tests, <code>Run 6</code> Post-Hardening vs. <code>Run 5</code> Pre-Hardening)</a></div>
+            <div><a href="#56-usb-over-ip-inter-frame-jitter-analysis-wi-fi-tailscale-mitigations" class="hover:underline">&sect;5.6 USB-over-IP Inter-Frame Jitter Analysis &amp; Wi-Fi / Tailscale Mitigations</a></div>
           </div>
         </li>
           </ul>
@@ -756,7 +757,7 @@ int yk_chirp_once(
 </tr>
 </tbody></table></div>
 <h3 id="53-live-chromium-webauthn-benchmark-with-mode-2-pi_prearmed_first_up-arm-n-8-test_mode2_chromiumjs" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.3 Live Chromium WebAuthn Benchmark with Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>, <code>N = 8</code>, <a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline">test_mode2_chromium.js</a>)</h3>
-<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><video src="./touchly-browser.mp4#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="./touchly-browser.mp4" type="video/mp4" /></video><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Live Chromium WebAuthn Operations (<code>navigator.credentials.create()</code> &amp; <code>navigator.credentials.get()</code>) Driven Hands-Free by Touchly Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>) Across <code>ES256 (-7)</code> and Post-Quantum <code>ML-DSA-65 (-49)</code> on YubiKey 6 NFC</figcaption></figure>
+<figure class="my-4 p-3 rounded-2xl bg-[var(--content)] border border-[var(--border)] shadow-sm"><video src="touchly-browser.mp4#t=0.1" controls playsinline preload="auto" class="rounded-xl border border-[var(--border)] max-h-[540px] w-auto mx-auto shadow-sm bg-black"><source src="touchly-browser.mp4" type="video/mp4" /></video><figcaption class="text-xs text-center text-[var(--muted-foreground)] mt-2.5">Live Chromium WebAuthn Operations (<code>navigator.credentials.create()</code> &amp; <code>navigator.credentials.get()</code>) Driven Hands-Free by Touchly Mode 2 (<code>pi_prearmed_first_up</code> / <code>ARM</code>) Across <code>ES256 (-7)</code> and Post-Quantum <code>ML-DSA-65 (-49)</code> on YubiKey 6 NFC</figcaption></figure>
 <p class="text-sm my-2"><a href="./test_mode2_chromium.js" class="text-[var(--primary)] hover:underline"><code>test_mode2_chromium.js</code></a> tested Mode 2 (<code>ARM &lt;id&gt; 25.000 arm_timeout=30.000 req_deadline=55.000 vid=1050 pid=0406</code>) end-to-end with Chromium (<code>/Users/jbradley/.gemini/antigravity/scratch/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium</code>) executing live <code>navigator.credentials.create()</code> and <code>navigator.credentials.get()</code> operations (<code>3x ES256 (-7)</code> pairs + <code>1x ML-DSA-65 (-49)</code> pair) against the physical YubiKey 6 NFC (<code>1050:0406</code>). Pre-flight <code>CTAPHID_INIT</code> and <code>authenticatorGetInfo</code> <code>TX_DONE</code> events were retired in High-Z without aborting the pre-arm (<a href="./touch.py#L740-L748" class="text-[var(--primary)] hover:underline"><code>drain_up_socket</code></a>), and <code>touch.py</code> measured the Pi-side software <code>CLOCK_MONOTONIC</code> breakdown from <code>pi_usbmon_capture.py</code> observing <code>UP_NEEDED (phase=1)</code> (<code>usbmon_ns</code>) to the userspace timestamp captured immediately after the first <code>gpio[GPSET0] = mask</code> register write in C (<code>yk_last_first_edge_ns()</code>, a software GPIO-write measurement rather than an external oscilloscope/logic-analyzer capture):</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
@@ -1136,6 +1137,137 @@ int yk_chirp_once(
 <td class="p-3 align-top text-left"><code>35</code></td>
 <td class="p-3 align-top text-left"><strong><code>20 / 20</code> (<code>100.0%</code> clean re-enumeration)</strong></td>
 <td class="p-3 align-top text-left"><code>-15</code> redundant power cycles eliminated</td>
+</tr>
+</tbody></table></div>
+<h3 id="56-usb-over-ip-inter-frame-jitter-analysis-wi-fi-tailscale-mitigations" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.6 USB-over-IP Inter-Frame Jitter Analysis &amp; Wi-Fi / Tailscale Mitigations</h3>
+<p class="text-sm my-2">When operating <code>touchly</code> untethered over <strong>802.11ac Wi-Fi (<code>wlan0</code>, <code>BCM43455</code> / <code>brcmfmac</code>, <code>5785 MHz</code> Channel 157, <code>80 MHz</code>, <code>433.3 Mbit/s</code>)</strong> and <strong>Tailscale (<code>tailscale0</code>, userspace WireGuard)</strong> instead of direct Gigabit Ethernet (<code>eth0</code>), multi-frame <code>CTAPHID_CBOR</code> responses (<code>10</code> to <code>47</code> <code>CTAPHID_CONT</code> frames, up to <code>2,734</code> bytes for post-quantum <code>ML-DSA-65</code> attestations) are sensitive to network round-trip jitter. Correlating Raspberry Pi hardware <code>usbmon</code> captures against macOS <code>node-hid</code> (<code>nodehid.fork.js</code>) reception timestamps across full 410-test suite runs revealed the exact transport interaction and two effective radio-level mitigations:</p>
+<h4 id="1-virtualhere-urb-replenishment-yubikey-100-ms-per-frame-tx-timeout" class="text-base font-semibold text-[var(--foreground)]">1. VirtualHere URB Replenishment &amp; YubiKey <code>100 ms</code> Per-Frame TX Timeout</h4>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li><strong>Demand-Driven Interrupt IN Polling</strong>: VirtualHere (<code>vhusbdarm</code> on the Raspberry Pi) does not autonomously poll the authenticator's USB Interrupt IN endpoint (<code>EP 5 IN</code>) in the Linux kernel; instead, it forwards <code>URB_INTERRUPT IN</code> requests on demand as the macOS VirtualHere client replenishes them over TCP port <code>7575</code>.<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>Over <strong>Direct Wi-Fi (<code>10.0.0.201</code>)</strong>, steady-state <code>CTAPHID_CONT IN</code> frames are clocked out on the Pi's physical USB bus at a median interval of <strong><code>7.00 ms</code> (<code>P50</code>)</strong> (<code>Mean = 9.35 ms</code>, <code>P95 = 13.00 ms</code>).</li>
+<li>Over <strong>Tailscale + Wi-Fi (<code>100.92.8.75</code>)</strong>, userspace WireGuard encryption/decryption and <code>tailscaled</code> TUN socket context switches on both endpoints add <strong><code>+4.00 ms</code> per frame</strong>, shifting the steady-state <code>CTAPHID_CONT IN</code> polling interval to <strong><code>11.00 ms</code> (<code>P50</code>)</strong> (<code>Mean = 13.22–13.53 ms</code>, <code>P95 = 18.00 ms</code>).</li>
+</ul></li>
+<li><strong>YubiKey <code>100 ms</code> Per-Frame Endpoint Write Timeout</strong>: Whenever a Wi-Fi/TCP stall delays IN URB replenishment from the macOS host by <strong><code>&gt;= 100 ms</code></strong> in the middle of a multi-frame response, the <code>CTAPHID_CONT</code> frame currently loaded in the YubiKey's hardware USB IN FIFO (<code>seq = k - 1</code>) sits unpolled on the bus while the YubiKey firmware's internal <code>100 ms</code> per-frame write timer expires—causing the authenticator to drop <strong>1 <code>CTAPHID_CONT</code> frame (<code>seq = k</code>) per <code>~100 ms</code> of IN polling stall</strong> before the next IN token arrives (<code>101–184 ms</code> stall $\rightarrow$ <code>1</code> dropped frame; <code>220–243 ms</code> $\rightarrow$ <code>2</code> dropped frames; <code>310–374 ms</code> $\rightarrow$ <code>3</code> dropped frames; <code>428–441 ms</code> $\rightarrow$ <code>4</code> dropped frames).</li>
+</ul>
+<h4 id="2-root-causes-of-100-ms-wi-fi-pauses-on-raspberry-pi-os-brcmfmac" class="text-base font-semibold text-[var(--foreground)]">2. Root Causes of <code>&gt;= 100 ms</code> Wi-Fi Pauses on Raspberry Pi OS (<code>brcmfmac</code>)</h4>
+<p class="text-sm my-2">Live radio diagnostics on <code>touchly</code> (<code>iw dev wlan0 get power_save</code>, <code>iw dev wlan0 link</code>, <code>nmcli dev wifi list</code>) confirmed strong RF link quality (<code>-27</code> to <code>-29 dBm</code> RSSI, <code>433.3 Mbit/s</code> TX/RX, <code>0</code> missed beacons) and isolated two software-controlled sources of <code>&gt;= 100 ms</code> airtime pauses:</p>
+<ol class="list-decimal pl-6 space-y-2 text-sm my-2">
+<li><strong>Broadcom <code>brcmfmac</code> IEEE 802.11 Power Save Mode (<code>Power save: on</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>By default (<code>802-11-wireless.powersave = 0 (default)</code>), <code>brcmfmac</code> enters 802.11 Power Save sleep during brief inter-packet lulls (<code>~50–100 ms</code>) while the authenticator is computing a cryptographic response. Downlink TCP URB replenishments from the Mac are buffered at the access point until the next <strong>Beacon / DTIM boundary (<code>beacon int = 100 TU = 102.4 ms</code>, <code>dtim period = 1</code>)</strong>, producing <code>101–145 ms</code> (<code>1x</code> beacon interval) IN-polling stalls.</li>
+</ul></li>
+<li><strong>Dual-Band Background Roaming Scans (<code>2.4 GHz</code> + <code>5 GHz</code> Shared SSID)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>When the same SSID is advertised on both <code>2.4 GHz</code> (<code>2412 MHz</code>, Channel 1) and <code>5 GHz</code> (<code>5785 MHz</code>, Channel 157) without an explicit BSSID/band lock, <code>NetworkManager</code> and <code>wpa_supplicant</code> periodically trigger off-channel roaming scans. Because the Raspberry Pi 3B+ (<code>BCM43455</code>) has a single radio chain, tuning off Channel 157 to sweep candidate channels suspends active traffic for <strong><code>2</code> to <code>4</code> beacon intervals (<code>225–430 ms</code>)</strong>.</li>
+</ul></li>
+</ol>
+<h4 id="3-radio-mitigations-applied-on-touchly" class="text-base font-semibold text-[var(--foreground)]">3. Radio Mitigations Applied on <code>touchly</code></h4>
+<p class="text-sm my-2">To eliminate power-save sleep wakeups and off-channel roaming scans on <code>wlan0</code>, both settings are locked persistently via <code>iw</code> and <code>NetworkManager</code>:</p>
+<div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">bash</div><pre class="text-xs leading-relaxed"><code># 1. Immediately disable brcmfmac 802.11 Power Save Mode
+sudo /sbin/iw dev wlan0 set power_save off
+
+# 2. Persist power_save=disable (2) and lock wlan0 to the 5 GHz AP BSSID (Channel 157, 80 MHz)
+sudo nmcli connection modify &lt;SSID&gt; \
+  802-11-wireless.powersave 2 \
+  802-11-wireless.band a \
+  802-11-wireless.bssid &lt;5GHZ_BSSID&gt;
+sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
+<h4 id="4-multi-transport-inter-frame-jitter-touch-performance-comparison" class="text-base font-semibold text-[var(--foreground)]">4. Multi-Transport Inter-Frame Jitter &amp; Touch Performance Comparison</h4>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric</th>
+<th class="p-3 font-semibold align-bottom text-center">Direct Gigabit Ethernet (<code>eth0</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">Direct Wi-Fi (<code>wlan0</code>, Default)</th>
+<th class="p-3 font-semibold align-bottom text-center">Direct Wi-Fi (<code>wlan0</code>, Mitigated)</th>
+<th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Run 1)</th>
+<th class="p-3 font-semibold align-bottom text-center">Tailscale + Wi-Fi (<code>tailscale0</code>, Run 2)</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>802.11 Power Save / 5 GHz BSSID Lock</strong></td>
+<td class="p-3 align-top text-center">N/A (Wired)</td>
+<td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
+<td class="p-3 align-top text-center"><strong><code>off</code> / Locked (<code>5785 MHz</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
+<td class="p-3 align-top text-center"><code>on</code> / Unlocked</td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>CTAPHID_CONT IN</code> Frames Analyzed</strong></td>
+<td class="p-3 align-top text-center"><code>4,982</code></td>
+<td class="p-3 align-top text-center"><code>5,050</code></td>
+<td class="p-3 align-top text-center"><code>5,008</code></td>
+<td class="p-3 align-top text-center"><code>5,070</code></td>
+<td class="p-3 align-top text-center"><code>5,423</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Min</code></strong></td>
+<td class="p-3 align-top text-center"><code>1.98 ms</code></td>
+<td class="p-3 align-top text-center"><code>5.96 ms</code></td>
+<td class="p-3 align-top text-center"><code>5.97 ms</code></td>
+<td class="p-3 align-top text-center"><code>6.99 ms</code></td>
+<td class="p-3 align-top text-center"><code>7.00 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P50</code> (Median)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>2.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>7.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>8.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>11.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>11.01 ms</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Mean</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>2.14 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>9.35 ms</code></td>
+<td class="p-3 align-top text-center"><code>9.69 ms</code></td>
+<td class="p-3 align-top text-center"><code>13.22 ms</code></td>
+<td class="p-3 align-top text-center"><code>13.53 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P95</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>3.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>13.00 ms</code></td>
+<td class="p-3 align-top text-center"><code>14.00 ms</code></td>
+<td class="p-3 align-top text-center"><code>18.00 ms</code></td>
+<td class="p-3 align-top text-center"><code>18.00 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>P99</code> (Tail Jitter)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>4.01 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>60.00 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>34.01 ms</code> (<code>-43.3%</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>64.00 ms</code></td>
+<td class="p-3 align-top text-center"><code>68.00 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> Inter-Frame Delta — <code>Max</code></strong></td>
+<td class="p-3 align-top text-center"><code>19.01 ms</code></td>
+<td class="p-3 align-top text-center"><code>430.00 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>374.00 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>441.01 ms</code></td>
+<td class="p-3 align-top text-center"><code>460.99 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Mac VirtualHere Mean Inter-Frame Delta (<code>P50</code> / <code>Mean</code> / <code>P95</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>2.05</code> / <code>2.21</code> / <code>3.10 ms</code></td>
+<td class="p-3 align-top text-center"><code>7.30</code> / <code>9.94</code> / <code>13.54 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>7.63</code> / <code>10.20</code> / <code>15.50 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>11.30</code> / <code>14.78</code> / <code>20.90 ms</code></td>
+<td class="p-3 align-top text-center"><code>11.34</code> / <code>13.36</code> / <code>16.60 ms</code></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Touchly <code>Pass 0</code> Touch Resolution Rate</strong></td>
+<td class="p-3 align-top text-center"><strong><code>190 / 190</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>150 / 150</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>149 / 149</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>149 / 149</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>151 / 151</code> (<code>100.0%</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>UP_NEEDED</code> $\rightarrow$ CTAP Response (<code>up_to_resp</code> <code>P50</code> / <code>Mean</code> / <code>P95</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>892.0</code> / <code>921.4</code> / <code>1,312.0 ms</code></td>
+<td class="p-3 align-top text-center"><code>996.8</code> / <code>972.6</code> / <code>1,389.8 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>956.0</code> / <code>973.6</code> / <code>1,460.2 ms</code></strong></td>
+<td class="p-3 align-top text-center"><code>1,024.6</code> / <code>1,046.6</code> / <code>1,483.6 ms</code></td>
+<td class="p-3 align-top text-center"><code>1,073.2</code> / <code>1,086.2</code> / <code>1,743.8 ms</code></td>
 </tr>
 </tbody></table></div>
     </section>

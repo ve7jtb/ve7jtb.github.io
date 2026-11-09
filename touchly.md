@@ -5,9 +5,9 @@
 > **Touchly** ([touch.py](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/touch.py) + `/home/jbradley/yubikey-control/libyk_chirp.so`) drives the YubiKey 6 NFC (`VID: 0x1050`, `PID: 0x0406`) capacitive touch sensor hands-free from Raspberry Pi BCM **`GPIO21`** by sweeping a compiled C `/dev/gpiomem` logarithmic push-pull frequency chirp (`500 kHz` $\rightarrow$ `2 kHz`) across the sensor's excitation carrier and releasing the pin to High-Z (`PUD_OFF`) within `12 ms` of User Presence (`UP`) satisfaction.
 > - Validated across the full 20-category FIDO CTAP 2.3 conformance suite (**`410` tests in `8m 22.22s` (`502,221 ms`, `3.77x` faster than the `31m 32.52s` pre-hardening run), `190 / 190` (`100.0%`) First-Pass (`Pass 0`) User Presence touches (`994.5 ms` median / `1,915.6 ms` max `up_to_resp`), `20` automated USB hub power cycles, `0` touch retries or frame drops**).
 
-![Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad](./touchly.png)
+![Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad](touchly.png)
 
-![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) on YubiKey 6 NFC](./touchly-browser.mp4)
+![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) on YubiKey 6 NFC](touchly-browser.mp4)
 
 ---
 
@@ -269,7 +269,7 @@ Prior to any pulse-timing or core-dwell adjustments, [`benchmark_hw_under_load.j
 
 ### 5.3 Live Chromium WebAuthn Benchmark with Mode 2 (`pi_prearmed_first_up` / `ARM`, `N = 8`, [test_mode2_chromium.js](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/test_mode2_chromium.js))
 
-![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) Across `ES256 (-7)` and Post-Quantum `ML-DSA-65 (-49)` on YubiKey 6 NFC](./touchly-browser.mp4)
+![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) Across `ES256 (-7)` and Post-Quantum `ML-DSA-65 (-49)` on YubiKey 6 NFC](touchly-browser.mp4)
 
 [`test_mode2_chromium.js`](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/test_mode2_chromium.js) tested Mode 2 (`ARM <id> 25.000 arm_timeout=30.000 req_deadline=55.000 vid=1050 pid=0406`) end-to-end with Chromium (`/Users/jbradley/.gemini/antigravity/scratch/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium`) executing live `navigator.credentials.create()` and `navigator.credentials.get()` operations (`3x ES256 (-7)` pairs + `1x ML-DSA-65 (-49)` pair) against the physical YubiKey 6 NFC (`1050:0406`). Pre-flight `CTAPHID_INIT` and `authenticatorGetInfo` `TX_DONE` events were retired in High-Z without aborting the pre-arm ([`drain_up_socket`](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/touch.py#L740-L748)), and `touch.py` measured the Pi-side software `CLOCK_MONOTONIC` breakdown from `pi_usbmon_capture.py` observing `UP_NEEDED (phase=1)` (`usbmon_ns`) to the userspace timestamp captured immediately after the first `gpio[GPSET0] = mask` register write in C (`yk_last_first_edge_ns()`, a software GPIO-write measurement rather than an external oscilloscope/logic-analyzer capture):
 
@@ -345,3 +345,53 @@ Running the complete 20-category FIDO CTAP 2.3 conformance suite ([`yubikey_usb_
 | **Total Hands-Free `GPIO21` UP Touches** | `198` | **`190`** (`0` duplicate/spurious triggers) | **`190 / 190` (`100.0%`) resolved on `Pass 0` (`< 1.92 s`)** |
 | **`UP_NEEDED` $\rightarrow$ CTAP Response (`up_to_resp`)** | Multi-pass tail up to `~22 s` | **Min `340.4 ms` / Median `994.5 ms` / Mean `963.7 ms` / `P95` `1,336.5 ms` / Max `1,915.6 ms`** | **`0%` fallback rate (`100%` single-pass)** |
 | **Automated `uhubctl` USB Hub Power Cycles** | `35` | **`20 / 20` (`100.0%` clean re-enumeration)** | `-15` redundant power cycles eliminated |
+
+---
+
+### 5.6 USB-over-IP Inter-Frame Jitter Analysis & Wi-Fi / Tailscale Mitigations
+
+When operating `touchly` untethered over **802.11ac Wi-Fi (`wlan0`, `BCM43455` / `brcmfmac`, `5785 MHz` Channel 157, `80 MHz`, `433.3 Mbit/s`)** and **Tailscale (`tailscale0`, userspace WireGuard)** instead of direct Gigabit Ethernet (`eth0`), multi-frame `CTAPHID_CBOR` responses (`10` to `47` `CTAPHID_CONT` frames, up to `2,734` bytes for post-quantum `ML-DSA-65` attestations) are sensitive to network round-trip jitter. Correlating Raspberry Pi hardware `usbmon` captures against macOS `node-hid` (`nodehid.fork.js`) reception timestamps across full 410-test suite runs revealed the exact transport interaction and two effective radio-level mitigations:
+
+#### 1. VirtualHere URB Replenishment & YubiKey `100 ms` Per-Frame TX Timeout
+- **Demand-Driven Interrupt IN Polling**: VirtualHere (`vhusbdarm` on the Raspberry Pi) does not autonomously poll the authenticator's USB Interrupt IN endpoint (`EP 5 IN`) in the Linux kernel; instead, it forwards `URB_INTERRUPT IN` requests on demand as the macOS VirtualHere client replenishes them over TCP port `7575`.
+  - Over **Direct Wi-Fi (`10.0.0.201`)**, steady-state `CTAPHID_CONT IN` frames are clocked out on the Pi's physical USB bus at a median interval of **`7.00 ms` (`P50`)** (`Mean = 9.35 ms`, `P95 = 13.00 ms`).
+  - Over **Tailscale + Wi-Fi (`100.92.8.75`)**, userspace WireGuard encryption/decryption and `tailscaled` TUN socket context switches on both endpoints add **`+4.00 ms` per frame**, shifting the steady-state `CTAPHID_CONT IN` polling interval to **`11.00 ms` (`P50`)** (`Mean = 13.22–13.53 ms`, `P95 = 18.00 ms`).
+- **YubiKey `100 ms` Per-Frame Endpoint Write Timeout**: Whenever a Wi-Fi/TCP stall delays IN URB replenishment from the macOS host by **`>= 100 ms`** in the middle of a multi-frame response, the `CTAPHID_CONT` frame currently loaded in the YubiKey's hardware USB IN FIFO (`seq = k - 1`) sits unpolled on the bus while the YubiKey firmware's internal `100 ms` per-frame write timer expires—causing the authenticator to drop **1 `CTAPHID_CONT` frame (`seq = k`) per `~100 ms` of IN polling stall** before the next IN token arrives (`101–184 ms` stall $\rightarrow$ `1` dropped frame; `220–243 ms` $\rightarrow$ `2` dropped frames; `310–374 ms` $\rightarrow$ `3` dropped frames; `428–441 ms` $\rightarrow$ `4` dropped frames).
+
+#### 2. Root Causes of `>= 100 ms` Wi-Fi Pauses on Raspberry Pi OS (`brcmfmac`)
+Live radio diagnostics on `touchly` (`iw dev wlan0 get power_save`, `iw dev wlan0 link`, `nmcli dev wifi list`) confirmed strong RF link quality (`-27` to `-29 dBm` RSSI, `433.3 Mbit/s` TX/RX, `0` missed beacons) and isolated two software-controlled sources of `>= 100 ms` airtime pauses:
+1. **Broadcom `brcmfmac` IEEE 802.11 Power Save Mode (`Power save: on`)**:
+   - By default (`802-11-wireless.powersave = 0 (default)`), `brcmfmac` enters 802.11 Power Save sleep during brief inter-packet lulls (`~50–100 ms`) while the authenticator is computing a cryptographic response. Downlink TCP URB replenishments from the Mac are buffered at the access point until the next **Beacon / DTIM boundary (`beacon int = 100 TU = 102.4 ms`, `dtim period = 1`)**, producing `101–145 ms` (`1x` beacon interval) IN-polling stalls.
+2. **Dual-Band Background Roaming Scans (`2.4 GHz` + `5 GHz` Shared SSID)**:
+   - When the same SSID is advertised on both `2.4 GHz` (`2412 MHz`, Channel 1) and `5 GHz` (`5785 MHz`, Channel 157) without an explicit BSSID/band lock, `NetworkManager` and `wpa_supplicant` periodically trigger off-channel roaming scans. Because the Raspberry Pi 3B+ (`BCM43455`) has a single radio chain, tuning off Channel 157 to sweep candidate channels suspends active traffic for **`2` to `4` beacon intervals (`225–430 ms`)**.
+
+#### 3. Radio Mitigations Applied on `touchly`
+To eliminate power-save sleep wakeups and off-channel roaming scans on `wlan0`, both settings are locked persistently via `iw` and `NetworkManager`:
+
+```bash
+# 1. Immediately disable brcmfmac 802.11 Power Save Mode
+sudo /sbin/iw dev wlan0 set power_save off
+
+# 2. Persist power_save=disable (2) and lock wlan0 to the 5 GHz AP BSSID (Channel 157, 80 MHz)
+sudo nmcli connection modify <SSID> \
+  802-11-wireless.powersave 2 \
+  802-11-wireless.band a \
+  802-11-wireless.bssid <5GHZ_BSSID>
+sudo nmcli connection up <SSID>
+```
+
+#### 4. Multi-Transport Inter-Frame Jitter & Touch Performance Comparison
+
+| Metric | Direct Gigabit Ethernet (`eth0`) | Direct Wi-Fi (`wlan0`, Default) | Direct Wi-Fi (`wlan0`, Mitigated) | Tailscale + Wi-Fi (`tailscale0`, Run 1) | Tailscale + Wi-Fi (`tailscale0`, Run 2) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **802.11 Power Save / 5 GHz BSSID Lock** | N/A (Wired) | `on` / Unlocked | **`off` / Locked (`5785 MHz`)** | `on` / Unlocked | `on` / Unlocked |
+| **Pi `usbmon` `CTAPHID_CONT IN` Frames Analyzed** | `4,982` | `5,050` | `5,008` | `5,070` | `5,423` |
+| **Pi `usbmon` Inter-Frame Delta — `Min`** | `1.98 ms` | `5.96 ms` | `5.97 ms` | `6.99 ms` | `7.00 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `P50` (Median)** | **`2.00 ms`** | **`7.00 ms`** | **`8.00 ms`** | **`11.00 ms`** | **`11.01 ms`** |
+| **Pi `usbmon` Inter-Frame Delta — `Mean`** | **`2.14 ms`** | `9.35 ms` | `9.69 ms` | `13.22 ms` | `13.53 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `P95`** | **`3.00 ms`** | `13.00 ms` | `14.00 ms` | `18.00 ms` | `18.00 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `P99` (Tail Jitter)** | **`4.01 ms`** | `60.00 ms` | **`34.01 ms` (`-43.3%`)** | `64.00 ms` | `68.00 ms` |
+| **Pi `usbmon` Inter-Frame Delta — `Max`** | `19.01 ms` | `430.00 ms` | **`374.00 ms`** | `441.01 ms` | `460.99 ms` |
+| **Mac VirtualHere Mean Inter-Frame Delta (`P50` / `Mean` / `P95`)** | `2.05` / `2.21` / `3.10 ms` | `7.30` / `9.94` / `13.54 ms` | **`7.63` / `10.20` / `15.50 ms`** | `11.30` / `14.78` / `20.90 ms` | `11.34` / `13.36` / `16.60 ms` |
+| **Touchly `Pass 0` Touch Resolution Rate** | **`190 / 190` (`100.0%`)** | **`150 / 150` (`100.0%`)** | **`149 / 149` (`100.0%`)** | **`149 / 149` (`100.0%`)** | **`151 / 151` (`100.0%`)** |
+| **`UP_NEEDED` $\rightarrow$ CTAP Response (`up_to_resp` `P50` / `Mean` / `P95`)** | `892.0` / `921.4` / `1,312.0 ms` | `996.8` / `972.6` / `1,389.8 ms` | **`956.0` / `973.6` / `1,460.2 ms`** | `1,024.6` / `1,046.6` / `1,483.6 ms` | `1,073.2` / `1,086.2` / `1,743.8 ms` |
