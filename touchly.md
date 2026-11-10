@@ -5,9 +5,9 @@
 > **Touchly** ([touch.py](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/touch.py) + `/home/jbradley/yubikey-control/libyk_chirp.so`) drives the YubiKey 6 NFC (`VID: 0x1050`, `PID: 0x0406`) capacitive touch sensor hands-free from Raspberry Pi BCM **`GPIO21`** by sweeping a compiled C `/dev/gpiomem` logarithmic push-pull frequency chirp (`500 kHz` $\rightarrow$ `2 kHz`) across the sensor's excitation carrier and releasing the pin to High-Z (`PUD_OFF`) within `12 ms` of User Presence (`UP`) satisfaction.
 > - Validated across the full 20-category FIDO CTAP 2.3 conformance suite (**`410` tests in `8m 22.22s` (`502,221 ms`, `3.77x` faster than the `31m 32.52s` pre-hardening run), `190 / 190` (`100.0%`) First-Pass (`Pass 0`) User Presence touches (`994.5 ms` median / `1,915.6 ms` max `up_to_resp`), `20` automated USB hub power cycles, `0` touch retries or frame drops**).
 
-![Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad](touchly.png)
+![Touchly Hardware Setup — Raspberry Pi 3B+ (`pi1`) with Ethernet (`eth0`), YubiKey 6 NFC, and `GPIO21` lead routed to the copper-tape capacitive electrode on the touch pad](/Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/touchly.png)
 
-![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) on YubiKey 6 NFC](touchly-browser.mp4)
+![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) on YubiKey 6 NFC](/Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/touchly-browser.mp4)
 
 ---
 
@@ -269,7 +269,7 @@ Prior to any pulse-timing or core-dwell adjustments, [`benchmark_hw_under_load.j
 
 ### 5.3 Live Chromium WebAuthn Benchmark with Mode 2 (`pi_prearmed_first_up` / `ARM`, `N = 8`, [test_mode2_chromium.js](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/test_mode2_chromium.js))
 
-![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) Across `ES256 (-7)` and Post-Quantum `ML-DSA-65 (-49)` on YubiKey 6 NFC](touchly-browser.mp4)
+![Live Chromium WebAuthn Operations (`navigator.credentials.create()` & `navigator.credentials.get()`) Driven Hands-Free by Touchly Mode 2 (`pi_prearmed_first_up` / `ARM`) Across `ES256 (-7)` and Post-Quantum `ML-DSA-65 (-49)` on YubiKey 6 NFC](/Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/touchly-browser.mp4)
 
 [`test_mode2_chromium.js`](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/test_mode2_chromium.js) tested Mode 2 (`ARM <id> 25.000 arm_timeout=30.000 req_deadline=55.000 vid=1050 pid=0406`) end-to-end with Chromium (`/Users/jbradley/.gemini/antigravity/scratch/chromium/src/out/Default/Chromium.app/Contents/MacOS/Chromium`) executing live `navigator.credentials.create()` and `navigator.credentials.get()` operations (`3x ES256 (-7)` pairs + `1x ML-DSA-65 (-49)` pair) against the physical YubiKey 6 NFC (`1050:0406`). Pre-flight `CTAPHID_INIT` and `authenticatorGetInfo` `TX_DONE` events were retired in High-Z without aborting the pre-arm ([`drain_up_socket`](file:///Users/jbradley/.gemini/antigravity/brain/af74f763-3e64-4a5f-b0cf-8e00c20c3671/scratch/touch.py#L740-L748)), and `touch.py` measured the Pi-side software `CLOCK_MONOTONIC` breakdown from `pi_usbmon_capture.py` observing `UP_NEEDED (phase=1)` (`usbmon_ns`) to the userspace timestamp captured immediately after the first `gpio[GPSET0] = mask` register write in C (`yk_last_first_edge_ns()`, a software GPIO-write measurement rather than an external oscilloscope/logic-analyzer capture):
 
@@ -358,15 +358,19 @@ When operating `touchly` untethered over **802.11ac Wi-Fi (`wlan0`, `BCM43455` /
   - Over **Tailscale + Wi-Fi (`100.92.8.75`)**, userspace WireGuard encryption/decryption and `tailscaled` TUN socket context switches on both endpoints add **`+4.00 ms` per frame**, shifting the steady-state `CTAPHID_CONT IN` polling interval to **`11.00 ms` (`P50`)** (`Mean = 13.22–13.53 ms`, `P95 = 18.00 ms`).
 - **YubiKey `100 ms` Per-Frame Endpoint Write Timeout**: Whenever a Wi-Fi/TCP stall delays IN URB replenishment from the macOS host by **`>= 100 ms`** in the middle of a multi-frame response, the `CTAPHID_CONT` frame currently loaded in the YubiKey's hardware USB IN FIFO (`seq = k - 1`) sits unpolled on the bus while the YubiKey firmware's internal `100 ms` per-frame write timer expires—causing the authenticator to drop **1 `CTAPHID_CONT` frame (`seq = k`) per `~100 ms` of IN polling stall** before the next IN token arrives (`101–184 ms` stall $\rightarrow$ `1` dropped frame; `220–243 ms` $\rightarrow$ `2` dropped frames; `310–374 ms` $\rightarrow$ `3` dropped frames; `428–441 ms` $\rightarrow$ `4` dropped frames).
 
-#### 2. Root Causes of `>= 100 ms` Wi-Fi Pauses on Raspberry Pi OS (`brcmfmac`)
-Live radio diagnostics on `touchly` (`iw dev wlan0 get power_save`, `iw dev wlan0 link`, `nmcli dev wifi list`) confirmed strong RF link quality (`-27` to `-29 dBm` RSSI, `433.3 Mbit/s` TX/RX, `0` missed beacons) and isolated two software-controlled sources of `>= 100 ms` airtime pauses:
+#### 2. Root Causes of `>= 100 ms` Wi-Fi Pauses on Raspberry Pi OS (`brcmfmac` / `BCM43455`)
+Live radio diagnostics on `touchly` (`iw dev wlan0 get power_save`, `iw dev wlan0 link`, `nmcli dev wifi list`, `hciconfig -a`) confirmed strong RF link quality (`-27` to `-29 dBm` RSSI, `433.3 Mbit/s` TX/RX, `0` missed beacons) and isolated three software-controlled sources of `>= 100 ms` airtime pauses:
 1. **Broadcom `brcmfmac` IEEE 802.11 Power Save Mode (`Power save: on`)**:
    - By default (`802-11-wireless.powersave = 0 (default)`), `brcmfmac` enters 802.11 Power Save sleep during brief inter-packet lulls (`~50–100 ms`) while the authenticator is computing a cryptographic response. Downlink TCP URB replenishments from the Mac are buffered at the access point until the next **Beacon / DTIM boundary (`beacon int = 100 TU = 102.4 ms`, `dtim period = 1`)**, producing `101–145 ms` (`1x` beacon interval) IN-polling stalls.
 2. **Dual-Band Background Roaming Scans (`2.4 GHz` + `5 GHz` Shared SSID)**:
-   - When the same SSID is advertised on both `2.4 GHz` (`2412 MHz`, Channel 1) and `5 GHz` (`5785 MHz`, Channel 157) without an explicit BSSID/band lock, `NetworkManager` and `wpa_supplicant` periodically trigger off-channel roaming scans. Because the Raspberry Pi 3B+ (`BCM43455`) has a single radio chain, tuning off Channel 157 to sweep candidate channels suspends active traffic for **`2` to `4` beacon intervals (`225–430 ms`)**.
+   - When the same SSID is advertised on both `2.4 GHz` (`2412 MHz`, Channel 1) and `5 GHz` (`5785 MHz`, Channel 157) without an explicit BSSID/band lock, `NetworkManager` and `wpa_supplicant` periodically trigger off-channel roaming scans. Because the Raspberry Pi (`BCM43455`) has a single radio chain, tuning off Channel 157 to sweep candidate channels suspends active traffic for **`2` to `4` beacon intervals (`225–430 ms`)**.
+3. **Cypress `BCM43455` Combo-Chip Bluetooth Coexistence (`BTC`) Preemption (`hci0` Page Scan & Paired HID ACL Traffic)**:
+   - On the Raspberry Pi, `wlan0` and `hci0` share the same Cypress `BCM43455` combo radio front-end. When `bluetooth.service` is active with `hci0` in `UP RUNNING PSCAN` mode and paired Bluetooth HID peripherals exist in the environment, the chip's internal Bluetooth Coexistence (`BTC`) arbiter grants high priority to periodic Bluetooth page scan windows (`PSCAN`) and background ACL packets, briefly preempting `wlan0` TX/RX scheduling.
 
 #### 3. Radio Mitigations Applied on `touchly`
-To eliminate power-save sleep wakeups and off-channel roaming scans on `wlan0`, both settings are locked persistently via `iw` and `NetworkManager`:
+To eliminate power-save sleep wakeups, off-channel roaming scans, and `BCM43455` Bluetooth coexistence preemption without permanently disabling Bluetooth outside of test runs:
+- **Persistent `wlan0` Configuration**: `802.11` Power Save is disabled (`powersave = 2`) and `wlan0` is locked to the 5 GHz BSSID (`Channel 157, 80 MHz`).
+- **Dynamic Test-Scoped Bluetooth Suspension (`disableBluetoothDuringRun: true`)**: Both the CLI runner ([`run_fidont_ctap23.js`](file:///Users/jbradley/.gemini/antigravity/scratch/run_fidont_ctap23.js)) and the Electron GUI ([`preload.js`](file:///Users/jbradley/.gemini/antigravity/scratch/fido_extracted/preload.js) / [`controller.js`](file:///Users/jbradley/.gemini/antigravity/scratch/fido_extracted/app/js/controller.js)) automatically stop `bluetooth.service` and bring `hci0 down` on `touchly` when a conformance run starts, and automatically restore `bluetooth.service` + `hci0 up` as soon as the run finishes (or on `SIGINT`/`SIGTERM`):
 
 ```bash
 # 1. Immediately disable brcmfmac 802.11 Power Save Mode
@@ -378,6 +382,12 @@ sudo nmcli connection modify <SSID> \
   802-11-wireless.band a \
   802-11-wireless.bssid <5GHZ_BSSID>
 sudo nmcli connection up <SSID>
+
+# 3. Dynamically suspend Bluetooth on touchly at test start and restore on test completion
+#    On test start:
+sudo systemctl stop bluetooth && sudo hciconfig hci0 down
+#    On test completion (or SIGINT/SIGTERM):
+sudo systemctl start bluetooth && sudo hciconfig hci0 up
 ```
 
 #### 4. Multi-Transport Inter-Frame Jitter & Touch Performance Comparison

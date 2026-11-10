@@ -1149,18 +1149,21 @@ int yk_chirp_once(
 </ul></li>
 <li><strong>YubiKey <code>100 ms</code> Per-Frame Endpoint Write Timeout</strong>: Whenever a Wi-Fi/TCP stall delays IN URB replenishment from the macOS host by <strong><code>&gt;= 100 ms</code></strong> in the middle of a multi-frame response, the <code>CTAPHID_CONT</code> frame currently loaded in the YubiKey's hardware USB IN FIFO (<code>seq = k - 1</code>) sits unpolled on the bus while the YubiKey firmware's internal <code>100 ms</code> per-frame write timer expires—causing the authenticator to drop <strong>1 <code>CTAPHID_CONT</code> frame (<code>seq = k</code>) per <code>~100 ms</code> of IN polling stall</strong> before the next IN token arrives (<code>101–184 ms</code> stall $\rightarrow$ <code>1</code> dropped frame; <code>220–243 ms</code> $\rightarrow$ <code>2</code> dropped frames; <code>310–374 ms</code> $\rightarrow$ <code>3</code> dropped frames; <code>428–441 ms</code> $\rightarrow$ <code>4</code> dropped frames).</li>
 </ul>
-<h4 id="2-root-causes-of-100-ms-wi-fi-pauses-on-raspberry-pi-os-brcmfmac" class="text-base font-semibold text-[var(--foreground)]">2. Root Causes of <code>&gt;= 100 ms</code> Wi-Fi Pauses on Raspberry Pi OS (<code>brcmfmac</code>)</h4>
-<p class="text-sm my-2">Live radio diagnostics on <code>touchly</code> (<code>iw dev wlan0 get power_save</code>, <code>iw dev wlan0 link</code>, <code>nmcli dev wifi list</code>) confirmed strong RF link quality (<code>-27</code> to <code>-29 dBm</code> RSSI, <code>433.3 Mbit/s</code> TX/RX, <code>0</code> missed beacons) and isolated two software-controlled sources of <code>&gt;= 100 ms</code> airtime pauses:</p>
+<h4 id="2-root-causes-of-100-ms-wi-fi-pauses-on-raspberry-pi-os-brcmfmac" class="text-base font-semibold text-[var(--foreground)]">2. Root Causes of <code>&gt;= 100 ms</code> Wi-Fi Pauses on Raspberry Pi OS (<code>brcmfmac</code> / <code>BCM43455</code>)</h4>
+<p class="text-sm my-2">Live radio diagnostics on <code>touchly</code> (<code>iw dev wlan0 get power_save</code>, <code>iw dev wlan0 link</code>, <code>nmcli dev wifi list</code>, <code>hciconfig -a</code>) confirmed strong RF link quality (<code>-27</code> to <code>-29 dBm</code> RSSI, <code>433.3 Mbit/s</code> TX/RX, <code>0</code> missed beacons) and isolated three software-controlled sources of <code>&gt;= 100 ms</code> airtime pauses:</p>
 <ol class="list-decimal pl-6 space-y-2 text-sm my-2">
 <li><strong>Broadcom <code>brcmfmac</code> IEEE 802.11 Power Save Mode (<code>Power save: on</code>)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li>By default (<code>802-11-wireless.powersave = 0 (default)</code>), <code>brcmfmac</code> enters 802.11 Power Save sleep during brief inter-packet lulls (<code>~50–100 ms</code>) while the authenticator is computing a cryptographic response. Downlink TCP URB replenishments from the Mac are buffered at the access point until the next <strong>Beacon / DTIM boundary (<code>beacon int = 100 TU = 102.4 ms</code>, <code>dtim period = 1</code>)</strong>, producing <code>101–145 ms</code> (<code>1x</code> beacon interval) IN-polling stalls.</li>
 </ul></li>
 <li><strong>Dual-Band Background Roaming Scans (<code>2.4 GHz</code> + <code>5 GHz</code> Shared SSID)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
-<li>When the same SSID is advertised on both <code>2.4 GHz</code> (<code>2412 MHz</code>, Channel 1) and <code>5 GHz</code> (<code>5785 MHz</code>, Channel 157) without an explicit BSSID/band lock, <code>NetworkManager</code> and <code>wpa_supplicant</code> periodically trigger off-channel roaming scans. Because the Raspberry Pi 3B+ (<code>BCM43455</code>) has a single radio chain, tuning off Channel 157 to sweep candidate channels suspends active traffic for <strong><code>2</code> to <code>4</code> beacon intervals (<code>225–430 ms</code>)</strong>.</li>
+<li>When the same SSID is advertised on both <code>2.4 GHz</code> (<code>2412 MHz</code>, Channel 1) and <code>5 GHz</code> (<code>5785 MHz</code>, Channel 157) without an explicit BSSID/band lock, <code>NetworkManager</code> and <code>wpa_supplicant</code> periodically trigger off-channel roaming scans. Because the Raspberry Pi (<code>BCM43455</code>) has a single radio chain, tuning off Channel 157 to sweep candidate channels suspends active traffic for <strong><code>2</code> to <code>4</code> beacon intervals (<code>225–430 ms</code>)</strong>.</li>
+</ul></li>
+<li><strong>Cypress <code>BCM43455</code> Combo-Chip Bluetooth Coexistence (<code>BTC</code>) Preemption (<code>hci0</code> Page Scan &amp; Paired HID ACL Traffic)</strong>:<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>On the Raspberry Pi, <code>wlan0</code> and <code>hci0</code> share the same Cypress <code>BCM43455</code> combo radio front-end. When <code>bluetooth.service</code> is active with <code>hci0</code> in <code>UP RUNNING PSCAN</code> mode and paired Bluetooth HID peripherals exist in the environment, the chip's internal Bluetooth Coexistence (<code>BTC</code>) arbiter grants high priority to periodic Bluetooth page scan windows (<code>PSCAN</code>) and background ACL packets, briefly preempting <code>wlan0</code> TX/RX scheduling.</li>
 </ul></li>
 </ol>
 <h4 id="3-radio-mitigations-applied-on-touchly" class="text-base font-semibold text-[var(--foreground)]">3. Radio Mitigations Applied on <code>touchly</code></h4>
-<p class="text-sm my-2">To eliminate power-save sleep wakeups and off-channel roaming scans on <code>wlan0</code>, both settings are locked persistently via <code>iw</code> and <code>NetworkManager</code>:</p>
+<p class="text-sm my-2">To eliminate power-save sleep wakeups, off-channel roaming scans, and <code>BCM43455</code> Bluetooth coexistence preemption without permanently disabling Bluetooth outside of test runs, persistent <code>wlan0</code> settings are combined with dynamic test-scoped Bluetooth suspension:</p>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">bash</div><pre class="text-xs leading-relaxed"><code># 1. Immediately disable brcmfmac 802.11 Power Save Mode
 sudo /sbin/iw dev wlan0 set power_save off
 
@@ -1169,7 +1172,13 @@ sudo nmcli connection modify &lt;SSID&gt; \
   802-11-wireless.powersave 2 \
   802-11-wireless.band a \
   802-11-wireless.bssid &lt;5GHZ_BSSID&gt;
-sudo nmcli connection up &lt;SSID&gt;</code></pre></div>
+sudo nmcli connection up &lt;SSID&gt;
+
+# 3. Dynamically suspend Bluetooth on touchly at test start and restore on test completion
+#    On test start:
+sudo systemctl stop bluetooth &amp;&amp; sudo hciconfig hci0 down
+#    On test completion (or SIGINT/SIGTERM):
+sudo systemctl start bluetooth &amp;&amp; sudo hciconfig hci0 up</code></pre></div>
 <h4 id="4-multi-transport-inter-frame-jitter-touch-performance-comparison" class="text-base font-semibold text-[var(--foreground)]">4. Multi-Transport Inter-Frame Jitter &amp; Touch Performance Comparison</h4>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
 <table class="w-full border-collapse text-xs">
