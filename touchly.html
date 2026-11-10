@@ -1422,6 +1422,66 @@ sudo systemctl start bluetooth &amp;&amp; sudo hciconfig hci0 up</code></pre></d
 <td class="p-3 align-top text-center"><strong><code>991.3</code> / <code>985.0</code> / <code>1,417.8</code></strong></td>
 </tr>
 </tbody></table></div>
+
+<h4 id="6-host-node-hid-persistent-handle--non-blocking-transport-refactoring-nodehidforkjs-hiddepjs" class="text-sm font-semibold mt-5 mb-2">6. Host <code>node-hid</code> Persistent Handle &amp; Non-Blocking Transport Refactoring (<code>nodehid.fork.js</code>, <code>hiddep.js</code>)</h4>
+<p class="text-sm leading-relaxed my-2">Inspecting the macOS host transport layer (<code>node-hid</code> C++/C <code>hidapi/mac/hid.c</code> and <code>dependencies/transports/nodehid.fork.js</code>) identified four host-side sources of per-command latency and USB-over-IP interrupt stream churn:</p>
+<ol class="list-decimal pl-5 space-y-1.5 my-2 text-sm">
+  <li><strong>Per-Command <code>IOHIDDeviceClose</code> / <code>IOHIDDeviceOpen</code> Churn (<code>3,200+</code> times per run)</strong>: Closing and reopening the <code>hid.HID</code> (<code>IOHIDDeviceRef</code>) handle at the end of every CTAPHID command forced macOS <code>hidapi</code> to repeatedly spawn and tear down its <code>CFRunLoop</code> <code>read_thread</code> (<code>pthread_create</code> + <code>pthread_barrier_wait</code>) and forced VirtualHere&rsquo;s macOS client driver to tear down and re-start its remote interrupt IN polling stream on <code>touchly</code>. <code>openDevice</code> and <code>settleRequest</code> now keep the <code>hid.HID</code> handle open across back-to-back commands when requests resolve cleanly, with a <code>5,000 ms</code> inactivity auto-close timer (<code>scheduleIdleCloseTimer</code>) so both subset runs and full runs release the device cleanly when idle.</li>
+  <li><strong>Blocking <code>5 ms</code> Pre-Write Drain (<code>readTimeout(5)</code> &rarr; <code>readTimeout(0)</code>)</strong>: Because the <code>CFRunLoop</code> input report queue (<code>dev-&gt;input_reports</code>) now stays continuously active between commands, <code>drainPendingInput</code> uses non-blocking <code>device.readTimeout(0)</code> (<code>&lt; 1 us</code>) instead of blocking <code>5 ms</code> before every write (<code>~16 s</code> saved per run).</li>
+  <li><strong>Synchronous <code>CTAPHID_CONT</code> Burst Drain on <code>ReadWorker</code> Wakeup</strong>: In <code>pumpAsyncRead</code>, as soon as libuv&rsquo;s <code>ReadWorker</code> delivers the initial frame of a multi-frame response, <code>nodehid.fork.js</code> immediately drains all continuation frames already queued in <code>hidapi</code>&rsquo;s C <code>input_reports</code> list via <code>device.readTimeout(0)</code> before scheduling another libuv thread-pool worker.</li>
+  <li><strong>Short-TTL <code>getDeviceState</code> Ready Cache (<code>2,000 ms</code>)</strong>: <code>getDeviceState</code> caches verified <code>'ready'</code> device state for <code>2,000 ms</code> (with immediate invalidation on any transport error, <code>closeHIDDevice</code>, or <code>powerCyclePiUsb</code>), avoiding <code>3,200+</code> synchronous <code>hid.devices()</code> IORegistry enumerations in the renderer process.</li>
+</ol>
+<div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
+<table class="w-full border-collapse text-xs">
+<thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
+<th class="p-3 font-semibold align-bottom text-left">Metric (Full 20-Category / 410-Test CTAP 2.3 Suite over Direct Wi-Fi)</th>
+<th class="p-3 font-semibold align-bottom text-center">Before Host Transport Refactor (<code>BT=off</code> + <code>performance</code> + <code>SCHED_FIFO:50</code>)</th>
+<th class="p-3 font-semibold align-bottom text-center">After Host Transport Refactor (<code>Persistent HID</code> + <code>readTimeout(0)</code> + Burst Drain)</th>
+<th class="p-3 font-semibold align-bottom text-center">Improvement</th>
+</tr></thead><tbody class="divide-y divide-[var(--border)]">
+<tr>
+<td class="p-3 align-top text-left"><strong>Total Suite Duration (<code>410</code> Tests)</strong></td>
+<td class="p-3 align-top text-center"><code>9m 36.3s</code> (<code>576,335 ms</code>)</td>
+<td class="p-3 align-top text-center"><strong><code>8m 59.8s</code> (<code>539,783 ms</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>-36.6s</code> (<code>-96.0s</code> vs. unmitigated Wi-Fi)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong><code>CTAPHID_INIT (0x86)</code> Command Latency (<code>Mean</code> / <code>P50</code> / <code>P95</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>20.59</code> / <code>18.90</code> / <code>23.40 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>12.60</code> / <code>12.10</code> / <code>15.50 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>-38.8%</code> Mean / <code>-36.0%</code> <code>P50</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Host Renderer IPC + Handle Overhead (<code>Mean</code> / <code>P50</code> / <code>P95</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>7.34</code> / <code>6.00</code> / <code>16.70 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>1.38</code> / <code>0.50</code> / <code>7.40 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>-81.2%</code> Mean / <code>-91.7%</code> <code>P50</code> (<code>12x</code> faster)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>CTAPHID_CONT IN</code> Inter-Frame <code>Mean</code> / <code>StdDev</code></strong></td>
+<td class="p-3 align-top text-center"><code>8.469 ms</code> / <code>10.677 ms</code></td>
+<td class="p-3 align-top text-center"><strong><code>8.268 ms</code> / <code>5.855 ms</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>-45.2%</code> inter-frame jitter <code>StdDev</code></strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>CTAPHID_CONT IN</code> Outliers (<code>&gt;= 20</code> / <code>&gt;= 50</code> / <code>&gt;= 100 ms</code>)</strong></td>
+<td class="p-3 align-top text-center"><code>42</code> / <code>31</code> / <code>15</code></td>
+<td class="p-3 align-top text-center"><strong><code>14</code> / <code>12</code> / <code>8</code></strong></td>
+<td class="p-3 align-top text-center"><strong><code>-66.7%</code> (<code>&gt;=20ms</code>) / <code>-61.3%</code> (<code>&gt;=50ms</code>) / <code>-46.7%</code> (<code>&gt;=100ms</code>)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>CTAPHID_CONT</code> Sequence Gaps</strong></td>
+<td class="p-3 align-top text-center"><code>7</code> (<code>0.144%</code> of frames)</td>
+<td class="p-3 align-top text-center"><strong><code>5</code> (<code>0.103%</code> of <code>4,876</code> frames)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>-28.6%</code> sequence gaps (<code>-61.5%</code> vs. unmitigated Wi-Fi)</strong></td>
+</tr>
+<tr>
+<td class="p-3 align-top text-left"><strong>Touchly <code>Pass 0</code> Touch Resolution Rate</strong></td>
+<td class="p-3 align-top text-center"><strong><code>173 / 173</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>186 / 186</code> (<code>100.0%</code>)</strong></td>
+<td class="p-3 align-top text-center"><strong><code>100.0%</code> single-pass touch resolution</strong></td>
+</tr>
+</tbody></table></div>
     </section>
   </main>
 
