@@ -445,3 +445,37 @@ Inspecting the macOS host transport layer (`node-hid` C++/C `hidapi/mac/hid.c` a
 | **Pi `usbmon` `CTAPHID_CONT IN` Outliers (`>= 20` / `>= 50` / `>= 100 ms`)** | `42` / `31` / `15` | **`14` / `12` / `8`** | **`-66.7%` (`>=20ms`) / `-61.3%` (`>=50ms`) / `-46.7%` (`>=100ms`)** |
 | **Pi `usbmon` `CTAPHID_CONT` Sequence Gaps** | `7` (`0.144%` of frames) | **`5` (`0.103%` of `4,876` frames)** | **`-28.6%` sequence gaps (`-61.5%` vs. unmitigated Wi-Fi)** |
 | **Touchly `Pass 0` Touch Resolution Rate** | **`173 / 173` (`100.0%`)** | **`186 / 186` (`100.0%`)** | **`100.0%` single-pass touch resolution** |
+
+#### 7. 10-Run Refactored Direct Wi-Fi Repeatability & AP `10.000-Second` RRM Off-Channel Scan Phase Guard
+Running a 10-pass back-to-back repeatability batch with the persistent `node-hid` handle refactor (`wifi_refactor_10x_summary.json`) reduced total 10-run execution time by **`-12m 18.0s`** (`89m 58.9s` vs. `102m 16.9s`, `8m 59.9s` average per run) and reduced `usbmon` sequence gaps by **`-33.0%`** (`59 / 16,323` multi-frame responses = `0.36%` vs. `88 / 16,230` = `0.54%`):
+
+| Run | Duration | `CTAPHID` Requests | `usbmon` Records | `CTAPHID_CONT` Frames | `usbmon` Delta `P50` / `Mean` / `P95` / `P99` (`ms`) | Sequence Gaps (`Rate`) | UP Touches (`Pass 0`) | `up_to_resp` `P50` / `Mean` / `P95` (`ms`) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1** | `9m 02.0s` | `3,221` | `16,818` | `4,958` | **`7.00` / `8.25` / `11.00` / `13.00`** | `7 / 1,617` (`0.43%`) | `187` (`100%`) | `1,049.6` / `1,008.7` / `1,460.4` |
+| **2** | `8m 38.2s` | `3,254` | `17,089` | `5,021` | **`7.00` / `8.04` / `11.00` / `13.00`** | `5 / 1,636` (`0.31%`) | `189` (`100%`) | `957.0` / `964.6` / `1,411.1` |
+| **3** | `8m 49.0s` | `3,309` | `17,330` | `5,046` | **`7.00` / `8.17` / `11.00` / `13.00`** | `9 / 1,667` (`0.54%`) | `191` (`100%`) | `985.3` / `986.2` / `1,417.0` |
+| **4** | `8m 46.8s` | `3,261` | `17,120` | `5,050` | **`7.00` / `8.16` / `11.00` / `13.01`** | `7 / 1,642` (`0.43%`) | `189` (`100%`) | `964.4` / `984.9` / `1,422.4` |
+| **5** | `8m 55.8s` | `3,290` | `17,452` | `5,253` | **`7.00` / `8.16` / `11.00` / `13.01`** | `5 / 1,656` (`0.30%`) | `192` (`100%`) | `970.4` / `984.7` / `1,401.9` |
+| **6** | `8m 56.6s` | `3,262` | `17,151` | `5,028` | **`7.00` / `8.05` / `11.00` / `13.01`** | `7 / 1,640` (`0.43%`) | `191` (`100%`) | `1,004.7` / `998.0` / `1,424.2` |
+| **7** | `8m 46.2s` | `3,253` | `17,153` | `5,126` | **`7.00` / `8.02` / `11.00` / `13.00`** | `6 / 1,636` (`0.37%`) | `189` (`100%`) | `984.7` / `969.2` / `1,384.6` |
+| **8** | `9m 22.8s` | `3,190` | `16,581` | `4,820` | **`7.00` / `8.06` / `11.00` / `13.00`** | `5 / 1,603` (`0.31%`) | `179` (`100%`) | `961.9` / `966.6` / `1,419.9` |
+| **9** | `9m 11.1s` | `3,251` | `16,964` | `4,938` | **`7.00` / `7.93` / `11.00` / `13.00`** | `3 / 1,633` (`0.18%`) | `185` (`100%`) | `991.8` / `995.5` / `1,411.5` |
+| **10** | `9m 30.3s` | `3,165` | `16,563` | `4,849` | **`7.00` / `8.07` / `11.00` / `13.00`** | `5 / 1,593` (`0.31%`) | `178` (`100%`) | `991.9` / `1,012.3` / `1,429.4` |
+| **Total / Aggregate** | **`89m 58.9s` (`8m 59.9s` avg)** | **`32,456`** | **`170,221`** | **`50,089`** | **`7.00` / `8.09` / `11.00` / `13.00`** | **`59 / 16,323` (`0.36%`)** | **`1,870 / 1,870` (`100.0%`)** | **`986.2` / `986.0` / `1,418.2`** |
+
+##### Root Cause of the Remaining `0.36%` Sequence Gaps: Deterministic `10.000-Second` AP RRM Off-Channel Scan (`:x8.000s–:x8.234s`)
+Once random host `IOHIDDeviceClose` / `IOHIDDeviceOpen` churn was eliminated, **100%** of the remaining multi-frame `CTAPHID_CONT` stalls across all 10 runs (`90 minutes`) clustered inside a deterministic **`10.000-second` wall-clock phase window** (`seconds_of_minute % 10.0s`, i.e., `:08s, :18s, :28s, :38s, :48s, :58s`). Synchronized `100 Hz` (`10 ms`) RTT probes across all four LAN paths isolated the exact two-stage radio pause:
+1. **AP (`10.0.0.1`) Radio Resource Management (RRM) Off-Channel Scan**: Every `10.000 seconds`, the tri-band Wi-Fi 6E router (`10.0.0.1`) steps its `6 GHz` radio (`Channel 5, 160 MHz`, used by the macOS host) off-channel for **`~111 ms`**, releasing queued frames at **`:x8.110s`**, and `124 ms` later steps its `5 GHz` radio (`Channel 157, 80 MHz`, used by `touchly`) off-channel for **`~31–55 ms`**, releasing queued frames at **`:x8.234s`**.
+2. **Test-Scoped Background Scan Suppression & Dynamic `10.000-Second` RRM Phase-Locked Loop (`touch-config.js`)**:
+   - On `touchly`, `run_fidont_ctap23.js` suppresses `wpa_supplicant` background roaming scans (`sudo wpa_cli -i wlan0 scan_interval 3600`), forces `wlan0` power save off (`sudo /usr/sbin/iw dev wlan0 set power_save off`), and stops the crash-looping `rpi-connect-wayvnc.service` during test runs, restoring `scan_interval 300` on exit.
+   - Because the `10.000-second` AP / radio off-channel scan timer runs on an independent monotonic clock that drifts (`~1.5–2.5 ms/min`) relative to `Date.now()` and resets to an arbitrary offset on router reboot or Wi-Fi re-association, `touch-config.js` maintains a cross-process Phase-Locked Loop (PLL) state in `/tmp/touchly_wifi_phase_lock.json` (`releaseMod10Ms = R`). It is calibrated at test startup via a `10.5s` `100 Hz` ping sweep (`calibrateWifiPhaseLockSync` / `runWifiPhasePingProbe`) and continuously tracks phase drift in-band whenever `nodehid.fork.js` observes an off-channel stall release on `CTAPHID_INIT`, `CTAPHID_KEEPALIVE`, or `CTAPHID_CONT` frames (`recordWifiStallReleaseObservation`).
+   - In `sendRequestAndWaitForResponse` (`nodehid.fork.js`), `getCtapCborPhaseGuardDelayMs` defers initial `CTAPHID_CBOR` (`0x90`) writes arriving within `[R - 650 ms, R + 150 ms]` (modulo `10,000 ms`) until `R + 150 ms`, preventing both outbound multi-frame TX bursts and fast non-UP multi-frame RX bursts from overlapping the radio blackout.
+   - In `sendPiTouchCommand` (`preload.js`), `getPiTouchStartPhaseGuardDelayMs` defers `START` triggers arriving within `[R - 1950 ms, R - 180 ms]` (modulo `10,000 ms`) until `R - 180 ms` so the post-touch 15-frame `MakeCredential` / `GetAssertion` response burst (`+319–1,680 ms`) starts at `>= R + 139 ms`, completely clear of the AP off-channel scan window.
+
+| Direct Wi-Fi (`10.0.0.201`) Evolution Stage | Suite Duration | `CTAPHID_CONT` Delta `P50` / `Mean` / `P95` / `P99` / `Max` (`ms`) | Outliers `>= 20` / `>= 50` / `>= 100 ms` | `usbmon` Sequence-Gap Rate |
+| :--- | :---: | :---: | :---: | :---: |
+| **1. Default Direct Wi-Fi (`powersave=on`, Unpinned)** | `10m 35.8s` | `7.00` / `9.35` / `13.00` / `60.00` / `389.00` | `76` / `54` / `13` | `0.79%` (`13 / 1,641`) |
+| **2. Radio + RT Tuning (`BT=off`, `performance`, `SCHED_FIFO:50`, `10x` Avg)** | `10m 13.7s` | `7.00` / `8.35` / `11.00` / `14.00` / `361.99` | `26.8` / `20.2` / `8.8` | `0.54%` (`88 / 16,230`) |
+| **3. + Persistent `node-hid` Handle & Burst Drain (`10x` Avg)** | `8m 59.9s` | `7.00` / `8.09` / `11.00` / `13.00` / `362.00` | `17.3` / `12.6` / `5.9` | `0.36%` (`59 / 16,323`) |
+| **4. + `scan_interval=3600` & `:x8.0s` RRM Phase Guard** | **`8m 55.9s`** | **`8.00` / `8.00` / `11.00` / `13.00` / `39.99`** | **`5` / `0` / `0`** | **`0.00%` (`0 / 1,579`)** |
+
