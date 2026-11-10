@@ -1162,8 +1162,8 @@ int yk_chirp_once(
 <li>On the Raspberry Pi, <code>wlan0</code> and <code>hci0</code> share the same Cypress <code>BCM43455</code> combo radio front-end. When <code>bluetooth.service</code> is active with <code>hci0</code> in <code>UP RUNNING PSCAN</code> mode and paired Bluetooth HID peripherals exist in the environment, the chip's internal Bluetooth Coexistence (<code>BTC</code>) arbiter grants high priority to periodic Bluetooth page scan windows (<code>PSCAN</code>) and background ACL packets, briefly preempting <code>wlan0</code> TX/RX scheduling.</li>
 </ul></li>
 </ol>
-<h4 id="3-radio-mitigations-applied-on-touchly" class="text-base font-semibold text-[var(--foreground)]">3. Radio Mitigations Applied on <code>touchly</code></h4>
-<p class="text-sm my-2">To eliminate power-save sleep wakeups, off-channel roaming scans, and <code>BCM43455</code> Bluetooth coexistence preemption without permanently disabling Bluetooth outside of test runs, persistent <code>wlan0</code> settings are combined with dynamic test-scoped Bluetooth suspension:</p>
+<h4 id="3-radio-mitigations-applied-on-touchly" class="text-base font-semibold text-[var(--foreground)]">3. Radio &amp; Scheduler Mitigations Applied on <code>touchly</code></h4>
+<p class="text-sm my-2">To eliminate power-save sleep wakeups, off-channel roaming scans, <code>BCM43455</code> Bluetooth coexistence preemption, and <code>ondemand</code> CPU frequency / <code>SCHED_OTHER</code> scheduler jitter without permanently altering idle system behavior outside of test runs, persistent <code>wlan0</code> settings are combined with dynamic test-scoped Bluetooth suspension, <code>performance</code> CPU governor, and <code>SCHED_FIFO:50</code> real-time priority on <code>vhusbdarm64</code>:</p>
 <div class="rounded-xl bg-[var(--content)] border border-[var(--border)] p-4 overflow-x-auto my-3"><div class="text-[10px] uppercase tracking-wider text-[var(--muted-foreground)] mb-2">bash</div><pre class="text-xs leading-relaxed"><code># 1. Immediately disable brcmfmac 802.11 Power Save Mode
 sudo /sbin/iw dev wlan0 set power_save off
 
@@ -1174,10 +1174,14 @@ sudo nmcli connection modify &lt;SSID&gt; \
   802-11-wireless.bssid &lt;5GHZ_BSSID&gt;
 sudo nmcli connection up &lt;SSID&gt;
 
-# 3. Dynamically suspend Bluetooth on touchly at test start and restore on test completion
+# 3. Dynamically apply test-scoped Bluetooth, CPU governor, and vhusbdarm64 RT tuning
 #    On test start:
 sudo systemctl stop bluetooth &amp;&amp; sudo hciconfig hci0 down
+for g in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo performance | sudo tee "$g"; done
+for p in $(pgrep vhusbdarm64); do sudo renice -n -20 -p "$p"; sudo chrt -a -f -p 50 "$p"; done
 #    On test completion (or SIGINT/SIGTERM):
+for p in $(pgrep vhusbdarm64); do sudo chrt -a -o -p 0 "$p"; sudo renice -n 0 -p "$p"; done
+for g in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo ondemand | sudo tee "$g"; done
 sudo systemctl start bluetooth &amp;&amp; sudo hciconfig hci0 up</code></pre></div>
 <h4 id="4-multi-transport-inter-frame-jitter-touch-performance-comparison" class="text-base font-semibold text-[var(--foreground)]">4. Multi-Transport Inter-Frame Jitter &amp; Touch Performance Comparison</h4>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">

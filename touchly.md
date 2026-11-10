@@ -367,10 +367,14 @@ Live radio diagnostics on `touchly` (`iw dev wlan0 get power_save`, `iw dev wlan
 3. **Cypress `BCM43455` Combo-Chip Bluetooth Coexistence (`BTC`) Preemption (`hci0` Page Scan & Paired HID ACL Traffic)**:
    - On the Raspberry Pi, `wlan0` and `hci0` share the same Cypress `BCM43455` combo radio front-end. When `bluetooth.service` is active with `hci0` in `UP RUNNING PSCAN` mode and paired Bluetooth HID peripherals exist in the environment, the chip's internal Bluetooth Coexistence (`BTC`) arbiter grants high priority to periodic Bluetooth page scan windows (`PSCAN`) and background ACL packets, briefly preempting `wlan0` TX/RX scheduling.
 
-#### 3. Radio Mitigations Applied on `touchly`
-To eliminate power-save sleep wakeups, off-channel roaming scans, and `BCM43455` Bluetooth coexistence preemption without permanently disabling Bluetooth outside of test runs:
+#### 3. Radio & Scheduler Mitigations Applied on `touchly`
+To eliminate power-save sleep wakeups, off-channel roaming scans, `BCM43455` Bluetooth coexistence preemption, and `ondemand` CPU frequency / `SCHED_OTHER` scheduler jitter without permanently altering idle system behavior outside of test runs:
 - **Persistent `wlan0` Configuration**: `802.11` Power Save is disabled (`powersave = 2`) and `wlan0` is locked to the 5 GHz BSSID (`Channel 157, 80 MHz`).
-- **Dynamic Test-Scoped Bluetooth Suspension (`disableBluetoothDuringRun: true`)**: Both the CLI runner ([`run_fidont_ctap23.js`](file:///Users/jbradley/.gemini/antigravity/scratch/run_fidont_ctap23.js)) and the Electron GUI ([`preload.js`](file:///Users/jbradley/.gemini/antigravity/scratch/fido_extracted/preload.js) / [`controller.js`](file:///Users/jbradley/.gemini/antigravity/scratch/fido_extracted/app/js/controller.js)) automatically stop `bluetooth.service` and bring `hci0 down` on `touchly` when a conformance run starts, and automatically restore `bluetooth.service` + `hci0 up` as soon as the run finishes (or on `SIGINT`/`SIGTERM`):
+- **Dynamic Test-Scoped Tuning (`disableBluetoothDuringRun: true`, `performanceGovernorDuringRun: true`, `realtimeVhusbdDuringRun: true`)**: Both the CLI runner ([`run_fidont_ctap23.js`](file:///Users/jbradley/.gemini/antigravity/scratch/run_fidont_ctap23.js)) and the Electron GUI ([`preload.js`](file:///Users/jbradley/.gemini/antigravity/scratch/fido_extracted/preload.js) / [`controller.js`](file:///Users/jbradley/.gemini/antigravity/scratch/fido_extracted/app/js/controller.js)) automatically:
+  1. Stop `bluetooth.service` and bring `hci0 down`,
+  2. Switch all 4 ARM cores from `ondemand` (`600 MHz` idle) to the `performance` governor (`1.4 GHz`), and
+  3. Elevate all `vhusbdarm64` threads to real-time `SCHED_FIFO` priority `50` (`nice -20`, re-applied after each `uhubctl` port power cycle),
+  and automatically restore `ondemand`, `SCHED_OTHER`, and `bluetooth.service` + `hci0 up` as soon as the run finishes (or on `SIGINT`/`SIGTERM`):
 
 ```bash
 # 1. Immediately disable brcmfmac 802.11 Power Save Mode
@@ -383,10 +387,14 @@ sudo nmcli connection modify <SSID> \
   802-11-wireless.bssid <5GHZ_BSSID>
 sudo nmcli connection up <SSID>
 
-# 3. Dynamically suspend Bluetooth on touchly at test start and restore on test completion
+# 3. Dynamically apply test-scoped Bluetooth, CPU governor, and vhusbdarm64 RT tuning
 #    On test start:
 sudo systemctl stop bluetooth && sudo hciconfig hci0 down
+for g in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo performance | sudo tee "$g"; done
+for p in $(pgrep vhusbdarm64); do sudo renice -n -20 -p "$p"; sudo chrt -a -f -p 50 "$p"; done
 #    On test completion (or SIGINT/SIGTERM):
+for p in $(pgrep vhusbdarm64); do sudo chrt -a -o -p 0 "$p"; sudo renice -n 0 -p "$p"; done
+for g in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do echo ondemand | sudo tee "$g"; done
 sudo systemctl start bluetooth && sudo hciconfig hci0 up
 ```
 
