@@ -409,7 +409,7 @@ int yk_chirp_once(
 <li>When <code>pi_usbmon_capture.py</code> delivers the selected request's first <code>UP_NEEDED</code> (<code>phase=1</code>), <a href="./touch.py#L1292-L1308" class="text-[var(--primary)] hover:underline"><code>check_armed_first_up_trigger</code></a> anchors a fresh 25-second touch budget (<code>first_up_mono + max(0, arm_duration_sec - arm_recovery_elapsed_sec)</code>) capped by <code>arm_req_deadline_mono</code> (<code>req_deadline=&lt;sec&gt;</code>), so a request that spends 20 seconds processing before <code>UP_NEEDED</code> still receives its full 25-second touch budget.</li>
 <li>Once <code>GPIO21</code> has been settled in High-Z for <code>&gt;= 120 ms</code> while pre-armed, <code>touch.py</code> skips the redundant <code>120 ms</code> Pass 0 pre-release delay; <code>pi_usbmon_capture.py</code> stamps <code>UP_NEEDED</code> datagrams with <code>usbmon_ns=&lt;time.monotonic_ns()&gt;</code>, C <code>yk_chirp_once</code> records the exact <code>CLOCK_MONOTONIC</code> timestamp of the first physical <code>gpio[GPSET0] = mask</code> register write via <code>yk_last_first_edge_ns()</code>, and <code>DONE &lt;id&gt; ...</code> emits <code>usbmon_to_edge_us=&lt;us&gt;</code> and <code>sock_to_edge_us=&lt;us&gt;</code>.</li>
 </ul></li>
-<li><strong>Manual / Off Mode (<code>'manual'</code> / <code>'off'</code> / <code>'disabled'</code>)</strong>: <a href="./preload.js#L708-L751" class="text-[var(--primary)] hover:underline"><code>getPiTouchTriggerMode</code></a> and <a href="./preload.js#L753-L769" class="text-[var(--primary)] hover:underline"><code>global.setPiTouchTriggerMode</code></a> recognize <code>'manual'</code>, <code>'off'</code>, <code>'disabled'</code>, <code>'none'</code>, <code>false</code>, and <code>0</code>, treat unrecognized mode strings as <code>'manual'</code> (with a warning) rather than falling back to automatic touch, and immediately stop any active or pre-armed session (<code>global.stopUserPresenceWaveform()</code>) when switched to <code>'manual'</code>.</li>
+<li><strong>Manual / Off Mode (<code>'manual'</code> / <code>'off'</code> / <code>'disabled'</code>) &amp; Unified Touch Suppression (<code>global.userPresenceBroadcastDisabled</code>)</strong>: <a href="./preload.js#L708-L751" class="text-[var(--primary)] hover:underline"><code>getPiTouchTriggerMode</code></a> and <a href="./preload.js#L753-L769" class="text-[var(--primary)] hover:underline"><code>global.setPiTouchTriggerMode</code></a> recognize <code>'manual'</code>, <code>'off'</code>, <code>'disabled'</code>, <code>'none'</code>, <code>false</code>, and <code>0</code>, treat unrecognized mode strings as <code>'manual'</code> (with a warning) rather than falling back to automatic touch, and immediately stop any active or pre-armed session (<code>global.stopUserPresenceWaveform()</code>) when switched to <code>'manual'</code>. In addition, <a href="./integration.js#L24-L191" class="text-[var(--primary)] hover:underline"><code>disableUserPresenceBroadcast()</code></a> and <a href="./integration.js#L35-L45" class="text-[var(--primary)] hover:underline"><code>enableUserPresenceBroadcast()</code></a> synchronize a shared suppression flag (<a href="./preload.js#L1528-L1546" class="text-[var(--primary)] hover:underline"><code>global.userPresenceBroadcastDisabled</code></a> / <code>global.setUserPresenceBroadcastDisabled</code> / <code>isUserPresenceSuppressed</code>) enforced across <a href="./integration.js#L47-L191" class="text-[var(--primary)] hover:underline"><code>broadcastUserPresence()</code></a>, <a href="./preload.js#L1553-L1677" class="text-[var(--primary)] hover:underline"><code>global.beginUserPresenceRequest</code></a> (preventing Mode 2 <code>ARM</code> pre-arming while touch broadcast is suppressed), <a href="./preload.js#L1687-L1760" class="text-[var(--primary)] hover:underline"><code>global.onHidKeepaliveUpNeeded</code></a>, and <a href="./preload.js#L1808-L1940" class="text-[var(--primary)] hover:underline"><code>global.triggerOpenSKUserPresence</code></a>, while immediately issuing <code>STOP</code> for any in-flight or pre-armed session when disabled.</li>
 </ul></li>
 </ol>
     </section>
@@ -915,8 +915,8 @@ int yk_chirp_once(
 <td class="p-3 align-top text-left"><strong><code>657.1 us</code> (<code>0.66 ms</code>) / <code>733.5 us</code> (<code>0.73 ms</code>) / <code>1,423.7 us</code> (<code>1.42 ms</code>) / <code>1,551.0 us</code> (<code>1.55 ms</code>)</strong></td>
 </tr>
 </tbody></table></div>
-<h3 id="54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2js" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) (<a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline">compare_mode1_vs_mode2.js</a>)</h3>
-<p class="text-sm my-2">Prior to any waveform timing changes, <a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline"><code>compare_mode1_vs_mode2.js</code></a> executed <code>N = 16</code> live <code>CTAPHID_CBOR</code> (<code>authenticatorMakeCredential</code>) transactions (<code>8</code> in <code>first_up_needed</code> and <code>8</code> in <code>pi_prearmed_first_up</code>) against the YubiKey 6 NFC (<code>1050:0406</code>) with identical explicit timeout and touch-budget parameters (<code>idleTimeoutMs: 15000</code>, <code>hardTimeoutMs: 55000</code>, <code>armTimeoutMs: 30000</code>, <code>touchBudgetMs: 25000</code>) in both modes using:</p>
+<h3 id="54-side-by-side-hardware-comparison-host-triggered-first_up_needed-vs-pi-pre-armed-pi_prearmed_first_up-compare_mode1_vs_mode2js" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.4 Side-by-Side Hardware Comparison: Host-Triggered (<code>first_up_needed</code>) vs. Pi Pre-Armed (<code>pi_prearmed_first_up</code>) Across Ethernet &amp; Wi-Fi (<a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline">compare_mode1_vs_mode2.js</a>)</h3>
+<p class="text-sm my-2">Without changing any waveform parameters, <a href="./compare_mode1_vs_mode2.js" class="text-[var(--primary)] hover:underline"><code>compare_mode1_vs_mode2.js</code></a> compared <strong>Mode 1 (<code>first_up_needed</code>, Host-Triggered)</strong> and <strong>Mode 2 (<code>pi_prearmed_first_up</code>, Pi Pre-Armed)</strong> side-by-side against the YubiKey 6 NFC (<code>1050:0406</code>) with identical explicit timeout and touch-budget parameters (<code>idleTimeoutMs: 15000</code>, <code>hardTimeoutMs: 55000</code>, <code>armTimeoutMs: 30000</code>, <code>touchBudgetMs: 25000</code>) across three transport conditions (with Pi desktop games stopped): <strong>Direct Gigabit Ethernet (<code>eth0</code>, <code>169.254.81.201</code>, <code>N = 8</code> per mode)</strong>, <strong>Direct 5 GHz Wi-Fi (<code>wlan0</code>, <code>10.0.0.201</code>, Phase Guard Disabled, <code>N = 12</code> per mode)</strong>, and <strong>Direct 5 GHz Wi-Fi (<code>wlan0</code>, <code>10.0.0.201</code>, Phase Guard Enabled, <code>N = 12</code> per mode)</strong> using:</p>
 <ul class="list-disc pl-6 space-y-2 text-sm my-2">
 <li><strong>Deadline-guarded <a href="./touch.py#L1284-L1656" class="text-[var(--primary)] hover:underline"><code>touch.py</code></a></strong>: Verifies <code>_arm_wait_deadline_mono</code> and <code>_arm_req_deadline_mono</code> before processing <code>_first_up_triggered</code> so expired pre-arm sessions terminate with <code>DONE &lt;id&gt; timeout</code>, and calls <code>reset_arm_state()</code> on <code>stop_session()</code>, <code>ambiguous_identity</code>, and <code>START</code> acceptance so a previous <code>ARM</code> session's <code>arm_req_deadline_mono</code> never caps a subsequent <code>START</code> session when backend selection is deferred (<code>not session_backend_selected</code>).</li>
 <li><strong>Consolidated timeout &amp; trigger-mode normalization with finite-number validation (<a href="./touch-config.js" class="text-[var(--primary)] hover:underline"><code>touch-config.js</code></a>)</strong>: Shared across <a href="./preload.js#L723-L845" class="text-[var(--primary)] hover:underline"><code>preload.js</code></a>, <a href="./hiddep.js#L221-L250" class="text-[var(--primary)] hover:underline"><code>hiddep.js</code></a>, and <a href="./nodehid.fork.js#L810-L895" class="text-[var(--primary)] hover:underline"><code>nodehid.fork.js</code></a>. Requires <code>typeof v === 'number' &amp;&amp; Number.isFinite(v) &amp;&amp; v &gt; 0</code> (<code>isPositiveFiniteMs</code>) for all duration options (<code>idleTimeoutMs</code>, <code>hardTimeoutMs</code>, <code>armTimeoutMs</code>, <code>touchBudgetMs</code>), rejecting <code>Infinity</code> / <code>NaN</code>, and propagates <code>reqCtx.touchBudgetMs</code> through <code>ARM</code>, first-UP deadline anchoring, and subsequent <code>START</code> sessions.</li>
@@ -927,172 +927,248 @@ int yk_chirp_once(
 <thead><tr class="bg-[var(--content)] border-b border-[var(--border)]">
 <th class="p-3 font-semibold align-bottom text-left">Metric Category</th>
 <th class="p-3 font-semibold align-bottom text-left">Metric</th>
-<th class="p-3 font-semibold align-bottom text-left">Mode 1: Host-Triggered (<code>first_up_needed</code>, <code>N = 8</code>)</th>
-<th class="p-3 font-semibold align-bottom text-left">Mode 2: Pi Pre-Armed (<code>pi_prearmed_first_up</code>, <code>N = 8</code>)</th>
-<th class="p-3 font-semibold align-bottom text-left">Delta (<code>Mode 2</code> vs. <code>Mode 1</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Ethernet <code>eth0</code> Mode 1 (<code>N = 8</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Ethernet <code>eth0</code> Mode 2 (<code>N = 8</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Wi-Fi <code>wlan0</code> (Guard Off) Mode 1 (<code>N = 12</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Wi-Fi <code>wlan0</code> (Guard Off) Mode 2 (<code>N = 12</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Wi-Fi <code>wlan0</code> (Guard On) Mode 1 (<code>N = 12</code>)</th>
+<th class="p-3 font-semibold align-bottom text-left">Wi-Fi <code>wlan0</code> (Guard On) Mode 2 (<code>N = 12</code>)</th>
 </tr></thead><tbody class="divide-y divide-[var(--border)]">
 <tr>
 <td class="p-3 align-top text-left"><strong>Trigger Mode &amp; Budgets</strong></td>
-<td class="p-3 align-top text-left"><strong><code>triggerMode</code> / <code>hardTimeoutMs</code> / <code>touchBudgetMs</code></strong></td>
-<td class="p-3 align-top text-left"><code>'first_up_needed'</code> / <code>55,000 ms</code> / <code>25,000 ms</code></td>
-<td class="p-3 align-top text-left"><code>'pi_prearmed_first_up'</code> / <code>55,000 ms</code> / <code>25,000 ms</code></td>
-<td class="p-3 align-top text-left">Matched <code>55s</code> hard limit &amp; <code>25s</code> touch budget</td>
+<td class="p-3 align-top text-left"><strong><code>triggerMode</code> / Budgets</strong></td>
+<td class="p-3 align-top text-left"><code>first_up_needed</code> (<code>15s/55s/30s/25s</code>)</td>
+<td class="p-3 align-top text-left"><code>pi_prearmed_first_up</code> (<code>15s/55s/30s/25s</code>)</td>
+<td class="p-3 align-top text-left"><code>first_up_needed</code> (<code>15s/55s/30s/25s</code>)</td>
+<td class="p-3 align-top text-left"><code>pi_prearmed_first_up</code> (<code>15s/55s/30s/25s</code>)</td>
+<td class="p-3 align-top text-left"><code>first_up_needed</code> (<code>15s/55s/30s/25s</code>)</td>
+<td class="p-3 align-top text-left"><code>pi_prearmed_first_up</code> (<code>15s/55s/30s/25s</code>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
-<td class="p-3 align-top text-left"><strong>Request / Session Failure Rate</strong></td>
+<td class="p-3 align-top text-left"><strong>Timeouts / Failures</strong></td>
 <td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
 <td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
-<td class="p-3 align-top text-left"><code>0.0%</code> failure in both modes</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)*</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>First-Pass Recognition (<code>pass == 0</code>)</strong></td>
 <td class="p-3 align-top text-left"><code>8 / 8</code> (<strong><code>100.0%</code></strong>)</td>
 <td class="p-3 align-top text-left"><code>8 / 8</code> (<strong><code>100.0%</code></strong>)</td>
-<td class="p-3 align-top text-left"><code>100.0%</code> Pass 0 recognition in both modes</td>
+<td class="p-3 align-top text-left"><code>12 / 12</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>12 / 12</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>12 / 12</code> (<strong><code>100.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>12 / 12</code> (<strong><code>100.0%</code></strong>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Fallback Frequency (<code>pass &gt;= 1</code>)</strong></td>
 <td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
 <td class="p-3 align-top text-left"><code>0 / 8</code> (<strong><code>0.0%</code></strong>)</td>
-<td class="p-3 align-top text-left"><code>0.0%</code> fallback rate in both modes</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
+<td class="p-3 align-top text-left"><code>0 / 12</code> (<strong><code>0.0%</code></strong>)</td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Pi <code>usbmon</code> <code>UP_NEEDED</code> -&gt; First Software GPIO Write (<code>usbmonToFirstEdgeUs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Minimum</strong></td>
-<td class="p-3 align-top text-left"><code>123,489.8 us</code> (<code>123.49 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>1,488.1 us</code> (<code>1.49 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-122.00 ms</code> (<code>83.0x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>123.49 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.49 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>127.71 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.43 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>127.49 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.39 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>124,486.9 us</code> (<code>124.49 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>1,609.2 us</code> (<code>1.61 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-122.88 ms</code> (<code>77.4x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>124.49 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.61 ms</code> (<code>77.4x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>129.93 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.46 ms</code> (<code>88.7x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>130.35 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.48 ms</code> (<code>87.9x</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Mean</strong></td>
-<td class="p-3 align-top text-left"><code>124,548.5 us</code> (<code>124.55 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>1,863.9 us</code> (<code>1.86 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-122.68 ms</code> (<code>66.8x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>124.55 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.86 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>129.87 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.47 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>331.48 ms</code>**</td>
+<td class="p-3 align-top text-left"><strong><code>1.48 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>125,634.6 us</code> (<code>125.63 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>2,683.5 us</code> (<code>2.68 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-122.95 ms</code> (<code>46.8x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>125.63 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>2.68 ms</code> (<code>46.8x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>131.83 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.49 ms</code> (<code>88.2x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,341.14 ms</code>**</td>
+<td class="p-3 align-top text-left"><strong><code>1.52 ms</code> (<code>883x</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Maximum</strong></td>
-<td class="p-3 align-top text-left"><code>125,989.2 us</code> (<code>125.99 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>2,686.9 us</code> (<code>2.69 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-123.30 ms</code> (<code>46.9x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>125.99 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>2.69 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>131.88 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.51 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>1,847.20 ms</code>**</td>
+<td class="p-3 align-top text-left"><strong><code>1.55 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>UNIX Socket <code>recv</code> -&gt; First Software GPIO Write (<code>sockToFirstEdgeUs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Minimum</strong></td>
-<td class="p-3 align-top text-left"><code>121,459.9 us</code> (<code>121.46 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>1,299.7 us</code> (<code>1.30 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-120.16 ms</code> (skips <code>120 ms</code> pre-release)</strong></td>
+<td class="p-3 align-top text-left"><code>121.46 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.30 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>121.39 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.26 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>121.40 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.22 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>121,501.2 us</code> (<code>121.50 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>1,424.7 us</code> (<code>1.42 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-120.08 ms</code> (<code>85.3x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>121.50 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.42 ms</code> (<code>85.3x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>121.46 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.28 ms</code> (<code>94.8x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>121.46 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.31 ms</code> (<code>92.7x</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
-<td class="p-3 align-top text-left"><code>122,402.3 us</code> (<code>122.40 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>2,417.7 us</code> (<code>2.42 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-119.98 ms</code> (<code>50.6x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>122.40 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>2.42 ms</code> (<code>50.6x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>121.54 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.32 ms</code> (<code>92.4x</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>121.51 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.34 ms</code> (<code>90.8x</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Maximum</strong></td>
-<td class="p-3 align-top text-left"><code>122,739.6 us</code> (<code>122.74 ms</code>)</td>
-<td class="p-3 align-top text-left"><strong><code>2,428.0 us</code> (<code>2.43 ms</code>)</strong></td>
-<td class="p-3 align-top text-left"><strong><code>-120.31 ms</code> (<code>50.6x</code> faster)</strong></td>
+<td class="p-3 align-top text-left"><code>122.74 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>2.43 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>121.57 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.33 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>121.51 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1.37 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Host <code>UP_NEEDED</code> -&gt; CTAP Response (<code>upToResponseMs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Minimum</strong></td>
 <td class="p-3 align-top text-left"><code>530.3 ms</code></td>
 <td class="p-3 align-top text-left"><strong><code>559.1 ms</code></strong></td>
-<td class="p-3 align-top text-left"><code>+28.8 ms</code></td>
+<td class="p-3 align-top text-left"><code>766.7 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>450.2 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>625.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>662.3 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
 <td class="p-3 align-top text-left"><code>952.9 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>817.7 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-135.2 ms</code> (<code>-14.2%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>817.7 ms</code> (<code>-14.2%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,071.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>902.1 ms</code> (<code>-15.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,117.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>878.2 ms</code> (<code>-21.4%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Mean</strong></td>
 <td class="p-3 align-top text-left"><code>1,099.1 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>817.8 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-281.3 ms</code> (<code>-25.6%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>817.8 ms</code> (<code>-25.6%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,075.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>852.4 ms</code> (<code>-20.7%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,277.9 ms</code>**</td>
+<td class="p-3 align-top text-left"><strong><code>897.8 ms</code> (<code>-29.7%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
 <td class="p-3 align-top text-left"><code>1,839.7 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>1,073.4 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-766.3 ms</code> (<code>-41.7%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,073.4 ms</code> (<code>-41.7%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,260.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1,087.8 ms</code> (<code>-13.7%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>2,256.9 ms</code>**</td>
+<td class="p-3 align-top text-left"><strong><code>1,097.0 ms</code> (<code>-51.4%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Maximum</strong></td>
 <td class="p-3 align-top text-left"><code>2,186.4 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>1,097.3 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-1,089.1 ms</code> (<code>-49.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>1,097.3 ms</code> (<code>-49.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,354.5 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>1,100.3 ms</code> (<code>-18.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>2,879.0 ms</code>**</td>
+<td class="p-3 align-top text-left"><strong><code>1,107.6 ms</code> (<code>-61.5%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"><strong>Daemon Session Elapsed (<code>daemonElapsedMs</code>)</strong></td>
 <td class="p-3 align-top text-left"><strong>Minimum</strong></td>
 <td class="p-3 align-top text-left"><code>293.7 ms</code></td>
 <td class="p-3 align-top text-left"><strong><code>394.1 ms</code></strong></td>
-<td class="p-3 align-top text-left"><code>+100.4 ms</code></td>
+<td class="p-3 align-top text-left"><code>542.6 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>205.5 ms</code></strong></td>
+<td class="p-3 align-top text-left"><code>406.0 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>448.1 ms</code></strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Median (<code>P50</code>)</strong></td>
 <td class="p-3 align-top text-left"><code>787.0 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>591.5 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-195.5 ms</code> (<code>-24.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>591.5 ms</code> (<code>-24.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>853.1 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>695.0 ms</code> (<code>-18.5%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>886.9 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>652.1 ms</code> (<code>-26.5%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Mean</strong></td>
 <td class="p-3 align-top text-left"><code>747.7 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>604.3 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-143.4 ms</code> (<code>-19.2%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>604.3 ms</code> (<code>-19.2%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>856.6 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>634.7 ms</code> (<code>-25.9%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>840.2 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>680.5 ms</code> (<code>-19.0%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>95th Percentile (<code>P95</code>)</strong></td>
 <td class="p-3 align-top text-left"><code>949.3 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>853.8 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-95.5 ms</code> (<code>-10.1%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>853.8 ms</code> (<code>-10.1%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,040.3 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>869.0 ms</code> (<code>-16.5%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>932.2 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>885.6 ms</code> (<code>-5.0%</code>)</strong></td>
 </tr>
 <tr>
 <td class="p-3 align-top text-left"></td>
 <td class="p-3 align-top text-left"><strong>Maximum</strong></td>
 <td class="p-3 align-top text-left"><code>984.1 ms</code></td>
-<td class="p-3 align-top text-left"><strong><code>887.8 ms</code></strong></td>
-<td class="p-3 align-top text-left"><strong><code>-96.3 ms</code> (<code>-9.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><strong><code>887.8 ms</code> (<code>-9.8%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>1,134.9 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>890.0 ms</code> (<code>-21.6%</code>)</strong></td>
+<td class="p-3 align-top text-left"><code>949.5 ms</code></td>
+<td class="p-3 align-top text-left"><strong><code>897.4 ms</code> (<code>-5.5%</code>)</strong></td>
 </tr>
 </tbody></table></div>
+<ul class="list-disc pl-6 space-y-2 text-sm my-2">
+<li>*In an unguarded Wi-Fi run prior to syncing <code>usbmon_capture.py</code>, Mode 1 (<code>first_up_needed</code>) suffered <code>1 / 12</code> (<code>8.3%</code>) <code>HIDFORK: INCOMPLETE CONT FRAMES</code> failure when its 15-frame <code>MakeCredential</code> response collided with the router's <code>10.000-second</code> RRM off-channel scan window; with phase guarding enabled (<code>confidence = 2 -&gt; 4</code>, <code>releaseMod10Ms = 8108.5 -&gt; 8071.2 ms</code>), <code>0</code> frame drops occurred across all <code>24 / 24</code> requests.</li>
+<li>**Under Wi-Fi Phase Guard Enabled, Mode 1 deferred <code>2 / 12</code> <code>START</code> triggers by <code>1,718 ms</code> and <code>705 ms</code> (<a href="./touch-config.js#L350-L398" class="text-[var(--primary)] hover:underline"><code>getPiTouchStartPhaseGuardDelayMs</code></a>) so the post-touch 15-frame response burst would clear the AP scan blackout, raising Mode 1's <code>P95</code> <code>upToResponseMs</code> to <code>2,256.9 ms</code> while preserving <code>100.0%</code> Pass 0 recognition and <code>0</code> dropped continuation frames. Mode 2 (<code>pi_prearmed_first_up</code>) triggers locally on the Pi in <strong><code>1.46–1.61 ms</code></strong> (<code>P50</code>) and <strong><code>1.49–2.68 ms</code></strong> (<code>P95</code>) regardless of Ethernet vs. Wi-Fi transport RTT, achieving <strong><code>878.2 ms</code> (<code>P50</code>) / <code>1,097.0 ms</code> (<code>P95</code>)</strong> <code>upToResponseMs</code> on guarded Wi-Fi.</li>
+</ul>
 <h3 id="55-full-20-category-fido-ctap-23-conformance-suite-benchmark-410-tests-run-6-post-hardening-vs-run-5-pre-hardening" class="text-lg font-semibold pt-4 border-t border-[var(--border)] text-[var(--foreground)]">5.5 Full 20-Category FIDO CTAP 2.3 Conformance Suite Benchmark (<code>410</code> Tests, <code>Run 6</code> Post-Hardening vs. <code>Run 5</code> Pre-Hardening)</h3>
 <p class="text-sm my-2">Running the complete 20-category FIDO CTAP 2.3 conformance suite (<a href="./yubikey_usb_ctap23_config.json" class="text-[var(--primary)] hover:underline"><code>yubikey_usb_ctap23_config.json</code></a>) against the YubiKey 6 NFC (<code>6.0.0 B0</code>, <code>1050:0406</code>) after all transport and Touchly hardening (<a href="./fido_conformance_debug.log" class="text-[var(--primary)] hover:underline">fido_conformance_debug.log</a>, <a href="./usbmon_yubikey_ctap23.csv" class="text-[var(--primary)] hover:underline">usbmon_yubikey_ctap23.csv</a>) reduced total suite execution time from <strong><code>31m 32.52s</code></strong> down to <strong><code>8m 22.22s</code></strong> (<strong><code>3.77x</code> faster / <code>-23m 10.30s</code></strong>), with <strong>100% (<code>190 / 190</code>) of User Presence touches resolving on Pass 0</strong> (<code>max = 1,915.6 ms</code>):</p>
 <div class="overflow-x-auto rounded-xl border border-[var(--border)] my-3 shadow-sm">
@@ -1519,7 +1595,7 @@ sudo systemctl start bluetooth &amp;&amp; sudo hciconfig hci0 up</code></pre></d
     <ul class="list-disc pl-5 space-y-1 mt-1">
       <li>On <code>touchly</code>, <code>run_fidont_ctap23.js</code> suppresses <code>wpa_supplicant</code> background roaming scans (<code>sudo wpa_cli -i wlan0 scan_interval 3600</code>), forces <code>wlan0</code> power save off (<code>sudo /usr/sbin/iw dev wlan0 set power_save off</code>), and stops the crash-looping <code>rpi-connect-wayvnc.service</code> during test runs, restoring <code>scan_interval 300</code> on exit.</li>
       <li>Because the <code>10.000-second</code> AP / radio off-channel scan timer runs on an independent monotonic clock that drifts (<code>~1.5&ndash;2.5 ms/min</code>) relative to <code>Date.now()</code> and resets to an arbitrary offset on router reboot or Wi-Fi re-association, <code>touch-config.js</code> maintains a cross-process Phase-Locked Loop (PLL) state in <code>/tmp/fido_wifi_phase_lock.json</code> (<code>releaseMod10Ms = R</code>, <code>candidateMod10Ms</code>, <code>confidence</code>).</li>
-      <li><strong>Multi-Cycle Confidence &amp; Phase-Consistency Gating (<code>WIFI_PHASE_MIN_CONFIDENCE = 2</code>, <code>WIFI_PHASE_CONSISTENCY_TOLERANCE_MS = 350</code>, <code>WIFI_PHASE_MIN_CYCLE_GAP_MS = 7000</code>)</strong>: Rather than enabling scheduling delays from an isolated <code>45&ndash;300 ms</code> RTT spike, <code>recordWifiStallReleaseObservation</code> treats a first spike only as an unconfirmed candidate (<code>confidence = 1, active = false</code>) and requires consistent spikes across at least <code>2</code> distinct <code>10.000s</code> cycles (<code>&gt;= 7.0s</code> apart) whose <code>mod10</code> offsets agree within <code>&plusmn;350 ms</code> before activating the phase guard (<code>confidence &gt;= 2, active = true</code>). If a subsequent spike falls outside <code>&plusmn;350 ms</code> or a tracking probe misses (<code>recordWifiProbeMiss</code>), <code>confidence</code> decays below <code>WIFI_PHASE_MIN_CONFIDENCE</code> and <code>active</code> resets to <code>false</code> (<code>releaseMod10Ms = null</code>). Both <code>calibrateWifiPhaseLockSync</code> (<code>20.0s</code>, <code>2,000</code> packets @ <code>100 Hz</code>) and <code>runWifiPhasePingProbe</code> pass <code>-W 1000</code> to <code>/sbin/ping</code> and clamp cycle bucket indices strictly to the full <code>10.0s</code> windows (<code>maxFullCycles = Math.max(1, Math.round(packetCount / 1000))</code>) so a tail packet never creates a spurious partial bucket, and <code>preload.js</code> resolves <code>touch-config.js</code> via <code>path.join(__dirname, 'dependencies', 'transports', 'touch-config')</code> regardless of <code>process.cwd()</code>.</li>
+      <li><strong>Multi-Cycle Confidence, Phase-Consistency Gating, &amp; Single-Writer Atomic Persistence (<code>WIFI_PHASE_MIN_CONFIDENCE = 2</code>, <code>WIFI_PHASE_CONSISTENCY_TOLERANCE_MS = 350</code>, <code>WIFI_PHASE_MIN_CYCLE_GAP_MS = 7000</code>, <code>writeWifiPhaseLockFileAtomic</code>)</strong>: Rather than enabling scheduling delays from an isolated <code>45&ndash;300 ms</code> RTT spike, <code>recordWifiStallReleaseObservation</code> treats a first spike only as an unconfirmed candidate (<code>confidence = 1, active = false</code>) and requires consistent spikes across at least <code>2</code> distinct <code>10.000s</code> cycles (<code>&gt;= 7.0s</code> apart) whose <code>mod10</code> offsets agree within <code>&plusmn;350 ms</code> before activating the phase guard (<code>confidence &gt;= 2, active = true</code>). If a subsequent spike falls outside <code>&plusmn;350 ms</code> or a tracking probe misses (<code>recordWifiProbeMiss</code>), <code>confidence</code> decays below <code>WIFI_PHASE_MIN_CONFIDENCE</code> and <code>active</code> resets to <code>false</code> (<code>releaseMod10Ms = null</code>). To prevent concurrent multi-process lost updates or partial reads on <code>/tmp/fido_wifi_phase_lock.json</code>, the parent process (<a href="./preload.js#L1433-L1458" class="text-[var(--primary)] hover:underline"><code>preload.js</code></a>) is the sole writer: <a href="./nodehid.fork.js#L1314-L1402" class="text-[var(--primary)] hover:underline"><code>nodehid.fork.js</code></a> forwards stall observations over IPC (<code>{ type: 'wifi-phase-observation', releaseEpochMs, stallDurationMs, source }</code> via <a href="./nodehid-ipc.js#L62-L77" class="text-[var(--primary)] hover:underline"><code>nodehid-ipc.js</code></a> to <code>global.onWifiPhaseObservation</code>, queuing up to <code>16</code> observations if IPC is temporarily unavailable and never writing the file directly from the worker), and <a href="./touch-config.js#L142-L296" class="text-[var(--primary)] hover:underline"><code>writeWifiPhaseLockFileAtomic</code></a> writes to a PID/sequence-uniquified temporary file (<code>.tmp.&lt;pid&gt;.&lt;seq&gt;</code>) and atomically replaces the target via <code>fs.renameSync()</code> so readers always observe a complete JSON snapshot. Both <code>calibrateWifiPhaseLockSync</code> (<code>20.0s</code>, <code>2,000</code> packets @ <code>100 Hz</code>) and <code>runWifiPhasePingProbe</code> pass <code>-W 1000</code> to <code>/sbin/ping</code> and clamp cycle bucket indices strictly to the full <code>10.0s</code> windows (<code>maxFullCycles = Math.max(1, Math.round(packetCount / 1000))</code>) so a tail packet never creates a spurious partial bucket, and <code>preload.js</code> resolves <code>touch-config.js</code> via <code>path.join(__dirname, 'dependencies', 'transports', 'touch-config')</code> regardless of <code>process.cwd()</code>.</li>
       <li>In <code>sendRequestAndWaitForResponse</code> (<code>nodehid.fork.js</code>), <code>getCtapCborPhaseGuardDelayMs</code> defers initial <code>CTAPHID_CBOR</code> (<code>0x90</code>) writes arriving within <code>[R - 650 ms, R + 150 ms]</code> (modulo <code>10,000 ms</code>) until <code>R + 150 ms</code> (bounded by the request&rsquo;s immutable hard deadline <code>initialHardDeadlineMs</code>), preventing both outbound multi-frame TX bursts and fast non-UP multi-frame RX bursts from overlapping the radio blackout.</li>
       <li>In <code>sendPiTouchCommand</code> (<code>preload.js</code>), <code>getPiTouchStartPhaseGuardDelayMs</code> defers <code>START</code> triggers arriving within <code>[R - 1950 ms, R - 180 ms]</code> (modulo <code>10,000 ms</code>) until <code>R - 180 ms</code> so the post-touch 15-frame <code>MakeCredential</code> / <code>GetAssertion</code> response burst (<code>+319&ndash;1,680 ms</code>) starts at <code>&gt;= R + 139 ms</code>, completely clear of the AP off-channel scan window.</li>
     </ul>
