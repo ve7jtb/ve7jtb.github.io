@@ -1540,7 +1540,10 @@ def build_index():
 
     <section id="sec-pq-mail" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
       <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Application · Desktop &amp; Android Preview</div>
-      <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail — Post-Quantum S/MIME</h2>
+      <div class="flex items-center gap-5">
+        <img src="./assets/pq-mail.png" alt="PQ Mail icon: PQ shield, envelope and YubiKey" width="112" height="112" class="w-20 h-20 md:w-28 md:h-28 shrink-0" loading="lazy" />
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail — Post-Quantum S/MIME</h2>
+      </div>
       <p class="text-sm text-[var(--muted-foreground)]">
         A mail application built with Jakarta Mail, Eclipse Angus Mail, and Bouncy Castle for pure ML-DSA signatures and ML-KEM encryption, plus hybrid profiles combining them with ECDSA and ECDH. It supports password-protected software <code>.p12</code> identities and PQC Ready YubiKey keys, with bundled PKCS#11 on desktop and YubiKit 3.3.0 over USB/NFC on Android.
       </p>
