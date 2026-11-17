@@ -74,6 +74,14 @@
           Quick Specification &amp; Report Directory
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <a href="#sec-pq-mail" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Mail Application</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ Mail — Post-Quantum S/MIME</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Pure and hybrid signing and encryption, software identities, and PQC YubiKey support for desktop and Android.</p>
+            </div>
+          </a>
+
           <!-- Item 1 -->
           <a href="#sec-mtc-trust-chain" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
@@ -1513,6 +1521,21 @@
             </p>
           </a>
         </div>
+      </div>
+    </section>
+
+    <section id="sec-pq-mail" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Application · Desktop &amp; Android Preview</div>
+      <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail — Post-Quantum S/MIME</h2>
+      <p class="text-sm text-[var(--muted-foreground)]">
+        A mail application built with Jakarta Mail, Eclipse Angus Mail, and Bouncy Castle for pure ML-DSA signatures and ML-KEM encryption, plus hybrid profiles combining them with ECDSA and ECDH. It supports password-protected software <code>.p12</code> identities and PQC Ready YubiKey keys, with bundled PKCS#11 on desktop and YubiKit 3.3.0 over USB/NFC on Android.
+      </p>
+      <p class="text-sm text-[var(--muted-foreground)]">
+        Features include signed mail with optional encryption, a ten-message IMAP inbox, SMTP sending, certificate management, and desktop Gmail OAuth. Desktop provisioning creates four keys on an empty compatible YubiKey for both pure and hybrid use. This is an interoperability experiment with local test certificates; see the README for platform limitations and current hardware validation, including ongoing Android NFC troubleshooting.
+      </p>
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a href="https://github.com/ve7jtb/pq-mail" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">Source &amp; README &rarr;</a>
+        <a href="https://github.com/ve7jtb/pq-mail/blob/main/android/README.md" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">Android build &amp; testing guide</a>
       </div>
     </section>
 
