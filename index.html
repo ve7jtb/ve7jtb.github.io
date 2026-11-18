@@ -1525,20 +1525,22 @@
     </section>
 
     <section id="sec-pq-mail" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
-      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Application · Desktop &amp; Android Preview</div>
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Application · Desktop, Android &amp; iOS</div>
       <div class="flex items-center gap-5">
         <img src="./assets/pq-mail.png" alt="PQ Mail icon: PQ shield, envelope and YubiKey" width="112" height="112" class="w-20 h-20 md:w-28 md:h-28 shrink-0" loading="lazy" />
-        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail — Post-Quantum S/MIME</h2>
+        <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail — S/MIME &amp; OpenPGP</h2>
       </div>
       <p class="text-sm text-[var(--muted-foreground)]">
-        A mail application built with Jakarta Mail, Eclipse Angus Mail, and Bouncy Castle for pure ML-DSA signatures and ML-KEM encryption, plus hybrid profiles combining them with ECDSA and ECDH. It supports password-protected software <code>.p12</code> identities and PQC Ready YubiKey keys, with bundled PKCS#11 on desktop and YubiKit 3.3.0 over USB/NFC on Android.
+        Experimental encrypted mail for macOS, Windows, Android and iOS. S/MIME supports pure ML-DSA signatures and ML-KEM encryption plus ECDSA/ECDH hybrid profiles. OpenPGP is an alternative for the draft Level 3 hybrid profile. Software keys use password-protected <code>.p12</code> identities; YubiKey operations use PKCS#11 on desktop and YubiKit on mobile. The iOS preview uses SwiftUI and OpenSSL.
       </p>
       <p class="text-sm text-[var(--muted-foreground)]">
-        Features include signed mail with optional encryption, a ten-message IMAP inbox, SMTP sending, certificate management, and desktop Gmail OAuth. Desktop provisioning creates four keys on an empty compatible YubiKey for both pure and hybrid use. This is an interoperability experiment with local test certificates; see the README for platform limitations and current hardware validation, including ongoing Android NFC troubleshooting.
+        Desktop and Android include IMAP/SMTP, S/MIME attachments and certificate management; desktop also supports Gmail API read/send access. iOS currently handles local message files. OpenPGP supports plain-text signed or encrypted mail and separate public-key exchange. Cross-platform software and simulated-token tests pass; physical OpenPGP YubiKey testing remains pending. See the guides for profile and platform limitations.
       </p>
       <div class="flex flex-wrap items-center gap-3 pt-2">
         <a href="https://github.com/ve7jtb/pq-mail" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">Source &amp; README &rarr;</a>
         <a href="https://github.com/ve7jtb/pq-mail/blob/main/android/README.md" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">Android build &amp; testing guide</a>
+      <a href="https://github.com/ve7jtb/pq-mail/blob/main/ios/README.md" class="text-sm underline">iOS guide</a>
+        <a href="https://github.com/ve7jtb/pq-mail/blob/main/docs/OPENPGP.md" class="text-sm underline">OpenPGP guide</a>
       </div>
     </section>
 
