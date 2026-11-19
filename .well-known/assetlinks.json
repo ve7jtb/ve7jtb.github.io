@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.pqmail.android",
+      "sha256_cert_fingerprints": [
+        "91:60:4F:85:E2:2D:58:A7:F7:AD:45:BF:2D:31:AE:A8:82:85:BE:3C:91:9C:7A:A7:ED:C4:42:48:4D:66:70:D6"
+      ]
+    }
+  }
+]
