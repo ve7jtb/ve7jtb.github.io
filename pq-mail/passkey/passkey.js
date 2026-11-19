@@ -23,8 +23,11 @@
  createButton.onclick=()=>{createConfirmed=true;createButton.hidden=true;return button.onclick();};
  button.onclick=async()=>{
   button.disabled=true;status.textContent='Complete the passkey prompt. No vault password is needed.';
-  let prf;
+  let prf,stage="local connection check";
   try{
+   const ready=await fetch(request.callback,{method:'GET',credentials:'omit',cache:'no-store',redirect:'error',targetAddressSpace:'loopback'});
+   if(!ready.ok)throw Error('PQ Mail did not acknowledge this request.');
+   stage='passkey assertion';
    const common={challenge:dec(request.challenge),timeout:120000,...(securityKey?{hints:['security-key']}:{}),extensions:{prf:{eval:{first:dec(request.salt)}}}};
    let credential,reply;
    if(request.create&&!createConfirmed){
@@ -56,10 +59,11 @@
    const nonce=crypto.getRandomValues(new Uint8Array(12));prf=text.encode(JSON.stringify(reply));
    const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce,additionalData:text.encode(request.nonce)},key,prf);
    const payload={publicKey:enc(await crypto.subtle.exportKey('spki',pair.publicKey)),nonce:enc(nonce),ciphertext:enc(ciphertext)};
+   stage='returning encrypted result to PQ Mail';
    const response=await fetch(request.callback,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'omit',cache:'no-store',redirect:'error',targetAddressSpace:'loopback'});
    if(!response.ok)throw Error('PQ Mail rejected the response or the operation expired.');
    status.textContent='Completed. Return to PQ Mail. You can close this tab.';button.hidden=true;request=null;
-  }catch(e){status.textContent='Passkey operation did not complete: '+e.message+'\nReturn to PQ Mail if the operation has expired.';button.disabled=false;}
+  }catch(e){status.textContent='Could not complete '+stage+': '+e.name+' — '+e.message+'\nIf this is the local connection check, no passkey was requested. Start a fresh operation in PQ Mail. For Safari network errors, select Google Chrome in Keys → Passkey browser. Allow local-app access if Chrome asks.';button.disabled=false;}
   finally{if(prf)prf.fill(0);}
  };
 })();
