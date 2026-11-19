@@ -2,8 +2,8 @@
 (() => {
  const dec=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
  const enc=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
- const text=new TextEncoder(),button=document.getElementById('continue'),createButton=document.getElementById('create-new'),status=document.getElementById('status');
- let request,createConfirmed=false;
+ const text=new TextEncoder(),button=document.getElementById('continue'),createButton=document.getElementById('create-new'),status=document.getElementById('status'),securityButton=document.getElementById('security-key');
+ let request,createConfirmed=false,securityKey=false;
  try {
   if(window.top!==window.self||location.origin!=='https://ve7jtb.github.io')throw Error('Open this page directly from PQ Mail.');
   request=JSON.parse(new TextDecoder().decode(dec(location.hash.slice(1))));history.replaceState(null,'',location.pathname);
@@ -19,19 +19,20 @@
   const prf=c.getClientExtensionResults().prf;
   return {type:c.type,rawId:enc(c.rawId),response,clientExtensionResults:{prf:prf?{enabled:prf.enabled,results:prf.results?{first:enc(prf.results.first)}:undefined}:undefined}};
  }
+ securityButton.onclick=()=>{securityKey=true;createConfirmed=false;return button.onclick();};
  createButton.onclick=()=>{createConfirmed=true;createButton.hidden=true;return button.onclick();};
  button.onclick=async()=>{
   button.disabled=true;status.textContent='Complete the passkey prompt. No vault password is needed.';
   let prf;
   try{
-   const common={challenge:dec(request.challenge),timeout:120000,extensions:{prf:{eval:{first:dec(request.salt)}}}};
+   const common={challenge:dec(request.challenge),timeout:120000,...(securityKey?{hints:['security-key']}:{}),extensions:{prf:{eval:{first:dec(request.salt)}}}};
    let credential,reply;
    if(request.create&&!createConfirmed){
     try{
      credential=await navigator.credentials.get({publicKey:{...common,rpId:'ve7jtb.github.io',userVerification:'required'}});
      reply=serialize(credential);reply.registration=true;
     }catch(e){
-     status.textContent='No existing passkey was selected. Retry the existing-passkey chooser, or explicitly choose Create new passkey. Cancelling does not create a credential.';
+     status.textContent='Existing-passkey lookup failed before completion: '+e.name+' — '+e.message+'\nThis does not prove the credential is missing. Try Check security key, or retry in Google Chrome if Safari cannot access the key. Creating a new credential is optional; cancellation never creates one.';
      createButton.hidden=false;button.disabled=false;button.textContent='Check existing passkeys again';return;
     }
    }else if(request.create){
