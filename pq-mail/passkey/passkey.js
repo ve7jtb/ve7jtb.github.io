@@ -10,7 +10,7 @@
   const url=new URL(request.callback);
   if(url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!/^\d+$/.test(url.port)||url.pathname!=='/prf/'+request.nonce||url.search||url.hash||url.username||url.password)throw Error('Invalid local callback.');
   for(const field of ['challenge','nonce','salt'])if(dec(request[field]).length!==32)throw Error('Invalid request.');
-  document.getElementById('description').textContent=(request.create?'Create':'Unlock with')+' your PQ Mail passkey: '+request.name;
+  document.getElementById('description').textContent=(request.create?'Create':request.discover?'Use an existing passkey for':'Unlock with')+' your PQ Mail passkey: '+request.name;
   button.disabled=false;
  } catch(e){status.textContent='Start this operation from PQ Mail → Keys → Passkey vault.';return;}
  function serialize(c){
@@ -35,7 +35,7 @@
      reply=serialize(credential);reply.registration=true;
     }
    }else{
-    credential=await navigator.credentials.get({publicKey:{...common,rpId:'ve7jtb.github.io',userVerification:'required',allowCredentials:[{type:'public-key',id:dec(request.credential)}]}});reply=serialize(credential);
+    credential=await navigator.credentials.get({publicKey:{...common,rpId:'ve7jtb.github.io',userVerification:'required',...(request.discover?{}:{allowCredentials:[{type:'public-key',id:dec(request.credential)}]})}});reply=serialize(credential);
    }
    if(!reply.clientExtensionResults.prf?.results?.first)throw Error('This provider did not return PRF output. Nothing was saved.');
    const server=await crypto.subtle.importKey('spki',dec(request.publicKey),{name:'ECDH',namedCurve:'P-256'},false,[]);
