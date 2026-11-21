@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "file": {
+    "path": "draft-bradley-pqmail-certificate-bundle-00.xml",
+    "size": 79194,
+    "sha256": "be5545036b85d38f9282275702fec8bbd8ba498a2521449ea2b5178bc25542aa"
+  },
+  "nitsBySeverity": {
+    "error": 0,
+    "warning": 0,
+    "comment": 0
+  },
+  "nits": [],
+  "sanitization": "Local input path replaced with its basename; input SHA-256 added."
+}

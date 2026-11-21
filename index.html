@@ -77,8 +77,16 @@
           <a href="#sec-pq-mail" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Mail Application</span>
-              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ Mail — Post-Quantum S/MIME</div>
-              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Pure and hybrid signing and encryption, software identities, and PQC YubiKey support for desktop and Android.</p>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ Mail — S/MIME &amp; OpenPGP</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Pure and hybrid mail, protected software identities, and YubiKey support across desktop and mobile previews.</p>
+            </div>
+          </a>
+
+          <a href="#sec-pq-mail-bundle" class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] hover:border-[var(--primary)] transition flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]">Independent Submission Working Draft</span>
+              <div class="font-semibold text-sm text-[var(--foreground)] mt-1">PQ Mail Certificate Bundles</div>
+              <p class="text-[var(--muted-foreground)] text-[11px] mt-1 line-clamp-2">Interoperable hardware key mappings, encrypted companions, and optional ultra-compact certificate reconstruction.</p>
             </div>
           </a>
 
@@ -1524,6 +1532,21 @@
       </div>
     </section>
 
+    <section id="sec-pq-mail-bundle" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
+      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Informational Working Draft · Independent Submission Stream</div>
+      <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail Certificate Bundles and Encrypted Companions</h2>
+      <p class="text-sm text-[var(--muted-foreground)]">An interoperable format for restoring messaging identities from a smart card: signed S/MIME and OpenPGP certificates, device identifiers, and component-to-slot mappings. Public certificate storage and the encrypted software-key companion use separate single banks, bounded compression, and local recovery backups before replacement.</p>
+      <p class="text-sm text-[var(--muted-foreground)]">Full storage preserves every certificate signature. Optional ultra-compact storage omits only supported self-issued signature values; a new host reconstructs and verifies them once, using the existing keys, then caches the public certificate. CA-issued and third-party-certified material remains complete. The draft explains message security levels, hardware custody, host-memory exposure and restore authorization.</p>
+      <p class="text-sm text-[var(--muted-foreground)]">This is a working draft intended for independent review, not an IETF consensus standard or an accepted RFC. Implementation and test scope, proposed extensions, and validation findings are identified in the document.</p>
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a href="./pq-mail/spec/draft-bradley-pqmail-certificate-bundle-00.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">Read the draft &rarr;</a>
+        <a href="https://github.com/ve7jtb/pq-mail/blob/main/docs/internet-drafts/draft-bradley-pqmail-certificate-bundle-00.md" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--content)] text-[var(--foreground)] border border-[var(--border)] hover:opacity-90 transition">GitHub Markdown</a>
+        <a href="./pq-mail/spec/draft-bradley-pqmail-certificate-bundle-00.xml" class="text-sm underline">RFCXML</a>
+        <a href="./pq-mail/spec/draft-bradley-pqmail-certificate-bundle-00.txt" class="text-sm underline">Text</a>
+        <a href="./pq-mail/spec/validation-report.md" class="text-sm underline">Validation and nits</a>
+      </div>
+    </section>
+
     <section id="sec-pq-mail" class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
       <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Experimental Application · Desktop, Android &amp; iOS</div>
       <div class="flex items-center gap-5">
@@ -1531,10 +1554,10 @@
         <h2 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">PQ Mail — S/MIME &amp; OpenPGP</h2>
       </div>
       <p class="text-sm text-[var(--muted-foreground)]">
-        Experimental encrypted mail for macOS, Windows, Android and iOS. S/MIME supports pure ML-DSA signatures and ML-KEM encryption plus ECDSA/ECDH hybrid profiles. OpenPGP is an alternative for the draft Level 3 hybrid profile. Software keys use password-protected <code>.p12</code> identities; YubiKey operations use PKCS#11 on desktop and YubiKit on mobile. The iOS preview uses SwiftUI and OpenSSL.
+        Experimental encrypted mail for macOS, Windows, Linux, Android and iOS. S/MIME supports pure and hybrid ML-DSA/ML-KEM profiles; OpenPGP includes hybrid v6 profiles and classical compatibility. Software identities use protected <code>.p12</code> storage. Desktop YubiKey operations use PKCS#11; mobile previews use platform-specific adapters. The iOS preview uses SwiftUI and OpenSSL.
       </p>
       <p class="text-sm text-[var(--muted-foreground)]">
-        Desktop and Android include IMAP/SMTP, S/MIME attachments and certificate management; desktop also supports Gmail API read/send access. iOS currently handles local message files. OpenPGP supports plain-text signed or encrypted mail and separate public-key exchange. Cross-platform software and simulated-token tests pass; physical OpenPGP YubiKey testing remains pending. See the guides for profile and platform limitations.
+        Desktop and Android support Gmail and Hotmail OAuth, signed/encrypted mail, attachments and certificate trust management. Desktop also has an experimental Google Chat connector and independent Sequoia interoperability tests. Physical YubiKey signing, decryption and certificate-bundle restore have passed for the documented profiles; support and validation vary by platform. See the README for exact scope and limitations.
       </p>
       <div class="flex flex-wrap items-center gap-3 pt-2">
         <a href="https://github.com/ve7jtb/pq-mail" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-95 shadow-sm transition">Source &amp; README &rarr;</a>
@@ -1593,3 +1616,4 @@
 
 </body>
 </html>
+

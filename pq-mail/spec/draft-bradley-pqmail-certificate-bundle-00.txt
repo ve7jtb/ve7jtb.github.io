@@ -1,0 +1,1960 @@
+
+
+
+
+Network Working Group                                         J. Bradley
+Internet-Draft                                          20 November 2026
+Intended status: Informational                                          
+Expires: 24 May 2027
+
+
+    Certificate Bundles and Encrypted Companions for Hardware-Backed
+                          Messaging Identities
+               draft-bradley-pqmail-certificate-bundle-00
+
+Abstract
+
+   This document describes a signed, compressed public certificate
+   bundle used to restore hardware-backed messaging identities on
+   another computer.  A bundle carries S/MIME certificates, OpenPGP
+   certificates, and bindings between public keys and device key
+   references.  A single-bank storage binding uses application data
+   objects in a YubiKey PIV application, with a verified local recovery
+   copy made before replacement.  The public bundle excludes private
+   keys and authentication credentials.  A separate, authenticated
+   encrypted companion carries software Ed448/X448 components for
+   hardware that lacks those algorithms.  An optional ultra-compact
+   companion retains certificate structure and metadata while
+   reconstructing eligible self-issued signatures once per host.  The
+   document specifies the deployed base payload and proposes a
+   separately versioned extension payload for additional certificate
+   types and explicit component-to-slot mappings.  It is intended for
+   the Independent Submission Stream as an Informational document.
+
+Discussion and implementation status
+
+   This note is to be removed before publishing as an RFC.
+
+   This is a working draft, not an IETF consensus specification.
+   Publication in a source repository does not constitute submission to
+   the Internet-Draft repository or acceptance by the Independent
+   Submissions Editor.  Discussion and source:
+   https://github.com/ve7jtb/pq-mail.  The compressed single-bank base
+   and full-companion formats have been tested with PQ Mail and a
+   separate Sequoia-based reader.  Ultra-compact implementation and
+   validation status is reported in the Implementation and
+   Interoperability Status section.  The extension payload in this
+   document is a proposal; deployed readers do not yet accept it.  Only
+   the current single-bank storage arrangement is specified.  Historical
+   encodings and storage arrangements are out of scope.
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 1]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 24 May 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.
+
+Table of Contents
+
+   1.  Introduction and Scope  . . . . . . . . . . . . . . . . . . .   3
+   2.  Conventions and Terminology . . . . . . . . . . . . . . . . .   4
+   3.  Encoding Layers and Limits  . . . . . . . . . . . . . . . . .   4
+   4.  Compressed Container  . . . . . . . . . . . . . . . . . . . .   5
+   5.  Signed Envelope . . . . . . . . . . . . . . . . . . . . . . .   5
+   6.  Deployed Base Payload . . . . . . . . . . . . . . . . . . . .   6
+     6.1.  S/MIME Algorithm Profiles . . . . . . . . . . . . . . . .   7
+     6.2.  OpenPGP Content and Base Slot Bindings  . . . . . . . . .   8
+   7.  Proposed Extension Payload  . . . . . . . . . . . . . . . . .   9
+     7.1.  Additional Certificate Set  . . . . . . . . . . . . . . .  10
+     7.2.  Explicit Public-Key Mappings  . . . . . . . . . . . . . .  10
+   8.  Single-Bank PIV Storage Binding . . . . . . . . . . . . . . .  12
+     8.1.  Read and Restore  . . . . . . . . . . . . . . . . . . . .  13
+     8.2.  Replacement and Local Recovery  . . . . . . . . . . . . .  14
+   9.  Encrypted Level 5 Software Companion  . . . . . . . . . . . .  15
+     9.1.  Companion Envelope and Encryption . . . . . . . . . . . .  15
+     9.2.  Component Manifest  . . . . . . . . . . . . . . . . . . .  17
+     9.3.  Ultra-Compact Certificate Template  . . . . . . . . . . .  18
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 2]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+     9.4.  First Restore and Public-Certificate Cache  . . . . . . .  22
+     9.5.  Companion Storage and Recovery  . . . . . . . . . . . . .  24
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  25
+     10.1.  Algorithm Profiles and Private-Key Custody . . . . . . .  26
+     10.2.  Hardware Assurance and Key Generation  . . . . . . . . .  29
+   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  31
+   12. Implementation and Interoperability Status  . . . . . . . . .  31
+   13. Normative References  . . . . . . . . . . . . . . . . . . . .  32
+   14. Informative References  . . . . . . . . . . . . . . . . . . .  33
+   Appendix A.  Proposed Future-Creation Layout  . . . . . . . . . .  34
+   Appendix B.  Synthetic Public Test Material . . . . . . . . . . .  34
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  34
+
+1.  Introduction and Scope
+
+   A hardware token can hold private keys without holding enough public
+   identity information for a new messaging client to use them.  In
+   particular, one OpenPGP composite key may involve two hardware slots,
+   and an application may offer both pure post-quantum and composite S/
+   MIME certificates over shared components.  A public certificate
+   bundle preserves certificates, their signatures, and their hardware
+   bindings without exporting private keys.
+
+   For the public bundle, backup means writing public identity
+   information to the device and restore means reading that information
+   and creating local references to existing device keys.  Neither
+   operation generates, imports, moves, or deletes a private key.  The
+   separately specified encrypted companion can hold newly generated
+   software components, but conversion between its full and ultra-
+   compact forms MUST preserve existing component keys.  An ultra-
+   compact first restore reconstructs eligible self-issued certificate
+   signatures; it does not create a CA-issued certificate or grant
+   contact trust.  These distinctions MUST be shown before requesting a
+   private operation.
+
+   The abstract identity model consists of certificate keys, component
+   roles, algorithms and explicit key references.  A particular numeric
+   slot layout is a provisioning convention for one device profile, not
+   part of the meaning of certification, signing or decryption.  A
+   different documented card can implement the same roles with fewer or
+   more key references, subject to its capabilities.  The concrete
+   storage and supported fixed-layout encodings below remain binding-
+   specific; their presence does not claim that current clients already
+   support arbitrary cards or mappings.
+
+   The device binding described here is application-specific.  Its
+   object identifiers are not allocations from the PIV standard.  Other
+   smart cards require a separately documented storage binding,
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 3]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   sufficient storage, suitable key operations, and a means of
+   retrieving or verifying public keys.  Having a PKCS#11 interface
+   alone does not satisfy those requirements.  The format does not
+   require a particular private-operation API.
+
+2.  Conventions and Terminology
+
+   The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD,
+   SHOULD NOT, RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL in this
+   document are to be interpreted as described in BCP 14 [RFC2119]
+   [RFC8174] when, and only when, they appear in all capitals.
+
+   A profile pairs a signing certificate with an encryption certificate
+   and optional OpenPGP material.  A component is one constituent public
+   key of a composite key.  A slot is a PIV key reference, not a data-
+   object identifier.  A bank is the one manifest and its numbered data
+   chunks.  A binding identifies which existing device key implements a
+   certificate key or component.  Certificate validity, bundle
+   integrity, live key matching, and correspondent trust are distinct
+   results.
+
+3.  Encoding Layers and Limits
+
+   PIV data objects
+     manifest + numbered chunks
+       PQMZIP01: zlib-compressed signed envelope
+         PQMAILS1: payload + signer index + signature
+           PQMAILB2: deployed base profiles
+           PQMAILB3: proposed base profiles + extensions
+
+   Separate companion data objects
+     manifest + numbered chunks
+       PQMCZ001: zlib-compressed companion envelope
+         signed body + ML-DSA-87 signature
+           PQMCP001: full certificate + encrypted software P12
+           PQMCP002: reconstruction template + encrypted P12
+
+   All integers are unsigned, big-endian octet sequences.  U8, U32, and
+   U64 occupy one, four, and eight octets respectively.  To match
+   current implementations, a device serial is in 1..2147483647 and a
+   generation is in 1..9223372036854775807.  Lengths and counts MUST be
+   checked before allocation, addition, multiplication, or slicing.
+   Implementations MUST reject overflow, truncation, inconsistent
+   counts, and trailing bytes at every defined layer.
+
+   BLOB(x) = U32(length(x)) || x
+   ||      = octet concatenation
+   MAGIC   = exactly eight ASCII octets, without a terminator
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 4]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   The compressed object stream and the decompressed signed envelope
+   MUST each be at most 65536 octets.  A BLOB MUST fit within its
+   enclosing structure and this limit.  Zero-length BLOBs are allowed
+   only where stated.  A base profile count is 2..16, including at least
+   one pure and one composite profile.  These bounds are protocol
+   limits, not a promise that a device has enough free storage.  Writers
+   MUST account for object overhead and other applications sharing
+   device storage.
+
+4.  Compressed Container
+
+   compressed = "PQMZIP01" || U32(expanded_length) || zlib_stream
+
+   The stream is one zlib stream [RFC1950] containing a DEFLATE
+   representation [RFC1951] of the complete signed envelope.  It is not
+   a ZIP archive, gzip member, raw DEFLATE stream, or OpenPGP Compressed
+   Data packet.  A preset dictionary MUST NOT be used.  Compression
+   level is not fixed, so compressed bytes need not be reproducible.
+
+   The expanded length MUST be 1..65536 and MUST equal the actual output
+   length.  Readers MUST stop expansion at the declared bound, require
+   end of stream and the zlib checksum, and reject additional output,
+   concatenated streams, trailing compressed input, and dictionary
+   requests.  No decompressed data is trusted before envelope
+   verification.  An implementation SHOULD also bound CPU time.
+
+5.  Signed Envelope
+
+   envelope = "PQMAILS1" || BLOB(payload) || U32(signer_index)
+              || BLOB(signature)
+
+   The signer index is zero-based and selects a base profile's signing
+   certificate.  The signature covers the exact payload octets,
+   including its magic and all lengths.  It does not cover the envelope
+   magic, signer index, compression, generation, or manifest.  Verifiers
+   MUST select the indicated key, determine the permitted signature
+   algorithm from its SubjectPublicKeyInfo (SPKI), and verify the
+   supplied signature over the original payload bytes.  Re-serialization
+   before verification is prohibited.
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 5]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   The certificate issuer's signature algorithm is not the bundle
+   signing algorithm.  Pure ML-DSA uses the matching pure algorithm with
+   an empty application context, not HashML-DSA.  Composite signatures
+   use the algorithm identified by the SPKI, including its prescribed
+   hashing, domain separation, component ordering, and signature
+   encoding.  Implementations MUST verify every component.  The bundle
+   adds no separate signature context.  Passing a precomputed external
+   mu to hardware is an implementation detail and MUST produce the same
+   signature semantics.
+
+   Writers SHOULD use the composite signing profile.  Readers MAY
+   require that profile by local policy, but MUST NOT silently accept
+   only its classical component.  Since the signer index is outside the
+   signature, its integrity is conditional on successful verification
+   with the selected key; it is not independently authenticated
+   metadata.
+
+6.  Deployed Base Payload
+
+   base_payload = "PQMAILB2" || U32(profile_count)
+                  || profile[profile_count]
+
+   profile = U32(device_serial)
+             || U8(pq_sign_slot) || U8(classical_sign_slot)
+             || U8(pq_decrypt_slot) || U8(classical_decrypt_slot)
+             || BLOB(signing_certificate_der)
+             || BLOB(encryption_certificate_der)
+             || BLOB(openpgp_public_certificate)
+             || BLOB(openpgp_v4_compatibility_certificate)
+
+   The X.509 BLOBs are nonempty and each contains exactly one DER
+   certificate [RFC5280].  They are not PEM, CMS SignedData, certificate
+   chains, or private-key containers.  The OpenPGP BLOBs contain binary
+   public certificate packets, not ASCII armor or secret-key packets.
+   Either OpenPGP field MAY be empty; a nonempty compatibility field
+   requires a nonempty public certificate field.  All original
+   certificate packets, including certification and binding signatures,
+   MUST be preserved.
+
+   All profiles MUST name the same device serial and the same four
+   distinct slots.  Pure and composite profiles MUST share the same ML-
+   DSA and ML-KEM public components.  A given slot MUST NOT be bound to
+   different public keys anywhere in the payload.  Duplicate signing/
+   encryption certificate pairs are invalid.  The current base profile
+   places ML-DSA signing in 9c; the current creation layout uses 83, 9d,
+   and 82 for the remaining fields in that order.  PIV references are
+   encoded as single octets, for example hexadecimal 83 is the octet
+   0x83, not the ASCII string "83".
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 6]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   Legal ordinary PIV references for base fields are 9a, 9c, 9d, 9e, and
+   82 through 95, hexadecimal.  This range is syntax validation only:
+   the four current role assignments and supported algorithm profile
+   still have to match.  Attestation and PIN/PUK references MUST NOT be
+   treated as application keys.  Importers MUST NOT move keys to satisfy
+   a mapping.
+
+6.1.  S/MIME Algorithm Profiles
+
+   Each base profile uses one row of the following table, with the
+   corresponding pure or composite form for both signing and encryption.
+   The OID suffixes in the last two columns are relative to
+   1.3.6.1.5.5.7.6.  Level labels describe the ML-DSA category, not a
+   certification of the complete system.  In particular, ML-KEM-768 is
+   category 3 in both the Level 2 and Level 3 profiles.
+
+      +=========+========+========+=======+=============+===========+
+      | Profile | ML-DSA | ML-KEM | EC    | Composite   | Composite |
+      |         |        |        |       | signing OID | KEM OID   |
+      +=========+========+========+=======+=============+===========+
+      | Level 2 | 44     | 768    | P-256 | 40          | 59        |
+      +---------+--------+--------+-------+-------------+-----------+
+      | Level 3 | 65     | 768    | P-384 | 46          | 60        |
+      +---------+--------+--------+-------+-------------+-----------+
+      | Level 5 | 87     | 1024   | P-384 | 49          | 63        |
+      +---------+--------+--------+-------+-------------+-----------+
+
+                      Table 1: Base profile algorithms
+
+   Pure ML-DSA SPKI OIDs are 2.16.840.1.101.3.4.3.17, .18, and .19
+   respectively; ML-KEM-768 and ML-KEM-1024 SPKI OIDs are
+   2.16.840.1.101.3.4.4.2 and .3.  Their AlgorithmIdentifier parameters
+   are absent.  Composite identifiers and encodings follow the
+   corresponding algorithm specifications [RFC10073] [COMPOSITE-KEM].
+   These identifier assignments are used, not allocated, by this
+   document.  Implementations MUST NOT equate similarly named
+   experimental algorithms having different identifiers or encodings.
+
+   The first composite component maps to the PQ slot, and the second to
+   the classical slot.  Pure profiles map only their single component;
+   the companion composite profile supplies the classical public keys.
+   Readers MUST parse the algorithm's actual component encoding rather
+   than treating the composite SPKI as a single device key.
+
+   Signing and encryption certificates MUST share at least one
+   rfc822Name SAN mailbox.  For activation as a messaging identity,
+   validity periods and applicable KeyUsage and ExtendedKeyUsage
+   restrictions MUST be checked; emailProtection or anyExtendedKeyUsage
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 7]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   is required when an EKU restriction is present.  Signing uses
+   digitalSignature; the base ML-KEM/composite KEM profiles use
+   keyEncipherment.  Parsing a backup for inspection does not itself
+   authorize use of expired or revoked credentials.  CA path building
+   and revocation policy remain the application's responsibility.
+
+6.2.  OpenPGP Content and Base Slot Bindings
+
+   OpenPGP certificates follow [RFC9580] and supported algorithm
+   profiles such as [RFC9980].  Readers MUST validate self-
+   certifications, subkey bindings, required signing-subkey back-
+   signatures, key flags, and revocation/expiration policy before
+   activating a key.  A packet's presence alone does not authorize its
+   use.  Secret-Key and Secret-Subkey packets MUST be rejected.
+   Unrecognized algorithms MUST NOT be guessed from lengths or replaced
+   with classical operations.
+
+   For the currently tested Level 3 separated-certification profile, the
+   base format uses the following fixed additional mappings.  They are
+   not additional fields in PQMAILB2.  A reader MUST recognize this
+   complete profile and match every public component before activating
+   it, or report the profile as unsupported.  The same logical public
+   key may occur in more than one certificate view without implying
+   another device key.
+
+      +=============================+=====================+=========+
+      | Role                        | Algorithm           | Slots   |
+      +=============================+=====================+=========+
+      | v6 certification primary    | ML-DSA-65 + Ed25519 | 86 + 87 |
+      +-----------------------------+---------------------+---------+
+      | v6 hybrid signing subkey    | ML-DSA-65 + Ed25519 | 9c + 84 |
+      +-----------------------------+---------------------+---------+
+      | v6 hybrid encryption subkey | ML-KEM-768 + X25519 | 9d + 85 |
+      +-----------------------------+---------------------+---------+
+      | v6 classical signing subkey | Ed25519             | 88      |
+      | / v4 primary                |                     |         |
+      +-----------------------------+---------------------+---------+
+      | v6/v4 classical encryption  | X25519              | 89      |
+      | subkey                      |                     |         |
+      +-----------------------------+---------------------+---------+
+      | v4 hybrid encryption subkey | ML-KEM-768 + X25519 | 9d + 85 |
+      +-----------------------------+---------------------+---------+
+
+                      Table 2: Level 3 OpenPGP mapping
+
+   The v4 view uses the appropriate v4 packet encodings for its
+   classical keys.  A v6 certificate and a v4 certificate have different
+   primary keys and fingerprints; correspondence MUST be verified by
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 8]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   their certified identities and constituent public keys, not by
+   assuming their fingerprints match.  Unsupported OpenPGP profiles can
+   be retained as opaque public backup data but MUST NOT become usable
+   hardware identities.
+
+   A classical-only v4 view MAY be obtained by retaining the original
+   primary key, User IDs and their certifications, and the classical
+   encryption subkey with its existing binding signatures and relevant
+   revocations, while omitting the hybrid encryption subkey and
+   signatures pertaining to it.  No signature is created and no PIN is
+   needed.  The primary-key fingerprint stays unchanged.  Filtering MUST
+   NOT remove a revocation or restriction applicable to a retained key,
+   invent a binding, or silently change the selected cryptographic
+   policy.  The resulting view MUST be verified again.
+
+7.  Proposed Extension Payload
+
+   This section defines a proposed, separately versioned payload.  It is
+   not implemented by the deployed PQMAILB2 readers.  A writer MUST NOT
+   use it for an installation that has not explicitly enabled extension
+   support.  The single-bank storage, compression, and signed-envelope
+   formats are unchanged.  Unknown payload magic MUST cause a clear
+   unsupported-format error; a reader MUST NOT strip extensions to try
+   base verification.
+
+   extended_payload = "PQMAILB3" || U32(profile_count)
+                      || profile[profile_count]
+                      || U32(extension_count)
+                      || extension[extension_count]
+
+   extension = BLOB(type_identifier) || U8(flags) || BLOB(value)
+
+   The profile encoding is exactly that in Section 6.  Extension count
+   is 0..32.  Type identifiers are 1..192 ASCII octets containing an
+   absolute HTTPS URI under the defining party's control.  They are
+   compared byte-for-byte, are unique within a payload, and MUST NOT be
+   fetched or used as executable locations.  Bit 0 of flags means
+   critical; all other bits MUST be zero.  Unknown critical extensions
+   cause rejection of the entire payload.  Unknown noncritical
+   extensions MUST NOT affect usable identity, key selection, trust, or
+   device commands.  A reader MAY retain them as opaque signed bytes.  A
+   writer rewriting an imported bundle MUST preserve them or explicitly
+   refuse the rewrite; silent loss is prohibited.
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                  [Page 9]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   All extensions are covered by the envelope signature.  Extensions
+   MUST NOT override a base certificate, change its mapping, grant
+   trust, designate an executable, supply credentials, or request
+   provisioning.  Conflicts cause rejection.  The extension mechanism is
+   additive: existing base S/MIME profiles remain required and continue
+   to identify the envelope signer.
+
+7.1.  Additional Certificate Set
+
+   The type identifier is https://github.com/ve7jtb/pq-mail/spec/
+   certificate-set/v1.  The value is:
+
+   U32(certificate_count) || certificate_record[certificate_count]
+
+   certificate_record = U32(certificate_id) || BLOB(format_identifier)
+                        || U32(purposes) || BLOB(certificate)
+
+   Count is 1..32.  IDs are nonzero and unique within this set.
+   Purposes is a bit mask: bit 0 signing, bit 1 decryption, bit 2
+   certification, bit 3 issuer-chain support.  At least one bit MUST be
+   set, other bits MUST be zero, and issuer-chain support MUST NOT be
+   combined with other purposes.  Purposes request local use and MUST
+   NOT expand permissions in the certificate itself.  Certificates are
+   nonempty and public-only.
+
+   Format identifiers are 1..192 ASCII octets.  This version defines the
+   exact identifiers "x509-der" for one DER X.509 certificate and
+   "openpgp-public" for one binary OpenPGP public certificate.  Other
+   formats use an absolute HTTPS URI and MUST define public-only syntax,
+   key identification, signature validation, permitted uses, and
+   component extraction.  Unknown formats in a critical certificate set
+   cause rejection.  In a noncritical set they MAY be retained only as
+   opaque data and MUST NOT be activated.
+
+   This extension can carry additional S/MIME signing/encryption
+   certificates or issuer certificates without replacing the base pair.
+   Issuer-chain certificates have no private-slot mapping and do not
+   become trust anchors.  The application still needs its ordinary S/
+   MIME chain, identity, validity, key-usage, and revocation checks.  A
+   noncritical certificate set is suitable only for information that may
+   safely be ignored.
+
+7.2.  Explicit Public-Key Mappings
+
+   The type identifier is https://github.com/ve7jtb/pq-mail/spec/key-
+   mappings/v1.  This extension MUST be critical, and its value is:
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 10]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   U32(binding_count) || binding[binding_count]
+
+   binding = U32(certificate_id) || BLOB(key_selector)
+             || U32(component_index) || U32(roles)
+             || BLOB(locator_type) || BLOB(locator)
+             || BLOB(component_spki_der)
+
+   Count is 1..64.  Each certificate ID MUST refer to the certificate-
+   set extension.  For X.509, key_selector is empty and selects the
+   subject public key.  For OpenPGP it is the full binary fingerprint of
+   the selected primary key or subkey, of the length defined for that
+   key version; short key IDs are forbidden.  A component index is zero-
+   based in the order defined by the certificate algorithm; a
+   noncomposite key has only index 0.  It MUST NOT be inferred from
+   field lengths.  For example, OpenPGP wire order and an X.509
+   composite algorithm's order need not agree.
+
+   Roles uses bits 0 signing, 1 decryption, and 2 certification, with at
+   least one bit set and no other bits.  Roles MUST be a subset of the
+   referenced certificate's requested purposes and its authenticated key
+   flags/usages.  A tuple (certificate_id, key_selector,
+   component_index) MUST appear once only; several permitted roles are
+   combined in that tuple.  Every component of every key being activated
+   MUST have a binding.  No omitted component may be silently downgraded
+   or synthesized.
+
+   The SPKI is the canonical DER encoding of the individual component,
+   with the algorithm and parameters appropriate to that component.
+   Readers MUST derive it from the referenced certificate key and
+   compare it with both the supplied SPKI and the live device key.  All
+   bindings naming the same locator MUST agree on the public key.  A
+   binding that overlaps a base or fixed-profile mapping MUST agree with
+   it exactly.
+
+   This version defines locator_type "piv-key-reference".  Its locator
+   is exactly one octet identifying an ordinary key slot on the same
+   device serial as the base profiles.  Other locator types use an
+   absolute HTTPS URI and need a separate specification of device
+   identification, key addressing, and safe public-key matching.  An
+   unsupported locator makes the critical extension unsupported.  A
+   locator MUST NOT contain a PIN, management key, executable path,
+   PKCS#11 module path, arbitrary command, or remote callback URL.
+
+   A binding for another smart-card family MUST specify its locator
+   syntax and version, stable device identification, supported key-
+   reference range and capacity, certificate-component extraction, live
+   public-key comparison, required private operations and authorization
+   semantics, and a storage-object binding with collision and recovery
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 11]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   rules.  It MUST NOT assume that another card implements the YubiKey
+   retired-slot range, current numerical layout, or custom data objects.
+   A device with insufficient references or an unsupported algorithm
+   MUST be reported as unsupported; roles MUST NOT be silently merged or
+   replaced by software.  Existing fixed-profile readers MUST reject an
+   unsupported mapping revision instead of applying their own slot
+   defaults.
+
+   The proposed B3 extension describes additional explicit mappings but
+   still includes the base profile's required fields and constraints.  A
+   card family that cannot represent those fields, device identifier or
+   algorithms needs a separately versioned payload/profile
+   specification; a new locator string alone does not remove those
+   constraints.  Likewise, the current encrypted-companion
+   implementation below recognizes only its named fixed mapping.
+   General role-based restore must be implemented and tested before
+   claiming support for a new card binding.
+
+   These mappings permit additional S/MIME certificates, multiple
+   OpenPGP keys, and other specified certificate formats without
+   assuming particular PIV slots.  They do not enable a device
+   algorithm, change touch/PIN policy, or prove a private key is
+   nonexportable.  Import MUST show the proposed mappings for user
+   review.
+
+8.  Single-Bank PIV Storage Binding
+
+   The YubiKey PIV application documents application-defined GET DATA
+   and PUT DATA objects [YUBICO-DATA].  This binding uses object
+   0x5f5000 for the manifest and objects 0x5f5001 through 0x5f5020 for
+   up to 32 chunks.  These are application conventions, not globally
+   reserved tags.  Writers MUST detect namespace collisions and MUST NOT
+   overwrite unrelated or unrecognized data.  Standard PIV certificate
+   objects are not used for the bundle.
+
+   Object values below exclude APDU framing, status words, and PIV data-
+   object TLV wrappers.  A transport adapter MUST remove only those
+   wrappers, assemble ISO 7816 response chaining correctly, and supply
+   exact object bytes.  USB and NFC must yield identical bytes.  Only an
+   explicit object-not-found result is absence; permission failures, tag
+   loss, timeouts, malformed responses, and transport errors MUST remain
+   errors.
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 12]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   manifest (52 octets):
+     "PQMIDX01" || U64(generation) || U32(stored_length)
+     || SHA256(compressed)
+
+   chunk i at object 0x5f5001 + i:
+     "PQMCHK01" || U64(generation) || U32(i) || chunk_data
+
+   Stored length is 1..65536.  The number of chunks is
+   ceiling(stored_length / 2048), at most 32.  Index i starts at zero.
+   Every chunk except the last carries exactly 2048 data octets; the
+   last carries precisely the remaining 1..2048 octets.  All chunk
+   generations MUST equal the manifest generation.  The digest covers
+   the concatenated compressed data, not the chunk headers.  Its purpose
+   is complete-object consistency checking, not authentication or
+   rollback protection.
+
+   A successful write retains only this bank.  No second on-card
+   recovery copy is required or written.  Unused tail chunk objects
+   SHOULD be removed after local backup, subject to namespace ownership
+   checks.  Hardware keys, ordinary PIV certificate objects, PIN/PUK
+   values, touch policies, and other applications MUST remain unchanged.
+
+8.1.  Read and Restore
+
+   1.  Read the manifest; reject invalid sizes or generations.  Obtain
+       each required chunk and require exact header and data lengths.
+
+   2.  Concatenate data and verify the manifest digest.  Re-read the
+       manifest and require it to be byte-identical, or report
+       concurrent modification.
+
+   3.  Perform bounded decompression and parse the complete envelope and
+       payload.  Reject unsupported critical features and inconsistent
+       mappings.
+
+   4.  Verify the envelope signature and the certificate-specific
+       bindings.  Check all required live public keys and the device
+       serial before offering hardware identity activation.
+
+   5.  Show mailbox identities, full fingerprints, algorithms, device
+       identifier, and slot mappings for review.  Import public-only
+       identities after confirmation; do not import trust, credentials,
+       or executable settings.
+
+   Reading from a file can verify signatures without a card, but the
+   result MUST be labeled not yet matched to hardware.  A missing
+   required key or a mismatch blocks hardware activation.  Serial
+   numbers are routing hints, not cryptographic device authentication.
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 13]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   Public-key matching does not prove hardware provenance or private-key
+   possession; those require separate attestation or an explicitly
+   authorized private operation.
+
+8.2.  Replacement and Local Recovery
+
+   1.  Construct and validate the replacement payload, check device
+       identity and every required public key, authorize bundle signing,
+       and verify the resulting signature locally.  Produce the
+       compressed representation within the size bounds.
+
+   2.  Snapshot every existing object in the owned bank.  Refuse
+       unrelated data or ambiguous ownership.  If a complete prior
+       bundle exists, verify and retain it as well.
+
+   3.  Before any card mutation, save the original object bytes,
+       verified prior envelope if available, replacement signed
+       envelope, and replacement compressed bytes to a new local
+       recovery directory.  Include lengths and SHA-256 digests.  Flush
+       files, make directory entries durable where the platform permits,
+       read the files back, and revalidate the replacement.  If this
+       cannot be completed, stop without card writes.
+
+   4.  Obtain management authorization locally.  Recheck the complete
+       object snapshot, including absence of previously absent objects,
+       and device identity before destructive work.  Serialize access
+       where supported; if the state has changed, stop and replan.
+
+   5.  Delete or invalidate the manifest first, then remove the owned
+       old chunks to release space.  Do not treat a failed delete as
+       success.  Write each replacement chunk and verify its exact bytes
+       by read-back.
+
+   6.  Write the manifest last.  Read the complete bank through the
+       normal verification path, compare it with the intended
+       replacement, and check live keys again.  Record local completion
+       only after success.  Retain the local recovery copy.
+
+   There is deliberately no atomic availability guarantee during
+   overwrite: removal, interruption, or storage failure can leave no
+   valid on-card bundle.  The UI MUST disclose this before backup.
+   Automatic blind retries of a partially completed mutation are
+   prohibited.  An explicit recovery operation MUST inspect current
+   device state and the saved recovery files, recheck keys, and obtain
+   any required management authorization before rewriting.  It MUST NOT
+   regenerate keys or change touch/PIN policies.
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 14]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   The generation increments after a valid previous generation; the
+   initial generation is 1.  Writers MUST reject overflow.  A resumed
+   write without a valid manifest uses the generation saved in the
+   recovery transaction.  Generations are unauthenticated operational
+   counters, not secure monotonic counters.  An old valid signed bundle
+   can be replayed; freshness needs separate trusted local state or an
+   explicitly confirmed comparison.
+
+   Suggested recovery names are previous.pqkey, replacement.pqkey,
+   replacement.pqmzip, object-TAG.bin, recovery.txt, and complete.txt.
+   These names are local conventions, not wire fields.  Directory
+   permissions SHOULD limit disclosure of personal identity information.
+   Files MUST NOT contain PINs, private keys, OAuth tokens, management
+   secrets, or trusted-contact decisions.  Recovery data MUST NOT be
+   automatically published.
+
+9.  Encrypted Level 5 Software Companion
+
+   This optional companion supplies distinct software Ed448
+   certification and message-signing keys and an X448 decryption key
+   while retaining ML-DSA-87 certification/signing and ML-KEM-1024
+   decryption on the device.  It uses the RFC 9980 combinations, not a
+   new message algorithm.  It occupies a separate single bank and MUST
+   NOT be placed in a public certificate field.  A reader that does not
+   implement this section MUST report the companion as unsupported; it
+   MUST NOT substitute classical-only operations.
+
+   Full storage is the default.  Ultra-compact storage is an explicit
+   user choice for eligible self-issued OpenPGP certificates.  It
+   reduces on-device storage at the cost of a first-restore PIN/private-
+   operation requirement.  An application MAY convert an existing full
+   companion after showing the measured size and restore requirements.
+   Conversion MUST preserve hardware and software component keys,
+   public-key packet bodies, fingerprints, slot bindings, certificate
+   restrictions, and device PIN/touch policies.  It MUST NOT regenerate
+   an identity to make it fit.
+
+9.1.  Companion Envelope and Encryption
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 15]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   companion_stored = "PQMCZ001" || U32(expanded_length)
+                      || zlib_stream
+   companion_envelope = BLOB(companion_body) || BLOB(signature)
+   companion_body = companion_magic || U32(device_serial)
+                    || BLOB(certification_pq_spki)
+                    || BLOB(signing_pq_spki)
+                    || BLOB(decryption_pq_spki)
+                    || BLOB(wrapping_spki)
+                    || BLOB(certificate_representation)
+                    || BLOB(component_manifest)
+                    || ephemeral_point[97] || salt[32] || nonce[12]
+                    || BLOB(ciphertext_and_tag)
+   companion_magic = "PQMCP001" / "PQMCP002"
+   plaintext = BLOB(empty_password_pfx)
+
+   The compressed and expanded limits are each 65536 octets.  The zlib
+   boundary rules in Section 4 apply, and nested compressed wrappers
+   MUST be rejected.  PQMCP001 carries one complete binary public
+   OpenPGP certificate.  PQMCP002 carries the reconstruction template in
+   Section 9.3.  Both are current optional representations, not
+   successive certificate generations.  Unknown magic MUST be rejected.
+
+   The four SPKIs are DER encodings for the existing keys in slots 86,
+   9c, 9d, and 82 respectively.  They MUST identify ML-DSA-87, ML-DSA-
+   87, ML-KEM-1024, and ECDH P-384.  The public certificate's
+   certification, signing, and encryption components MUST match those
+   hardware keys and the software components declared by the manifest.
+   Before any private operation, readers MUST compare the hardware SPKIs
+   with the selected device and verify the envelope signature over the
+   exact companion_body octets using the independently matched slot-86
+   key.  The signature is a 4627-octet pure ML-DSA-87 signature with
+   empty context; it is never omitted by ultra-compact encoding.
+
+   The wrapping point is an uncompressed P-384 point: 0x04 followed by
+   the 48-octet x coordinate and 48-octet y coordinate.  Readers MUST
+   reject points not on the curve or at infinity.  The writer generates
+   a fresh ephemeral P-384 keypair, 32-octet salt and 12-octet nonce for
+   each encrypted envelope.  ECDH with the device's slot-82 public key
+   gives the 48-octet, big-endian shared x coordinate, retaining leading
+   zeros.  The reader derives the same value with slot 82.  An invalid
+   or all-zero shared secret MUST be rejected.
+
+   AAD  = companion_body through nonce, inclusive
+   info = ASCII("PQMail companion P384 v1") || SHA256(AAD)
+   key  = HKDF-SHA256(salt, ECDH_secret, info, 32)
+   ciphertext_and_tag = AES-256-GCM(key, nonce, AAD, plaintext)
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 16]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   HKDF uses Extract and Expand as specified by [RFC5869].  AES-256-GCM
+   uses a 16-octet authentication tag appended to its ciphertext
+   [RFC5116].  The ciphertext length prefix and envelope signature are
+   outside AAD; the signature authenticates the complete body, including
+   that length prefix and ciphertext.  Every BLOB, including plaintext's
+   PFX, MUST consume exactly its enclosing field.  Authentication
+   failure MUST release no private material to callers.
+
+   The PFX [RFC7292] contains exactly three unencrypted private-key/
+   certificate bag pairs, named cert-ed, sign-ed, and kem-x, with
+   distinct Ed448, Ed448, and X448 keys respectively.  The password is
+   the empty string; there is no inner PFX MAC.  The outer AES-GCM
+   envelope provides confidentiality and integrity.  Readers MUST reject
+   duplicate/missing roles, extra private keys, unexpected encrypted
+   bags, and private/public mismatches.  The PFX and derived secrets
+   MUST remain operation-scoped; no plaintext PFX, private-key cache or
+   separately saved password is created.
+
+   Converting from PQMCP001 to PQMCP002 changes AAD.  It therefore
+   requires authorized unwrap and re-encryption of the same software
+   keys with fresh ephemeral key, salt and nonce, followed by a new
+   envelope signature.  Unlike lossless zlib recompression, conversion
+   does not preserve ciphertext or the envelope signature byte for byte.
+   It preserves the key material and certificate semantics instead.  An
+   implementation MUST verify both the old and replacement envelopes and
+   the exact key bindings before replacing storage.
+
+9.2.  Component Manifest
+
+   The component_manifest is UTF-8 JSON with exactly the fields version,
+   serial, profile, and components, in that order, without insignificant
+   whitespace.  Version is the integer 1, serial is the envelope's
+   device serial, and profile is the string LEVEL5_COMPANION.  Each
+   component has exactly role, algorithm, storage, slot, and sha256 in
+   that order. sha256 is the lowercase 64-hex-digit SHA-256 digest of
+   its DER SPKI.  The array order and other string values are fixed by
+   the following table.  Unknown, duplicate or conflicting fields and
+   noncanonical encodings MUST be rejected.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 17]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   +=========================+=============+===========+==============+
+   | Role                    | Algorithm   | Storage   | Slot         |
+   +=========================+=============+===========+==============+
+   | certification-pq        | ML-DSA-87   | piv       | 86           |
+   +-------------------------+-------------+-----------+--------------+
+   | signing-pq              | ML-DSA-87   | piv       | 9c           |
+   +-------------------------+-------------+-----------+--------------+
+   | decryption-pq           | ML-KEM-1024 | piv       | 9d           |
+   +-------------------------+-------------+-----------+--------------+
+   | companion-wrap          | P-384       | piv       | 82           |
+   +-------------------------+-------------+-----------+--------------+
+   | certification-classical | Ed448       | companion | empty string |
+   +-------------------------+-------------+-----------+--------------+
+   | signing-classical       | Ed448       | companion | empty string |
+   +-------------------------+-------------+-----------+--------------+
+   | decryption-classical    | X448        | companion | empty string |
+   +-------------------------+-------------+-----------+--------------+
+
+                  Table 3: Companion component bindings
+
+   The serial is only a device-selection hint.  Manifest validity
+   requires the envelope signature, exact algorithm/role validation,
+   certificate or template bindings, and live public-key comparison.
+   Neither a serial nor a manifest declaration proves physical custody
+   or hardware assurance.
+
+9.3.  Ultra-Compact Certificate Template
+
+   The initial template profile is deliberately narrow.  It accepts one
+   version-6 primary key with algorithm 31 (ML-DSA-87 + Ed448), one
+   direct-key signature, one to five User IDs each followed by its
+   positive self-certification, one distinct algorithm-31 signing subkey
+   with a binding signature containing exactly one embedded primary-key-
+   binding signature, and one algorithm-36 (ML-KEM-1024 + X448)
+   encryption subkey with its binding signature.  All signatures use
+   version 6, algorithm 31, SHA-512 and a 32-octet salt.  The
+   certification and signing keys MUST have distinct ML-DSA-87
+   components and distinct Ed448 components.  The packet sequence is:
+
+   Public-Key(6), Signature(2: 0x1f),
+     [User-ID(13), Signature(2: 0x13)]{1..5},
+   Public-Subkey(14: alg 31), Signature(2: 0x18),
+   Public-Subkey(14: alg 36), Signature(2: 0x18)
+
+   The signing-subkey binding contains one hashed Embedded
+   Signature subpacket (type 32) of signature type 0x19.
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 18]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   Conversion MUST begin with a fully verified certificate, including
+   each certification, binding and embedded cross-certification.  The
+   template preserves exact public-key packet bodies, User ID bytes,
+   algorithm identifiers, signature versions/types, hashed and unhashed
+   metadata, creation and expiration values, key flags, preferences,
+   critical bits, issuer fingerprints, and the signature-salt length.
+   Per-signature random salt bytes are not identity metadata and are
+   regenerated as described below.  Packet headers MAY be normalized to
+   definite-length new-format headers; this does not change key packet
+   bodies or fingerprints.
+
+   For each eligible self-issued signature, replace its 4741-octet
+   cryptographic value (114-octet Ed448 value followed by 4627-octet ML-
+   DSA-87 value), its two-octet digest check prefix, and its 32-octet
+   signature salt with zero octets of the same lengths.  Apply the same
+   rule recursively to the one embedded cross-certification.  Nothing
+   else is omitted.  In particular, the full envelope authentication
+   signature remains present.  The resulting zero-filled template is
+   compressed as part of the companion envelope.  Its expanded length is
+   not smaller; its compressed representation avoids storing those
+   random-looking signature values.
+
+   Stored template packet headers MUST use the new-format tag octet
+   followed by 0xff and a four-octet definite body length.  Other valid
+   definite-length packet headers in a verified cached certificate MAY
+   be normalized to this framing for comparison.  Partial-length,
+   legacy-format, marker, padding, extra and reordered packets are not
+   part of this template profile.  Original subpacket framing inside
+   signature metadata is preserved.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 19]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+    +===============+================================================+
+    | Signature     | Permitted subpacket types                      |
+    | role          |                                                |
+    +===============+================================================+
+    | All roles     | 2 creation time; 3 signature expiration; 33    |
+    |               | issuer fingerprint                             |
+    +---------------+------------------------------------------------+
+    | Direct-key    | 9 key expiration; 11 symmetric preferences; 21 |
+    | 0x1f,         | hash preferences; 22 compression preferences;  |
+    | additionally  | 27 key flags; 30 features; 39 AEAD preferences |
+    +---------------+------------------------------------------------+
+    | User ID       | 11, 21, 22, 30, 39                             |
+    | certification |                                                |
+    | 0x13,         |                                                |
+    | additionally  |                                                |
+    +---------------+------------------------------------------------+
+    | Subkey        | 9, 27; exactly one type 32 embedded signature  |
+    | binding 0x18, | for the signing subkey only                    |
+    | additionally  |                                                |
+    +---------------+------------------------------------------------+
+    | Embedded 0x19 | No additional types                            |
+    +---------------+------------------------------------------------+
+
+              Table 4: Permitted hashed signature subpackets
+
+   Every signature MUST have zero unhashed-subpacket length, at most
+   8192 hashed-subpacket octets, one creation-time subpacket, and one
+   exact version-6 issuer fingerprint.  Duplicate types and unknown
+   types, including unknown noncritical subpackets, MUST be rejected for
+   this profile.  Critical type 32 MUST be rejected.  Other permitted
+   subpacket critical bits are retained.  The direct-key flags MUST be
+   exactly 0x01, signing-subkey flags exactly 0x02, and encryption-
+   subkey flags exactly 0x0c.  An embedded signature is permitted only
+   in its designated signing-subkey binding and is subject to the same
+   version, algorithm, hash, salt, time and issuer rules.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 20]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   Creation and expiration values occupy four octets.  Signature
+   creation MUST NOT predate the involved keys or exceed the current
+   time by more than 300 seconds.  A signature-expiration interval is
+   relative to signature creation, and a key-expiration interval is
+   relative to the subject key creation.  Nonzero intervals MUST remain
+   unexpired; zero means no expiration.  Preferences 11, 21 and 22 have
+   1..32 octets drawn respectively from algorithm IDs {7,8,9},
+   {8,9,10,12,14}, and {0,1,2}. Feature subpacket 30 is one octet with
+   no bits outside 0x0f.  AEAD preference subpacket 39 has an even
+   length from 2 through 32; each pair is a symmetric algorithm in
+   {7,8,9} and an AEAD algorithm in {1,2,3}. These bounds deliberately
+   restrict reconstruction eligibility; they do not redefine general
+   OpenPGP validity.
+
+   User IDs MUST be valid UTF-8 of at most 1024 octets, each identifying
+   one distinct email address, either directly or as a display name
+   followed by an angle-bracketed address.  There is no whitespace
+   trimming.  If the text ends with an angle-closing bracket and
+   contains an angle-opening bracket, the address is the substring after
+   the last opening bracket and before the final closing bracket;
+   otherwise it is the complete User ID.  The address has at most 254
+   ASCII characters and matches the application profile below.
+   Duplicate detection compares the entire address after ASCII
+   lowercasing, while preserving original User ID bytes.  The same rules
+   MUST be applied at conversion, reconstruction and cache verification.
+   Unsupported identities remain in full storage.  Implementations MUST
+   NOT rewrite the original User ID bytes when creating a template.
+
+   local = 1*( ALPHA / DIGIT / "." / "!" / "#" / "$" / "%" /
+              "&" / "'" / "*" / "+" / "/" / "=" / "?" / "^" /
+              "_" / "`" / "{" / "|" / "}" / "~" / "-" )
+   domain-prefix = 1*( ALPHA / DIGIT / "." / "-" )
+   address = local || "@" || domain-prefix || "." || 2*ALPHA
+
+   This restricted address grammar is an eligibility check for
+   reconstruction, not a complete mailbox syntax specification.  ALPHA
+   and DIGIT above mean ASCII letters and digits.  General OpenPGP User
+   IDs outside this grammar remain usable in full-certificate storage
+   when otherwise valid.
+
+   sig_header = 0x06 || signature_type || 31 || 10
+                || U32(hashed_subpackets_length) || hashed_subpackets
+   sig_digest = SHA512(signature_salt || signed_data || sig_header
+                       || 0x06 || 0xff || U32(length(sig_header)))
+
+   signed_data is derived from the exact key and User ID packet bodies
+   using [RFC9580] for the specific permitted signature type.  The
+   digest check prefix is the first two octets of sig_digest.  Each
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 21]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   reconstructed signature, including the embedded cross-certification,
+   MUST use its own fresh 32-octet salt from a cryptographically secure
+   random generator.  Template normalization zeroes those salt bytes as
+   well as signature values and digest prefixes, while retaining the
+   salt-size octet.  Readers MUST NOT sign using the zero placeholder
+   salt or copy the old signature salt into a new signature.  A
+   reconstructed embedded signature is inserted before computing the
+   containing binding's sig_header and digest.  Both components of the
+   resulting algorithm-31 signature MUST verify using the corresponding
+   component keys before the complete certificate is accepted.
+
+   Fresh signature salts follow the security guidance in Section 13.2 of
+   [RFC9580]: re-signing a previously predictable digest forfeits the
+   benefits of salted signatures, including resistance to certain
+   repeated-signature fault attacks.  This profile makes freshness
+   mandatory.  It preserves certificate identity and restrictions rather
+   than reproducing the previous signature's randomness.  Two valid
+   cached certificates can therefore have different signature salts and
+   values while normalizing to the same authenticated template.
+
+   A template is not a transferable OpenPGP certificate and MUST NOT be
+   exported, attached to messages, or accepted as a valid certificate.
+   The zero fields are defined placeholders only under PQMCP002; an all-
+   zero signature in PQMCP001 is an invalid certificate.  A reader MUST
+   require the placeholders and their exact lengths, not interpret
+   arbitrary signature bytes as a command to re-sign them.
+
+   This initial profile excludes third-party certifications, CA-issued
+   certificates, revocations, unknown packet structures and unsupported
+   signature metadata.  Conversion MUST refuse such a certificate and
+   retain its full representation; it MUST NOT strip those packets or
+   signatures to obtain eligibility.  CA-issued S/MIME certificates and
+   chains in the public bundle are unaffected.  A future extension that
+   retains additional immutable signatures requires separate specified
+   validation and interoperability testing.
+
+   The converter MUST preserve primary-key and subkey packet bodies
+   exactly.  Therefore their OpenPGP fingerprints remain unchanged.
+   Reconstructed signature bytes and, because of embedded-signature
+   dependencies, enclosing digest-check prefixes can differ.  A pin on
+   the hash of the entire certificate is not equivalent to a fingerprint
+   pin and needs explicit handling.  Reconstruction MUST NOT renew
+   expiration, change an identity, broaden key usage, revive revoked
+   material, or silently change the advertised algorithm.
+
+9.4.  First Restore and Public-Certificate Cache
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 22]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   1.  Read and verify the companion envelope and match every required
+       live public key before requesting a PIN.  Validate the entire
+       template's allowed sequence, algorithms, metadata, issuer
+       fingerprints, key roles, key flags, time/expiration constraints
+       and cross-certification location.  Reject malformed or
+       unsupported records before any private operation.
+
+   2.  If a local complete public certificate is available, verify all
+       its signatures and policy constraints, derive its normalized
+       zero-filled template, and require exact equality with the
+       authenticated template.  Match all primary/subkey fingerprints
+       and component public keys.  A valid matching cache avoids
+       reconstruction.  It does not bypass ordinary validity, revocation
+       or trust decisions.
+
+   3.  Otherwise explain that this host must reconstruct self-issued
+       signatures once.  Obtain local authorization, unwrap the
+       companion using slot 82, and verify each software private/public
+       pair.  Recompute signature digests from the allowed packet
+       structures and preserved metadata; never accept an arbitrary
+       digest or message from the template as a signing request.
+
+   4.  Regenerate the embedded 0x19 signature with the existing signing
+       key before regenerating its enclosing 0x18 binding with the
+       certification key.  Preserve identity metadata, select a fresh
+       salt independently for each new signature, and update derived
+       digest-check prefixes.  Regenerate the remaining eligible
+       signatures with their proper certification key.  Each resulting
+       composite signature MUST verify in both components before use.
+
+   5.  Parse and verify the complete reconstructed OpenPGP certificate,
+       then normalize it again and require equality with the
+       authenticated template.  Cache only that public certificate,
+       bound to the validated envelope/template and component keys.
+       Clear operation PINs, unwrapped keys and temporary secrets.  Do
+       not grant contact trust.
+
+   Only the first restore on a host, or a missing/invalidated public
+   cache, needs reconstruction.  Subsequent signing/decryption still
+   unwraps the companion privately for that operation; the cache does
+   not contain software private keys.  A matching already-issued public
+   certificate can seed the cache without re-signing.  A changed
+   authenticated template invalidates the cache, even if the primary
+   fingerprint stays the same.  Implementations MUST validate the cache
+   contents, not trust its filename, a bare fingerprint or an
+   unauthenticated cached hash.
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 23]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   PIN and touch requirements are those of the existing device keys.  A
+   per-operation PIN cache can avoid asking the user again for each
+   component, but MUST NOT weaken PIN Always, suppress a required touch,
+   retry a rejected PIN, or change device policy.  Certificate
+   reconstruction is not a PIN-free public read and MUST be clearly
+   distinguished from the full-format restore workflow.
+
+9.5.  Companion Storage and Recovery
+
+   manifest at object 0x5f5200 (44 octets):
+     "PQCIDX01" || U32(stored_length) || SHA256(companion_stored)
+
+   chunk i at object 0x5f5201 + i:
+     "PQCCHK01" || U32(i) || chunk_data
+
+   There are at most 32 chunks, using objects 0x5f5201 through 0x5f5220.
+   Each carries up to 2048 data octets; exact lengths and index rules
+   follow Section 8 without its generation field.  The manifest digest
+   covers the complete compressed companion.  It is not authentication
+   or rollback protection.  This separate single bank MUST NOT overwrite
+   the public bundle, ordinary PIV certificates, other applications,
+   keys or policies.
+
+   The verified local-recovery and manifest-last rules in Section 8.2
+   apply to companion creation, recompression and ultra-compact
+   conversion.  Recovery files MAY contain the encrypted companion, full
+   public certificate and authenticated template, but MUST NOT contain
+   plaintext private keys, PFX contents, PINs, wrapping secrets or
+   management credentials.  The writer MUST snapshot all 33 reserved
+   objects, including absence, and detect unexpected tail objects.
+   Recovery MUST compare current objects against the exact old/
+   replacement journal and refuse unrelated data; it MUST NOT generate
+   replacement identity keys.
+
+   Before ultra-compact replacement, the writer MUST verify that
+   restored replacement keys and normalized certificate semantics equal
+   the original, retain the original encrypted companion and complete
+   public certificate locally, and make the recovery journal durable.
+   Read-back MUST verify the new envelope and template and compare the
+   committed bytes.  Users can begin with full storage and explicitly
+   convert later when shared device storage becomes constrained.  The UI
+   MUST report measured byte/object savings and actual free storage
+   where available, rather than promising a fixed number of additional
+   discoverable credentials.
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 24]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+10.  Security Considerations
+
+   A public certificate bundle is public, not confidential.  Anyone able
+   to read its objects may learn mailbox addresses, device identifiers,
+   certificate relationships, and key fingerprints.  Compression does
+   not conceal this information.  Shared copies and local recovery files
+   warrant the same privacy treatment as the certificates themselves.
+
+   A signature made by a key contained in the same bundle proves
+   consistency with that key, not the owner's real-world identity.  An
+   attacker can create an entirely self-consistent replacement using the
+   attacker's own keys.  Live public-key checks and independently
+   established correspondent trust are separate requirements.  Restore
+   MUST NOT automatically mark any mailbox/fingerprint pair trusted or
+   turn included CA certificates into roots.
+
+   The public bundle MUST contain only public material and declarative
+   mappings.  Encrypted software private components are permitted only
+   in the separately authenticated companion defined in Section 9.
+   Implementations MUST reject private-key packets and prevent path
+   traversal, executable configuration, automatic URL fetching, and
+   command construction from certificate or extension data.  Displayed
+   identity strings require escaping and length limits.  Import must
+   stage all validation before persistent activation; failures MUST NOT
+   leave partially trusted identities.
+
+   Signature-valid certificates can be expired, revoked, or unsuitable
+   for the requested purpose.  Removing a hybrid subkey can yield a
+   still-valid classical certificate view.  Therefore signature validity
+   alone does not promise hybrid capabilities or authorize a downgrade.
+   Applications MUST disclose classical fallback separately for signing
+   and encryption and apply their local acceptance policy.
+
+   Storage ownership cannot be established by magic bytes alone.  Before
+   deleting, the writer must inspect the namespace and its application
+   context; unexpected objects require explicit recovery review.  The
+   local recovery mechanism protects availability only to the extent the
+   backup was durably saved and remains accessible.  The unauthenticated
+   manifest and generation permit denial of service and rollback.  No
+   claim of transactionality across power loss is made.
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 25]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   Readers MUST bound decompression, parsing, certificate counts, packet
+   nesting, and signature work.  Failed hardware reads MUST NOT be
+   converted to missing objects or empty slots.  Public-bundle and full-
+   companion public inspection require no signing PIN or private
+   operation.  Ultra-compact certificate reconstruction requires
+   explicitly authorized private operations as described in Section 9.4.
+   An application MUST NOT retry a PIN after rejection or modify key
+   policy to complete restore.
+
+10.1.  Algorithm Profiles and Private-Key Custody
+
+   An implementation can offer more than one algorithm and custody
+   profile.  An ML parameter set, a certificate algorithm, and the
+   location of its private components are separate properties.  The
+   labels "Level 3" and "Level 5" below describe the intended post-
+   quantum security category of the message-protection profile, using
+   the specified composite construction and ML parameter set.  They do
+   not rate private-key storage, imply that every constituent algorithm
+   has that security strength, claim that a complete implementation has
+   been certified, or prove that private keys cannot be extracted.  The
+   message-level claim assumes secure key generation and uncompromised
+   required key material; it is not the sum of the component strengths.
+   Applications SHOULD display both the algorithms and the custody
+   model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 26]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   +===========+=========================+=============================+
+   | Option    | Private components      | Principal tradeoff          |
+   +===========+=========================+=============================+
+   | Level 3   | ML-DSA-65, ML-KEM-768,  | Hardware custody for both   |
+   | NIST      | and the selected NIST-  | components; the             |
+   | composite | curve components on the | certificate protocol and    |
+   |           | device                  | implemented algorithm       |
+   |           |                         | revision determine          |
+   |           |                         | interoperability.           |
+   +-----------+-------------------------+-----------------------------+
+   | Level 5   | ML-DSA-87, ML-KEM-1024, | Higher ML parameter         |
+   | NIST      | and the selected NIST-  | category with hardware      |
+   | composite | curve components on the | custody; not                |
+   |           | device                  | interchangeable with the    |
+   |           |                         | Edwards/Montgomery          |
+   |           |                         | combinations in RFC 9980.   |
+   +-----------+-------------------------+-----------------------------+
+   | Level 5   | ML-DSA-87, Ed448, ML-   | RFC 9980 combinations       |
+   | native    | KEM-1024, and X448 on   | with hardware custody for   |
+   | Ed448/    | the device              | both components; requires   |
+   | X448      |                         | native device and           |
+   |           |                         | transport support for       |
+   |           |                         | every required operation.   |
+   +-----------+-------------------------+-----------------------------+
+   | Level 5   | ML-DSA-87 and ML-       | RFC 9980 interoperability   |
+   | software  | KEM-1024 on the device; | on hardware lacking         |
+   | Ed448/    | newly generated Ed448/  | Ed448/X448, at the cost     |
+   | X448      | X448 private keys       | of additional exposure of   |
+   | companion | unwrapped into host     | the classical private       |
+   |           | memory per operation    | components on the host.     |
+   +-----------+-------------------------+-----------------------------+
+
+                         Table 5: Profile Tradeoffs
+
+   A NIST-curve composite used in S/MIME MUST NOT be labeled as an RFC
+   9980 OpenPGP composite.  A separate experimental NIST/Brainpool
+   OpenPGP encoding, if offered, needs its own explicit algorithm-
+   revision label and peer support.  OpenPGP version 6 alone does not
+   imply support for every post-quantum or experimental composite
+   algorithm.  The native and software-companion Level 5 options use the
+   same RFC 9980 message algorithms; their differing key custody is a
+   local security property.
+
+   Hybrid signatures require successful verification of both components.
+   A hybrid KEM uses its specified combiner and requires both component
+   operations.  A classical component provides protection if the post-
+   quantum component suffers an unexpected cryptanalytic failure;
+   conversely, the post-quantum component provides protection against
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 27]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   breaks of the classical assumption, including quantum attacks.
+   Implementations MUST NOT treat either component as optional, ignore a
+   failed component, or silently fall back to a classical-only
+   operation.  Any robustness claim depends on the specified
+   construction and its assumptions, not merely concatenating two keys.
+
+   The software-companion approach encrypts an empty-password PKCS#12
+   container in an authenticated envelope, unlocked with the existing
+   P-384 ECDH device key.  The envelope, rather than a PKCS#12 password,
+   is the confidentiality and integrity boundary.  Only ciphertext is
+   intentionally persisted on the device and in local recovery files.
+   The password is not a separate saved secret.  This is classical
+   protection of the companion at rest, not post-quantum protection of
+   its contents.  An attacker who breaks or obtains the wrapping key and
+   obtains the ciphertext can recover the companion's classical private
+   keys.  That fact does not by itself reveal the hardware ML private
+   keys or satisfy both components of a hybrid operation.
+
+   After unwrap, the Ed448/X448 private keys and derived secrets exist
+   in client process memory.  They may additionally be exposed through
+   memory copies, CPU caches and side channels, debugging or process
+   inspection, a compromised operating system, swap or page files,
+   hibernation images, crash dumps, and diagnostic or virtual-machine
+   snapshots.  A design that intentionally writes no plaintext key files
+   does not guarantee that no plaintext key material ever reaches
+   persistent client storage.  Managed runtimes and cryptographic
+   providers may retain copies beyond the application's explicit buffer-
+   clearing operations.
+
+   Companion implementations SHOULD minimize the lifetime and number of
+   secret copies, clear owned secret buffers on success and failure,
+   release provider key objects promptly, avoid persistent private-key
+   caches, suppress secrets in logs and telemetry, and use platform
+   memory-locking and dump-exclusion facilities where available.  Such
+   measures reduce exposure but do not establish the nonexportability of
+   a hardware private key.  Documentation MUST distinguish implemented
+   controls from desired controls and MUST NOT claim guaranteed erasure
+   when the runtime or operating system cannot provide it.
+
+   Touch and PIN authorization apply to particular device operations;
+   they are not properties of an entire certificate.  A no-touch P-384
+   unwrap can avoid an additional touch while the ML-DSA signing or ML-
+   KEM decapsulation slot retains its existing touch policy.  This does
+   not put the software private keys under equivalent hardware custody
+   or prevent their later use after host extraction.  A conforming
+   implementation MUST preserve device policy on restore and MUST NOT
+   describe a per-operation PIN cache as changing a device's PIN Always
+   policy.
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 28]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   There is no unconditional ordering between fully hardware-backed
+   Level 3 and a Level 5 software companion.  The latter uses higher ML
+   parameters, while the former better isolates its classical private
+   components from the host.  The preferred option depends on the threat
+   model, algorithm support, interoperability requirements, and device
+   capabilities.  Native Level 5 Ed448/X448 avoids the companion's
+   private-key unwrap exposure when the required hardware and software
+   support are available.
+
+   The public certificate bundle specified by this document MUST NOT
+   contain the companion's private keys or PKCS#12 plaintext.  The
+   encrypted companion uses the separately authenticated format and
+   storage namespace in Section 9.  A manifest describing it must bind
+   the device identifier, component public keys, algorithms, roles,
+   storage locations, and slots.  Restore MUST verify those bindings
+   against the authenticated certificates and live device keys, and MUST
+   reject unsupported components instead of substituting software keys
+   or choosing a different profile.  The serial number routes the
+   request; public-key matching and signature validation establish the
+   relevant cryptographic bindings.  Ultra-compact reconstruction adds a
+   signing-oracle risk if authenticated template fields are treated as
+   arbitrary signing instructions.  Independent structural and digest
+   validation, strict role binding, and complete verification of
+   reconstructed output are required.  The envelope signature alone is
+   not permission to sign arbitrary data.
+
+10.2.  Hardware Assurance and Key Generation
+
+   Hardware-backed storage is not a uniform assurance category.  Devices
+   differ in physical tamper protection, implementation quality,
+   resistance to non-invasive and side-channel attacks, and lifecycle
+   controls.  FIPS 140-3 [FIPS1403] and Common Criteria evaluations
+   [CC-PROFILES] provide structured assurance evidence, but their scopes
+   differ.  A product name, a PKCS#11 interface, an on-device-generation
+   flag, or a vendor's use of the word "secure" does not establish those
+   properties.
+
+   FIPS 140-3 validation applies to an identified cryptographic module,
+   version, configuration, boundary, and approved services.  Its
+   security level is unrelated to the NIST post-quantum algorithm
+   categories used for message protection.  Common Criteria evaluation
+   applies to a defined Target of Evaluation and its Security Target,
+   possibly with conformance to a Protection Profile; an Evaluation
+   Assurance Level alone does not enumerate which physical, side-
+   channel, algorithm, or randomness claims were evaluated.  An
+   evaluation of a secure element is not automatically an evaluation of
+   the complete token, its PIV application, or the host software.
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 29]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   Applications and deployments SHOULD examine the applicable validation
+   certificate, security policy or Security Target, assurance scope,
+   operational assumptions, hardware and firmware versions, and
+   supported algorithms.  Side-channel resistance MUST NOT be inferred
+   solely from a headline FIPS level or Common Criteria assurance label.
+   New PQ firmware, beta hardware, algorithms added after evaluation, or
+   an unevaluated operating mode MUST NOT be described as covered
+   without evidence that they are within the evaluated configuration.
+   This document makes no FIPS or Common Criteria validation claim for
+   the devices used in its interoperability tests.
+
+   Random-number generation is especially important when private keys
+   are generated on the device: strong storage cannot repair a
+   predictable private key.  Relevant assurance includes the entropy
+   source, conditioning, generator design, initialization and reseeding,
+   and health tests.  The NIST SP 800-90 series separates deterministic
+   generators [SP80090A], entropy sources [SP80090B], and complete
+   random-bit-generator constructions [SP80090C].  A claim that a device
+   has a hardware random-number generator is not by itself evidence of
+   adequate entropy or correct use for every key-generation service.
+
+   A common failing or compromised randomness source may undermine both
+   components of a hybrid keypair.  Combining two algorithms does not
+   compensate for predictable keys generated from inadequate entropy,
+   and deriving several keys from one seed does not create independent
+   entropy.  Each component MUST be generated with a cryptographically
+   appropriate generator and the entropy required by its algorithm.
+   Newly generated software companion keys rely on the host generator
+   and entropy source, not the token's key-generation assurance; the
+   same applies to ephemeral wrapping keys and other host-generated
+   secrets.
+
+   Restore verifies declared public-key bindings and does not
+   independently establish the quality of historical randomness,
+   nonexportability, physical protection, or side-channel resistance.
+   Attestation may provide evidence of provenance or device state only
+   within its own verified scope.  User interfaces SHOULD distinguish
+   message algorithms and categories, component storage locations, PIN/
+   touch policies, and independently verified hardware-assurance
+   information.  Unverified assurance metadata in a signed bundle is a
+   declaration by its signer, not a certification issued by an
+   evaluation authority.
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 30]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+11.  IANA Considerations
+
+   This document requests no IANA actions.  The PIV object tags and
+   extension identifiers are application-specific conventions and do not
+   reserve a PIV namespace, an IANA registry, an OID, a URI scheme, or a
+   media type.  Existing cryptographic identifiers retain their
+   specifications.  The local file suffixes .pqkey, .pqmzip and .pqcomp
+   do not establish registered MIME types.
+
+12.  Implementation and Interoperability Status
+
+   As of 20 November 2026, a Level 3 bundle using the deployed base
+   payload was written to a single bank on a PQC Ready YubiKey Beta0,
+   restored into a fresh PQ Mail store, and independently read and
+   verified with a Sequoia-based adapter.  The tests compared public
+   keys and PIN/touch policies before and after.  This establishes
+   interoperability for that tested profile, not universal hardware
+   support or a production security audit.
+
+   The full Level 5 companion and its losslessly compressed storage have
+   passed physical-device restore, signing and decryption tests in PQ
+   Mail and the independent Sequoia adapter.  The measured stored
+   representation decreased from 46412 to 39163 octets, with unchanged
+   expanded-envelope bytes, hardware keys, ordinary certificates and
+   PIN/touch policies.  That lossless test did not exercise ultra-
+   compact reconstruction.
+
+   Ultra-compact Java software checks cover fresh-salt reconstruction,
+   key and metadata preservation, cache validation, signing/decryption,
+   12 malformed authenticated templates rejected before private
+   operations, and 60 injected storage/recovery interruption points.  A
+   synthetic two-User-ID companion measured 43918 octets in full
+   compressed storage and 15431 octets in ultra-compact storage.  These
+   are software-fixture encoded sizes, not measurements of a physical-
+   device conversion or a guarantee of recoverable card space.  Physical
+   ultra-compact conversion has not yet been tested.
+
+   Independent Java/Rust software interoperability also passed: the
+   Sequoia adapter reconstructed the Java-produced PQMCP002 template
+   through a simulated card backend, using one P-384 unwrap, five
+   certification-key ML-DSA operations and one signing-key ML-DSA
+   operation for the two-User-ID fixture.  A subsequent validated
+   public-cache restore succeeded with the private backend unavailable
+   and no new private calls.  Java and Sequoia verified each other's
+   signatures and decrypted each other's ciphertexts using the
+   reconstructed certificate.  These tests establish software-format
+   interoperability for this profile; they do not establish physical-
+   device reconstruction timing or touch behavior.
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 31]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   The accompanying public software fixture uses synthetic identities
+   and a synthetic serial; no private keys or actual user's hardware
+   backup are included.  It exercises pure and composite envelope
+   signatures, compressed framing, and separated certification/signing
+   keys.  The extension payload, other-card bindings, and all possible
+   certificate algorithms require additional implementation and
+   interoperability testing.
+
+13.  Normative References
+
+   [COMPOSITE-KEM]
+              Ounsworth, M., "Composite ML-KEM for Use in X.509 Public
+              Key Infrastructure", Work in Progress, Internet-Draft,
+              draft-ietf-lamps-pq-composite-kem-23, 14 October 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
+              pq-composite-kem-23>.  Work in Progress.  Algorithm
+              identifiers and encodings must be matched to the
+              implemented revision.
+
+   [RFC10073] Ounsworth, M., "Composite Module-Lattice-Based Digital
+              Signature Algorithm (ML-DSA) for Use in X.509 Public Key
+              Infrastructure", RFC 10073, November 2026,
+              <https://www.rfc-editor.org/rfc/rfc10073>.
+
+   [RFC1950]  Deutsch, P. and J.-L. Gailly, "ZLIB Compressed Data Format
+              Specification version 3.3", RFC 1950, May 1996,
+              <https://www.rfc-editor.org/rfc/rfc1950>.
+
+   [RFC1951]  Deutsch, P., "DEFLATE Compressed Data Format Specification
+              version 1.3", RFC 1951, May 1996,
+              <https://www.rfc-editor.org/rfc/rfc1951>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5116]  McGrew, D., "An Interface and Algorithms for Authenticated
+              Encryption", RFC 5116, January 2008,
+              <https://www.rfc-editor.org/rfc/rfc5116>.
+
+   [RFC5280]  Cooper, D., "Internet X.509 Public Key Infrastructure
+              Certificate and Certificate Revocation List (CRL)
+              Profile", RFC 5280, May 2008,
+              <https://www.rfc-editor.org/rfc/rfc5280>.
+
+   [RFC5869]  Krawczyk, H. and P. Eronen, "HMAC-based Extract-and-Expand
+              Key Derivation Function (HKDF)", RFC 5869, May 2010,
+              <https://www.rfc-editor.org/rfc/rfc5869>.
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 32]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   [RFC7292]  Moriarty, K., "PKCS #12: Personal Information Exchange
+              Syntax v1.1", RFC 7292, July 2014,
+              <https://www.rfc-editor.org/rfc/rfc7292>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, May 2017,
+              <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC9580]  Wouters, P., "OpenPGP", RFC 9580, July 2024,
+              <https://www.rfc-editor.org/rfc/rfc9580>.
+
+   [RFC9980]  Kousidis, S., "Post-Quantum Cryptography in OpenPGP",
+              RFC 9980, June 2026,
+              <https://www.rfc-editor.org/rfc/rfc9980>.
+
+14.  Informative References
+
+   [CC-PROFILES]
+              Common Criteria Recognition Arrangement, "Common Criteria
+              Portal: Protection Profiles",
+              <https://www.commoncriteriaportal.org/pps/index.cfm>.  See
+              the applicable product Security Target, Protection Profile
+              and certification report for the evaluated scope.
+
+   [FIPS1403] National Institute of Standards and Technology, "Security
+              Requirements for Cryptographic Modules", FIPS 140-3, March
+              2019, <https://csrc.nist.gov/pubs/fips/140-3/final>.
+
+   [SP80090A] National Institute of Standards and Technology,
+              "Recommendation for Random Number Generation Using
+              Deterministic Random Bit Generators", NIST SP 800-90A
+              Revision 1, June 2015,
+              <https://csrc.nist.gov/pubs/sp/800/90/a/r1/final>.
+
+   [SP80090B] National Institute of Standards and Technology,
+              "Recommendation for the Entropy Sources Used for Random
+              Bit Generation", NIST SP 800-90B, January 2018,
+              <https://csrc.nist.gov/pubs/sp/800/90/b/final>.
+
+   [SP80090C] National Institute of Standards and Technology,
+              "Recommendation for Random Bit Generator (RBG)
+              Constructions", NIST SP 800-90C, September 2025,
+              <https://csrc.nist.gov/pubs/sp/800/90/c/final>.
+
+   [YUBICO-DATA]
+              Yubico, "PIV GET and PUT DATA", 2026,
+              <https://docs.yubico.com/yesdk/users-manual/application-
+              piv/get-and-put-data.html>.
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 33]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+Appendix A.  Proposed Future-Creation Layout
+
+   This planning note is not an implemented mapping, a migration
+   instruction, or a replacement for the current companion bindings.  A
+   future initial-provisioning layout could group roles as follows:
+   9c/9d for PQ message signing/decryption; 82/83 for PQ/classical
+   certification; 84/85 for classical S/MIME signing/ECDH; 86/87 for
+   classical Edwards/Montgomery OpenPGP signing/ECDH; 88/89 for
+   standalone classical compatibility; and 8a/8b for the additional ML-
+   KEM-768/X25519 encryption components of a Level 5 v4 compatibility
+   certificate.  Algorithms would depend on the selected profile, unused
+   slots would remain empty, and a software component would have no
+   fictitious hardware slot.
+
+   Such a layout needs a distinct, versioned, signed manifest before
+   deployment.  In particular, assigning certification to slot 82
+   conflicts with the current companion's P-384 wrapping role in that
+   slot.  Existing PQMCP001/PQMCP002 mappings MUST retain their current
+   meaning; a reader MUST NOT reinterpret them according to this
+   proposal.  No key move, regeneration, policy change or provisioning
+   operation is authorized by this note.  New-layout support and tests
+   require a later explicit specification revision.
+
+Appendix B.  Synthetic Public Test Material
+
+   The repository accompanying this draft includes a public-only
+   software fixture, a framing validator, and build instructions.  The
+   fixture contains both pure-signed and composite-signed compressed
+   base bundles and the expected component SPKIs.  It MUST NOT be used
+   as a production identity.  The framing validator does not replace
+   cryptographic signature verification; independent signature
+   validation uses the Sequoia adapter test suite.
+
+   Negative tests should include truncated chunks, wrong indices/
+   generations, digest mismatch, invalid zlib boundaries, expansion
+   overflow, trailing bytes, invalid signatures in either composite
+   component, secret OpenPGP packets, invalid bindings, wrong device or
+   key, conflicting mappings, unknown critical extensions, namespace
+   collisions, and interruption after every mutation step.  A public-
+   only reader must not perform a private-key operation or confer
+   contact trust.  An ultra-compact reconstruction test must establish
+   explicit authorization and prove that malformed templates are
+   rejected before private-key operations.
+
+Author's Address
+
+   John Bradley
+   Email: ve7jtb@ve7jtb.com
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 34]
+
+Internet-Draft             Certificate Bundles             November 2026
+
+
+   URI:   https://github.com/ve7jtb
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bradley                    Expires 24 May 2027                 [Page 35]
